@@ -39,7 +39,7 @@ var state = {
 function _echo(options) {
   var messages = [].slice.call(arguments, 1);
   log.apply(this, messages);
-  return new ShellString(messages.join(' '));
+  return ShellString(messages.join(' '));
 };
 exports.echo = wrap('echo', _echo);
 
@@ -162,7 +162,7 @@ exports.cd = wrap('cd', _cd);
 //@ Returns the current directory.
 function _pwd(options) {
   var pwd = path.resolve(process.cwd());
-  return new ShellString(pwd);
+  return ShellString(pwd);
 };
 exports.pwd = wrap('pwd', _pwd);
 
@@ -441,7 +441,7 @@ function _cat(options, files) {
   if (cat[cat.length-1] === '\n')
     cat = cat.substring(0, cat.length-1);
 
-  return new ShellString(cat);
+  return ShellString(cat);
 };
 exports.cat = wrap('cat', _cat);
 
@@ -463,12 +463,12 @@ function _to(options, file) {
 
   fs.writeFileSync(file, this.toString(), 'utf8');
 };
-// Augmented String() object, to mimick Unix redirection operators
+// In the future, when Proxies are default, we can add methods like `.to()` to primitive strings. 
+// For now, this is a dummy function to bookmark places we need such strings
 function ShellString(str) {
-  var s = new String(str);
-  s.to = wrap('to', _to);
-  return s;
+  return str;
 }
+String.prototype.to = wrap('to', _to);
 
 //@
 //@ #### sed([options ,] search_regex, replace_str, file)
@@ -505,7 +505,7 @@ function _sed(options, regex, replacement, file) {
   if (options.inplace)
     fs.writeFileSync(file, result, 'utf8');
 
-  return new ShellString(result);
+  return ShellString(result);
 };
 exports.sed = wrap('sed', _sed);
 
@@ -540,69 +540,27 @@ function _grep(options, regex, file) {
     });
   });
 
-  return new ShellString(grep);
+  return ShellString(grep);
 };
 exports.grep = wrap('grep', _grep);
 
-//@
-//@ #### exit(code)
-//@ Exits the current process with the given exit code.
-exports.exit = process.exit;
 
 //@
-//@ #### env['VAR_NAME']
-//@ Object containing environment variables (both getter and setter). Shortcut to process.env.
-exports.env = process.env;
-
-
-
-
-
+//@ #### which([options ,] command)
 //@
-//@ ## Other commands
+//@ Examples:
 //@
-
-
-
-
-
+//@ + `var nodeExec = which('node')`
 //@
-//@ #### external('command', options)
-//@ Checks that the external `command` exists either as an absolute path or in the system `PATH`, 
-//@ and returns a callable function `function([args] [,options] [,callback])` that executes the 
-//@ command. Example:
-//@
-//@ ```javascript
-//@ var git = external('git'),
-//@     gitVersion = git('--version').output;
-//@ ```
-//@
-//@ Available options:
-//@
-//@ + `required`: (Default is `false`) If `true`, will throw an error when command cannot be found.
-//@ + `silent`: (Default is `false`) If `true` will suppress all output from command, otherwise both `stdout` and `stderr`
-//@ will be redirected to the console.
-//@ + `async`: (Default is `false`) If `true` will call the optional `callback` argument to the 
-//@ callable function when the command is done, instead of blocking execution.
-//@
-//@ When in synchronous mode the callable function returns the object `{ code:..., output:... }`, 
-//@ containing the program's `output` (stdout + stderr)  and its exit `code`. 
-//@ Otherwise the `callback` gets the arguments `(code, output)`.
-exports.external = wrap('external', function(cmd, opts) {
+//@ Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`, and `.bat` extensions.
+//@ Returns `String()` object containing the absolute path to the command.
+function _which(options, cmd) {
   if (!cmd)
     error('must specify command');
-
-  var options = extend({
-    silent: false,
-    required: false,
-    async: false
-  }, opts);
 
   var pathEnv = process.env.path || process.env.Path || process.env.PATH,
       pathArray = splitPath(pathEnv),
       where = null;
-
-  write('Checking for external command availability: ' + cmd + ' ... ');
 
   // No relative/absolute paths provided?
   if (cmd.search(/\//) === -1) {
@@ -639,48 +597,34 @@ exports.external = wrap('external', function(cmd, opts) {
   }
     
   // Command not found anywhere?
-  if (!fs.existsSync(cmd) && !where) {
-    state.fatal = options.required;
-    log('NO');
-
-    if (state.fatal)
-      error('Fatal: could not find required command');
-
+  if (!fs.existsSync(cmd) && !where)
     return null;
-  }
 
-  log('OK');
   where = where || path.resolve(cmd);
 
-  // Callable function
-  return function(args, options2, callback) {
-    if (typeof args === 'string' && typeof options2 === 'object' && typeof callback === 'function') {
-      // nothing to do
-    } else if (typeof args === 'function') {
-      callback = args;
-      args = '';
-      options2 = {};
-    } else if (typeof options2 === 'function') {
-      callback = options2;
-      if (typeof args === 'object') {
-        options2 = args;
-        args = '';
-      }
-    } else if (typeof args === 'object') {
-      options2 = args;
-      args = '';
-    }
+  return ShellString(where);
+};
+exports.which = wrap('which', _which);
 
-    var thisOpts = extend({}, options); // clone 'global' opts
-    thisOpts = extend(thisOpts, options2); // override global opts with local opts
-  
-    if (thisOpts.async)
-      execAsync(where, args, thisOpts, callback);
-    else
-      return execSync(where, args, thisOpts);
+//@
+//@ #### exit(code)
+//@ Exits the current process with the given exit code.
+exports.exit = process.exit;
 
-  } // callable function
-});
+//@
+//@ #### env['VAR_NAME']
+//@ Object containing environment variables (both getter and setter). Shortcut to process.env.
+exports.env = process.env;
+
+
+
+
+
+//@
+//@ ## Non-Unix commands
+//@
+
+
 
 //@
 //@ #### exists('path [path ...]')
