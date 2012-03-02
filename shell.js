@@ -503,7 +503,7 @@ function _sed(options, regex, replacement, file) {
 
   var result = fs.readFileSync(file, 'utf8').replace(regex, replacement);
   if (options.inplace)
-    result.to(file);
+    fs.writeFileSync(file, result, 'utf8');
 
   return new ShellString(result);
 };
