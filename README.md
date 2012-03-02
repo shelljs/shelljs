@@ -2,6 +2,8 @@
 
 **Why?** Because you want a portable (Windows included) solution to your shell scripts, and you're already familiar with Unix shell commands. No dependencies other than Node.js. No asynchronous callback hell. Just good old shell scripting.
 
+Shell.js is [unit-tested](http://travis-ci.org/arturadib/shell.js) and battle-tested at Mozilla's [pdf.js](http://github.com/mozilla/pdf.js).
+
 
 ### Example
 
