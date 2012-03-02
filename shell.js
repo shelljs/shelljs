@@ -166,7 +166,7 @@ exports.pwd = wrap('pwd', _pwd);
 //@ + `cp('file1', 'dir1')`
 //@ + `cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp')`
 //@
-//@ The wildcard `*` is accepted. Copy files.
+//@ Copies files. The wildcard `*` is accepted.
 function _cp(options, sources, dest) {
   options = parseOptions(options, {
     'f': 'force',
@@ -241,7 +241,7 @@ function _cp(options, sources, dest) {
 exports.cp = wrap('cp', _cp);
 
 //@
-//@ #### rm('[options ,] file [, file ...]')
+//@ #### rm([options ,] file [, file ...])
 //@ Available options:
 //@
 //@ + `-f`: force
@@ -249,10 +249,10 @@ exports.cp = wrap('cp', _cp);
 //@
 //@ Examples:
 //@
-//@ + `rm('a.js', 'b.js')`
+//@ + `rm('some_file.txt', 'another_file.txt')`
 //@ + `rm('-rf', '/tmp/*')`
 //@
-//@ The wildcard `*` is accepted. 
+//@ Removes files. The wildcard `*` is accepted. 
 function _rm(options, files) {
   options = parseOptions(options, {
     'f': 'force',
@@ -298,25 +298,25 @@ function _rm(options, files) {
 exports.rm = wrap('rm', _rm);
 
 //@
-//@ #### mv('source [source ...] dest')
+//@ #### mv(source [, source ...], dest')
 //@ Available options:
 //@
 //@ + `f`: force
 //@
-//@ The wildcard `*` is accepted.
-function _mv(options, str) {
-  var options = parseOptions(str, {
+//@ Moves files. The wildcard `*` is accepted.
+function _mv(options, sources, dest) {
+  options = parseOptions(options, {
     'f': 'force'
   });
-  var files = parsePaths(str);
 
   // Get sources, dest
-  var sources, dest;
-  if (files.length < 2) {
+  if (arguments.length < 3) {
     error('missing <source> and/or <dest>');
+  } else if (arguments.length > 3) {
+    sources = [].slice.call(arguments, 1, arguments.length - 1);
+    dest = arguments[arguments.length - 1];
   } else {
-    sources = files.slice(0, files.length - 1);
-    dest = files[files.length - 1];
+    sources = [sources];
   }
 
   sources = expand(sources);
@@ -359,15 +359,17 @@ function _mv(options, str) {
 exports.mv = wrap('mv', _mv);
 
 //@
-//@ #### mkdir('[-options] dir [dir ...]')
+//@ #### mkdir([options ,] dir [, dir ...]')
 //@ Available options:
 //@
 //@ + `p`: full path (will create intermediate dirs if necessary)
-function _mkdir(options, str) {
-  var options = parseOptions(str, {
+//@
+//@ Creates directories.
+function _mkdir(options, dirs) {
+  options = parseOptions(options, {
     'p': 'fullpath'
   });
-  var dirs = parsePaths(str);
+  var dirs = [].slice.call(arguments, 1);
 
   if (dirs.length === 0)
     error('no directories given');
@@ -404,7 +406,7 @@ function _cat(options, files) {
       cat = '';
 
   files = expand(files);
-  
+
   if (files.length === 0)
     error('no files given');
 
