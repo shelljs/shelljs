@@ -27,23 +27,6 @@ var state = {
 
 
 //@
-//@ #### echo(string [,string ...])
-//@
-//@ Examples:
-//@
-//@ + `echo('hello world')`
-//@ + `var str = echo('hello world');`
-//@
-//@ Prints string to stdout, and returns augmented `String()` object with additional utility methods
-//@ like `.to()`.
-function _echo(options) {
-  var messages = [].slice.call(arguments, 1);
-  log.apply(this, messages);
-  return ShellString(messages.join(' '));
-};
-exports.echo = wrap('echo', _echo);
-
-//@
 //@ #### ls([options] [,path] [,path ...])
 //@ Available options:
 //@
@@ -482,7 +465,7 @@ String.prototype.to = wrap('to', _to);
 //@ + `sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js')`
 //@
 //@ Reads an input string from `file` and performs a JavaScript `replace()` on the input
-//@ using the given search regex and replacement string. Returns the replaced `String()` object.
+//@ using the given search regex and replacement string. Returns the new string after replacement.
 function _sed(options, regex, replacement, file) {
   options = parseOptions(options, {
     'i': 'inplace'
@@ -516,7 +499,7 @@ exports.sed = wrap('sed', _sed);
 //@
 //@ + `grep('GLOBAL_VARIABLE', '*.js')`
 //@
-//@ Reads input string from given files and returns a `String()` containing all lines of the 
+//@ Reads input string from given files and returns a string containing all lines of the 
 //@ file that match the given `regex_filter`. Wildcard `*` accepted.
 function _grep(options, regex, file) {
   if (!file)
@@ -553,7 +536,7 @@ exports.grep = wrap('grep', _grep);
 //@ + `var nodeExec = which('node')`
 //@
 //@ Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`, and `.bat` extensions.
-//@ Returns `String()` object containing the absolute path to the command.
+//@ Returns string containing the absolute path to the command.
 function _which(options, cmd) {
   if (!cmd)
     error('must specify command');
@@ -605,6 +588,23 @@ function _which(options, cmd) {
   return ShellString(where);
 };
 exports.which = wrap('which', _which);
+
+//@
+//@ #### echo(string [,string ...])
+//@
+//@ Examples:
+//@
+//@ + `echo('hello world')`
+//@ + `var str = echo('hello world');`
+//@
+//@ Prints string to stdout, and returns string with additional utility methods
+//@ like `.to()`.
+function _echo(options) {
+  var messages = [].slice.call(arguments, 1);
+  log.apply(this, messages);
+  return ShellString(messages.join(' '));
+};
+exports.echo = wrap('echo', _echo);
 
 //@
 //@ #### exit(code)
