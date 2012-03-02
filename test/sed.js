@@ -1,4 +1,4 @@
-require('../maker');
+var shell = require('..');
 
 var assert = require('assert'),
     path = require('path'),
@@ -7,49 +7,52 @@ var assert = require('assert'),
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
 
-silent();
+shell.silent();
 
 function numLines(str) {
   return typeof str === 'string' ? str.match(/\n/g).length : 0;
 }
 
+shell.rm('-rf', 'tmp');
+shell.mkdir('tmp')
+
 //
 // Invalids
 //
 
-sed();
-assert.ok(error());
+shell.sed();
+assert.ok(shell.error());
 
-sed(/asdf/g); // too few args
-assert.ok(error());
+shell.sed(/asdf/g); // too few args
+assert.ok(shell.error());
 
-sed(/asdf/g, 'nada'); // too few args
-assert.ok(error());
+shell.sed(/asdf/g, 'nada'); // too few args
+assert.ok(shell.error());
 
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-sed(/asdf/g, 'nada', '/asdfasdf'); // no such file
-assert.ok(error());
+shell.sed(/asdf/g, 'nada', '/asdfasdf'); // no such file
+assert.ok(shell.error());
 
 //
 // Valids
 //
 
-cp('-f resources/file1 tmp/file1')
-var result = sed('test1', 'hello', 'tmp/file1'); // search string
-assert.equal(error(), null);
+shell.cp('-f', 'resources/file1', 'tmp/file1')
+var result = shell.sed('test1', 'hello', 'tmp/file1'); // search string
+assert.equal(shell.error(), null);
 assert.equal(result, 'hello');
 
-var result = sed(/test1/, 'hello', 'tmp/file1'); // search regex
-assert.equal(error(), null);
+var result = shell.sed(/test1/, 'hello', 'tmp/file1'); // search regex
+assert.equal(shell.error(), null);
 assert.equal(result, 'hello');
 
-var result = sed(/test1/, 1234, 'tmp/file1'); // numeric replacement
-assert.equal(error(), null);
+var result = shell.sed(/test1/, 1234, 'tmp/file1'); // numeric replacement
+assert.equal(shell.error(), null);
 assert.equal(result, '1234');
 
-var result = sed(/test1/, 'hello', 'tmp/file1', {inplace:true});
-assert.equal(error(), null);
+var result = shell.sed('-i', /test1/, 'hello', 'tmp/file1');
+assert.equal(shell.error(), null);
 assert.equal(result, 'hello');
-assert.equal(cat('tmp/file1'), 'hello');
+assert.equal(shell.cat('tmp/file1'), 'hello');
 
-exit(123);
+shell.exit(123);

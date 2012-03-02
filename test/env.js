@@ -4,6 +4,9 @@ var assert = require('assert');
 
 silent();
 
+shell.rm('-rf', 'tmp');
+shell.mkdir('tmp')
+
 //
 // Valids
 //

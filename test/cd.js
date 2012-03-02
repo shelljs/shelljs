@@ -16,6 +16,9 @@ function numLines(str) {
 // save current dir
 var cur = shell.pwd();
 
+shell.rm('-rf', 'tmp');
+shell.mkdir('tmp')
+
 //
 // Invalids
 //

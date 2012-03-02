@@ -9,6 +9,9 @@ fs.existsSync = fs.existsSync || path.existsSync;
 
 silent();
 
+shell.rm('-rf', 'tmp');
+shell.mkdir('tmp')
+
 //
 // Invalids
 //

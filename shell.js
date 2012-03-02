@@ -364,6 +364,10 @@ exports.mv = wrap('mv', _mv);
 //@
 //@ + `p`: full path (will create intermediate dirs if necessary)
 //@
+//@ Examples:
+//@
+//@ + `mkdir('-p', '/tmp/a/b/c/d')`
+//@
 //@ Creates directories.
 function _mkdir(options, dirs) {
   options = parseOptions(options, {
@@ -398,6 +402,11 @@ exports.mkdir = wrap('mkdir', _mkdir);
 
 //@
 //@ #### cat(file [, file ...]')
+//@
+//@ Examples:
+//@
+//@ `var str = cat('file*.txt')`
+//@
 //@ Returns a string containing the given file, or a concatenated string
 //@ containing the files if more than one file is given (a new line character is
 //@ introduced between each file). Wildcard `*` accepted.
@@ -441,7 +450,7 @@ function _to(options, file) {
 String.prototype.to = wrap('to', _to);
 
 //@
-//@ #### sed(search_regex, 'replace_str', 'file' [, options])
+//@ #### sed([options ,] search_regex, 'replace_str', 'file')
 //@ Available options:
 //@
 //@ + `inplace`: (Default is `false`) If `true` will replace contents of 'file' with 
@@ -449,7 +458,11 @@ String.prototype.to = wrap('to', _to);
 //@
 //@ Reads an input string from `file` and performs a JavaScript `replace()` on the input
 //@ using the given search regex and replacement string. Returns the modified string.
-function _sed(options, regex, replacement, file, options) {
+function _sed(options, regex, replacement, file) {
+  options = parseOptions(options, {
+    'i': 'inplace'
+  });
+
   if (typeof replacement === 'string')
     replacement = replacement; // no-op
   else if (typeof replacement === 'number')
@@ -464,7 +477,7 @@ function _sed(options, regex, replacement, file, options) {
     error('no such file or directory: ' + file);
 
   var result = fs.readFileSync(file, 'utf8').replace(regex, replacement);
-  if (options && options.inplace)
+  if (options.inplace)
     result.to(file);
 
   return result;
@@ -772,7 +785,7 @@ function wrap(cmd, fn) {
 
     try {
       var args = [].slice.call(arguments, 0);
-      if (args.length === 0 || args[0][0] !== '-')
+      if (args.length === 0 || typeof args[0] !== 'string' || args[0][0] !== '-')
         args.unshift(''); // only add dummy option if '-option' not already present
       retValue = fn.apply(this, args);
     } catch (e) {

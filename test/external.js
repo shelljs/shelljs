@@ -10,6 +10,9 @@ function numLines(str) {
   return typeof str === 'string' ? str.match(/\n/g).length : 0;
 }
 
+shell.rm('-rf', 'tmp');
+shell.mkdir('tmp')
+
 //
 // Invalids
 //
