@@ -43,7 +43,7 @@ function _cd(options, dir) {
 exports.cd = wrap('cd', _cd);
 
 //@
-//@ #### shell.pwd()
+//@ #### pwd()
 //@ Returns the current directory.
 function _pwd(options) {
   var pwd = path.resolve(process.cwd());

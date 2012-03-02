@@ -1,6 +1,6 @@
 # Shell.js - Unix shell commands for Node.js [![Build Status](https://secure.travis-ci.org/arturadib/shell.js.png)](http://travis-ci.org/arturadib/shell.js)
 
-**Why?** Because you want a portable (Windows included) solution to your shell scripts, and you're already familiar with Unix shell commands. No dependencies other than Node.js. No asynchronous callback hell. Just good old shell scripting.
+**Why?** Because your JavaScript project needs a portable (Windows included) alternative to Unix shell scripts, and you don't want to learn yet another library(ies). No dependencies other than Node.js. No asynchronous callback hell. Just good old shell scripting.
 
 Shell.js is [unit-tested](http://travis-ci.org/arturadib/shell.js) and battle-tested at Mozilla's [pdf.js](http://github.com/mozilla/pdf.js).
 
@@ -33,7 +33,16 @@ if (exec('git commit -am "Auto-commit"').code !== 0) {
 }
 ```
 
-See also `scripts/` for real-life examples.
+See `scripts/` for real-world applications.
+
+### Global vs Local
+
+The `shell/global` script is provided as a convenience shortcut. If polluting your global namespace is not desirable, simply require `shell`:
+
+```javascript
+var shell = require('shell');
+shell.echo('hello world');
+```
 
 
 <!-- 
