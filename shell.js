@@ -621,17 +621,22 @@ exports.env = process.env;
 
 
 //@
-//@ ## Non-Unix commands
+//@ ## Convenience commands (non-Unix)
 //@
 
 
 
 //@
-//@ #### exists('path [path ...]')
+//@ #### tempdir()
+//@ Searches and returns string containing a writeable, platform-dependent temporary directory.
+//@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
+exports.tempdir = wrap('tempdir', tempDir);
+
+//@
+//@ #### exists([options ,] path [, path ...])
 //@ Returns true if all the given paths exist.
-function _exists(str) {
-  var options = parseOptions(str, {});
-  var paths = parsePaths(str);
+function _exists(options) {
+  var paths = [].slice.call(arguments, 1);
 
   if (paths.length === 0)
     error('no paths given');
@@ -647,15 +652,9 @@ function _exists(str) {
 exports.exists = wrap('exists', _exists);
 
 //@
-//@ #### tempdir()
-//@ Searches and returns string containing a writeable, platform-dependent temporary directory.
-//@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
-exports.tempdir = tempDir;
-
-//@
 //@ #### error()
-//@ Tests if error occurred. Returns `null` if no error occurred in the last command. Otherwise returns a string
-//@ explaining the error
+//@ Tests if error occurred in the last command. Returns `null` if no error occurred,
+//@ otherwise returns string explaining the error
 exports.error = function() {
   return state.error;
 }

@@ -1,4 +1,4 @@
-require('../maker');
+var shell = require('..');
 
 var assert = require('assert'),
     path = require('path'),
@@ -7,7 +7,7 @@ var assert = require('assert'),
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
 
-silent();
+shell.silent();
 
 function numLines(str) {
   return typeof str === 'string' ? str.match(/\n/g).length : 0;
@@ -20,8 +20,8 @@ shell.mkdir('tmp')
 // Valids
 //
 
-var tmp = tempdir();
-assert.equal(error(), null);
+var tmp = shell.tempdir();
+assert.equal(shell.error(), null);
 assert.equal(fs.existsSync(tmp), true);
 
-exit(123);
+shell.exit(123);
