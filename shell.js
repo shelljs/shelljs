@@ -178,7 +178,7 @@ function _cp(options, sources, dest) {
   if (arguments.length < 3) {
     error('missing <source> and/or <dest>');
   } else if (arguments.length > 3) {
-    sources = arguments.slice(1, arguments.length - 1);
+    sources = [].slice.call(arguments, 1, arguments.length - 2);
     dest = arguments[arguments.length - 1];
   }
 
@@ -1069,7 +1069,7 @@ function expand(list) {
   list.forEach(function(listEl) {
     // Wildcard present? 
     if (listEl.search(/\*/) > -1) {
-      for (file in _ls(listEl))
+      for (file in _ls('', listEl))
         expanded.push(file);
     } else {
       expanded.push(listEl);
