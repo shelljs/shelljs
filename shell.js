@@ -25,6 +25,31 @@ var state = {
     },
     platform = os.type().match(/^Win/) ? 'win' : 'unix';
 
+//@
+//@ #### cd('dir')
+//@ Changes to directory `dir` for the duration of the script
+function _cd(options, dir) {
+  if (!dir)
+    error('directory not specified');
+
+  if (!fs.existsSync(dir))
+    error('no such file or directory: ' + dir);
+
+  if (fs.existsSync(dir) && !fs.statSync(dir).isDirectory())
+    error('not a directory: ' + dir);
+
+  process.chdir(dir);
+};
+exports.cd = wrap('cd', _cd);
+
+//@
+//@ #### shell.pwd()
+//@ Returns the current directory.
+function _pwd(options) {
+  var pwd = path.resolve(process.cwd());
+  return ShellString(pwd);
+};
+exports.pwd = wrap('pwd', _pwd);
 
 //@
 //@ #### ls([options] [,path] [,path ...])
@@ -35,8 +60,10 @@ var state = {
 //@
 //@ Examples:
 //@
-//@ + `ls('projs/*.js')`
-//@ + `ls('-R', '/users/me', '/tmp')`
+//@ ```javascript
+//@ ls('projs/*.js')
+//@ ls('-R', '/users/me', '/tmp')
+//@ ```
 //@
 //@ Returns list of files in the given path, or in current directory if no path provided.
 //@ For convenient iteration via `for (file in ls())`, the format returned is a hash object:
@@ -123,31 +150,6 @@ function _ls(options, paths) {
 };
 exports.ls = wrap('ls', _ls);
 
-//@
-//@ #### cd('dir')
-//@ Changes to directory `dir` for the duration of the script
-function _cd(options, dir) {
-  if (!dir)
-    error('directory not specified');
-
-  if (!fs.existsSync(dir))
-    error('no such file or directory: ' + dir);
-
-  if (fs.existsSync(dir) && !fs.statSync(dir).isDirectory())
-    error('not a directory: ' + dir);
-
-  process.chdir(dir);
-};
-exports.cd = wrap('cd', _cd);
-
-//@
-//@ #### shell.pwd()
-//@ Returns the current directory.
-function _pwd(options) {
-  var pwd = path.resolve(process.cwd());
-  return ShellString(pwd);
-};
-exports.pwd = wrap('pwd', _pwd);
 
 //@
 //@ #### cp('[options ,] source [,source ...] , dest')
@@ -158,8 +160,10 @@ exports.pwd = wrap('pwd', _pwd);
 //@
 //@ Examples:
 //@
-//@ + `cp('file1', 'dir1')`
-//@ + `cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp')`
+//@ ```javascript
+//@ cp('file1', 'dir1')
+//@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp')
+//@ ```
 //@
 //@ Copies files. The wildcard `*` is accepted.
 function _cp(options, sources, dest) {
@@ -244,8 +248,10 @@ exports.cp = wrap('cp', _cp);
 //@
 //@ Examples:
 //@
-//@ + `rm('some_file.txt', 'another_file.txt')`
-//@ + `rm('-rf', '/tmp/*')`
+//@ ```javascript
+//@ rm('some_file.txt', 'another_file.txt')
+//@ rm('-rf', '/tmp/*')
+//@ ```
 //@
 //@ Removes files. The wildcard `*` is accepted. 
 function _rm(options, files) {
@@ -361,7 +367,9 @@ exports.mv = wrap('mv', _mv);
 //@
 //@ Examples:
 //@
-//@ + `mkdir('-p', '/tmp/a/b/c/d')`
+//@ ```javascript
+//@ mkdir('-p', '/tmp/a/b/c/d')
+//@ ```
 //@
 //@ Creates directories.
 function _mkdir(options, dirs) {
@@ -400,7 +408,9 @@ exports.mkdir = wrap('mkdir', _mkdir);
 //@
 //@ Examples:
 //@
-//@ `var str = cat('file*.txt')`
+//@ ```javascript
+//@ var str = cat('file*.txt')
+//@ ```
 //@
 //@ Returns a string containing the given file, or a concatenated string
 //@ containing the files if more than one file is given (a new line character is
@@ -433,7 +443,9 @@ exports.cat = wrap('cat', _cat);
 //@
 //@ Examples:
 //@
-//@ + `cat('input.txt').to('output.txt')`
+//@ ```javascript
+//@ cat('input.txt').to('output.txt')
+//@ ```
 //@
 //@ Analogous to the redirection operator `>` in Unix, but works with strings such as those 
 //@ returned by a shell command. _Like Unix redirections, `to()` will overwrite any existing file!_
@@ -461,8 +473,10 @@ String.prototype.to = wrap('to', _to);
 //@
 //@ Examples:
 //@
-//@ + `sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js')`
-//@ + `sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js')`
+//@ ```javascript
+//@ sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js')
+//@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js')
+//@ ```
 //@
 //@ Reads an input string from `file` and performs a JavaScript `replace()` on the input
 //@ using the given search regex and replacement string. Returns the new string after replacement.
@@ -497,7 +511,9 @@ exports.sed = wrap('sed', _sed);
 //@
 //@ Examples:
 //@
-//@ + `grep('GLOBAL_VARIABLE', '*.js')`
+//@ ```javascript
+//@ grep('GLOBAL_VARIABLE', '*.js')
+//@ ```
 //@
 //@ Reads input string from given files and returns a string containing all lines of the 
 //@ file that match the given `regex_filter`. Wildcard `*` accepted.
@@ -533,7 +549,9 @@ exports.grep = wrap('grep', _grep);
 //@
 //@ Examples:
 //@
-//@ + `var nodeExec = which('node')`
+//@ ```javascript
+//@ var nodeExec = which('node')
+//@ ```
 //@
 //@ Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`, and `.bat` extensions.
 //@ Returns string containing the absolute path to the command.
@@ -594,8 +612,10 @@ exports.which = wrap('which', _which);
 //@
 //@ Examples:
 //@
-//@ + `echo('hello world')`
-//@ + `var str = echo('hello world');`
+//@ ```javascript
+//@ echo('hello world')
+//@ var str = echo('hello world')
+//@ ```
 //@
 //@ Prints string to stdout, and returns string with additional utility methods
 //@ like `.to()`.
@@ -637,7 +657,9 @@ exports.env = process.env;
 //@
 //@ Examples:
 //@
-//@ + `var version = exec('node --version', {silent:true}).output`
+//@ ```javascript
+//@ var version = exec('node --version', {silent:true}).output
+//@ ```
 //@
 //@ Executes the given `command` _synchronously_, unless otherwise specified. 
 //@ When in synchronous mode returns the object `{ code:..., output:... }`, containing the program's 
