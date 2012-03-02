@@ -90,7 +90,7 @@ assert.equal(shell.error(), null);
 var contents = fs.readdirSync('tmp');
 assert.equal(contents.length, 0);
 
-// recursive dir removal - comma-syntax
+// recursive dir removal - array-syntax
 shell.mkdir('-p', 'tmp/a/b/c');
 shell.mkdir('-p', 'tmp/b');
 shell.mkdir('-p', 'tmp/c');
@@ -99,7 +99,7 @@ assert.equal(fs.existsSync('tmp/a/b/c'), true);
 assert.equal(fs.existsSync('tmp/b'), true);
 assert.equal(fs.existsSync('tmp/c'), true);
 assert.equal(fs.existsSync('tmp/.hidden'), true);
-shell.rm('-rf', 'tmp/*', 'tmp/.*');
+shell.rm('-rf', ['tmp/*', 'tmp/.*']);
 assert.equal(shell.error(), null);
 var contents = fs.readdirSync('tmp');
 assert.equal(contents.length, 0);

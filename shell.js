@@ -58,7 +58,8 @@ function _pwd(options) {
 exports.pwd = wrap('pwd', _pwd);
 
 //@
-//@ #### ls([options] [,path] [,path ...])
+//@ #### ls([options ,] path [,path ...])
+//@ #### ls([options ,] path_array)
 //@ Available options:
 //@
 //@ + `-R`: recursive
@@ -69,6 +70,7 @@ exports.pwd = wrap('pwd', _pwd);
 //@ ```javascript
 //@ ls('projs/*.js');
 //@ ls('-R', '/users/me', '/tmp');
+//@ ls('-R', ['/users/me', '/tmp']); // same as above
 //@ ```
 //@
 //@ Returns list of files in the given path, or in current directory if no path provided.
@@ -158,7 +160,8 @@ exports.ls = wrap('ls', _ls);
 
 
 //@
-//@ #### cp('[options ,] source [,source ...] , dest')
+//@ #### cp('[options ,] source [,source ...], dest')
+//@ #### cp('[options ,] source_array, dest')
 //@ Available options:
 //@
 //@ + `-f`: force
@@ -169,6 +172,7 @@ exports.ls = wrap('ls', _ls);
 //@ ```javascript
 //@ cp('file1', 'dir1');
 //@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
+//@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 //@ ```
 //@
 //@ Copies files. The wildcard `*` is accepted.
@@ -185,8 +189,12 @@ function _cp(options, sources, dest) {
   } else if (arguments.length > 3) {
     sources = [].slice.call(arguments, 1, arguments.length - 1);
     dest = arguments[arguments.length - 1];
-  } else {
+  } else if (typeof sources === 'string') {
     sources = [sources];
+  } else if ('length' in sources) {
+    sources = sources; // no-op for array
+  } else {
+    error('invalid arguments');
   }
 
   // Dest is not existing dir, but multiple sources given
@@ -247,6 +255,7 @@ exports.cp = wrap('cp', _cp);
 
 //@
 //@ #### rm([options ,] file [, file ...])
+//@ #### rm([options ,] file_array)
 //@ Available options:
 //@
 //@ + `-f`: force
@@ -255,8 +264,9 @@ exports.cp = wrap('cp', _cp);
 //@ Examples:
 //@
 //@ ```javascript
-//@ rm('some_file.txt', 'another_file.txt');
 //@ rm('-rf', '/tmp/*');
+//@ rm('some_file.txt', 'another_file.txt');
+//@ rm(['some_file.txt', 'another_file.txt']); // same as above
 //@ ```
 //@
 //@ Removes files. The wildcard `*` is accepted. 
@@ -266,10 +276,12 @@ function _rm(options, files) {
     'r': 'recursive',
     'R': 'recursive'
   });
-  var files = [].slice.call(arguments, 1);
-
-  if (files.length === 0)
+  if (!files)
     error('no paths given');
+
+  if (typeof files === 'string')
+    files = [].slice.call(arguments, 1);
+  // if it's array leave it as it is
 
   files = expand(files);
 
@@ -306,9 +318,18 @@ exports.rm = wrap('rm', _rm);
 
 //@
 //@ #### mv(source [, source ...], dest')
+//@ #### mv(source_array, dest')
 //@ Available options:
 //@
 //@ + `f`: force
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ mv('-f', 'file', 'dir/');
+//@ mv('file1', 'file2', 'dir/');
+//@ mv(['file1', 'file2'], 'dir/'); // same as above
+//@ ```
 //@
 //@ Moves files. The wildcard `*` is accepted.
 function _mv(options, sources, dest) {
@@ -322,8 +343,12 @@ function _mv(options, sources, dest) {
   } else if (arguments.length > 3) {
     sources = [].slice.call(arguments, 1, arguments.length - 1);
     dest = arguments[arguments.length - 1];
-  } else {
+  } else if (typeof sources === 'string') {
     sources = [sources];
+  } else if ('length' in sources) {
+    sources = sources; // no-op for array
+  } else {
+    error('invalid arguments');
   }
 
   sources = expand(sources);
@@ -366,7 +391,8 @@ function _mv(options, sources, dest) {
 exports.mv = wrap('mv', _mv);
 
 //@
-//@ #### mkdir([options ,] dir [, dir ...]')
+//@ #### mkdir([options ,] dir [, dir ...])
+//@ #### mkdir([options ,] dir_array)
 //@ Available options:
 //@
 //@ + `p`: full path (will create intermediate dirs if necessary)
@@ -374,7 +400,8 @@ exports.mv = wrap('mv', _mv);
 //@ Examples:
 //@
 //@ ```javascript
-//@ mkdir('-p', '/tmp/a/b/c/d');
+//@ mkdir('-p', '/tmp/a/b/c/d', '/tmp/e/f/g');
+//@ mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 //@ ```
 //@
 //@ Creates directories.
@@ -382,10 +409,12 @@ function _mkdir(options, dirs) {
   options = parseOptions(options, {
     'p': 'fullpath'
   });
-  var dirs = [].slice.call(arguments, 1);
+  if (!dirs)
+    error('no paths given');
 
-  if (dirs.length === 0)
-    error('no directories given');
+  if (typeof dirs === 'string')
+    dirs = [].slice.call(arguments, 1);
+  // if it's array leave it as it is
 
   dirs.forEach(function(dir) {
     if (fs.existsSync(dir)) {
@@ -410,25 +439,31 @@ function _mkdir(options, dirs) {
 exports.mkdir = wrap('mkdir', _mkdir);
 
 //@
-//@ #### cat(file [, file ...]')
+//@ #### cat(file [, file ...])
+//@ #### cat(file_array)
 //@
 //@ Examples:
 //@
 //@ ```javascript
 //@ var str = cat('file*.txt');
+//@ var str = cat('file1', 'file2');
+//@ var str = cat(['file1', 'file2']); // same as above
 //@ ```
 //@
 //@ Returns a string containing the given file, or a concatenated string
 //@ containing the files if more than one file is given (a new line character is
 //@ introduced between each file). Wildcard `*` accepted.
 function _cat(options, files) {
-  var files = [].slice.call(arguments, 1),
-      cat = '';
+  var cat = '';
+
+  if (!files)
+    error('no paths given');
+
+  if (typeof files === 'string')
+    files = [].slice.call(arguments, 1);
+  // if it's array leave it as it is
 
   files = expand(files);
-
-  if (files.length === 0)
-    error('no files given');
 
   files.forEach(function(file) {
     if (!fs.existsSync(file))
@@ -513,7 +548,8 @@ function _sed(options, regex, replacement, file) {
 exports.sed = wrap('sed', _sed);
 
 //@
-//@ #### grep(regex_filter, file [, file ...]')
+//@ #### grep(regex_filter, file [, file ...])
+//@ #### grep(regex_filter, file_array)
 //@
 //@ Examples:
 //@
@@ -523,11 +559,14 @@ exports.sed = wrap('sed', _sed);
 //@
 //@ Reads input string from given files and returns a string containing all lines of the 
 //@ file that match the given `regex_filter`. Wildcard `*` accepted.
-function _grep(options, regex, file) {
-  if (!file)
-    error('no file given');
+function _grep(options, regex, files) {
+  if (!files)
+    error('no paths given');
 
-  var files = [].slice.call(arguments, 2);
+  if (typeof files === 'string')
+    files = [].slice.call(arguments, 2);
+  // if it's array leave it as it is
+
   files = expand(files);
 
   var grep = '';
@@ -700,12 +739,15 @@ exports.tempdir = wrap('tempdir', tempDir);
 
 //@
 //@ #### exists(path [, path ...])
+//@ #### exists(path_array)
 //@ Returns true if all the given paths exist.
-function _exists(options) {
-  var paths = [].slice.call(arguments, 1);
-
-  if (paths.length === 0)
+function _exists(options, paths) {
+  if (!paths)
     error('no paths given');
+
+  if (typeof paths === 'string')
+    paths = [].slice.call(arguments, 1);
+  // if it's array leave it as it is
 
   var exists = true;
   paths.forEach(function(p) {

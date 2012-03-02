@@ -63,12 +63,28 @@ assert.equal(fs.existsSync('tmp/a_file'), false);
 // Valids
 //
 
+// simple - to dir
 shell.cp('resources/file1', 'tmp');
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/file1'), true);
 
+// simple - to file
 shell.cp('resources/file2', 'tmp/file2');
 assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/file2'), true);
+
+// simple - file list
+shell.rm('-rf', 'tmp/*');
+shell.cp('resources/file1', 'resources/file2', 'tmp');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/file1'), true);
+assert.equal(fs.existsSync('tmp/file2'), true);
+
+// simple - file list, array syntax
+shell.rm('-rf', 'tmp/*');
+shell.cp(['resources/file1', 'resources/file2'], 'tmp');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/file1'), true);
 assert.equal(fs.existsSync('tmp/file2'), true);
 
 shell.cp('resources/file2', 'tmp/file3');
@@ -98,15 +114,6 @@ assert.equal(shell.error(), null); // crash test only
 //recursive, everything exists, with force flag
 shell.rm('-rf', 'tmp/*')
 shell.cp('-R', 'resources/cp', 'tmp');
-'changing things around'.to('tmp/cp/dir_a/z');
-assert.notEqual(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); // before cp
-shell.cp('-Rf', 'resources/cp', 'tmp');
-assert.equal(shell.error(), null);
-assert.equal(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); // after cp
-
-//recursive, everything exists, with force flag - comma-syntax
-shell.rm('-rf', 'tmp/*')
-shell.cp('-R', 'resources/cp' ,'tmp');
 'changing things around'.to('tmp/cp/dir_a/z');
 assert.notEqual(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); // before cp
 shell.cp('-Rf', 'resources/cp', 'tmp');

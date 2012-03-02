@@ -62,4 +62,18 @@ assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/a/b/c'), true);
 shell.rm('-Rf', 'tmp/a'); // revert
 
+// multiple dirs
+shell.mkdir('-p', 'tmp/zzza', 'tmp/zzzb', 'tmp/zzzc');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/zzza'), true);
+assert.equal(fs.existsSync('tmp/zzzb'), true);
+assert.equal(fs.existsSync('tmp/zzzc'), true);
+
+// multiple dirs, array syntax
+shell.mkdir('-p', ['tmp/yyya', 'tmp/yyyb', 'tmp/yyyc']);
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/yyya'), true);
+assert.equal(fs.existsSync('tmp/yyyb'), true);
+assert.equal(fs.existsSync('tmp/yyyc'), true);
+
 shell.exit(123);

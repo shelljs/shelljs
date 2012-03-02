@@ -86,8 +86,23 @@ shell.mv('file3', 'file1'); // revert
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('file1'), true);
 
+// two sources
+shell.rm('-rf', 't');
 shell.mkdir('-p', 't');
-shell.mv('file1', 'file2', 't'); // two sources
+shell.mv('file1', 'file2', 't');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('file1'), false);
+assert.equal(fs.existsSync('file2'), false);
+assert.equal(fs.existsSync('t/file1'), true);
+assert.equal(fs.existsSync('t/file2'), true);
+shell.mv('t/*', '.'); // revert
+assert.equal(fs.existsSync('file1'), true);
+assert.equal(fs.existsSync('file2'), true);
+
+// two sources, array style
+shell.rm('-rf', 't');
+shell.mkdir('-p', 't');
+shell.mv(['file1', 'file2'], 't'); // two sources
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('file1'), false);
 assert.equal(fs.existsSync('file2'), false);

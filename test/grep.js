@@ -42,8 +42,14 @@ var result = shell.grep('line one', 'resources/a.txt');
 assert.equal(shell.error(), null);
 assert.equal(result, 'This is line one\n');
 
-var result = shell.grep(/line one/, 'resources/a.txt');
+// multiple files
+var result = shell.grep(/test/, 'resources/file1.txt', 'resources/file2.txt');
 assert.equal(shell.error(), null);
-assert.equal(result, 'This is line one\n');
+assert.equal(result, 'test1\ntest2\n');
+
+// multiple files, array syntax
+var result = shell.grep(/test/, ['resources/file1.txt', 'resources/file2.txt']);
+assert.equal(shell.error(), null);
+assert.equal(result, 'test1\ntest2\n');
 
 shell.exit(123);

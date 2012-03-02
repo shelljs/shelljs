@@ -111,7 +111,8 @@ Changes to directory `dir` for the duration of the script
 #### pwd()
 Returns the current directory.
 
-#### ls([options] [,path] [,path ...])
+#### ls([options ,] path [,path ...])
+#### ls([options ,] path_array)
 Available options:
 
 + `-R`: recursive
@@ -122,13 +123,15 @@ Examples:
 ```javascript
 ls('projs/*.js');
 ls('-R', '/users/me', '/tmp');
+ls('-R', ['/users/me', '/tmp']); // same as above
 ```
 
 Returns list of files in the given path, or in current directory if no path provided.
 For convenient iteration via `for (file in ls())`, the format returned is a hash object:
 `{ 'file1':null, 'dir1/file2':null, ...}`.
 
-#### cp('[options ,] source [,source ...] , dest')
+#### cp('[options ,] source [,source ...], dest')
+#### cp('[options ,] source_array, dest')
 Available options:
 
 + `-f`: force
@@ -139,11 +142,13 @@ Examples:
 ```javascript
 cp('file1', 'dir1');
 cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
+cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 ```
 
 Copies files. The wildcard `*` is accepted.
 
 #### rm([options ,] file [, file ...])
+#### rm([options ,] file_array)
 Available options:
 
 + `-f`: force
@@ -152,20 +157,31 @@ Available options:
 Examples:
 
 ```javascript
-rm('some_file.txt', 'another_file.txt');
 rm('-rf', '/tmp/*');
+rm('some_file.txt', 'another_file.txt');
+rm(['some_file.txt', 'another_file.txt']); // same as above
 ```
 
 Removes files. The wildcard `*` is accepted. 
 
 #### mv(source [, source ...], dest')
+#### mv(source_array, dest')
 Available options:
 
 + `f`: force
 
+Examples:
+
+```javascript
+mv('-f', 'file', 'dir/');
+mv('file1', 'file2', 'dir/');
+mv(['file1', 'file2'], 'dir/'); // same as above
+```
+
 Moves files. The wildcard `*` is accepted.
 
-#### mkdir([options ,] dir [, dir ...]')
+#### mkdir([options ,] dir [, dir ...])
+#### mkdir([options ,] dir_array)
 Available options:
 
 + `p`: full path (will create intermediate dirs if necessary)
@@ -173,17 +189,21 @@ Available options:
 Examples:
 
 ```javascript
-mkdir('-p', '/tmp/a/b/c/d');
+mkdir('-p', '/tmp/a/b/c/d', '/tmp/e/f/g');
+mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 ```
 
 Creates directories.
 
-#### cat(file [, file ...]')
+#### cat(file [, file ...])
+#### cat(file_array)
 
 Examples:
 
 ```javascript
 var str = cat('file*.txt');
+var str = cat('file1', 'file2');
+var str = cat(['file1', 'file2']); // same as above
 ```
 
 Returns a string containing the given file, or a concatenated string
@@ -216,7 +236,8 @@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 Reads an input string from `file` and performs a JavaScript `replace()` on the input
 using the given search regex and replacement string. Returns the new string after replacement.
 
-#### grep(regex_filter, file [, file ...]')
+#### grep(regex_filter, file [, file ...])
+#### grep(regex_filter, file_array)
 
 Examples:
 
@@ -281,6 +302,7 @@ Searches and returns string containing a writeable, platform-dependent temporary
 Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 
 #### exists(path [, path ...])
+#### exists(path_array)
 Returns true if all the given paths exist.
 
 #### error()
