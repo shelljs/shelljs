@@ -84,7 +84,7 @@ assert.equal(fs.existsSync('tmp/file2'), true);
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
-assert.deepEqual(shell.ls('-R', 'resources/cp'), ls('-R', 'tmp/cp'));
+assert.deepEqual(shell.ls('-R', 'resources/cp'), shell.ls('-R', 'tmp/cp'));
 
 //recursive, everything exists, no force flag
 shell.rm('-rf', 'tmp/*')

@@ -178,8 +178,10 @@ function _cp(options, sources, dest) {
   if (arguments.length < 3) {
     error('missing <source> and/or <dest>');
   } else if (arguments.length > 3) {
-    sources = [].slice.call(arguments, 1, arguments.length - 2);
+    sources = [].slice.call(arguments, 1, arguments.length - 1);
     dest = arguments[arguments.length - 1];
+  } else {
+    sources = [sources];
   }
 
   // Dest is not existing dir, but multiple sources given
@@ -393,15 +395,16 @@ function _mkdir(options, str) {
 exports.mkdir = wrap('mkdir', _mkdir);
 
 //@
-//@ #### cat('file [file ...]')
+//@ #### cat(file [, file ...]')
 //@ Returns a string containing the given file, or a concatenated string
 //@ containing the files if more than one file is given (a new line character is
-//@ introduced between each file). Wildcards are accepted.
-function _cat(options, str) {
-  var files = parsePaths(str),
+//@ introduced between each file). Wildcard `*` accepted.
+function _cat(options, files) {
+  var files = [].slice.call(arguments, 1),
       cat = '';
 
   files = expand(files);
+  
   if (files.length === 0)
     error('no files given');
 
