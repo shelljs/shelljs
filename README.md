@@ -4,6 +4,7 @@ Shell.js is a portable (Windows included) implementation of Unix shell commands 
 
 The project is both [unit-tested](http://travis-ci.org/arturadib/shell.js) and battle-tested at Mozilla's [pdf.js](http://github.com/mozilla/pdf.js).
 
+
 ### Example
 
 ```javascript
@@ -80,6 +81,15 @@ target.docs = function() {
 
 To run the target `all`, call the above script without arguments: `$ node make`. To run the target `docs`: `$ node make docs`, and so on.
 
+### Installing
+
+Via npm:
+
+```bash
+$ npm install shelljs
+```
+
+Or simply copy `shell.js` into your project's directory, and `require()` accordingly.
 
 
 <!-- 
@@ -89,7 +99,7 @@ To run the target `all`, call the above script without arguments: `$ node make`.
 -->
 
 
-# Command reference
+# Commands reference
 
 
 All commands run synchronously, unless otherwise stated.

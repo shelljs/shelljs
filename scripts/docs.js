@@ -10,6 +10,6 @@ var docs = grep('//@', 'shell.js');
 // Remove '//@'
 docs = docs.replace(/\/\/\@ */g, '');
 // Append docs to README
-sed('-i', /# Command reference(.|\n)*/, '# Command reference\n\n' + docs, 'README.md');
+sed('-i', /# Commands reference(.|\n)*/, '# Commands reference\n\n' + docs, 'README.md');
 
 echo('All done.');
