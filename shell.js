@@ -61,8 +61,8 @@ exports.pwd = wrap('pwd', _pwd);
 //@ Examples:
 //@
 //@ ```javascript
-//@ ls('projs/*.js')
-//@ ls('-R', '/users/me', '/tmp')
+//@ ls('projs/*.js');
+//@ ls('-R', '/users/me', '/tmp');
 //@ ```
 //@
 //@ Returns list of files in the given path, or in current directory if no path provided.
@@ -161,8 +161,8 @@ exports.ls = wrap('ls', _ls);
 //@ Examples:
 //@
 //@ ```javascript
-//@ cp('file1', 'dir1')
-//@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp')
+//@ cp('file1', 'dir1');
+//@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
 //@ ```
 //@
 //@ Copies files. The wildcard `*` is accepted.
@@ -249,8 +249,8 @@ exports.cp = wrap('cp', _cp);
 //@ Examples:
 //@
 //@ ```javascript
-//@ rm('some_file.txt', 'another_file.txt')
-//@ rm('-rf', '/tmp/*')
+//@ rm('some_file.txt', 'another_file.txt');
+//@ rm('-rf', '/tmp/*');
 //@ ```
 //@
 //@ Removes files. The wildcard `*` is accepted. 
@@ -368,7 +368,7 @@ exports.mv = wrap('mv', _mv);
 //@ Examples:
 //@
 //@ ```javascript
-//@ mkdir('-p', '/tmp/a/b/c/d')
+//@ mkdir('-p', '/tmp/a/b/c/d');
 //@ ```
 //@
 //@ Creates directories.
@@ -409,7 +409,7 @@ exports.mkdir = wrap('mkdir', _mkdir);
 //@ Examples:
 //@
 //@ ```javascript
-//@ var str = cat('file*.txt')
+//@ var str = cat('file*.txt');
 //@ ```
 //@
 //@ Returns a string containing the given file, or a concatenated string
@@ -444,11 +444,11 @@ exports.cat = wrap('cat', _cat);
 //@ Examples:
 //@
 //@ ```javascript
-//@ cat('input.txt').to('output.txt')
+//@ cat('input.txt').to('output.txt');
 //@ ```
 //@
-//@ Analogous to the redirection operator `>` in Unix, but works with strings such as those 
-//@ returned by a shell command. _Like Unix redirections, `to()` will overwrite any existing file!_
+//@ Analogous to the redirection operator `>` in Unix, but works with JavaScript strings (such as
+//@ those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will overwrite any existing file!_
 function _to(options, file) {
   if (!file)
     error('wrong arguments');
@@ -474,8 +474,8 @@ String.prototype.to = wrap('to', _to);
 //@ Examples:
 //@
 //@ ```javascript
-//@ sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js')
-//@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js')
+//@ sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js');
+//@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 //@ ```
 //@
 //@ Reads an input string from `file` and performs a JavaScript `replace()` on the input
@@ -512,7 +512,7 @@ exports.sed = wrap('sed', _sed);
 //@ Examples:
 //@
 //@ ```javascript
-//@ grep('GLOBAL_VARIABLE', '*.js')
+//@ grep('GLOBAL_VARIABLE', '*.js');
 //@ ```
 //@
 //@ Reads input string from given files and returns a string containing all lines of the 
@@ -550,7 +550,7 @@ exports.grep = wrap('grep', _grep);
 //@ Examples:
 //@
 //@ ```javascript
-//@ var nodeExec = which('node')
+//@ var nodeExec = which('node');
 //@ ```
 //@
 //@ Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`, and `.bat` extensions.
@@ -613,8 +613,8 @@ exports.which = wrap('which', _which);
 //@ Examples:
 //@
 //@ ```javascript
-//@ echo('hello world')
-//@ var str = echo('hello world')
+//@ echo('hello world');
+//@ var str = echo('hello world');
 //@ ```
 //@
 //@ Prints string to stdout, and returns string with additional utility methods
@@ -636,18 +636,6 @@ exports.exit = process.exit;
 //@ Object containing environment variables (both getter and setter). Shortcut to process.env.
 exports.env = process.env;
 
-
-
-
-
-//@
-//@ ## Convenience commands (non-Unix)
-//@
-
-
-
-
-
 //@
 //@ #### exec(command [, options] [, callback])
 //@ Available options (all `false` by default):
@@ -658,7 +646,7 @@ exports.env = process.env;
 //@ Examples:
 //@
 //@ ```javascript
-//@ var version = exec('node --version', {silent:true}).output
+//@ var version = exec('node --version', {silent:true}).output;
 //@ ```
 //@
 //@ Executes the given `command` _synchronously_, unless otherwise specified. 
@@ -685,6 +673,18 @@ function _exec(command, options, callback) {
     return execSync(command, options);
 };
 exports.exec = wrap('exec', _exec, {notUnix:true});
+
+
+
+
+//@
+//@ ## Non-Unix commands
+//@
+
+
+
+
+
 
 //@
 //@ #### tempdir()
