@@ -1,9 +1,9 @@
-require('../maker');
+var shell = require('..');
 
 var assert = require('assert'),
     path = require('path');
 
-silent();
+shell.silent();
 
 function numLines(str) {
   return typeof str === 'string' ? str.match(/\n/g).length : 0;
@@ -13,13 +13,13 @@ function numLines(str) {
 // Valids
 //
 
-var _pwd = pwd();
-assert.equal(error(), null);
+var _pwd = shell.pwd();
+assert.equal(shell.error(), null);
 assert.equal(_pwd, path.resolve('.'));
 
-cd('tmp');
-var _pwd = pwd();
-assert.equal(error(), null);
+shell.cd('tmp');
+var _pwd = shell.pwd();
+assert.equal(shell.error(), null);
 assert.equal(path.basename(_pwd), 'tmp');
 
-exit(123);
+shell.exit(123);

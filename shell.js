@@ -148,7 +148,7 @@ function _cd(options, dir) {
 exports.cd = wrap('cd', _cd);
 
 //@
-//@ #### pwd()
+//@ #### shell.pwd()
 //@ Returns the current directory.
 function _pwd(options) {
   return path.resolve(process.cwd());
