@@ -25,6 +25,12 @@ var state = {
     },
     platform = os.type().match(/^Win/) ? 'win' : 'unix';
 
+
+//@
+//@ All commands run synchronously, unless otherwise stated.
+//@ 
+
+
 //@
 //@ #### cd('dir')
 //@ Changes to directory `dir` for the duration of the script

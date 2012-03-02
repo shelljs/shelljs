@@ -1,9 +1,8 @@
 # Shell.js - Unix shell commands for Node.js [![Build Status](https://secure.travis-ci.org/arturadib/shell.js.png)](http://travis-ci.org/arturadib/shell.js)
 
-**Why?** Because your JavaScript project needs a portable (Windows included) alternative to Unix shell scripts, and you don't want to learn yet another library(ies). No dependencies other than Node.js. No asynchronous callback hell. Just good old shell scripting.
+Shell.js is a portable (Windows included) implementation of Unix shell commands for Node.js. It can be used to eliminate your project's dependencies on Unix while still keeping its familiar and powerful syntax.
 
-Shell.js is [unit-tested](http://travis-ci.org/arturadib/shell.js) and battle-tested at Mozilla's [pdf.js](http://github.com/mozilla/pdf.js).
-
+The project is both [unit-tested](http://travis-ci.org/arturadib/shell.js) and battle-tested at Mozilla's [pdf.js](http://github.com/mozilla/pdf.js).
 
 ### Example
 
@@ -11,12 +10,10 @@ Shell.js is [unit-tested](http://travis-ci.org/arturadib/shell.js) and battle-te
 require('shell/global');
 
 // Copy files to release dir
-
 mkdir('-p', 'out/Release');
 cp('-R', 'lib/*.js', 'out/Release');
 
 // Replace macros in each .js file
-
 cd('lib');
 for (file in ls('*.js')) {
   sed('-i', 'BUILD_VERSION', 'v0.1.2', file);
@@ -26,23 +23,63 @@ for (file in ls('*.js')) {
 cd('..');
 
 // Run external tool synchronously
-
 if (exec('git commit -am "Auto-commit"').code !== 0) {
   echo('Error: Git commit failed');
   exit(1);
 }
 ```
 
-See `scripts/` for real-world applications.
+### Global vs. Local
 
-### Global vs Local
+The example above uses the convenience script `shell/global` to reduce verbosity. If polluting your global namespace is not desirable, simply require `shell`.
 
-The `shell/global` script is provided as a convenience shortcut. If polluting your global namespace is not desirable, simply require `shell`:
+Example:
 
 ```javascript
 var shell = require('shell');
 shell.echo('hello world');
 ```
+
+### Make tool
+
+A convenience script `shell/make` is also provided to mimic the behavior of a Unix Makefile. In this case all shell objects are global, and command line arguments will cause the script to execute only the corresponding function in the global `target` object. To avoid redundant calls, target functions are executed only once per script.
+
+Example:
+
+```javascript
+//
+// Example file: make.js
+//
+require('shell/make');
+
+target.all = function() {
+  target.bundle();
+  target.docs();
+}
+
+// Bundle JS files
+target.bundle = function() {
+  cd(__dirname);
+  mkdir('build');
+  cd('lib');
+  cat('*.js').to('../build/output.js');
+}
+
+// Generate docs
+target.docs = function() {
+  cd(__dirname);
+  mkdir('docs');
+  cd('lib');
+  for (file in ls('*.js')) {
+    var text = grep('//@', file); // extract special comments
+    text.replace('//@', ''); // remove comment tags
+    text.to('docs/my_docs.md');
+  }
+}
+```
+
+To run the target `all`, call the above script without arguments: `$ node make`. To run the target `docs`: `$ node make docs`, and so on.
+
 
 
 <!-- 
@@ -52,13 +89,16 @@ shell.echo('hello world');
 -->
 
 
-# API reference
+# Command reference
+
+
+All commands run synchronously, unless otherwise stated.
 
 
 #### cd('dir')
 Changes to directory `dir` for the duration of the script
 
-#### shell.pwd()
+#### pwd()
 Returns the current directory.
 
 #### ls([options] [,path] [,path ...])
