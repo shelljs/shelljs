@@ -34,7 +34,7 @@ assert.equal(shell.error(), null);
 
 // no args
 shell.cd('resources/ls');
-var result = shell.ls();
+var result = shell.ls().hash;
 assert.equal(shell.error(), null);
 assert.equal('file1' in result, true);
 assert.equal('file2' in result, true);
@@ -46,7 +46,7 @@ assert.equal(Object.keys(result).length, 6);
 shell.cd('../..');
 
 // simple arg
-var result = shell.ls('resources/ls');
+var result = shell.ls('resources/ls').hash;
 assert.equal(shell.error(), null);
 assert.equal('file1' in result, true);
 assert.equal('file2' in result, true);
@@ -117,15 +117,6 @@ assert.equal('nada' in result, true); // no wildcard == no path prefix
 
 // wildcard for both paths
 var result = shell.ls('resources/ls/f*le*.js', 'resources/ls/a_dir/*');
-assert.equal(shell.error(), null);
-assert.equal(Object.keys(result).length, 4);
-assert.equal('resources/ls/file1.js' in result, true);
-assert.equal('resources/ls/file2.js' in result, true);
-assert.equal('resources/ls/a_dir/b_dir' in result, true);
-assert.equal('resources/ls/a_dir/nada' in result, true);
-
-// wildcard for both paths, array
-var result = shell.ls(['resources/ls/f*le*.js', 'resources/ls/a_dir/*']);
 assert.equal(shell.error(), null);
 assert.equal(Object.keys(result).length, 4);
 assert.equal('resources/ls/file1.js' in result, true);

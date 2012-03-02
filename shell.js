@@ -33,7 +33,7 @@ exports.echo = wrap('echo', function() {
 });
 
 //@
-//@ #### ls([options] [,path ,path ...])
+//@ #### ls([options] [,path] [,path ...])
 //@ Available options:
 //@
 //@ + `-R`: recursive
@@ -43,7 +43,6 @@ exports.echo = wrap('echo', function() {
 //@
 //@ + `ls('projs/*.js')`
 //@ + `ls('-R', '/users/me', '/tmp')`
-//@ + `ls('-a', ['dir1/', 'dir2/'])`
 //@
 //@ Returns list of files in the given path, or in current directory if no path provided.
 //@ For convenient iteration via `for (file in ls())`, the format returned is a hash object:
@@ -156,28 +155,31 @@ function _pwd(options) {
 exports.pwd = wrap('pwd', _pwd);
 
 //@
-//@ #### cp('[-options] source [source ...] dest')
+//@ #### cp('[options ,] source [,source ...] , dest')
 //@ Available options:
 //@
-//@ + `f`: force
-//@ + `r, R`: recursive
+//@ + `-f`: force
+//@ + `-r, -R`: recursive
 //@
-//@ The wildcard `*` is accepted.
-function _cp(options, str) {
-  var options = parseOptions(str, {
+//@ Examples:
+//@
+//@ + `cp('file1', 'dir1')`
+//@ + `cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp')`
+//@
+//@ The wildcard `*` is accepted. Copy files.
+function _cp(options, sources, dest) {
+  options = parseOptions(options, {
     'f': 'force',
     'R': 'recursive',
     'r': 'recursive'
   });
-  var files = parsePaths(str);
 
   // Get sources, dest
-  var sources, dest;
-  if (files.length < 2) {
+  if (arguments.length < 3) {
     error('missing <source> and/or <dest>');
-  } else {
-    sources = files.slice(0, files.length - 1);
-    dest = files[files.length - 1];
+  } else if (arguments.length > 3) {
+    sources = arguments.slice(1, arguments.length - 1);
+    dest = arguments[arguments.length - 1];
   }
 
   // Dest is not existing dir, but multiple sources given
@@ -237,20 +239,25 @@ function _cp(options, str) {
 exports.cp = wrap('cp', _cp);
 
 //@
-//@ #### rm('[-options] file [file ...]')
+//@ #### rm('[options ,] file [, file ...]')
 //@ Available options:
 //@
-//@ + `f`: force
-//@ + `r, R`: recursive
+//@ + `-f`: force
+//@ + `-r, -R`: recursive
 //@
-//@ The wildcard `*` is accepted.
-function _rm(options, str) {
-  var options = parseOptions(str, {
+//@ Examples:
+//@
+//@ + `rm('a.js', 'b.js')`
+//@ + `rm('-rf', '/tmp/*')`
+//@
+//@ The wildcard `*` is accepted. 
+function _rm(options, files) {
+  options = parseOptions(options, {
     'f': 'force',
     'r': 'recursive',
     'R': 'recursive'
   });
-  var files = parsePaths(str);
+  var files = [].slice.call(arguments, 1);
 
   if (files.length === 0)
     error('no paths given');
