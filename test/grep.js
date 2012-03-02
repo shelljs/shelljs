@@ -1,4 +1,4 @@
-require('../maker');
+var shell = require('..');
 
 var assert = require('assert'),
     path = require('path'),
@@ -7,7 +7,7 @@ var assert = require('assert'),
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
 
-silent();
+shell.silent();
 
 function numLines(str) {
   return typeof str === 'string' ? str.match(/\n/g).length : 0;
@@ -20,30 +20,30 @@ shell.mkdir('tmp')
 // Invalids
 //
 
-grep();
-assert.ok(error());
+shell.grep();
+assert.ok(shell.error());
 
-grep(/asdf/g); // too few args
-assert.ok(error());
+shell.grep(/asdf/g); // too few args
+assert.ok(shell.error());
 
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-grep(/asdf/g, '/asdfasdf'); // no such file
-assert.ok(error());
+shell.grep(/asdf/g, '/asdfasdf'); // no such file
+assert.ok(shell.error());
 
 //
 // Valids
 //
 
-var result = grep('line', 'resources/a.txt');
-assert.equal(error(), null);
+var result = shell.grep('line', 'resources/a.txt');
+assert.equal(shell.error(), null);
 assert.equal(result.split('\n').length - 1, 4);
 
-var result = grep('line one', 'resources/a.txt');
-assert.equal(error(), null);
+var result = shell.grep('line one', 'resources/a.txt');
+assert.equal(shell.error(), null);
 assert.equal(result, 'This is line one\n');
 
-var result = grep(/line one/, 'resources/a.txt');
-assert.equal(error(), null);
+var result = shell.grep(/line one/, 'resources/a.txt');
+assert.equal(shell.error(), null);
 assert.equal(result, 'This is line one\n');
 
-exit(123);
+shell.exit(123);

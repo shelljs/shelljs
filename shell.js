@@ -482,7 +482,7 @@ function ShellString(str) {
 //@ + `sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js')`
 //@
 //@ Reads an input string from `file` and performs a JavaScript `replace()` on the input
-//@ using the given search regex and replacement string. Returns the modified string.
+//@ using the given search regex and replacement string. Returns the replaced `String()` object.
 function _sed(options, regex, replacement, file) {
   options = parseOptions(options, {
     'i': 'inplace'
@@ -510,14 +510,19 @@ function _sed(options, regex, replacement, file) {
 exports.sed = wrap('sed', _sed);
 
 //@
-//@ #### grep(regex_filter, 'file [file ...]')
-//@ Reads input string from given files and returns a string containing all lines of the 
-//@ file that match the given `regex_filter`. Wildcards are accepted for file names.
-function _grep(options, regex, filesStr) {
-  if (!filesStr)
+//@ #### grep([options ,] regex_filter, file [, file ...]')
+//@
+//@ Examples:
+//@
+//@ + `grep('GLOBAL_VARIABLE', '*.js')`
+//@
+//@ Reads input string from given files and returns a `String()` containing all lines of the 
+//@ file that match the given `regex_filter`. Wildcard `*` accepted.
+function _grep(options, regex, file) {
+  if (!file)
     error('no file given');
 
-  var files = parsePaths(filesStr);
+  var files = [].slice.call(arguments, 2);
   files = expand(files);
 
   var grep = '';
