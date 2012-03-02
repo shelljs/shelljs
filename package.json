@@ -1,7 +1,9 @@
-{ "name": "shell.js"
-, "version": "0.0.1"
-, "author": "Artur Adib"
-, "description": "Unix shell commands on top of the Node.js API"
+{ "name": "shelljs"
+, "version": "0.0.1alpha1"
+, "author": "Artur Adib <aadib@mozilla.com>"
+, "description": "Unix shell commands for Node.js"
+, "keywords": ["unix", "shell", "makefile", "make", "jake", "synchronous"]
+, "repository": "git://github.com/arturadib/shell.js"
 , "homepage": "http://github.com/arturadib/shell.js"
 , "main": "./shell.js"
 , "scripts": {
