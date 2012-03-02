@@ -8,7 +8,7 @@ The project is both [unit-tested](http://travis-ci.org/arturadib/shell.js) and b
 ### Example
 
 ```javascript
-require('shell/global');
+require('shelljs/global');
 
 // Copy files to release dir
 mkdir('-p', 'out/Release');
@@ -32,18 +32,18 @@ if (exec('git commit -am "Auto-commit"').code !== 0) {
 
 ### Global vs. Local
 
-The example above uses the convenience script `shell/global` to reduce verbosity. If polluting your global namespace is not desirable, simply require `shell`.
+The example above uses the convenience script `shelljs/global` to reduce verbosity. If polluting your global namespace is not desirable, simply require `shelljs`.
 
 Example:
 
 ```javascript
-var shell = require('shell');
+var shell = require('shelljs');
 shell.echo('hello world');
 ```
 
 ### Make tool
 
-A convenience script `shell/make` is also provided to mimic the behavior of a Unix Makefile. In this case all shell objects are global, and command line arguments will cause the script to execute only the corresponding function in the global `target` object. To avoid redundant calls, target functions are executed only once per script.
+A convenience script `shelljs/make` is also provided to mimic the behavior of a Unix Makefile. In this case all shell objects are global, and command line arguments will cause the script to execute only the corresponding function in the global `target` object. To avoid redundant calls, target functions are executed only once per script.
 
 Example:
 
@@ -51,7 +51,7 @@ Example:
 //
 // Example file: make.js
 //
-require('shell/make');
+require('shelljs/make');
 
 target.all = function() {
   target.bundle();
