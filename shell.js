@@ -27,10 +27,21 @@ var state = {
 
 
 //@
-//@ #### echo('message' [,'message' ...])
-exports.echo = wrap('echo', function() {
-  console.log.apply(this, arguments);
-});
+//@ #### echo(string [,string ...])
+//@
+//@ Examples:
+//@
+//@ + `echo('hello world')`
+//@ + `var str = echo('hello world');`
+//@
+//@ Prints string to stdout, and returns augmented `String()` object with additional utility methods
+//@ like `.to()`.
+function _echo(options) {
+  var messages = [].slice.call(arguments, 1);
+  log.apply(this, messages);
+  return new ShellString(messages.join(' '));
+};
+exports.echo = wrap('echo', _echo);
 
 //@
 //@ #### ls([options] [,path] [,path ...])
@@ -150,7 +161,8 @@ exports.cd = wrap('cd', _cd);
 //@ #### shell.pwd()
 //@ Returns the current directory.
 function _pwd(options) {
-  return path.resolve(process.cwd());
+  var pwd = path.resolve(process.cwd());
+  return new ShellString(pwd);
 };
 exports.pwd = wrap('pwd', _pwd);
 
@@ -429,14 +441,18 @@ function _cat(options, files) {
   if (cat[cat.length-1] === '\n')
     cat = cat.substring(0, cat.length-1);
 
-  return cat;
+  return new ShellString(cat);
 };
 exports.cat = wrap('cat', _cat);
 
 //@
-//@ #### 'any string'.to('file')
-//@ Analogous to the redirection operator `>` in Unix, but works with JavaScript strings. 
-//@ For example, to redirect the output of `cat()` to a file, use: `cat('input.txt').to('output.txt')`. 
+//@ #### 'shell string'.to(file)
+//@
+//@ Examples:
+//@
+//@ + `cat('input.txt').to('output.txt')`
+//@
+//@ Analogous to the redirection operator `>` in Unix, but works with strings returned by a shell command. 
 //@ _Like Unix redirections, `to()` will overwrite any existing file!_
 function _to(options, file) {
   if (!file)
@@ -447,14 +463,23 @@ function _to(options, file) {
 
   fs.writeFileSync(file, this.toString(), 'utf8');
 };
-String.prototype.to = wrap('to', _to);
+// Augmented String() object, to mimick Unix redirection operators
+function ShellString(str) {
+  var s = new String(str);
+  s.to = wrap('to', _to);
+  return s;
+}
 
 //@
-//@ #### sed([options ,] search_regex, 'replace_str', 'file')
+//@ #### sed([options ,] search_regex, replace_str, file)
 //@ Available options:
 //@
-//@ + `inplace`: (Default is `false`) If `true` will replace contents of 'file' with 
-//@ the modified string. _Note that no backups will be created!_
+//@ + `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_
+//@
+//@ Examples:
+//@
+//@ + `sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js')`
+//@ + `sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js')`
 //@
 //@ Reads an input string from `file` and performs a JavaScript `replace()` on the input
 //@ using the given search regex and replacement string. Returns the modified string.
@@ -480,7 +505,7 @@ function _sed(options, regex, replacement, file) {
   if (options.inplace)
     result.to(file);
 
-  return result;
+  return new ShellString(result);
 };
 exports.sed = wrap('sed', _sed);
 
@@ -510,7 +535,7 @@ function _grep(options, regex, filesStr) {
     });
   });
 
-  return grep;
+  return new ShellString(grep);
 };
 exports.grep = wrap('grep', _grep);
 
@@ -718,9 +743,9 @@ exports.silent = function() {
 // Auxiliary functions (internal use only)
 //
 
-function log(msg) {
+function log() {
   if (!state.silent)
-    console.log(msg);
+    console.log.apply(this, arguments);
 }
 
 function write(msg) {

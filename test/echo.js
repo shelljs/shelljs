@@ -17,23 +17,10 @@ shell.rm('-rf', 'tmp');
 shell.mkdir('tmp')
 
 //
-// Invalids
-//
-
-shell.echo('hello world').to();
-assert.ok(shell.error());
-
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-shell.echo('hello world').to('/asdfasdf/file');
-assert.ok(shell.error());
-
-//
 // Valids
 //
 
-shell.echo('hello world').to('tmp/to1');
-var result = shell.cat('tmp/to1');
+assert.equal(shell.echo('hello world'), 'hello world');
 assert.equal(shell.error(), null);
-assert.equal(result, 'hello world');
 
 shell.exit(123);
