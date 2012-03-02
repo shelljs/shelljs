@@ -446,14 +446,14 @@ function _cat(options, files) {
 exports.cat = wrap('cat', _cat);
 
 //@
-//@ #### 'shell string'.to(file)
+//@ #### 'string'.to(file)
 //@
 //@ Examples:
 //@
 //@ + `cat('input.txt').to('output.txt')`
 //@
-//@ Analogous to the redirection operator `>` in Unix, but works with strings returned by a shell command. 
-//@ _Like Unix redirections, `to()` will overwrite any existing file!_
+//@ Analogous to the redirection operator `>` in Unix, but works with strings such as those 
+//@ returned by a shell command. _Like Unix redirections, `to()` will overwrite any existing file!_
 function _to(options, file) {
   if (!file)
     error('wrong arguments');
@@ -510,7 +510,7 @@ function _sed(options, regex, replacement, file) {
 exports.sed = wrap('sed', _sed);
 
 //@
-//@ #### grep([options ,] regex_filter, file [, file ...]')
+//@ #### grep(regex_filter, file [, file ...]')
 //@
 //@ Examples:
 //@
@@ -546,7 +546,7 @@ exports.grep = wrap('grep', _grep);
 
 
 //@
-//@ #### which([options ,] command)
+//@ #### which(command)
 //@
 //@ Examples:
 //@
@@ -626,6 +626,44 @@ exports.env = process.env;
 
 
 
+
+
+//@
+//@ #### exec(command [, options] [, callback])
+//@ Available options (all `false` by default):
+//@
+//@ + `async`: Asynchronous execution. Needs callback.
+//@ + `silent`: Do not echo program output to console.
+//@
+//@ Examples:
+//@
+//@ + `var version = exec('node --version', {silent:true}).output`
+//@
+//@ Executes the given `command` _synchronously_, unless otherwise specified. 
+//@ When in synchronous mode returns the object `{ code:..., output:... }`, containing the program's 
+//@ `output` (stdout + stderr)  and its exit `code`. Otherwise the `callback` gets the 
+//@ arguments `(code, output)`.
+function _exec(command, options, callback) {
+  if (!command)
+    error('must specify command');
+
+  if (typeof options === 'function') {
+    callback = options;
+    options = {};
+  }
+
+  options = extend({
+    silent: false,
+    async: false
+  }, options);
+
+  if (options.async)
+    execAsync(command, options, callback);
+  else
+    return execSync(command, options);
+};
+exports.exec = wrap('exec', _exec, {notUnix:true});
+
 //@
 //@ #### tempdir()
 //@ Searches and returns string containing a writeable, platform-dependent temporary directory.
@@ -633,7 +671,7 @@ exports.env = process.env;
 exports.tempdir = wrap('tempdir', tempDir);
 
 //@
-//@ #### exists([options ,] path [, path ...])
+//@ #### exists(path [, path ...])
 //@ Returns true if all the given paths exist.
 function _exists(options) {
   var paths = [].slice.call(arguments, 1);
@@ -749,7 +787,7 @@ function parseOptions(str, map) {
 }
 
 // Common wrapper for all Unix-like commands
-function wrap(cmd, fn) {
+function wrap(cmd, fn, options) {
   return function() {
     var retValue = null;
 
@@ -758,9 +796,14 @@ function wrap(cmd, fn) {
 
     try {
       var args = [].slice.call(arguments, 0);
-      if (args.length === 0 || typeof args[0] !== 'string' || args[0][0] !== '-')
-        args.unshift(''); // only add dummy option if '-option' not already present
-      retValue = fn.apply(this, args);
+
+      if (options && options.notUnix) {
+        retValue = fn.apply(this, args);
+      } else {
+        if (args.length === 0 || typeof args[0] !== 'string' || args[0][0] !== '-')
+          args.unshift(''); // only add dummy option if '-option' not already present
+        retValue = fn.apply(this, args);
+      }
     } catch (e) {
       if (!state.error) {
         // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
@@ -951,10 +994,10 @@ function tempDir() {
 }
 
 // Wrapper around exec() to enable echoing output to console in real time
-function execAsync(cmd, args, opts, callback) {
+function execAsync(cmd, opts, callback) {
   var output = '';
   
-  var c = child.exec(formCommandLine(cmd, args), {env: process.env}, function(err) {
+  var c = child.exec(cmd, {env: process.env}, function(err) {
     if (callback) 
       callback(err ? err.code : 0, output);
   });
@@ -977,7 +1020,7 @@ function execAsync(cmd, args, opts, callback) {
 // (Can't do a wait loop that checks for internal Node variables/messages as
 // Node is single-threaded; callbacks and other internal state changes are done in the 
 // event loop).
-function execSync(cmd, args, opts) {
+function execSync(cmd, opts) {
   var stdoutFile = path.resolve(tempDir()+'/'+randomFileName()),
       codeFile = path.resolve(tempDir()+'/'+randomFileName()),
       scriptFile = path.resolve(tempDir()+'/'+randomFileName());
@@ -1007,13 +1050,12 @@ function execSync(cmd, args, opts) {
     return str;
   }
     
-  var cmdLine = formCommandLine(cmd, args);  
-  cmdLine += ' > '+stdoutFile+' 2>&1'; // works on both win/unix
+  cmd += ' > '+stdoutFile+' 2>&1'; // works on both win/unix
 
   var script = 
    "var child = require('child_process'), \
         fs = require('fs'); \
-    child.exec('"+escape(cmdLine)+"', {env: process.env}, function(err) { \
+    child.exec('"+escape(cmd)+"', {env: process.env}, function(err) { \
       fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0'); \
     });";
 
@@ -1092,12 +1134,4 @@ function extend(target) {
   });
   
   return target;
-}
-
-// Normalize platform-dependent command line
-function formCommandLine(cmd, args) {
-  if (platform === 'win')
-    cmd = '\"'+cmd+'\"'; // wrap in quotes to avoid issues with space
-
-  return cmd + (args ? ' '+args : '');
 }
