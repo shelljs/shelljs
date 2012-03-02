@@ -5,6 +5,6 @@
 , "homepage": "http://github.com/arturadib/shell.js"
 , "main": "./shell.js"
 , "scripts": {
-    "test": "node test/run"
+    "test": "node scripts/run-tests"
   }
 }
