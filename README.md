@@ -1,6 +1,6 @@
 # Shell.js - Unix shell commands for Node.js [![Build Status](https://secure.travis-ci.org/arturadib/shell.js.png)](http://travis-ci.org/arturadib/shell.js)
 
-Shell.js is a portable (Windows included) implementation of Unix shell commands for Node.js. It can be used to eliminate your project's dependencies on Unix while still keeping its familiar and powerful syntax.
+Shell.js is a **portable** (Windows included) implementation of Unix shell commands on top of the Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping its familiar and powerful commands.
 
 The project is both [unit-tested](http://travis-ci.org/arturadib/shell.js) and battle-tested at Mozilla's [pdf.js](http://github.com/mozilla/pdf.js).
 
@@ -99,7 +99,7 @@ Or simply copy `shell.js` into your project's directory, and `require()` accordi
 -->
 
 
-# Commands reference
+# Command reference
 
 
 All commands run synchronously, unless otherwise stated.
