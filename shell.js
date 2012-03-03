@@ -1,9 +1,9 @@
 //
-// shell.js
+// ShellJS
 // Unix shell commands on top of Node's API
 //
 // Copyright (c) 2012 Artur Adib
-// http://github.com/arturadib/shell.js
+// http://github.com/arturadib/shelljs
 //
 
 var fs = require('fs'),
