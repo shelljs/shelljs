@@ -14,7 +14,7 @@ require('shelljs/global');
 
 // Copy files to release dir
 mkdir('-p', 'out/Release');
-cp('-R', 'lib/*.js', 'out/Release');
+cp('-R', 'stuff/*', 'out/Release');
 
 // Replace macros in each .js file
 cd('lib');
