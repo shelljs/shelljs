@@ -35,7 +35,7 @@ setTimeout(function() {
       if (arg in target) 
         target[arg]();
       else {
-        log('no such target: ' + arg);
+        console.log('no such target: ' + arg);
         exit(1);
       }
     });
