@@ -55,14 +55,14 @@ assert.equal(result.output, 'node_script_1234\n');
 var asyncFlags = [];
 
 asyncFlags[0] = false;
-shell.exec('node -e \"console.log(1234);\"', {async:true}, function(code, output) { // callback as 2nd argument
+shell.exec('node -e \"console.log(1234);\"', function(code, output) { // callback as 2nd argument
   assert.equal(code, 0);
   assert.ok(output === '1234\n' || output === '1234\nundefined\n');  // 'undefined' for v0.4
   asyncFlags[0] = true;
 });
 assert.equal(shell.error(), null);
 
-shell.exec('node -e \"console.log(1234)\"', {async:true}); // no callback
+shell.exec('node -e \"console.log(1234)\"', function(){}); // dummy callback
 assert.equal(shell.error(), null);
 
 setTimeout(function() {

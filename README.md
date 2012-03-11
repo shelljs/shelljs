@@ -279,20 +279,15 @@ Exits the current process with the given exit code.
 #### env['VAR_NAME']
 Object containing environment variables (both getter and setter). Shortcut to process.env.
 
-#### exec(command [, options] [, callback])
-Available options (all `false` by default):
-
-+ `async`: Asynchronous execution. Needs callback.
-+ `silent`: Do not echo program output to console.
-
+#### exec(command [, callback])
 Examples:
 
 ```javascript
-var version = exec('node --version', {silent:true}).output;
+var version = exec('node --version').output;
 ```
 
-Executes the given `command` _synchronously_, unless otherwise specified. 
-When in synchronous mode returns the object `{ code:..., output:... }`, containing the program's 
+Executes the given `command` _synchronously_, unless a callback is provided. 
+When in synchronous mode returns the object `{ code:..., output:... }` containing the program's 
 `output` (stdout + stderr)  and its exit `code`. Otherwise the `callback` gets the 
 arguments `(code, output)`.
 

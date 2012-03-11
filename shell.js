@@ -682,42 +682,27 @@ exports.exit = process.exit;
 exports.env = process.env;
 
 //@
-//@ #### exec(command [, options] [, callback])
-//@ Available options (all `false` by default):
-//@
-//@ + `async`: Asynchronous execution. Needs callback.
-//@ + `silent`: Do not echo program output to console.
-//@
+//@ #### exec(command [, callback])
 //@ Examples:
 //@
 //@ ```javascript
-//@ var version = exec('node --version', {silent:true}).output;
+//@ var version = exec('node --version').output;
 //@ ```
 //@
-//@ Executes the given `command` _synchronously_, unless otherwise specified. 
-//@ When in synchronous mode returns the object `{ code:..., output:... }`, containing the program's 
+//@ Executes the given `command` _synchronously_, unless a callback is provided. 
+//@ When in synchronous mode returns the object `{ code:..., output:... }` containing the program's 
 //@ `output` (stdout + stderr)  and its exit `code`. Otherwise the `callback` gets the 
 //@ arguments `(code, output)`.
-function _exec(command, options, callback) {
+function _exec(options, command, callback) {
   if (!command)
     error('must specify command');
 
-  if (typeof options === 'function') {
-    callback = options;
-    options = {};
-  }
-
-  options = extend({
-    silent: false,
-    async: false
-  }, options);
-
-  if (options.async)
-    execAsync(command, options, callback);
+  if (callback)
+    execAsync(command, callback);
   else
-    return execSync(command, options);
+    return execSync(command);
 };
-exports.exec = wrap('exec', _exec, {notUnix:true});
+exports.exec = wrap('exec', _exec);
 
 
 
@@ -867,13 +852,9 @@ function wrap(cmd, fn, options) {
     try {
       var args = [].slice.call(arguments, 0);
 
-      if (options && options.notUnix) {
-        retValue = fn.apply(this, args);
-      } else {
-        if (args.length === 0 || typeof args[0] !== 'string' || args[0][0] !== '-')
-          args.unshift(''); // only add dummy option if '-option' not already present
-        retValue = fn.apply(this, args);
-      }
+      if (args.length === 0 || typeof args[0] !== 'string' || args[0][0] !== '-')
+        args.unshift(''); // only adds dummy option if '-option' not already present
+      retValue = fn.apply(this, args);
     } catch (e) {
       if (!state.error) {
         // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
@@ -1064,7 +1045,7 @@ function tempDir() {
 }
 
 // Wrapper around exec() to enable echoing output to console in real time
-function execAsync(cmd, opts, callback) {
+function execAsync(cmd, callback) {
   var output = '';
   
   var c = child.exec(cmd, {env: process.env}, function(err) {
@@ -1074,13 +1055,13 @@ function execAsync(cmd, opts, callback) {
 
   c.stdout.on('data', function(data) {
     output += data;
-    if (!opts.silent)
+    if (!state.silent)
       write(data);
   });
 
   c.stderr.on('data', function(data) {
     output += data;
-    if (!opts.silent)
+    if (!state.silent)
       write(data);
   });
 }
@@ -1090,19 +1071,15 @@ function execAsync(cmd, opts, callback) {
 // (Can't do a wait loop that checks for internal Node variables/messages as
 // Node is single-threaded; callbacks and other internal state changes are done in the 
 // event loop).
-function execSync(cmd, opts) {
+function execSync(cmd) {
   var stdoutFile = path.resolve(tempDir()+'/'+randomFileName()),
       codeFile = path.resolve(tempDir()+'/'+randomFileName()),
       scriptFile = path.resolve(tempDir()+'/'+randomFileName());
 
-  var options = extend({
-    silent: false
-  }, opts);
-
   var previousStdoutContent = '';
   // Echoes stdout changes from running process, if not silent
   function updateStdout() {
-    if (state.silent || options.silent || !fs.existsSync(stdoutFile))
+    if (state.silent || !fs.existsSync(stdoutFile))
       return;
 
     var stdoutContent = fs.readFileSync(stdoutFile, 'utf8');
