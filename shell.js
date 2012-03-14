@@ -57,6 +57,7 @@ function _pwd(options) {
 };
 exports.pwd = wrap('pwd', _pwd);
 
+
 //@
 //@ #### ls([options ,] path [,path ...])
 //@ #### ls([options ,] path_array)
@@ -485,6 +486,42 @@ function _mkdir(options, dirs) {
   });
 }; // mkdir
 exports.mkdir = wrap('mkdir', _mkdir);
+
+//@
+//@ #### test(expression)
+//@ Available expression primaries:
+//@
+//@ + `'-d', 'path'`: true if path is a directory
+//@ + `'-f', 'path'`: true if path is a regular file
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ if (test('-d', path)) { /* do something with dir */ };
+//@ if (!test('-f', path)) continue; // skip if it's a regular file
+//@ ```
+//@
+//@ Evaluates expression using the available primaries and returns corresponding value.
+function _test(options, path) {
+  if (!path)
+    error('no path given');
+
+  // hack - only works with unary primaries
+  options = parseOptions(options, {
+    'd': 'directory',
+    'f': 'file'
+  });
+  if (!options.directory && !options.file)
+    error('could not interpret expression');
+
+  if (options.directory)
+    return fs.existsSync(path) && fs.statSync(path).isDirectory();
+
+  if (options.file)
+    return fs.existsSync(path) && fs.statSync(path).isFile();
+}; // test
+exports.test = wrap('test', _test);
+
 
 //@
 //@ #### cat(file [, file ...])

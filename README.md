@@ -218,6 +218,21 @@ mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 
 Creates directories.
 
+#### test(expression)
+Available expression primaries:
+
++ `'-d', 'path'`: true if path is a directory
++ `'-f', 'path'`: true if path is a regular file
+
+Examples:
+
+```javascript
+if (test('-d', path)) { /* do something with dir */ };
+if (!test('-f', path)) continue; // skip if it's a regular file
+```
+
+Evaluates expression using the available primaries and returns corresponding value.
+
 #### cat(file [, file ...])
 #### cat(file_array)
 
