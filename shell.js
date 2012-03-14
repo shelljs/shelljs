@@ -179,7 +179,7 @@ exports.ls = wrap('ls', _ls);
 //@ via `for (file in find(...))`, the format returned is a hash object:
 //@ `{ 'file1':null, 'dir1/file2':null, ...}`.
 //@
-//@ The main difference with respect to `ls('-R', path)` is that the resulting file names 
+//@ The main difference from `ls('-R', path)` is that the resulting file names 
 //@ include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
 function _find(options, paths) {
   if (!paths)

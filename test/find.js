@@ -23,6 +23,7 @@ assert.ok(shell.error());
 // Valids
 //
 
+// current path
 shell.cd('resources/find');
 var result = shell.find('.');
 assert.equal(shell.error(), null);
@@ -31,10 +32,25 @@ assert.equal('dir1/dir11/a_dir11' in result, true);
 assert.equal(Object.keys(result).length, 10);
 shell.cd('../..')
 
+// simple path
 var result = shell.find('resources/find');
 assert.equal(shell.error(), null);
 assert.equal('resources/find/.hidden' in result, true);
 assert.equal('resources/find/dir1/dir11/a_dir11' in result, true);
 assert.equal(Object.keys(result).length, 10);
+
+// multiple paths - comma
+var result = shell.find('resources/find/dir1', 'resources/find/dir2');
+assert.equal(shell.error(), null);
+assert.equal('resources/find/dir1/dir11/a_dir11' in result, true);
+assert.equal('resources/find/dir2/a_dir1' in result, true);
+assert.equal(Object.keys(result).length, 6);
+
+// multiple paths - array
+var result = shell.find(['resources/find/dir1', 'resources/find/dir2']);
+assert.equal(shell.error(), null);
+assert.equal('resources/find/dir1/dir11/a_dir11' in result, true);
+assert.equal('resources/find/dir2/a_dir1' in result, true);
+assert.equal(Object.keys(result).length, 6);
 
 shell.exit(123);
