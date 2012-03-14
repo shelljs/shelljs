@@ -132,6 +132,27 @@ Returns list of files in the given path, or in current directory if no path prov
 For convenient iteration via `for (file in ls())`, the format returned is a hash object:
 `{ 'file1':null, 'dir1/file2':null, ...}`.
 
+#### find(path [,path ...])
+#### find(path_array)
+Examples:
+
+```javascript
+find('src', 'lib');
+find(['src', 'lib']); // same as above
+for (file in find('.')) {
+if (!file.match(/\.js$/))
+continue;
+// all files at this point end in '.js'
+}
+```
+
+Returns list of all files (however deep) in the given paths. For convenient iteration 
+via `for (file in find(...))`, the format returned is a hash object:
+`{ 'file1':null, 'dir1/file2':null, ...}`.
+
+The main difference with respect to `ls('-R', path)` is that the resulting file names 
+include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
+
 #### cp('[options ,] source [,source ...], dest')
 #### cp('[options ,] source_array, dest')
 Available options:

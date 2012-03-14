@@ -160,6 +160,54 @@ exports.ls = wrap('ls', _ls);
 
 
 //@
+//@ #### find(path [,path ...])
+//@ #### find(path_array)
+//@ Examples:
+//@
+//@ ```javascript
+//@ find('src', 'lib');
+//@ find(['src', 'lib']); // same as above
+//@ for (file in find('.')) {
+//@   if (!file.match(/\.js$/))
+//@     continue;
+//@   // all files at this point end in '.js'
+//@ }
+//@ ```
+//@
+//@ Returns list of all files (however deep) in the given paths. For convenient iteration 
+//@ via `for (file in find(...))`, the format returned is a hash object:
+//@ `{ 'file1':null, 'dir1/file2':null, ...}`.
+//@
+//@ The main difference with respect to `ls('-R', path)` is that the resulting file names 
+//@ include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
+function _find(options, paths) {
+  if (!paths)
+    error('no path specified');
+  else if (typeof paths === 'object')
+    paths = paths; // assume array
+  else if (typeof paths === 'string')
+    paths = [].slice.call(arguments, 1);
+
+  var hash = {};
+
+  // why not simply do ls('-R', paths)? because the output wouldn't give the base dirs
+  // to get the base dir in the output, we need instead ls('-R', 'dir/*') for every directory
+
+  paths.forEach(function(file){
+    hash[file] = null;
+
+    if (fs.statSync(file).isDirectory()) {
+      for (subfile in _ls('-Ra', file+'/*'))
+        hash[subfile] = null;
+    }
+  });
+
+  return hash;
+}
+exports.find = wrap('find', _find);
+
+
+//@
 //@ #### cp('[options ,] source [,source ...], dest')
 //@ #### cp('[options ,] source_array, dest')
 //@ Available options:
