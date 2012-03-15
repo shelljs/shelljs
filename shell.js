@@ -822,11 +822,52 @@ exports.exec = wrap('exec', _exec, {notUnix:true});
 //@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 exports.tempdir = wrap('tempdir', tempDir);
 
+
+//@
+//@ #### error()
+//@ Tests if error occurred in the last command. Returns `null` if no error occurred,
+//@ otherwise returns string explaining the error
+exports.error = function() {
+  return state.error;
+}
+
+//@
+//@ #### silent([state])
+//@ Example:
+//@
+//@ ```javascript
+//@ var silentState = silent();
+//@ silent(true);
+//@ /* ... */
+//@ silent(silentState); // restore old silent state
+//@ ```
+//@
+//@ Suppresses all output if `state = true`. Returns state if no arguments given.
+exports.silent = function(_state) {
+  if (typeof _state !== 'boolean')
+    return state.silent;
+  
+  state.silent = _state;
+}
+
+
+//@
+//@ ## Deprecated
+//@
+
+
+
+
 //@
 //@ #### exists(path [, path ...])
 //@ #### exists(path_array)
+//@
+//@ _This function is being deprecated. Use `test()` instead._
+//@
 //@ Returns true if all the given paths exist.
 function _exists(options, paths) {
+  deprecate('exists', 'Use test() instead.');
+
   if (!paths)
     error('no paths given');
 
@@ -844,31 +885,18 @@ function _exists(options, paths) {
 };
 exports.exists = wrap('exists', _exists);
 
-//@
-//@ #### error()
-//@ Tests if error occurred in the last command. Returns `null` if no error occurred,
-//@ otherwise returns string explaining the error
-exports.error = function() {
-  return state.error;
-}
 
 //@
 //@ #### verbose()
+//@
+//@ _This function is being deprecated. Use `silent(false) instead.`_
+//@
 //@ Enables all output (default)
 exports.verbose = function() {
+  deprecate('verbose', 'Use silent(false) instead.');
+
   state.silent = false;
 }
-
-//@
-//@ #### silent()
-//@ Suppresses all output, except for explict `echo()` calls
-exports.silent = function() {
-  state.silent = true;
-}
-
-
-
-
 
 
 
@@ -887,6 +915,10 @@ exports.silent = function() {
 function log() {
   if (!state.silent)
     console.log.apply(this, arguments);
+}
+
+function deprecate(what, msg) {
+  console.log('*** '+what+': This function is deprecated.', msg);
 }
 
 function write(msg) {

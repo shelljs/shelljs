@@ -4,7 +4,7 @@ var assert = require('assert'),
     path = require('path'),
     fs = require('fs');
 
-shell.silent();
+shell.silent(true);
 
 function numLines(str) {
   return typeof str === 'string' ? str.match(/\n/g).length : 0;

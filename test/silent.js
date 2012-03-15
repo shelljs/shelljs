@@ -7,20 +7,20 @@ var assert = require('assert'),
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
 
-shell.silent(true);
-
 function numLines(str) {
   return typeof str === 'string' ? str.match(/\n/g).length : 0;
 }
-
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp')
 
 //
 // Valids
 //
 
-assert.equal(shell.echo('hello world'), 'hello world');
-assert.equal(shell.error(), null);
+assert.equal(shell.silent(), false); // default
+
+shell.silent(true);
+assert.equal(shell.silent(), true);
+
+shell.silent(false);
+assert.equal(shell.silent(), false);
 
 shell.exit(123);

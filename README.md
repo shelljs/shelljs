@@ -339,16 +339,34 @@ arguments `(code, output)`.
 Searches and returns string containing a writeable, platform-dependent temporary directory.
 Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 
-#### exists(path [, path ...])
-#### exists(path_array)
-Returns true if all the given paths exist.
-
 #### error()
 Tests if error occurred in the last command. Returns `null` if no error occurred,
 otherwise returns string explaining the error
 
-#### verbose()
-Enables all output (default)
+#### silent([state])
+Example:
 
-#### silent()
-Suppresses all output, except for explict `echo()` calls
+```javascript
+var silentState = silent();
+silent(true);
+/* ... */
+silent(silentState); // restore old silent state
+```
+
+Suppresses all output if `state = true`. Returns state if no arguments given.
+
+## Deprecated
+
+
+#### exists(path [, path ...])
+#### exists(path_array)
+
+_This function is being deprecated. Use `test()` instead._
+
+Returns true if all the given paths exist.
+
+#### verbose()
+
+_This function is being deprecated. Use `silent(false) instead.`_
+
+Enables all output (default)
