@@ -1,0 +1,9 @@
+2012.03.15, Version 0.0.2
+
+* New methods: find(), test() (Artur Adib)
+* Deprecated non-Unix methods: exists(), verbose()
+
+
+2012.03.03, Version 0.0.2pre1
+
+* First public release
