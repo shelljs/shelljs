@@ -918,7 +918,7 @@ function log() {
 }
 
 function deprecate(what, msg) {
-  console.log('*** '+what+': This function is deprecated.', msg);
+  console.log('*** ShellJS.'+what+': This function is deprecated.', msg);
 }
 
 function write(msg) {
