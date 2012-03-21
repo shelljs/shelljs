@@ -1,3 +1,10 @@
+2012.03.21, Version 0.0.3
+
+* Wildcard bug fix (Artur Adib)
+* execSync() now uses dummy file I/O op to reduce CPU usage (Artur Adib)
+* Minor fixes
+
+
 2012.03.15, Version 0.0.2
 
 * New methods: find(), test() (Artur Adib)
