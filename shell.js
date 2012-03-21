@@ -793,7 +793,7 @@ function _exec(command, options, callback) {
   }
 
   options = extend({
-    silent: false,
+    silent: state.silent,
     async: false
   }, options);
 
@@ -1194,7 +1194,8 @@ function tempDir() {
 
 // Wrapper around exec() to enable echoing output to console in real time
 function execAsync(cmd, opts, callback) {
-  var output = '';
+  var output = '',
+      silent = 'silent' in opts ? opts.silent : state.silent;
   
   var c = child.exec(cmd, {env: process.env}, function(err) {
     if (callback) 
@@ -1203,13 +1204,13 @@ function execAsync(cmd, opts, callback) {
 
   c.stdout.on('data', function(data) {
     output += data;
-    if (!opts.silent)
+    if (!silent)
       write(data);
   });
 
   c.stderr.on('data', function(data) {
     output += data;
-    if (!opts.silent)
+    if (!silent)
       write(data);
   });
 }
@@ -1226,13 +1227,13 @@ function execSync(cmd, opts) {
       sleepFile = path.resolve(tempDir()+'/'+randomFileName());
 
   var options = extend({
-    silent: false
+    silent: state.silent
   }, opts);
 
   var previousStdoutContent = '';
   // Echoes stdout changes from running process, if not silent
   function updateStdout() {
-    if (state.silent || options.silent || !fs.existsSync(stdoutFile))
+    if (options.silent || !fs.existsSync(stdoutFile))
       return;
 
     var stdoutContent = fs.readFileSync(stdoutFile, 'utf8');
