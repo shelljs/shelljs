@@ -109,6 +109,19 @@ assert.equal(Object.keys(result).length, 2);
 assert.equal('resources/ls/file1.js' in result, true);
 assert.equal('resources/ls/file2.js' in result, true);
 
+// wildcard, should not do partial matches
+var result = shell.ls('resources/ls/*.j'); // shouldn't get .js
+assert.equal(shell.error(), null);
+assert.equal(Object.keys(result).length, 0);
+
+// wildcard, all files with extension
+var result = shell.ls('resources/ls/*.*');
+assert.equal(shell.error(), null);
+assert.equal(Object.keys(result).length, 3);
+assert.equal('resources/ls/file1.js' in result, true);
+assert.equal('resources/ls/file2.js' in result, true);
+assert.equal('resources/ls/filename(with)[chars$]^that.must+be-escaped' in result, true);
+
 // wildcard, with additional path
 var result = shell.ls('resources/ls/f*le*.js', 'resources/ls/a_dir');
 assert.equal(shell.error(), null);

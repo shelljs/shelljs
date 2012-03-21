@@ -137,7 +137,7 @@ function _ls(options, paths) {
       // Escape special regular expression chars
       var regexp = basename.replace(/(\^|\$|\(|\)|\<|\>|\[|\]|\{|\}|\.|\+|\?)/g, '\\$1');
       // Translates wildcard into regex
-      regexp = '^' + regexp.replace(/\*/g, '.*');
+      regexp = '^' + regexp.replace(/\*/g, '.*') + '$';
       // Iterate over directory contents
       fs.readdirSync(dirname).forEach(function(file) {
         if (file.match(new RegExp(regexp))) {
