@@ -1016,10 +1016,22 @@ function copyFileSync(srcFile, destFile) {
 
   var BUF_LENGTH = 64*1024,
       buf = new Buffer(BUF_LENGTH),
-      fdr = fs.openSync(srcFile, 'r'),
-      fdw = fs.openSync(destFile, 'w'),
       bytesRead = BUF_LENGTH,
-      pos = 0;
+      pos = 0,
+      fdr = null,
+      fdw = null;
+
+  try {
+    fdr = fs.openSync(srcFile, 'r');
+  } catch(e) {
+    error('copyFileSync: could not read src file ('+srcFile+')');
+  }
+
+  try {
+    fdw = fs.openSync(destFile, 'w');
+  } catch(e) {
+    error('copyFileSync: could not write to dest file ('+destFile+')');
+  }
 
   while (bytesRead === BUF_LENGTH) {
     bytesRead = fs.readSync(fdr, buf, 0, BUF_LENGTH, pos);
