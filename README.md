@@ -1,6 +1,7 @@
 # ShellJS - Unix shell commands for Node.js [![Build Status](https://secure.travis-ci.org/arturadib/shelljs.png)](http://travis-ci.org/arturadib/shelljs)
 
-_This project is young and experimental. Use at your own risk._
++ _This project is young and experimental. Use at your own risk._
++ _Major API change as of v0.0.4: `ls()` and `find()` now return arrays._
 
 ShellJS is a **portable** (Windows included) implementation of Unix shell commands on top of the Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping its familiar and powerful commands.
 
@@ -18,11 +19,11 @@ cp('-R', 'stuff/*', 'out/Release');
 
 // Replace macros in each .js file
 cd('lib');
-for (file in ls('*.js')) {
+ls('*.js').forEach(function(file) {
   sed('-i', 'BUILD_VERSION', 'v0.1.2', file);
   sed('-i', /.*REMOVE_THIS_LINE.*\n/, '', file);
   sed('-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, cat('macro.js'), file);
-}
+});
 cd('..');
 
 // Run external tool synchronously
@@ -73,11 +74,11 @@ target.docs = function() {
   cd(__dirname);
   mkdir('docs');
   cd('lib');
-  for (file in ls('*.js')) {
+  ls('*.js').forEach(function(file){
     var text = grep('//@', file); // extract special comments
     text.replace('//@', ''); // remove comment tags
     text.to('docs/my_docs.md');
-  }
+  });
 }
 ```
 
@@ -128,9 +129,7 @@ ls('-R', '/users/me', '/tmp');
 ls('-R', ['/users/me', '/tmp']); // same as above
 ```
 
-Returns list of files in the given path, or in current directory if no path provided.
-For convenient iteration via `for (file in ls())`, the format returned is a hash object:
-`{ 'file1':null, 'dir1/file2':null, ...}`.
+Returns array of files in the given path, or in current directory if no path provided.
 
 #### find(path [,path ...])
 #### find(path_array)
@@ -139,16 +138,10 @@ Examples:
 ```javascript
 find('src', 'lib');
 find(['src', 'lib']); // same as above
-for (file in find('.')) {
-  if (!file.match(/\.js$/))
-    continue;
-  // all files at this point end in '.js'
-}
+find('.').filter(function(file) { return file.match(/\.js$/); })
 ```
 
-Returns list of all files (however deep) in the given paths. For convenient iteration 
-via `for (file in find(...))`, the format returned is a hash object:
-`{ 'file1':null, 'dir1/file2':null, ...}`.
+Returns array of all files (however deep) in the given paths.
 
 The main difference from `ls('-R', path)` is that the resulting file names 
 include the base directories, e.g. `lib/resources/file1` instead of just `file1`.

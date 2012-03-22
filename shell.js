@@ -74,9 +74,7 @@ exports.pwd = wrap('pwd', _pwd);
 //@ ls('-R', ['/users/me', '/tmp']); // same as above
 //@ ```
 //@
-//@ Returns list of files in the given path, or in current directory if no path provided.
-//@ For convenient iteration via `for (file in ls())`, the format returned is a hash object:
-//@ `{ 'file1':null, 'dir1/file2':null, ...}`.
+//@ Returns array of files in the given path, or in current directory if no path provided.
 function _ls(options, paths) {
   options = parseOptions(options, {
     'R': 'recursive',
@@ -90,9 +88,11 @@ function _ls(options, paths) {
   else if (typeof paths === 'string')
     paths = [].slice.call(arguments, 1);
 
-  var hash = {};
+  var list = [];
 
-  function pushHash(file, query) {
+  // Conditionally pushes file to list 
+  // (e.g. prevents hidden files to be included unless explicitly told so)
+  function pushFile(file, query) {
     // hidden file?
     if (path.basename(file)[0] === '.') {
       // not explicitly asking for hidden files?
@@ -100,14 +100,14 @@ function _ls(options, paths) {
         return;
     }
 
-    hash[file] = null;
+    list.push(file);
   }
 
   paths.forEach(function(p) {
     if (fs.existsSync(p)) {
       // Simple file?
       if (fs.statSync(p).isFile()) {
-        pushHash(p, p);
+        pushFile(p, p);
         return; // continue
       }
       
@@ -115,13 +115,13 @@ function _ls(options, paths) {
       if (fs.statSync(p).isDirectory()) {
         // Iterate over p contents
         fs.readdirSync(p).forEach(function(file) {
-          pushHash(file, p);
+          pushFile(file, p);
 
           // Recursive
           var oldDir = _pwd();
           _cd('', p);
           if (fs.statSync(file).isDirectory() && options.recursive)
-            hash = extend(hash, _ls('-R', file+'/*'));
+            list = list.concat(_ls('-R', file+'/*'));
           _cd('', oldDir);
         });
         return; // continue
@@ -141,12 +141,12 @@ function _ls(options, paths) {
       // Iterate over directory contents
       fs.readdirSync(dirname).forEach(function(file) {
         if (file.match(new RegExp(regexp))) {
-          pushHash(path.normalize(dirname+'/'+file), basename);
+          pushFile(path.normalize(dirname+'/'+file), basename);
 
           // Recursive
           var pp = dirname + '/' + file;
           if (fs.statSync(pp).isDirectory() && options.recursive)
-            hash = extend(hash, _ls('-R', pp+'/*'));
+            list = list.concat(_ls('-R', pp+'/*'));
         }
       }); // forEach
       return;
@@ -155,7 +155,7 @@ function _ls(options, paths) {
     error('no such file or directory: ' + p, true);
   });
 
-  return hash;
+  return list;
 };
 exports.ls = wrap('ls', _ls);
 
@@ -168,16 +168,10 @@ exports.ls = wrap('ls', _ls);
 //@ ```javascript
 //@ find('src', 'lib');
 //@ find(['src', 'lib']); // same as above
-//@ for (file in find('.')) {
-//@   if (!file.match(/\.js$/))
-//@     continue;
-//@   // all files at this point end in '.js'
-//@ }
+//@ find('.').filter(function(file) { return file.match(/\.js$/); });
 //@ ```
 //@
-//@ Returns list of all files (however deep) in the given paths. For convenient iteration 
-//@ via `for (file in find(...))`, the format returned is a hash object:
-//@ `{ 'file1':null, 'dir1/file2':null, ...}`.
+//@ Returns array of all files (however deep) in the given paths.
 //@
 //@ The main difference from `ls('-R', path)` is that the resulting file names 
 //@ include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
@@ -189,21 +183,22 @@ function _find(options, paths) {
   else if (typeof paths === 'string')
     paths = [].slice.call(arguments, 1);
 
-  var hash = {};
+  var list = [];
 
   // why not simply do ls('-R', paths)? because the output wouldn't give the base dirs
   // to get the base dir in the output, we need instead ls('-R', 'dir/*') for every directory
 
   paths.forEach(function(file){
-    hash[file] = null;
+    list.push(file);
 
     if (fs.statSync(file).isDirectory()) {
-      for (subfile in _ls('-Ra', file+'/*'))
-        hash[subfile] = null;
+      _ls('-Ra', file+'/*').forEach(function(subfile) {
+        list.push(subfile);
+      });
     }
   });
 
-  return hash;
+  return list;
 }
 exports.find = wrap('find', _find);
 
@@ -1307,8 +1302,9 @@ function expand(list) {
   list.forEach(function(listEl) {
     // Wildcard present? 
     if (listEl.search(/\*/) > -1) {
-      for (file in _ls('', listEl))
+      _ls('', listEl).forEach(function(file) {
         expanded.push(file);
+      });
     } else {
       expanded.push(listEl);
     }
