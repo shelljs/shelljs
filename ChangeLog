@@ -1,3 +1,9 @@
+2012.03.21, Version 0.0.4
+
+* ls() and find() return arrays instead of hashes (Artur Adib)
+* exec({silent:...}) overrides global silent() state (Artur Adib)
+
+
 2012.03.21, Version 0.0.3
 
 * Wildcard bug fix (Artur Adib)
