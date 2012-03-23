@@ -1,4 +1,4 @@
-2012.03.21, Version 0.0.4
+2012.03.22, Version 0.0.4
 
 * ls() and find() return arrays instead of hashes (Artur Adib)
 * exec({silent:...}) overrides global silent() state (Artur Adib)
