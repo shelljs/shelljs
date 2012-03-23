@@ -104,4 +104,18 @@ assert.equal(shell.error(), null);
 var contents = fs.readdirSync('tmp');
 assert.equal(contents.length, 0);
 
+// removal of a read-only file (unforced)
+shell.mkdir('-p', 'tmp/readonly');
+'asdf'.to('tmp/readonly/file1');
+fs.chmodSync('tmp/readonly/file1', 0444); // -r--r--r--
+shell.rm('tmp/readonly/file1');
+assert.equal(fs.existsSync('tmp/readonly/file1'), true);
+
+// removal of a read-only file (forced)
+shell.mkdir('-p', 'tmp/readonly');
+'asdf'.to('tmp/readonly/file2');
+fs.chmodSync('tmp/readonly/file2', 444); // -r--r--r--
+shell.rm('-f', 'tmp/readonly/file2');
+assert.equal(fs.existsSync('tmp/readonly/file2'), false);
+
 shell.exit(123);
