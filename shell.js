@@ -342,9 +342,20 @@ function _rm(options, files) {
 
     // Remove simple file
     if (fs.statSync(file).isFile()) {
-      fs.unlinkSync(file);
+
+      // Do not check for file writing permissions
+      if (options.force) {
+        _unlinkSync(file);
+        return;
+      }
+            
+      if (hasWritePermission(file))
+        _unlinkSync(file);
+      else
+        error('permission denied: '+file, true);
+
       return;
-    }
+    } // simple file
 
     // Path is an existing directory, but no -r flag given
     if (fs.statSync(file).isDirectory() && !options.recursive) {
@@ -354,7 +365,7 @@ function _rm(options, files) {
 
     // Recursively remove existing directory
     if (fs.statSync(file).isDirectory() && options.recursive) {
-      rmdirSyncRecursive(file);
+      rmdirSyncRecursive(file, options.force);
     }
   }); // forEach(file)
 }; // rm
@@ -1025,7 +1036,7 @@ function copyFileSync(srcFile, destFile) {
   try {
     fdw = fs.openSync(destFile, 'w');
   } catch(e) {
-    error('copyFileSync: could not write to dest file ('+destFile+')');
+    error('copyFileSync: could not write to dest file (code='+e.code+'):'+destFile);
   }
 
   while (bytesRead === BUF_LENGTH) {
@@ -1089,28 +1100,42 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //
 // Licensed under the MIT License
 // http://www.opensource.org/licenses/mit-license.php
-function rmdirSyncRecursive(dir) {
+function rmdirSyncRecursive(dir, force) {
   var files;
 
   files = fs.readdirSync(dir);
 
   // Loop through and delete everything in the sub-tree after checking it
   for(var i = 0; i < files.length; i++) {
-    var currFile = fs.lstatSync(dir + "/" + files[i]);
+    var file = dir + "/" + files[i],
+        currFile = fs.lstatSync(file);
 
-    if(currFile.isDirectory()) // Recursive function back to the beginning
-      rmdirSyncRecursive(dir + "/" + files[i]);
+    if(currFile.isDirectory()) { // Recursive function back to the beginning
+      rmdirSyncRecursive(file);
+    }
 
-    else if(currFile.isSymbolicLink()) // Unlink symlinks
-      fs.unlinkSync(dir + "/" + files[i]);
+    else if(currFile.isSymbolicLink()) { // Unlink symlinks
+      if (force || hasWritePermission(file))
+        _unlinkSync(file);
+    }
 
     else // Assume it's a file - perhaps a try/catch belongs here?
-      fs.unlinkSync(dir + "/" + files[i]);
+      if (force || hasWritePermission(file))
+        _unlinkSync(file);
   }
 
   // Now that we know everything in the sub-tree has been deleted, we can delete the main directory. 
   // Huzzah for the shopkeep.
-  return fs.rmdirSync(dir);
+  var result;
+
+  try {
+    result = fs.rmdirSync(dir);
+  } catch(e) {
+    if (e.code === 'ENOTEMPTY')
+      error('directory not empty: ' + dir, true);
+  }
+
+  return result;
 }; // rmdirSyncRecursive
 
 // Recursively creates 'dir'
@@ -1157,7 +1182,7 @@ function writeableDir(dir) {
   var testFile = dir+'/'+randomFileName();
   try {
     fs.writeFileSync(testFile, ' ');
-    fs.unlinkSync(testFile);
+    _unlinkSync(testFile);
     return dir;
   } catch (e) {
     return false;
@@ -1255,9 +1280,9 @@ function execSync(cmd, opts) {
       fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0'); \
     });";
 
-  if (fs.existsSync(scriptFile)) fs.unlinkSync(scriptFile);
-  if (fs.existsSync(stdoutFile)) fs.unlinkSync(stdoutFile);
-  if (fs.existsSync(codeFile)) fs.unlinkSync(codeFile);
+  if (fs.existsSync(scriptFile)) _unlinkSync(scriptFile);
+  if (fs.existsSync(stdoutFile)) _unlinkSync(stdoutFile);
+  if (fs.existsSync(codeFile)) _unlinkSync(codeFile);
 
   fs.writeFileSync(scriptFile, script);
   child.exec('node '+scriptFile, { 
@@ -1280,10 +1305,10 @@ function execSync(cmd, opts) {
 
   var stdout = fs.readFileSync(stdoutFile, 'utf8');
 
-  fs.unlinkSync(scriptFile);
-  fs.unlinkSync(stdoutFile);
-  fs.unlinkSync(codeFile);
-  fs.unlinkSync(sleepFile);
+  _unlinkSync(scriptFile);
+  _unlinkSync(stdoutFile);
+  _unlinkSync(codeFile);
+  _unlinkSync(sleepFile);
 
   // True if successful, false if not
   var obj = {
@@ -1335,4 +1360,34 @@ function extend(target) {
   });
   
   return target;
+}
+
+// Normalizes _unlinkSync() across platforms to match Unix behavior, i.e.
+// file can be unlinked even if it's read-only, see joyent/node#3006
+function _unlinkSync(file) {
+  try {
+    fs.unlinkSync(file);
+  } catch(e) {
+    // Try to override file permission
+    if (e.code === 'EPERM') {
+      fs.chmodSync(file, '0666');
+      fs.unlinkSync(file);
+    } else {
+      throw e;
+    }
+  }
+}
+
+// Hack to determine if file has write permissions for current user
+// Avoids having to check user, group, etc, but it's probably slow
+function hasWritePermission(file) {
+  var writePermission = true;
+  try {
+    var __fd = fs.openSync(file, 'a');
+    fs.closeSync(__fd);
+  } catch(e) {
+    if (e.code === 'EACCES' || e.code === 'EPERM')
+      writePermission = false;
+  }
+  return writePermission;
 }

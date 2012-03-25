@@ -10,7 +10,7 @@ fs.existsSync = fs.existsSync || path.existsSync;
 shell.silent(true);
 
 shell.rm('-rf', 'tmp');
-shell.mkdir('tmp')
+shell.mkdir('tmp');
 
 //
 // Invalids
@@ -107,15 +107,33 @@ assert.equal(contents.length, 0);
 // removal of a read-only file (unforced)
 shell.mkdir('-p', 'tmp/readonly');
 'asdf'.to('tmp/readonly/file1');
-fs.chmodSync('tmp/readonly/file1', 0444); // -r--r--r--
+fs.chmodSync('tmp/readonly/file1', '0444'); // -r--r--r--
 shell.rm('tmp/readonly/file1');
-assert.equal(fs.existsSync('tmp/readonly/file1'), true);
+assert.equal(fs.existsSync('tmp/readonly/file1'), true); // bash's rm always asks before removing read-only files
+                                                         // here we just assume "no"
 
 // removal of a read-only file (forced)
 shell.mkdir('-p', 'tmp/readonly');
 'asdf'.to('tmp/readonly/file2');
-fs.chmodSync('tmp/readonly/file2', 444); // -r--r--r--
+fs.chmodSync('tmp/readonly/file2', '0444'); // -r--r--r--
 shell.rm('-f', 'tmp/readonly/file2');
 assert.equal(fs.existsSync('tmp/readonly/file2'), false);
+
+// removal of a tree containing read-only files (unforced)
+shell.mkdir('-p', 'tmp/tree2');
+'asdf'.to('tmp/tree2/file1');
+'asdf'.to('tmp/tree2/file2');
+fs.chmodSync('tmp/tree2/file1', '0444'); // -r--r--r--
+shell.rm('-r', 'tmp/tree2');
+assert.equal(fs.existsSync('tmp/tree2/file1'), true);
+assert.equal(fs.existsSync('tmp/tree2/file2'), false);
+
+// removal of a tree containing read-only files (forced)
+shell.mkdir('-p', 'tmp/tree');
+'asdf'.to('tmp/tree/file1');
+'asdf'.to('tmp/tree/file2');
+fs.chmodSync('tmp/tree/file1', '0444'); // -r--r--r--
+shell.rm('-rf', 'tmp/tree');
+assert.equal(fs.existsSync('tmp/tree'), false);
 
 shell.exit(123);
