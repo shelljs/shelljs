@@ -349,7 +349,7 @@ function _rm(options, files) {
         return;
       }
             
-      if (hasWritePermission(file))
+      if (isWriteable(file))
         _unlinkSync(file);
       else
         error('permission denied: '+file, true);
@@ -1115,12 +1115,12 @@ function rmdirSyncRecursive(dir, force) {
     }
 
     else if(currFile.isSymbolicLink()) { // Unlink symlinks
-      if (force || hasWritePermission(file))
+      if (force || isWriteable(file))
         _unlinkSync(file);
     }
 
     else // Assume it's a file - perhaps a try/catch belongs here?
-      if (force || hasWritePermission(file))
+      if (force || isWriteable(file))
         _unlinkSync(file);
   }
 
@@ -1380,14 +1380,14 @@ function _unlinkSync(file) {
 
 // Hack to determine if file has write permissions for current user
 // Avoids having to check user, group, etc, but it's probably slow
-function hasWritePermission(file) {
+function isWriteable(file) {
   var writePermission = true;
   try {
     var __fd = fs.openSync(file, 'a');
     fs.closeSync(__fd);
   } catch(e) {
-    if (e.code === 'EACCES' || e.code === 'EPERM')
-      writePermission = false;
+    writePermission = false;
   }
+
   return writePermission;
 }
