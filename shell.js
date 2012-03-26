@@ -90,17 +90,18 @@ function _ls(options, paths) {
 
   var list = [];
 
-  // Conditionally pushes file to list 
+  // Conditionally pushes file to list - returns true if pushed, false otherwise
   // (e.g. prevents hidden files to be included unless explicitly told so)
   function pushFile(file, query) {
     // hidden file?
     if (path.basename(file)[0] === '.') {
       // not explicitly asking for hidden files?
       if (!options.all && !(path.basename(query)[0] === '.' && path.basename(query).length > 1))
-        return;
+        return false;
     }
 
     list.push(file);
+    return true;
   }
 
   paths.forEach(function(p) {
@@ -115,14 +116,17 @@ function _ls(options, paths) {
       if (fs.statSync(p).isDirectory()) {
         // Iterate over p contents
         fs.readdirSync(p).forEach(function(file) {
-          pushFile(file, p);
+          if (!pushFile(file, p))
+            return;
 
-          // Recursive
-          var oldDir = _pwd();
-          _cd('', p);
-          if (fs.statSync(file).isDirectory() && options.recursive)
-            list = list.concat(_ls('-R', file+'/*'));
-          _cd('', oldDir);
+          // Recursive?
+          if (options.recursive) {
+            var oldDir = _pwd();
+            _cd('', p);
+            if (fs.statSync(file).isDirectory())
+              list = list.concat(_ls('-R'+(options.all?'a':''), file+'/*'));
+            _cd('', oldDir);
+          }
         });
         return; // continue
       }
@@ -141,13 +145,16 @@ function _ls(options, paths) {
       // Iterate over directory contents
       fs.readdirSync(dirname).forEach(function(file) {
         if (file.match(new RegExp(regexp))) {
-          pushFile(path.normalize(dirname+'/'+file), basename);
+          if (!pushFile(path.normalize(dirname+'/'+file), basename))
+            return;
 
-          // Recursive
-          var pp = dirname + '/' + file;
-          if (fs.statSync(pp).isDirectory() && options.recursive)
-            list = list.concat(_ls('-R', pp+'/*'));
-        }
+          // Recursive?
+          if (options.recursive) {
+            var pp = dirname + '/' + file;
+            if (fs.statSync(pp).isDirectory())
+              list = list.concat(_ls('-R'+(options.all?'a':''), pp+'/*'));
+          } // recursive
+        } // if file matches
       }); // forEach
       return;
     }
@@ -1126,8 +1133,8 @@ function rmdirSyncRecursive(dir, force) {
 
   // Now that we know everything in the sub-tree has been deleted, we can delete the main directory. 
   // Huzzah for the shopkeep.
-  var result;
 
+  var result;
   try {
     result = fs.rmdirSync(dir);
   } catch(e) {

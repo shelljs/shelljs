@@ -156,7 +156,7 @@ assert.equal(shell.error(), null);
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir/z') > -1, true);
-assert.equal(result.length, 10);
+assert.equal(result.length, 9);
 shell.cd('../..');
 
 // recusive, path given
@@ -165,7 +165,16 @@ assert.equal(shell.error(), null);
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir/z') > -1, true);
-assert.equal(result.length, 10);
+assert.equal(result.length, 9);
+
+// recusive, path given - 'all' flag
+var result = shell.ls('-Ra', 'resources/ls');
+assert.equal(shell.error(), null);
+assert.equal(result.indexOf('a_dir') > -1, true);
+assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
+assert.equal(result.indexOf('a_dir/b_dir/z') > -1, true);
+assert.equal(result.indexOf('a_dir/.hidden_dir/nada') > -1, true);
+assert.equal(result.length, 14);
 
 // recursive, wildcard
 var result = shell.ls('-R', 'resources/ls/*');
@@ -173,6 +182,6 @@ assert.equal(shell.error(), null);
 assert.equal(result.indexOf('resources/ls/a_dir') > -1, true);
 assert.equal(result.indexOf('resources/ls/a_dir/b_dir') > -1, true);
 assert.equal(result.indexOf('resources/ls/a_dir/b_dir/z') > -1, true);
-assert.equal(result.length, 10);
+assert.equal(result.length, 9);
 
 shell.exit(123);
