@@ -100,6 +100,9 @@ function _ls(options, paths) {
         return false;
     }
 
+    if (platform === 'win')
+      file = file.replace(/\\/g, '/');
+
     list.push(file);
     return true;
   }
@@ -192,15 +195,21 @@ function _find(options, paths) {
 
   var list = [];
 
+  function pushFile(file) {
+    if (platform === 'win')
+      file = file.replace(/\\/g, '/');
+    list.push(file);
+  }
+
   // why not simply do ls('-R', paths)? because the output wouldn't give the base dirs
   // to get the base dir in the output, we need instead ls('-R', 'dir/*') for every directory
 
-  paths.forEach(function(file){
-    list.push(file);
+  paths.forEach(function(file) {
+    pushFile(file);
 
     if (fs.statSync(file).isDirectory()) {
       _ls('-Ra', file+'/*').forEach(function(subfile) {
-        list.push(subfile);
+        pushFile(subfile);
       });
     }
   });
