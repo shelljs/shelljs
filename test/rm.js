@@ -136,4 +136,32 @@ fs.chmodSync('tmp/tree/file1', '0444'); // -r--r--r--
 shell.rm('-rf', 'tmp/tree');
 assert.equal(fs.existsSync('tmp/tree'), false);
 
+// removal of a sub-tree containing read-only and hidden files - rm('dir/*')
+shell.mkdir('-p', 'tmp/tree3');
+shell.mkdir('-p', 'tmp/tree3/subtree');
+shell.mkdir('-p', 'tmp/tree3/.hidden');
+'asdf'.to('tmp/tree3/subtree/file');
+'asdf'.to('tmp/tree3/.hidden/file');
+'asdf'.to('tmp/tree3/file');
+fs.chmodSync('tmp/tree3/file', '0444'); // -r--r--r--
+fs.chmodSync('tmp/tree3/subtree/file', '0444'); // -r--r--r--
+fs.chmodSync('tmp/tree3/.hidden/file', '0444'); // -r--r--r--
+shell.cd('tmp/tree3');
+shell.rm('-rf', '*', '.*'); // erase dir contents
+assert.equal(shell.ls().length, 0);
+shell.cd('..');
+
+// removal of a sub-tree containing read-only and hidden files - rm('dir')
+shell.mkdir('-p', 'tmp/tree4');
+shell.mkdir('-p', 'tmp/tree4/subtree');
+shell.mkdir('-p', 'tmp/tree4/.hidden');
+'asdf'.to('tmp/tree4/subtree/file');
+'asdf'.to('tmp/tree4/.hidden/file');
+'asdf'.to('tmp/tree4/file');
+fs.chmodSync('tmp/tree4/file', '0444'); // -r--r--r--
+fs.chmodSync('tmp/tree4/subtree/file', '0444'); // -r--r--r--
+fs.chmodSync('tmp/tree4/.hidden/file', '0444'); // -r--r--r--
+shell.rm('-rf', 'tmp/tree4'); // erase dir contents
+assert.equal(fs.existsSync('tmp/tree4'), false);
+
 shell.exit(123);
