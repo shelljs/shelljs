@@ -595,7 +595,11 @@ function _to(options, file) {
   if (!fs.existsSync( path.dirname(file) ))
       error('no such file or directory: ' + path.dirname(file));
 
-  fs.writeFileSync(file, this.toString(), 'utf8');
+  try {
+    fs.writeFileSync(file, this.toString(), 'utf8');
+  } catch(e) {
+    error('could not write to file (code '+e.code+'): '+file, true);
+  }
 };
 // In the future, when Proxies are default, we can add methods like `.to()` to primitive strings. 
 // For now, this is a dummy function to bookmark places we need such strings
@@ -1118,7 +1122,7 @@ function rmdirSyncRecursive(dir, force) {
         currFile = fs.lstatSync(file);
 
     if(currFile.isDirectory()) { // Recursive function back to the beginning
-      rmdirSyncRecursive(file);
+      rmdirSyncRecursive(file, force);
     }
 
     else if(currFile.isSymbolicLink()) { // Unlink symlinks

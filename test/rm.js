@@ -146,10 +146,8 @@ shell.mkdir('-p', 'tmp/tree3/.hidden');
 fs.chmodSync('tmp/tree3/file', '0444'); // -r--r--r--
 fs.chmodSync('tmp/tree3/subtree/file', '0444'); // -r--r--r--
 fs.chmodSync('tmp/tree3/.hidden/file', '0444'); // -r--r--r--
-shell.cd('tmp/tree3');
-shell.rm('-rf', '*', '.*'); // erase dir contents
-assert.equal(shell.ls().length, 0);
-shell.cd('..');
+shell.rm('-rf', 'tmp/tree3/*', 'tmp/tree3/.*'); // erase dir contents
+assert.equal(shell.ls('tmp/tree3').length, 0);
 
 // removal of a sub-tree containing read-only and hidden files - rm('dir')
 shell.mkdir('-p', 'tmp/tree4');
