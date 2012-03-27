@@ -33,21 +33,32 @@ assert.equal(fs.existsSync('resources/file1'), true);
 // Valids
 //
 
-shell.rm('-f', 'asdfasdf'); // file does not exist, but -f specified
+// file does not exist, but -f specified
+shell.rm('-f', 'asdfasdf');
 assert.equal(shell.error(), null);
 
-shell.cp('-f', 'resources/file1', 'tmp/file1');
+ // simple rm
+ shell.cp('-f', 'resources/file1', 'tmp/file1');
 assert.equal(fs.existsSync('tmp/file1'), true);
-shell.rm('tmp/file1'); // simple rm
+shell.rm('tmp/file1');
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/file1'), false);
 
+// recursive dir removal - small-caps '-r'
 shell.mkdir('-p', 'tmp/a/b/c');
 assert.equal(fs.existsSync('tmp/a/b/c'), true);
-shell.rm('-rf', 'tmp/a'); // recursive dir removal
+shell.rm('-rf', 'tmp/a');
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/a'), false);
 
+// recursive dir removal - capital '-R'
+shell.mkdir('-p', 'tmp/a/b/c');
+assert.equal(fs.existsSync('tmp/a/b/c'), true);
+shell.rm('-Rf', 'tmp/a');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/a'), false);
+
+// wildcard
 shell.cp('-f', 'resources/file*', 'tmp');
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/file1'), true);
