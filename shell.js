@@ -1151,8 +1151,7 @@ function rmdirSyncRecursive(dir, force) {
   try {
     result = fs.rmdirSync(dir);
   } catch(e) {
-    if (e.code === 'ENOTEMPTY')
-      error('directory not empty: ' + dir, true);
+    error('could not remove directory (code '+e.code+'): ' + dir, true);
   }
 
   return result;
