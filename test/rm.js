@@ -58,6 +58,13 @@ shell.rm('-Rf', 'tmp/a');
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/a'), false);
 
+// recursive dir removal - absolute path
+shell.mkdir('-p', 'tmp/a/b/c');
+assert.equal(fs.existsSync('tmp/a/b/c'), true);
+shell.rm('-Rf', path.resolve('./tmp/a'));
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/a'), false);
+
 // wildcard
 shell.cp('-f', 'resources/file*', 'tmp');
 assert.equal(shell.error(), null);
