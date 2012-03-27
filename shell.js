@@ -777,7 +777,7 @@ exports.which = wrap('which', _which);
 //@ like `.to()`.
 function _echo(options) {
   var messages = [].slice.call(arguments, 1);
-  log.apply(this, messages);
+  console.log.apply(this, messages);
   return ShellString(messages.join(' '));
 };
 exports.echo = wrap('echo', _echo);
@@ -868,7 +868,8 @@ exports.error = function() {
 //@ silent(silentState); // restore old silent state
 //@ ```
 //@
-//@ Suppresses all output if `state = true`. Returns state if no arguments given.
+//@ Suppresses all command output if `state = true`, except for `echo()` calls. 
+//@ Returns state if no arguments given.
 exports.silent = function(_state) {
   if (typeof _state !== 'boolean')
     return state.silent;

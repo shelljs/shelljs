@@ -76,6 +76,13 @@ shell.exec('node -e \"console.log(5678);\"', {async:true}, function(code, output
   assert.ok(output === '5678\n' || output === '5678\nundefined\n');  // 'undefined' for v0.4
   asyncFlags[0] = true;
 
+
+  // Most of the following code doesn't really belong here since it tests the sync version.
+  // However there seems to be a race condition with the stdout returned by child.exec()
+  // that makes the tests fail intermittently. So we're keeping them here in a chain
+  // to avoid this race issue
+
+
   //
   // check if stdout is proxied with default silent options (i.e. silent = false)
   //

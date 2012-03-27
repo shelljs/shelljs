@@ -2,7 +2,8 @@ var shell = require('..');
 
 var assert = require('assert'),
     path = require('path'),
-    fs = require('fs');
+    fs = require('fs'),
+    child = require('child_process');
 
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
@@ -20,7 +21,30 @@ shell.mkdir('tmp')
 // Valids
 //
 
-assert.equal(shell.echo('hello world'), 'hello world');
-assert.equal(shell.error(), null);
 
-shell.exit(123);
+// From here on we use child.exec() to intercept the stdout
+
+
+// simple test with defaults
+shell.mkdir('-p', 'tmp');
+var file = 'tmp/tempscript'+Math.random()+'.js',
+    script = 'require(\'../../global.js\'); echo(111);';
+script.to(file);
+child.exec('node '+file, function(err, stdout, stderr) {
+  assert.ok(stdout === '111\n' || stdout === '111\nundefined\n'); // 'undefined' for v0.4
+
+  // simple test with silent(true)
+  shell.mkdir('-p', 'tmp');
+  var file = 'tmp/tempscript'+Math.random()+'.js',
+      script = 'require(\'../../global.js\'); silent(true); echo(555);';
+  script.to(file);
+  child.exec('node '+file, function(err, stdout, stderr) {
+    assert.ok(stdout === '555\n' || stdout === '555\nundefined\n'); // 'undefined' for v0.4
+
+    theEnd();
+  });
+});
+
+function theEnd() {
+  shell.exit(123);
+}
