@@ -1020,7 +1020,7 @@ function wrap(cmd, fn, options) {
     } catch (e) {
       if (!state.error) {
         // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
-        console.log('maker.js: internal error');
+        console.log('shell.js: internal error');
         console.log(e.stack || e);
         process.exit(1);
       }
@@ -1028,7 +1028,7 @@ function wrap(cmd, fn, options) {
         throw e;
     }
 
-    state.currentCmd = 'maker.js';
+    state.currentCmd = 'shell.js';
     return retValue;
   }
 } // wrap
