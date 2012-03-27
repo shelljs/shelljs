@@ -1233,8 +1233,11 @@ function tempDir() {
 
 // Wrapper around exec() to enable echoing output to console in real time
 function execAsync(cmd, opts, callback) {
-  var output = '',
-      silent = 'silent' in opts ? opts.silent : state.silent;
+  var output = '';
+
+  var options = extend({
+    silent: state.silent
+  }, opts);
   
   var c = child.exec(cmd, {env: process.env}, function(err) {
     if (callback) 
@@ -1243,14 +1246,14 @@ function execAsync(cmd, opts, callback) {
 
   c.stdout.on('data', function(data) {
     output += data;
-    if (!silent)
-      write(data);
+    if (!options.silent)
+      process.stdout.write(data);
   });
 
   c.stderr.on('data', function(data) {
     output += data;
-    if (!silent)
-      write(data);
+    if (!options.silent)
+      process.stdout.write(data);
   });
 }
 
@@ -1324,11 +1327,12 @@ function execSync(cmd, opts) {
 
   var stdout = fs.readFileSync(stdoutFile, 'utf8');
 
-  _unlinkSync(scriptFile);
-  _unlinkSync(stdoutFile);
-  _unlinkSync(codeFile);
-  _unlinkSync(sleepFile);
-
+  // No biggie if we can't erase the files now -- they're in a temp dir anyway
+  try { _unlinkSync(scriptFile); } catch(e) {};
+  try { _unlinkSync(stdoutFile); } catch(e) {};
+  try { _unlinkSync(codeFile); } catch(e) {};
+  try { _unlinkSync(sleepFile); } catch(e) {};
+  
   // True if successful, false if not
   var obj = {
     code: code,
