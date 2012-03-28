@@ -809,6 +809,10 @@ exports.env = process.env;
 //@ When in synchronous mode returns the object `{ code:..., output:... }`, containing the program's 
 //@ `output` (stdout + stderr)  and its exit `code`. Otherwise the `callback` gets the 
 //@ arguments `(code, output)`.
+//@
+//@ **Note:** For long-lived processes, it's best to run `exec()` asynchronously as
+//@ the current synchronous implementation uses a lot of CPU. This should be getting
+//@ fixed soon.
 function _exec(command, options, callback) {
   if (!command)
     error('must specify command');
