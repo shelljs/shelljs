@@ -20,18 +20,18 @@ shell.mkdir('tmp')
 // Invalids
 //
 
-shell.echo('hello world').to();
+'hello world'.to();
 assert.ok(shell.error());
 
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-shell.echo('hello world').to('/asdfasdf/file');
+'hello world'.to('/asdfasdf/file');
 assert.ok(shell.error());
 
 //
 // Valids
 //
 
-shell.echo('hello world').to('tmp/to1');
+'hello world'.to('tmp/to1');
 var result = shell.cat('tmp/to1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello world');

@@ -65,6 +65,10 @@ shell.cd('../..');
 // async
 //
 
+// no callback (no need for asyncFlags)
+shell.exec('node -e \"console.log(1234)\"', {async:true});
+assert.equal(shell.error(), null);
+
 var asyncFlags = [];
 
 //
@@ -118,20 +122,10 @@ shell.exec('node -e \"console.log(5678);\"', {async:true}, function(code, output
       child.exec('node '+file, function(err, stdout, stderr) {
         assert.ok(stdout === '222\n' || stdout === '222\nundefined\n'); // 'undefined' for v0.4
         asyncFlags[3] = true;
+        
+        shell.exit(123);  
       });
     });
   });
 });
 assert.equal(shell.error(), null);
-
-// no callback (no need for asyncFlags)
-shell.exec('node -e \"console.log(1234)\"', {async:true});
-assert.equal(shell.error(), null);
-
-setTimeout(function() {
-  asyncFlags.forEach(function(flag) {
-    assert.equal(flag, true);
-  });
-
-  shell.exit(123);  
-}, 2000);
