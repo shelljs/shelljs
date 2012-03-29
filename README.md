@@ -5,7 +5,7 @@
 
 ShellJS is a **portable** (Windows included) implementation of Unix shell commands on top of the Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping its familiar and powerful commands.
 
-The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and is being used at Mozilla's [pdf.js](http://github.com/mozilla/pdf.js).
+The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and is being used at Mozilla's [pdf.js](http://github.com/mozilla/pdf.js), [butter.js](http://github.com/mozilla/butter) and [others](http://search.npmjs.org/#/shelljs).
 
 
 ### Example
