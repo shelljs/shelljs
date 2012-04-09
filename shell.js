@@ -1378,8 +1378,7 @@ function splitPath(p) {
 
 // extend(target_obj, source_obj1 [, source_obj2 ...])
 // Shallow extend, e.g.:
-//    aux.extend({a:1}, {b:2}, {c:3}) 
-//    returns {a:1, b:2, c:3}
+//    extend({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
 function extend(target) {
   var sources = [].slice.call(arguments, 1);
   sources.forEach(function(source) {
