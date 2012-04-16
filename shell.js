@@ -1140,13 +1140,23 @@ function rmdirSyncRecursive(dir, force) {
     }
 
     else if(currFile.isSymbolicLink()) { // Unlink symlinks
-      if (force || isWriteable(file))
-        _unlinkSync(file);
+      if (force || isWriteable(file)) {
+        try {
+          _unlinkSync(file);
+        } catch (e) {
+          error('could not remove file (code '+e.code+'): ' + file, true);
+        }
+      }
     }
 
     else // Assume it's a file - perhaps a try/catch belongs here?
-      if (force || isWriteable(file))
-        _unlinkSync(file);
+      if (force || isWriteable(file)) {
+        try {
+          _unlinkSync(file);
+        } catch (e) {
+          error('could not remove file (code '+e.code+'): ' + file, true);
+        }
+      }
   }
 
   // Now that we know everything in the sub-tree has been deleted, we can delete the main directory. 
