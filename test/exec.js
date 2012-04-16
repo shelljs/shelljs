@@ -88,6 +88,9 @@ shell.exec('node -e \"console.log(5678);\"', {async:true}, function(code, output
 
   // STILL SUFFERING INTERMITTENT FAILURES - COMMENTING OUT UNTIL THIS GETS SORTED OUT
 
+  shell.exit(123);  
+
+
   // //
   // // check if stdout is proxied with default silent options (i.e. silent = false)
   // //
