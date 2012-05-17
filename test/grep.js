@@ -38,6 +38,10 @@ var result = shell.grep('line', 'resources/a.txt');
 assert.equal(shell.error(), null);
 assert.equal(result.split('\n').length - 1, 4);
 
+var result = shell.grep('-v', 'line', 'resources/a.txt');
+assert.equal(shell.error(), null);
+assert.equal(result.split('\n').length - 1, 8);
+
 var result = shell.grep('line one', 'resources/a.txt');
 assert.equal(shell.error(), null);
 assert.equal(result, 'This is line one\n');

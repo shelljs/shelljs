@@ -267,12 +267,16 @@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 Reads an input string from `file` and performs a JavaScript `replace()` on the input
 using the given search regex and replacement string. Returns the new string after replacement.
 
-#### grep(regex_filter, file [, file ...])
-#### grep(regex_filter, file_array)
+#### grep([options ,] regex_filter, file [, file ...])
+#### grep([options ,] regex_filter, file_array)
+Available options:
+
++ `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
 
 Examples:
 
 ```javascript
+grep('-v', 'GLOBAL_VARIABLE', '*.js');
 grep('GLOBAL_VARIABLE', '*.js');
 ```
 
@@ -368,3 +372,4 @@ Returns true if all the given paths exist.
 _This function is being deprecated. Use `silent(false) instead.`_
 
 Enables all output (default)
+
