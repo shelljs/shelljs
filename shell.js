@@ -659,18 +659,26 @@ function _sed(options, regex, replacement, file) {
 exports.sed = wrap('sed', _sed);
 
 //@
-//@ #### grep(regex_filter, file [, file ...])
-//@ #### grep(regex_filter, file_array)
+//@ #### grep([options ,] regex_filter, file [, file ...])
+//@ #### grep([options ,] regex_filter, file_array)
+//@ Available options:
+//@
+//@ + `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
 //@
 //@ Examples:
 //@
 //@ ```javascript
+//@ grep('-v', 'GLOBAL_VARIABLE', '*.js');
 //@ grep('GLOBAL_VARIABLE', '*.js');
 //@ ```
 //@
 //@ Reads input string from given files and returns a string containing all lines of the 
 //@ file that match the given `regex_filter`. Wildcard `*` accepted.
 function _grep(options, regex, files) {
+  options = parseOptions(options, {
+    'v': 'inverse'
+  });
+
   if (!files)
     error('no paths given');
 
@@ -690,7 +698,8 @@ function _grep(options, regex, files) {
     var contents = fs.readFileSync(file, 'utf8'),
         lines = contents.split(/\r*\n/);
     lines.forEach(function(line) {
-      if (line.match(regex))
+      var matched = line.match(regex);
+      if ((options.inverse && !matched) || (!options.inverse && matched))
         grep += line + '\n';
     });
   });
