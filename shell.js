@@ -1392,7 +1392,7 @@ function splitPath(p) {
 function extend(target) {
   var sources = [].slice.call(arguments, 1);
   sources.forEach(function(source) {
-    for (key in source) 
+    for (var key in source)
       target[key] = source[key];
   });
   
