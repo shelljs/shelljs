@@ -1,3 +1,8 @@
+2012.05.24, Version 0.0.5
+
+* grep -v option (Kalervo Kujala)
+* bug fixes (Artur Adib)
+
 2012.03.22, Version 0.0.4
 
 * ls() and find() return arrays instead of hashes (Artur Adib)
