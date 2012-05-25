@@ -8,7 +8,7 @@ ShellJS is a **portable** (Windows included) implementation of Unix shell comman
 The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and is being used at Mozilla's [PDF.js](http://github.com/mozilla/pdf.js), [Butter.js](http://github.com/mozilla/butter) and [others](http://search.npmjs.org/#/shelljs).
 
 
-### Example
+### Examples
 
 #### JavaScript
 
@@ -49,20 +49,20 @@ if not which 'git'
   echo 'Sorry, this script requires git'
   exit 1
 
-// Copy files to release dir
+# Copy files to release dir
 mkdir '-p', 'out/Release'
 cp '-R', 'stuff/*', 'out/Release'
 
-// Replace macros in each .js file
+# Replace macros in each .js file
 cd 'lib'
 for file in ls '*.js'
   sed '-i', 'BUILD_VERSION', 'v0.1.2', file
   sed '-i', /.*REMOVE_THIS_LINE.*\n/, '', file
-  sed '-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, cat('macro.js'), file
+  sed '-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, cat 'macro.js', file
 cd '..'
 
-// Run external tool synchronously
-if exec('git commit -am "Auto-commit"').code != 0
+# Run external tool synchronously
+if (exec 'git commit -am "Auto-commit"').code != 0
   echo 'Error: Git commit failed'
   exit 1
 ```
@@ -82,7 +82,7 @@ shell.echo('hello world');
 
 A convenience script `shelljs/make` is also provided to mimic the behavior of a Unix Makefile. In this case all shell objects are global, and command line arguments will cause the script to execute only the corresponding function in the global `target` object. To avoid redundant calls, target functions are executed only once per script.
 
-Example:
+Example (CoffeeScript):
 
 ```coffeescript
 require 'shelljs/make'
@@ -91,14 +91,12 @@ target.all = ->
   target.bundle()
   target.docs()
 
-// Bundle JS files
 target.bundle = ->
   cd __dirname
   mkdir 'build'
   cd 'lib'
   (cat '*.js').to '../build/output.js'
 
-// Generate docs
 target.docs = ->
   cd __dirname
   mkdir 'docs'
