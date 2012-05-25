@@ -1265,7 +1265,8 @@ function execAsync(cmd, opts, callback) {
   var output = '';
 
   var options = extend({
-    silent: state.silent
+    silent: state.silent,
+    progress: function() {}
   }, opts);
   
   var c = child.exec(cmd, {env: process.env}, function(err) {
@@ -1275,12 +1276,14 @@ function execAsync(cmd, opts, callback) {
 
   c.stdout.on('data', function(data) {
     output += data;
+    options.progress(data);
     if (!options.silent)
       process.stdout.write(data);
   });
 
   c.stderr.on('data', function(data) {
     output += data;
+    options.progress(data);
     if (!options.silent)
       process.stdout.write(data);
   });
