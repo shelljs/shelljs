@@ -10,8 +10,15 @@ The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and is bein
 
 ### Example
 
+#### JavaScript
+
 ```javascript
 require('shelljs/global');
+
+if (!which('git')) {
+  echo('Sorry, this script requires git');
+  exit(1);
+}
 
 // Copy files to release dir
 mkdir('-p', 'out/Release');
@@ -33,6 +40,33 @@ if (exec('git commit -am "Auto-commit"').code !== 0) {
 }
 ```
 
+#### CoffeeScript
+
+```coffeescript
+require 'shelljs/global'
+
+if not which 'git'
+  echo 'Sorry, this script requires git'
+  exit 1
+
+// Copy files to release dir
+mkdir '-p', 'out/Release'
+cp '-R', 'stuff/*', 'out/Release'
+
+// Replace macros in each .js file
+cd 'lib'
+for file in ls '*.js'
+  sed '-i', 'BUILD_VERSION', 'v0.1.2', file
+  sed '-i', /.*REMOVE_THIS_LINE.*\n/, '', file
+  sed '-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, cat('macro.js'), file
+cd '..'
+
+// Run external tool synchronously
+if exec('git commit -am "Auto-commit"').code != 0
+  echo 'Error: Git commit failed'
+  exit 1
+```
+
 ### Global vs. Local
 
 The example above uses the convenience script `shelljs/global` to reduce verbosity. If polluting your global namespace is not desirable, simply require `shelljs`.
@@ -50,36 +84,29 @@ A convenience script `shelljs/make` is also provided to mimic the behavior of a 
 
 Example:
 
-```javascript
-//
-// Example file: make.js
-//
-require('shelljs/make');
+```coffeescript
+require 'shelljs/make'
 
-target.all = function() {
-  target.bundle();
-  target.docs();
-}
+target.all = ->
+  target.bundle()
+  target.docs()
 
 // Bundle JS files
-target.bundle = function() {
-  cd(__dirname);
-  mkdir('build');
-  cd('lib');
-  cat('*.js').to('../build/output.js');
-}
+target.bundle = ->
+  cd __dirname
+  mkdir 'build'
+  cd 'lib'
+  (cat '*.js').to '../build/output.js'
 
 // Generate docs
-target.docs = function() {
-  cd(__dirname);
-  mkdir('docs');
-  cd('lib');
-  ls('*.js').forEach(function(file){
-    var text = grep('//@', file); // extract special comments
-    text.replace('//@', ''); // remove comment tags
-    text.to('docs/my_docs.md');
-  });
-}
+target.docs = ->
+  cd __dirname
+  mkdir 'docs'
+  cd 'lib'
+  for file in ls '*.js'
+    text = grep '//@', file     # extract special comments
+    text.replace '//@', ''      # remove comment tags
+    text.to 'docs/my_docs.md'
 ```
 
 To run the target `all`, call the above script without arguments: `$ node make`. To run the target `docs`: `$ node make docs`, and so on.
@@ -89,10 +116,17 @@ To run the target `all`, call the above script without arguments: `$ node make`.
 Via npm:
 
 ```bash
-$ npm install shelljs
+$ npm install [-g] shelljs
 ```
 
-Or simply copy `shell.js` into your project's directory, and `require()` accordingly.
+If the global option `-g` is specified, the binary `sjs` will be installed. This makes it possible to
+run ShellJS scripts much like any shell script from the command line, i.e. without requiring a `node_modules` folder:
+
+```bash
+$ sjs my_script
+```
+
+You can also just copy `shell.js` into your project's directory, and `require()` accordingly.
 
 
 <!-- 

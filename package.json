@@ -20,6 +20,9 @@
   "scripts": {
     "test": "node scripts/run-tests"
   },
+  "bin": {
+    "sjs": "./bin/sjs"
+  },
   "dependencies": {},
   "devDependencies": {},
   "optionalDependencies": {},
