@@ -322,12 +322,17 @@ Examples:
 
 ```javascript
 var version = exec('node --version', {silent:true}).output;
+
+var child = exec('some_long_running_process', {async:true});
+child.stdout.on('data', function(data) { 
+  /* ... do something with data ... */ 
+});
 ```
 
 Executes the given `command` _synchronously_, unless otherwise specified. 
 When in synchronous mode returns the object `{ code:..., output:... }`, containing the program's 
-`output` (stdout + stderr)  and its exit `code`. Otherwise the `callback` gets the 
-arguments `(code, output)`.
+`output` (stdout + stderr)  and its exit `code`. Otherwise returns the child process object, and
+the `callback` gets the arguments `(code, output)`.
 
 **Note:** For long-lived processes, it's best to run `exec()` asynchronously as
 the current synchronous implementation uses a lot of CPU. This should be getting
@@ -372,4 +377,3 @@ Returns true if all the given paths exist.
 _This function is being deprecated. Use `silent(false) instead.`_
 
 Enables all output (default)
-

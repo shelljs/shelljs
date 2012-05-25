@@ -66,8 +66,9 @@ shell.cd('../..');
 //
 
 // no callback (no need for asyncFlags)
-shell.exec('node -e \"console.log(1234)\"', {async:true});
+var c = shell.exec('node -e \"console.log(1234)\"', {async:true});
 assert.equal(shell.error(), null);
+assert.ok('stdout' in c, 'async exec returns child process object');
 
 var asyncFlags = [];
 
