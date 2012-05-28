@@ -117,11 +117,11 @@ Via npm:
 $ npm install [-g] shelljs
 ```
 
-If the global option `-g` is specified, the binary `sjs` will be installed. This makes it possible to
+If the global option `-g` is specified, the binary `shjs` will be installed. This makes it possible to
 run ShellJS scripts much like any shell script from the command line, i.e. without requiring a `node_modules` folder:
 
 ```bash
-$ sjs my_script
+$ shjs my_script
 ```
 
 You can also just copy `shell.js` into your project's directory, and `require()` accordingly.
