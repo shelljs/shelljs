@@ -5,6 +5,24 @@ ShellJS is a **portable** (Windows included) implementation of Unix shell comman
 The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and is being used at Mozilla's [PDF.js](http://github.com/mozilla/pdf.js), [Butter.js](http://github.com/mozilla/butter) and [others](http://search.npmjs.org/#/shelljs).
 
 
+### Installing
+
+Via npm:
+
+```bash
+$ npm install [-g] shelljs
+```
+
+If the global option `-g` is specified, the binary `shjs` will be installed. This makes it possible to
+run ShellJS scripts much like any shell script from the command line, i.e. without requiring a `node_modules` folder:
+
+```bash
+$ shjs my_script
+```
+
+You can also just copy `shell.js` into your project's directory, and `require()` accordingly.
+
+
 ### Examples
 
 #### JavaScript
@@ -106,22 +124,6 @@ target.docs = ->
 
 To run the target `all`, call the above script without arguments: `$ node make`. To run the target `docs`: `$ node make docs`, and so on.
 
-### Installing
-
-Via npm:
-
-```bash
-$ npm install [-g] shelljs
-```
-
-If the global option `-g` is specified, the binary `shjs` will be installed. This makes it possible to
-run ShellJS scripts much like any shell script from the command line, i.e. without requiring a `node_modules` folder:
-
-```bash
-$ shjs my_script
-```
-
-You can also just copy `shell.js` into your project's directory, and `require()` accordingly.
 
 
 <!-- 
