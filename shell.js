@@ -991,7 +991,7 @@ function parseOptions(str, map) {
 
   // All options are false by default
   var options = {};
-  for (letter in map)
+  for (var letter in map)
     options[map[letter]] = false;
 
   if (!str)
