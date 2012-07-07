@@ -5,7 +5,7 @@ var assert = require('assert'),
     fs = require('fs');
 
 // Node shims for < v0.7
-fs.existsSync = fs.existsSync || path.existsSync;
+fs.existsSync = fs.existsSync || fs.existsSync;
 
 shell.silent(true);
 
