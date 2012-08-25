@@ -28,10 +28,10 @@ shell.mkdir('tmp')
 // simple test with defaults
 shell.mkdir('-p', 'tmp');
 var file = 'tmp/tempscript'+Math.random()+'.js',
-    script = 'require(\'../../global.js\'); echo(111);';
+    script = 'require(\'../../global.js\'); echo("-asdf", "111");'; // test '-' bug (see issue #20)
 script.to(file);
 child.exec('node '+file, function(err, stdout, stderr) {
-  assert.ok(stdout === '111\n' || stdout === '111\nundefined\n'); // 'undefined' for v0.4
+  assert.ok(stdout === '-asdf 111\n' || stdout === '-asdf 111\nundefined\n'); // 'undefined' for v0.4
 
   // simple test with silent(true)
   shell.mkdir('-p', 'tmp');

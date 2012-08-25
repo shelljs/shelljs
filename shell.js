@@ -784,12 +784,12 @@ exports.which = wrap('which', _which);
 //@
 //@ Prints string to stdout, and returns string with additional utility methods
 //@ like `.to()`.
-function _echo(options) {
-  var messages = [].slice.call(arguments, 1);
+function _echo() {
+  var messages = [].slice.call(arguments, 0);
   console.log.apply(this, messages);
   return ShellString(messages.join(' '));
 };
-exports.echo = wrap('echo', _echo);
+exports.echo = _echo; // don't wrap() as it could parse '-options'
 
 //@
 //@ #### exit(code)
