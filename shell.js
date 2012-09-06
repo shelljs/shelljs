@@ -32,7 +32,7 @@ var state = {
 
 
 //@
-//@ #### cd('dir')
+//@ ### cd('dir')
 //@ Changes to directory `dir` for the duration of the script
 function _cd(options, dir) {
   if (!dir)
@@ -49,7 +49,7 @@ function _cd(options, dir) {
 exports.cd = wrap('cd', _cd);
 
 //@
-//@ #### pwd()
+//@ ### pwd()
 //@ Returns the current directory.
 function _pwd(options) {
   var pwd = path.resolve(process.cwd());
@@ -59,8 +59,8 @@ exports.pwd = wrap('pwd', _pwd);
 
 
 //@
-//@ #### ls([options ,] path [,path ...])
-//@ #### ls([options ,] path_array)
+//@ ### ls([options ,] path [,path ...])
+//@ ### ls([options ,] path_array)
 //@ Available options:
 //@
 //@ + `-R`: recursive
@@ -171,8 +171,8 @@ exports.ls = wrap('ls', _ls);
 
 
 //@
-//@ #### find(path [,path ...])
-//@ #### find(path_array)
+//@ ### find(path [,path ...])
+//@ ### find(path_array)
 //@ Examples:
 //@
 //@ ```javascript
@@ -220,8 +220,8 @@ exports.find = wrap('find', _find);
 
 
 //@
-//@ #### cp('[options ,] source [,source ...], dest')
-//@ #### cp('[options ,] source_array, dest')
+//@ ### cp('[options ,] source [,source ...], dest')
+//@ ### cp('[options ,] source_array, dest')
 //@ Available options:
 //@
 //@ + `-f`: force
@@ -314,8 +314,8 @@ function _cp(options, sources, dest) {
 exports.cp = wrap('cp', _cp);
 
 //@
-//@ #### rm([options ,] file [, file ...])
-//@ #### rm([options ,] file_array)
+//@ ### rm([options ,] file [, file ...])
+//@ ### rm([options ,] file_array)
 //@ Available options:
 //@
 //@ + `-f`: force
@@ -388,8 +388,8 @@ function _rm(options, files) {
 exports.rm = wrap('rm', _rm);
 
 //@
-//@ #### mv(source [, source ...], dest')
-//@ #### mv(source_array, dest')
+//@ ### mv(source [, source ...], dest')
+//@ ### mv(source_array, dest')
 //@ Available options:
 //@
 //@ + `f`: force
@@ -462,8 +462,8 @@ function _mv(options, sources, dest) {
 exports.mv = wrap('mv', _mv);
 
 //@
-//@ #### mkdir([options ,] dir [, dir ...])
-//@ #### mkdir([options ,] dir_array)
+//@ ### mkdir([options ,] dir [, dir ...])
+//@ ### mkdir([options ,] dir_array)
 //@ Available options:
 //@
 //@ + `p`: full path (will create intermediate dirs if necessary)
@@ -510,7 +510,7 @@ function _mkdir(options, dirs) {
 exports.mkdir = wrap('mkdir', _mkdir);
 
 //@
-//@ #### test(expression)
+//@ ### test(expression)
 //@ Available expression primaries:
 //@
 //@ + `'-d', 'path'`: true if path is a directory
@@ -546,8 +546,8 @@ exports.test = wrap('test', _test);
 
 
 //@
-//@ #### cat(file [, file ...])
-//@ #### cat(file_array)
+//@ ### cat(file [, file ...])
+//@ ### cat(file_array)
 //@
 //@ Examples:
 //@
@@ -587,7 +587,7 @@ function _cat(options, files) {
 exports.cat = wrap('cat', _cat);
 
 //@
-//@ #### 'string'.to(file)
+//@ ### 'string'.to(file)
 //@
 //@ Examples:
 //@
@@ -618,7 +618,7 @@ function ShellString(str) {
 String.prototype.to = wrap('to', _to);
 
 //@
-//@ #### sed([options ,] search_regex, replace_str, file)
+//@ ### sed([options ,] search_regex, replace_str, file)
 //@ Available options:
 //@
 //@ + `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_
@@ -659,8 +659,8 @@ function _sed(options, regex, replacement, file) {
 exports.sed = wrap('sed', _sed);
 
 //@
-//@ #### grep([options ,] regex_filter, file [, file ...])
-//@ #### grep([options ,] regex_filter, file_array)
+//@ ### grep([options ,] regex_filter, file [, file ...])
+//@ ### grep([options ,] regex_filter, file_array)
 //@ Available options:
 //@
 //@ + `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
@@ -710,7 +710,7 @@ exports.grep = wrap('grep', _grep);
 
 
 //@
-//@ #### which(command)
+//@ ### which(command)
 //@
 //@ Examples:
 //@
@@ -773,7 +773,7 @@ function _which(options, cmd) {
 exports.which = wrap('which', _which);
 
 //@
-//@ #### echo(string [,string ...])
+//@ ### echo(string [,string ...])
 //@
 //@ Examples:
 //@
@@ -792,17 +792,17 @@ function _echo() {
 exports.echo = _echo; // don't wrap() as it could parse '-options'
 
 //@
-//@ #### exit(code)
+//@ ### exit(code)
 //@ Exits the current process with the given exit code.
 exports.exit = process.exit;
 
 //@
-//@ #### env['VAR_NAME']
+//@ ### env['VAR_NAME']
 //@ Object containing environment variables (both getter and setter). Shortcut to process.env.
 exports.env = process.env;
 
 //@
-//@ #### exec(command [, options] [, callback])
+//@ ### exec(command [, options] [, callback])
 //@ Available options (all `false` by default):
 //@
 //@ + `async`: Asynchronous execution. Needs callback.
@@ -861,14 +861,14 @@ exports.exec = wrap('exec', _exec, {notUnix:true});
 
 
 //@
-//@ #### tempdir()
+//@ ### tempdir()
 //@ Searches and returns string containing a writeable, platform-dependent temporary directory.
 //@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 exports.tempdir = wrap('tempdir', tempDir);
 
 
 //@
-//@ #### error()
+//@ ### error()
 //@ Tests if error occurred in the last command. Returns `null` if no error occurred,
 //@ otherwise returns string explaining the error
 exports.error = function() {
@@ -876,7 +876,7 @@ exports.error = function() {
 }
 
 //@
-//@ #### silent([state])
+//@ ### silent([state])
 //@ Example:
 //@
 //@ ```javascript
@@ -904,8 +904,8 @@ exports.silent = function(_state) {
 
 
 //@
-//@ #### exists(path [, path ...])
-//@ #### exists(path_array)
+//@ ### exists(path [, path ...])
+//@ ### exists(path_array)
 //@
 //@ _This function is being deprecated. Use `test()` instead._
 //@
@@ -932,7 +932,7 @@ exports.exists = wrap('exists', _exists);
 
 
 //@
-//@ #### verbose()
+//@ ### verbose()
 //@
 //@ _This function is being deprecated. Use `silent(false) instead.`_
 //@

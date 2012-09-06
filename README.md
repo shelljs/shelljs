@@ -5,7 +5,7 @@ ShellJS is a **portable** (Windows included) implementation of Unix shell comman
 The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and is being used at Mozilla's [PDF.js](http://github.com/mozilla/pdf.js), [Butter.js](http://github.com/mozilla/butter) and [others](http://search.npmjs.org/#/shelljs).
 
 
-### Installing
+## Installing
 
 Via npm:
 
@@ -23,9 +23,9 @@ $ shjs my_script
 You can also just copy `shell.js` into your project's directory, and `require()` accordingly.
 
 
-### Examples
+## Examples
 
-#### JavaScript
+### JavaScript
 
 ```javascript
 require('shelljs/global');
@@ -55,7 +55,7 @@ if (exec('git commit -am "Auto-commit"').code !== 0) {
 }
 ```
 
-#### CoffeeScript
+### CoffeeScript
 
 ```coffeescript
 require 'shelljs/global'
@@ -82,7 +82,7 @@ if (exec 'git commit -am "Auto-commit"').code != 0
   exit 1
 ```
 
-### Global vs. Local
+## Global vs. Local
 
 The example above uses the convenience script `shelljs/global` to reduce verbosity. If polluting your global namespace is not desirable, simply require `shelljs`.
 
@@ -93,7 +93,7 @@ var shell = require('shelljs');
 shell.echo('hello world');
 ```
 
-### Make tool
+## Make tool
 
 A convenience script `shelljs/make` is also provided to mimic the behavior of a Unix Makefile. In this case all shell objects are global, and command line arguments will cause the script to execute only the corresponding function in the global `target` object. To avoid redundant calls, target functions are executed only once per script.
 
@@ -133,20 +133,20 @@ To run the target `all`, call the above script without arguments: `$ node make`.
 -->
 
 
-# Command reference
+## Command reference
 
 
 All commands run synchronously, unless otherwise stated.
 
 
-#### cd('dir')
+### cd('dir')
 Changes to directory `dir` for the duration of the script
 
-#### pwd()
+### pwd()
 Returns the current directory.
 
-#### ls([options ,] path [,path ...])
-#### ls([options ,] path_array)
+### ls([options ,] path [,path ...])
+### ls([options ,] path_array)
 Available options:
 
 + `-R`: recursive
@@ -162,8 +162,8 @@ ls('-R', ['/users/me', '/tmp']); // same as above
 
 Returns array of files in the given path, or in current directory if no path provided.
 
-#### find(path [,path ...])
-#### find(path_array)
+### find(path [,path ...])
+### find(path_array)
 Examples:
 
 ```javascript
@@ -177,8 +177,8 @@ Returns array of all files (however deep) in the given paths.
 The main difference from `ls('-R', path)` is that the resulting file names 
 include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
 
-#### cp('[options ,] source [,source ...], dest')
-#### cp('[options ,] source_array, dest')
+### cp('[options ,] source [,source ...], dest')
+### cp('[options ,] source_array, dest')
 Available options:
 
 + `-f`: force
@@ -194,8 +194,8 @@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 
 Copies files. The wildcard `*` is accepted.
 
-#### rm([options ,] file [, file ...])
-#### rm([options ,] file_array)
+### rm([options ,] file [, file ...])
+### rm([options ,] file_array)
 Available options:
 
 + `-f`: force
@@ -211,8 +211,8 @@ rm(['some_file.txt', 'another_file.txt']); // same as above
 
 Removes files. The wildcard `*` is accepted. 
 
-#### mv(source [, source ...], dest')
-#### mv(source_array, dest')
+### mv(source [, source ...], dest')
+### mv(source_array, dest')
 Available options:
 
 + `f`: force
@@ -227,8 +227,8 @@ mv(['file1', 'file2'], 'dir/'); // same as above
 
 Moves files. The wildcard `*` is accepted.
 
-#### mkdir([options ,] dir [, dir ...])
-#### mkdir([options ,] dir_array)
+### mkdir([options ,] dir [, dir ...])
+### mkdir([options ,] dir_array)
 Available options:
 
 + `p`: full path (will create intermediate dirs if necessary)
@@ -242,7 +242,7 @@ mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 
 Creates directories.
 
-#### test(expression)
+### test(expression)
 Available expression primaries:
 
 + `'-d', 'path'`: true if path is a directory
@@ -257,8 +257,8 @@ if (!test('-f', path)) continue; // skip if it's a regular file
 
 Evaluates expression using the available primaries and returns corresponding value.
 
-#### cat(file [, file ...])
-#### cat(file_array)
+### cat(file [, file ...])
+### cat(file_array)
 
 Examples:
 
@@ -272,7 +272,7 @@ Returns a string containing the given file, or a concatenated string
 containing the files if more than one file is given (a new line character is
 introduced between each file). Wildcard `*` accepted.
 
-#### 'string'.to(file)
+### 'string'.to(file)
 
 Examples:
 
@@ -283,7 +283,7 @@ cat('input.txt').to('output.txt');
 Analogous to the redirection operator `>` in Unix, but works with JavaScript strings (such as
 those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will overwrite any existing file!_
 
-#### sed([options ,] search_regex, replace_str, file)
+### sed([options ,] search_regex, replace_str, file)
 Available options:
 
 + `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_
@@ -298,8 +298,8 @@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 Reads an input string from `file` and performs a JavaScript `replace()` on the input
 using the given search regex and replacement string. Returns the new string after replacement.
 
-#### grep([options ,] regex_filter, file [, file ...])
-#### grep([options ,] regex_filter, file_array)
+### grep([options ,] regex_filter, file [, file ...])
+### grep([options ,] regex_filter, file_array)
 Available options:
 
 + `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
@@ -314,7 +314,7 @@ grep('GLOBAL_VARIABLE', '*.js');
 Reads input string from given files and returns a string containing all lines of the 
 file that match the given `regex_filter`. Wildcard `*` accepted.
 
-#### which(command)
+### which(command)
 
 Examples:
 
@@ -325,7 +325,7 @@ var nodeExec = which('node');
 Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`, and `.bat` extensions.
 Returns string containing the absolute path to the command.
 
-#### echo(string [,string ...])
+### echo(string [,string ...])
 
 Examples:
 
@@ -337,13 +337,13 @@ var str = echo('hello world');
 Prints string to stdout, and returns string with additional utility methods
 like `.to()`.
 
-#### exit(code)
+### exit(code)
 Exits the current process with the given exit code.
 
-#### env['VAR_NAME']
+### env['VAR_NAME']
 Object containing environment variables (both getter and setter). Shortcut to process.env.
 
-#### exec(command [, options] [, callback])
+### exec(command [, options] [, callback])
 Available options (all `false` by default):
 
 + `async`: Asynchronous execution. Needs callback.
@@ -372,15 +372,15 @@ fixed soon.
 ## Non-Unix commands
 
 
-#### tempdir()
+### tempdir()
 Searches and returns string containing a writeable, platform-dependent temporary directory.
 Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 
-#### error()
+### error()
 Tests if error occurred in the last command. Returns `null` if no error occurred,
 otherwise returns string explaining the error
 
-#### silent([state])
+### silent([state])
 Example:
 
 ```javascript
@@ -396,14 +396,14 @@ Returns state if no arguments given.
 ## Deprecated
 
 
-#### exists(path [, path ...])
-#### exists(path_array)
+### exists(path [, path ...])
+### exists(path_array)
 
 _This function is being deprecated. Use `test()` instead._
 
 Returns true if all the given paths exist.
 
-#### verbose()
+### verbose()
 
 _This function is being deprecated. Use `silent(false) instead.`_
 
