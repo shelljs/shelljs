@@ -533,14 +533,27 @@ function _test(options, path) {
     'd': 'directory',
     'f': 'file'
   });
-  if (!options.directory && !options.file)
+
+  var canInterpret = false;
+  for (var key in options)
+    if (options[key] === true) {
+      canInterpret = true;
+      break;
+    }
+
+  if (!canInterpret)
     error('could not interpret expression');
 
+  if (!fs.existsSync(path))
+    return false;
+
+  stats = fs.lstatSync(path);
+
   if (options.directory)
-    return fs.existsSync(path) && fs.statSync(path).isDirectory();
+    return stats.isDirectory();
 
   if (options.file)
-    return fs.existsSync(path) && fs.statSync(path).isFile();
+    return stats.isFile();
 }; // test
 exports.test = wrap('test', _test);
 
