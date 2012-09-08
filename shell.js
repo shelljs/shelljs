@@ -533,6 +533,7 @@ function _test(options, path) {
     'b': 'block',
     'c': 'character',
     'd': 'directory',
+    'e': 'exists',
     'f': 'file',
     'L': 'link',
     'p': 'pipe',
@@ -551,6 +552,9 @@ function _test(options, path) {
 
   if (!fs.existsSync(path))
     return false;
+
+  if (options.exists)
+    return true;
 
   stats = fs.lstatSync(path);
 
