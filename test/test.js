@@ -32,20 +32,52 @@ assert.ok(shell.error());
 // Valids
 //
 
-var result = shell.test('-f', 'resources/file1');
+//exists
+var result = shell.test('-e', 'resources/file1');
 assert.equal(shell.error(), null);
-assert.equal(result, true);
+assert.equal(result, true);//true
 
-var result = shell.test('-d', 'resources/file1');
+var result = shell.test('-e', 'resources/404');
 assert.equal(shell.error(), null);
 assert.equal(result, false);
+
+//directory
+var result = shell.test('-d', 'resources');
+assert.equal(shell.error(), null);
+assert.equal(result, true);//true
 
 var result = shell.test('-f', 'resources');
 assert.equal(shell.error(), null);
 assert.equal(result, false);
 
-var result = shell.test('-d', 'resources');
+var result = shell.test('-L', 'resources');
 assert.equal(shell.error(), null);
-assert.equal(result, true);
+assert.equal(result, false);
+
+//file
+var result = shell.test('-d', 'resources/file1');
+assert.equal(shell.error(), null);
+assert.equal(result, false);
+
+var result = shell.test('-f', 'resources/file1');
+assert.equal(shell.error(), null);
+assert.equal(result, true);//true
+
+var result = shell.test('-L', 'resources/file1');
+assert.equal(shell.error(), null);
+assert.equal(result, false);
+
+//link
+var result = shell.test('-d', 'resources/link');
+assert.equal(shell.error(), null);
+assert.equal(result, false);
+
+var result = shell.test('-f', 'resources/link');
+assert.equal(shell.error(), null);
+assert.equal(result, true);//true
+
+var result = shell.test('-L', 'resources/link');
+assert.equal(shell.error(), null);
+assert.equal(result, true);//true
 
 shell.exit(123);
