@@ -35,7 +35,11 @@ assert.ok(shell.error());
 //exists
 var result = shell.test('-e', 'resources/file1');
 assert.equal(shell.error(), null);
-assert.equal(result, true);
+assert.equal(result, true);//true
+
+var result = shell.test('-e', 'resources/404');
+assert.equal(shell.error(), null);
+assert.equal(result, false);
 
 //directory
 var result = shell.test('-d', 'resources');
