@@ -562,7 +562,10 @@ function _test(options, path) {
   if (options.exists)
     return true;
 
-  stats = fs.lstatSync(path);
+  if (options.link)
+    return fs.lstatSync(path).isSymbolicLink();
+
+  stats = fs.statSync(path);
 
   if (options.block)
     return stats.isBlockDevice();
@@ -575,9 +578,6 @@ function _test(options, path) {
 
   if (options.file)
     return stats.isFile();
-
-  if (options.link)
-    return stats.isSymbolicLink();
 
   if (options.pipe)
     return stats.isFIFO();

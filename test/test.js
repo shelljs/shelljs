@@ -74,7 +74,7 @@ assert.equal(result, false);
 
 var result = shell.test('-f', 'resources/link');
 assert.equal(shell.error(), null);
-assert.equal(result, false);
+assert.equal(result, true);//true
 
 var result = shell.test('-L', 'resources/link');
 assert.equal(shell.error(), null);
