@@ -61,7 +61,7 @@ assert.equal(result.length, 6);
 
 // no args, 'all' option
 shell.cd('resources/ls');
-var result = shell.ls('-a');
+var result = shell.ls('-A');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('file1') > -1, true);
 assert.equal(result.indexOf('file2') > -1, true);
@@ -168,7 +168,7 @@ assert.equal(result.indexOf('a_dir/b_dir/z') > -1, true);
 assert.equal(result.length, 9);
 
 // recusive, path given - 'all' flag
-var result = shell.ls('-Ra', 'resources/ls');
+var result = shell.ls('-RA', 'resources/ls');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
