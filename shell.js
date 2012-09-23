@@ -265,6 +265,15 @@ function _cp(options, sources, dest) {
   if (fs.existsSync(dest) && fs.statSync(dest).isFile() && !options.force)
     error('dest file already exists: ' + dest);
 
+  // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
+  // (see Github issue #15)
+  if (options.recursive) {
+    sources.forEach(function(src, i) {
+      if (src[src.length - 1] === '/')
+        sources[i] += '*';
+    });
+  }
+
   sources = expand(sources);
 
   sources.forEach(function(src) {
@@ -1374,8 +1383,9 @@ function execSync(cmd, opts) {
 
 // Expands wildcards with matching file names. For a given array of file names 'list', returns 
 // another array containing all file names as per ls(list[i]). 
-// For example: expand(['file*.js']) = ['file1.js', 'file2.js', ...]
-// (if the files 'file1.js', 'file2.js', etc, exist in the current dir)
+// For example:
+//   expand(['file*.js']) = ['file1.js', 'file2.js', ...]
+//   (if the files 'file1.js', 'file2.js', etc, exist in the current dir)
 function expand(list) {
   var expanded = [];
   list.forEach(function(listEl) {

@@ -93,6 +93,7 @@ shell.cp('-f', 'resources/file2', 'tmp/file3'); // file exists, but -f specified
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/file3'), true);
 
+// wildcard
 shell.rm('tmp/file1', 'tmp/file2');
 shell.cp('resources/file*', 'tmp');
 assert.equal(shell.error(), null);
@@ -104,6 +105,12 @@ shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
 assert.equal(JSON.stringify(shell.ls('-R', 'resources/cp')), JSON.stringify(shell.ls('-R', 'tmp/cp')));
+
+//recursive, nothing exists, source ends in '/' (see Github issue #15)
+shell.rm('-rf', 'tmp/*');
+shell.cp('-R', 'resources/cp/', 'tmp/');
+assert.equal(shell.error(), null);
+assert.equal(JSON.stringify(shell.ls('-R', 'resources/cp')), JSON.stringify(shell.ls('-R', 'tmp')));
 
 //recursive, everything exists, no force flag
 shell.rm('-rf', 'tmp/*')
