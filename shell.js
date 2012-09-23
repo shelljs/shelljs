@@ -64,7 +64,7 @@ exports.pwd = wrap('pwd', _pwd);
 //@ Available options:
 //@
 //@ + `-R`: recursive
-//@ + `-a`: all files (include files beginning with `.`)
+//@ + `-A`: all files (include files beginning with `.`)
 //@
 //@ Examples:
 //@
@@ -78,7 +78,7 @@ exports.pwd = wrap('pwd', _pwd);
 function _ls(options, paths) {
   options = parseOptions(options, {
     'R': 'recursive',
-    'a': 'all'
+    'A': 'all'
   });
 
   if (!paths)
@@ -127,7 +127,7 @@ function _ls(options, paths) {
             var oldDir = _pwd();
             _cd('', p);
             if (fs.statSync(file).isDirectory())
-              list = list.concat(_ls('-R'+(options.all?'a':''), file+'/*'));
+              list = list.concat(_ls('-R'+(options.all?'A':''), file+'/*'));
             _cd('', oldDir);
           }
         });
@@ -155,7 +155,7 @@ function _ls(options, paths) {
           if (options.recursive) {
             var pp = dirname + '/' + file;
             if (fs.statSync(pp).isDirectory())
-              list = list.concat(_ls('-R'+(options.all?'a':''), pp+'/*'));
+              list = list.concat(_ls('-R'+(options.all?'A':''), pp+'/*'));
           } // recursive
         } // if file matches
       }); // forEach
@@ -208,7 +208,7 @@ function _find(options, paths) {
     pushFile(file);
 
     if (fs.statSync(file).isDirectory()) {
-      _ls('-Ra', file+'/*').forEach(function(subfile) {
+      _ls('-RA', file+'/*').forEach(function(subfile) {
         pushFile(subfile);
       });
     }
