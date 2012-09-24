@@ -583,7 +583,7 @@ function _test(options, path) {
   if (options.link)
     return fs.lstatSync(path).isSymbolicLink();
 
-  stats = fs.statSync(path);
+  var stats = fs.statSync(path);
 
   if (options.block)
     return stats.isBlockDevice();
