@@ -150,7 +150,7 @@ Returns the current directory.
 Available options:
 
 + `-R`: recursive
-+ `-a`: all files (include files beginning with `.`)
++ `-A`: all files (include files beginning with `.`)
 
 Examples:
 
@@ -245,8 +245,14 @@ Creates directories.
 ### test(expression)
 Available expression primaries:
 
++ `'-b', 'path'`: true if path is a block device
++ `'-c', 'path'`: true if path is a character device
 + `'-d', 'path'`: true if path is a directory
++ `'-e', 'path'`: true if path exists
 + `'-f', 'path'`: true if path is a regular file
++ `'-L', 'path'`: true if path is a symboilc link
++ `'-p', 'path'`: true if path is a pipe (FIFO)
++ `'-S', 'path'`: true if path is a socket
 
 Examples:
 

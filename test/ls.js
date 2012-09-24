@@ -74,6 +74,21 @@ assert.equal(result.indexOf('.hidden_dir') > -1, true);
 assert.equal(result.length, 8);
 shell.cd('../..');
 
+// no args, 'all' option
+shell.cd('resources/ls');
+var result = shell.ls('-a'); // (deprecated) backwards compatibility test
+assert.equal(shell.error(), null);
+assert.equal(result.indexOf('file1') > -1, true);
+assert.equal(result.indexOf('file2') > -1, true);
+assert.equal(result.indexOf('file1.js') > -1, true);
+assert.equal(result.indexOf('file2.js') > -1, true);
+assert.equal(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1, true);
+assert.equal(result.indexOf('a_dir') > -1, true);
+assert.equal(result.indexOf('.hidden_file') > -1, true);
+assert.equal(result.indexOf('.hidden_dir') > -1, true);
+assert.equal(result.length, 8);
+shell.cd('../..');
+
 // wildcard, simple
 var result = shell.ls('resources/ls/*');
 assert.equal(shell.error(), null);

@@ -64,7 +64,7 @@ exports.pwd = wrap('pwd', _pwd);
 //@ Available options:
 //@
 //@ + `-R`: recursive
-//@ + `-A`: all files (include files beginning with `.`)
+//@ + `-A`: all files (include files beginning with `.`, except for `.` and `..`)
 //@
 //@ Examples:
 //@
@@ -78,8 +78,17 @@ exports.pwd = wrap('pwd', _pwd);
 function _ls(options, paths) {
   options = parseOptions(options, {
     'R': 'recursive',
-    'A': 'all'
+    'A': 'all',
+    'a': 'all_deprecated'
   });
+
+  if (options.all_deprecated) {
+    // We won't support the -a option as it's hard to image why it's useful
+    // (it includes '.' and '..' in addition to '.*' files)
+    // For backwards compatibility we'll dump a deprecated message and proceed as before
+    log('ls: Option -a is deprecated. Use -A instead');
+    options.all = true;
+  }
 
   if (!paths)
     paths = ['.'];
