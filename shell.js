@@ -866,7 +866,7 @@ exports.env = process.env;
 //@ ### exec(command [, options] [, callback])
 //@ Available options (all `false` by default):
 //@
-//@ + `async`: Asynchronous execution. Needs callback.
+//@ + `async`: Asynchronous execution. Defaults to true if a callback is provided.
 //@ + `silent`: Do not echo program output to console.
 //@
 //@ Examples:
@@ -877,6 +877,11 @@ exports.env = process.env;
 //@ var child = exec('some_long_running_process', {async:true});
 //@ child.stdout.on('data', function(data) { 
 //@   /* ... do something with data ... */ 
+//@ });
+//@
+//@ exec('some_long_running_process', function(code, output) {
+//@   console.log('Exit code:', code);
+//@   console.log('Program output:', output);
 //@ });
 //@ ```
 //@
@@ -894,7 +899,7 @@ function _exec(command, options, callback) {
 
   if (typeof options === 'function') {
     callback = options;
-    options = {};
+    options = { async: true };
   }
 
   options = extend({

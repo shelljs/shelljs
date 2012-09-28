@@ -150,7 +150,7 @@ Returns the current directory.
 Available options:
 
 + `-R`: recursive
-+ `-A`: all files (include files beginning with `.`)
++ `-A`: all files (include files beginning with `.`, except for `.` and `..`)
 
 Examples:
 
@@ -352,7 +352,7 @@ Object containing environment variables (both getter and setter). Shortcut to pr
 ### exec(command [, options] [, callback])
 Available options (all `false` by default):
 
-+ `async`: Asynchronous execution. Needs callback.
++ `async`: Asynchronous execution. Defaults to true if a callback is provided.
 + `silent`: Do not echo program output to console.
 
 Examples:
@@ -363,6 +363,11 @@ var version = exec('node --version', {silent:true}).output;
 var child = exec('some_long_running_process', {async:true});
 child.stdout.on('data', function(data) { 
   /* ... do something with data ... */ 
+});
+
+exec('some_long_running_process', function(code, output) {
+  console.log('Exit code:', code);
+  console.log('Program output:', output);
 });
 ```
 
