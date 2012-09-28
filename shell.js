@@ -229,8 +229,8 @@ exports.find = wrap('find', _find);
 
 
 //@
-//@ ### cp('[options ,] source [,source ...], dest')
-//@ ### cp('[options ,] source_array, dest')
+//@ ### cp([options ,] source [,source ...], dest)
+//@ ### cp([options ,] source_array, dest)
 //@ Available options:
 //@
 //@ + `-f`: force

@@ -177,8 +177,8 @@ Returns array of all files (however deep) in the given paths.
 The main difference from `ls('-R', path)` is that the resulting file names 
 include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
 
-### cp('[options ,] source [,source ...], dest')
-### cp('[options ,] source_array, dest')
+### cp([options ,] source [,source ...], dest)
+### cp([options ,] source_array, dest)
 Available options:
 
 + `-f`: force
