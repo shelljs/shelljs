@@ -1,6 +1,6 @@
 {
   "name": "shelljs",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": "Artur Adib <aadib@mozilla.com>",
   "description": "Portable Unix shell commands for Node.js",
   "keywords": [
