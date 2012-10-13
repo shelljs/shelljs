@@ -2,8 +2,15 @@
 
 ShellJS is a portable (**Windows included**) implementation of Unix shell commands on top of the Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping its familiar and powerful commands. You can also install it globally so you can run it from outside Node projects - say goodbye to those gnarly Bash scripts!
 
-The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and is being used at Mozilla's [PDF.js](http://github.com/mozilla/pdf.js), [Butter.js](http://github.com/mozilla/butter) and [others](http://search.npmjs.org/#/shelljs).
+The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and battled-tested in projects like:
 
++ [PDF.js](http://github.com/mozilla/pdf.js) - Firefox's next-gen PDF reader
++ [Firebug](http://getfirebug.com/) - Firefox's infamous debugger
++ [JSHint](http://jshint.com) - Most popular JavaScript linter
++ [Yeoman](http://yeoman.io/) - Web application stack and development tool
++ [Deployd.com](http://deployd.com) - Open source PaaS for quick API backend generation
+
+and [many more](https://npmjs.org/browse/depended/shelljs).
 
 ## Installing
 
