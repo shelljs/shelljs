@@ -24,15 +24,13 @@ if (!test('-f', scriptName)) {
   process.exit(1);
 }
 
-
 args = process.argv.slice(3);
 
 for (var i = 0, l = args.length; i < l; i++) {
   if (args[i][0] !== "-"){
-    args[i][0] = '"' + args[i][0] + '"';
+    args[i] = '"' + args[i] + '"'; // fixes arguments with multiple words
   }
 }
-
 
 if (scriptName.match(/\.coffee$/)) {
   //
