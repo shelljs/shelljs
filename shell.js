@@ -1045,8 +1045,10 @@ function error(msg, _continue) {
   
   log(state.error);
 
-  if (!_continue)
+  if (!_continue) {
+    state.fatal = true;
     throw '';
+  }
 }
 
 // Returns {'alice': true, 'bob': false} when passed:
