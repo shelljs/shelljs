@@ -1,5 +1,7 @@
+var shell = require('./shell');
 require('./global');
 
+shell.config.exitOnErrors = true;
 global.target = {};
 
 // This ensures we only execute the script targets after the entire script has

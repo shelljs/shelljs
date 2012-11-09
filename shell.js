@@ -16,6 +16,10 @@ var fs = require('fs'),
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
 
+var config = exports.config = {
+  exitOnErrors: false
+};
+
 var state = {
       error: null,
       fatal: false,
@@ -1046,7 +1050,9 @@ function error(msg, _continue) {
   log(state.error);
 
   if (!_continue) {
-    state.fatal = true;
+    if (config.exitOnErrors) {
+      state.fatal = true;
+    }
     throw '';
   }
 }
