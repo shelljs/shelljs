@@ -1,4 +1,5 @@
 require('./global');
+config.fatal = true;
 
 global.target = {};
 

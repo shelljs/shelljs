@@ -7,7 +7,7 @@ var assert = require('assert'),
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
 
-shell.silent(true);
+shell.config.silent = true;
 
 shell.rm('-rf', 'tmp');
 shell.mkdir('tmp')

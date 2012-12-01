@@ -8,7 +8,7 @@ var assert = require('assert'),
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
 
-shell.silent(true);
+shell.config.silent = true;
 
 function numLines(str) {
   return typeof str === 'string' ? str.match(/\n/g).length : 0;
@@ -36,7 +36,7 @@ child.exec('node '+file, function(err, stdout, stderr) {
   // simple test with silent(true)
   shell.mkdir('-p', 'tmp');
   var file = 'tmp/tempscript'+Math.random()+'.js',
-      script = 'require(\'../../global.js\'); silent(true); echo(555);';
+      script = 'require(\'../../global.js\'); config.silent=true; echo(555);';
   script.to(file);
   child.exec('node '+file, function(err, stdout, stderr) {
     assert.ok(stdout === '555\n' || stdout === '555\nundefined\n'); // 'undefined' for v0.4

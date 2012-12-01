@@ -387,6 +387,33 @@ the `callback` gets the arguments `(code, output)`.
 the current synchronous implementation uses a lot of CPU. This should be getting
 fixed soon.
 
+## Configuration
+
+
+### config.silent
+Example:
+
+```javascript
+var silentState = config.silent; // save old silent state
+config.silent = true;
+/* ... */
+config.silent = silentState; // restore old silent state
+```
+
+Suppresses all command output if `true`, except for `echo()` calls.
+Default is `false`.
+
+### config.fatal
+Example:
+
+```javascript
+config.fatal = true;
+cp('this_file_does_not_exist', '/dev/null'); // dies here
+/* more commands... */
+```
+
+If `true` the script will die on errors. Default is `false`.
+
 ## Non-Unix commands
 
 
@@ -397,32 +424,3 @@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.ht
 ### error()
 Tests if error occurred in the last command. Returns `null` if no error occurred,
 otherwise returns string explaining the error
-
-### silent([state])
-Example:
-
-```javascript
-var silentState = silent();
-silent(true);
-/* ... */
-silent(silentState); // restore old silent state
-```
-
-Suppresses all command output if `state = true`, except for `echo()` calls. 
-Returns state if no arguments given.
-
-## Deprecated
-
-
-### exists(path [, path ...])
-### exists(path_array)
-
-_This function is being deprecated. Use `test()` instead._
-
-Returns true if all the given paths exist.
-
-### verbose()
-
-_This function is being deprecated. Use `silent(false) instead.`_
-
-Enables all output (default)

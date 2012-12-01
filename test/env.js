@@ -2,7 +2,7 @@ var shell = require('..');
 
 var assert = require('assert');
 
-shell.silent(true);
+shell.config.silent = true;
 
 shell.rm('-rf', 'tmp');
 shell.mkdir('tmp')

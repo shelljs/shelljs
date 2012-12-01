@@ -5,7 +5,7 @@ var assert = require('assert'),
     fs = require('fs'),
     child = require('child_process');
 
-shell.silent(true);
+shell.config.silent = true;
 
 function numLines(str) {
   return typeof str === 'string' ? str.match(/\n/g).length : 0;

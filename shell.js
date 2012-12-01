@@ -16,10 +16,13 @@ var fs = require('fs'),
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
 
+var config = {
+  silent: false,
+  fatal: false
+}
+
 var state = {
       error: null,
-      fatal: false,
-      silent: false,
       currentCmd: 'shell.js',
       tempDir: null
     },
@@ -903,7 +906,7 @@ function _exec(command, options, callback) {
   }
 
   options = extend({
-    silent: state.silent,
+    silent: config.silent,
     async: false
   }, options);
 
@@ -913,6 +916,43 @@ function _exec(command, options, callback) {
     return execSync(command, options);
 };
 exports.exec = wrap('exec', _exec, {notUnix:true});
+
+
+
+
+//@
+//@ ## Configuration
+//@
+
+
+
+exports.config = config;
+
+//@
+//@ ### config.silent
+//@ Example:
+//@
+//@ ```javascript
+//@ var silentState = config.silent; // save old silent state
+//@ config.silent = true;
+//@ /* ... */
+//@ config.silent = silentState; // restore old silent state
+//@ ```
+//@
+//@ Suppresses all command output if `true`, except for `echo()` calls.
+//@ Default is `false`.
+
+//@
+//@ ### config.fatal
+//@ Example:
+//@
+//@ ```javascript
+//@ config.fatal = true;
+//@ cp('this_file_does_not_exist', '/dev/null'); // dies here
+//@ /* more commands... */
+//@ ```
+//@
+//@ If `true` the script will die on errors. Default is `false`.
 
 
 
@@ -941,79 +981,6 @@ exports.error = function() {
   return state.error;
 }
 
-//@
-//@ ### silent([state])
-//@ Example:
-//@
-//@ ```javascript
-//@ var silentState = silent();
-//@ silent(true);
-//@ /* ... */
-//@ silent(silentState); // restore old silent state
-//@ ```
-//@
-//@ Suppresses all command output if `state = true`, except for `echo()` calls. 
-//@ Returns state if no arguments given.
-exports.silent = function(_state) {
-  if (typeof _state !== 'boolean')
-    return state.silent;
-  
-  state.silent = _state;
-}
-
-
-//@
-//@ ## Deprecated
-//@
-
-
-
-
-//@
-//@ ### exists(path [, path ...])
-//@ ### exists(path_array)
-//@
-//@ _This function is being deprecated. Use `test()` instead._
-//@
-//@ Returns true if all the given paths exist.
-function _exists(options, paths) {
-  deprecate('exists', 'Use test() instead.');
-
-  if (!paths)
-    error('no paths given');
-
-  if (typeof paths === 'string')
-    paths = [].slice.call(arguments, 1);
-  // if it's array leave it as it is
-
-  var exists = true;
-  paths.forEach(function(p) {
-    if (!fs.existsSync(p))
-      exists = false;
-  });
-
-  return exists;
-};
-exports.exists = wrap('exists', _exists);
-
-
-//@
-//@ ### verbose()
-//@
-//@ _This function is being deprecated. Use `silent(false) instead.`_
-//@
-//@ Enables all output (default)
-exports.verbose = function() {
-  deprecate('verbose', 'Use silent(false) instead.');
-
-  state.silent = false;
-}
-
-
-
-
-
-
 
 
 
@@ -1024,7 +991,7 @@ exports.verbose = function() {
 //
 
 function log() {
-  if (!state.silent)
+  if (!config.silent)
     console.log.apply(this, arguments);
 }
 
@@ -1033,17 +1000,20 @@ function deprecate(what, msg) {
 }
 
 function write(msg) {
-  if (!state.silent)
+  if (!config.silent)
     process.stdout.write(msg);
 }
 
-// Shows error message. Throws unless '_continue = true'.
+// Shows error message. Throws unless _continue or config.fatal are true
 function error(msg, _continue) {
   if (state.error === null)
     state.error = '';
   state.error += state.currentCmd + ': ' + msg + '\n';
   
   log(state.error);
+
+  if (config.fatal)
+    process.exit(1);
 
   if (!_continue)
     throw '';
@@ -1109,7 +1079,7 @@ function wrap(cmd, fn, options) {
         console.log(e.stack || e);
         process.exit(1);
       }
-      if (state.fatal)
+      if (config.fatal)
         throw e;
     }
 
@@ -1331,7 +1301,7 @@ function execAsync(cmd, opts, callback) {
   var output = '';
 
   var options = extend({
-    silent: state.silent
+    silent: config.silent
   }, opts);
   
   var c = child.exec(cmd, {env: process.env}, function(err) {
@@ -1366,7 +1336,7 @@ function execSync(cmd, opts) {
       sleepFile = path.resolve(tempDir()+'/'+randomFileName());
 
   var options = extend({
-    silent: state.silent
+    silent: config.silent
   }, opts);
 
   var previousStdoutContent = '';
