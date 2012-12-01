@@ -3,6 +3,7 @@ var shell = require('..');
 var assert = require('assert'),
     path = require('path'),
     fs = require('fs'),
+    util = require('util'),
     child = require('child_process');
 
 shell.config.silent = true;
@@ -60,6 +61,12 @@ assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result.output, 'node_script_1234\n');
 shell.cd('../..');
+
+// check quotes escaping
+var result = shell.exec( util.format('node -e "console.log(%s);"', "\\\"\\'+\\'_\\'+\\'\\\"") );
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result.output, "'+'_'+'\n");
 
 //
 // async
