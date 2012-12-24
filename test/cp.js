@@ -110,16 +110,16 @@ assert.equal(shell.ls('-R', 'resources/cp') + '', shell.ls('-R', 'tmp/cp') + '')
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp/', 'tmp/');
 assert.equal(shell.error(), null);
-assert.equal(JSON.stringify(shell.ls('-R', 'resources/cp')), JSON.stringify(shell.ls('-R', 'tmp')));
+assert.equal(shell.ls('-R', 'resources/cp') + '', shell.ls('-R', 'tmp') + '');
 
 //recursive, everything exists, no force flag
-shell.rm('-rf', 'tmp/*')
+shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
 shell.cp('-R', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null); // crash test only
 
 //recursive, everything exists, with force flag
-shell.rm('-rf', 'tmp/*')
+shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
 'changing things around'.to('tmp/cp/dir_a/z');
 assert.notEqual(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); // before cp
@@ -127,29 +127,17 @@ shell.cp('-Rf', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
 assert.equal(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); // after cp
 
-// arturadib/shelljs#44
-shell.rm('-rf', 'tmp/*')
-shell.cp('-r', 'resources/issue44/*', 'tmp/dir2/')
+//recursive, creates dest dir since it's only one level deep (see Github issue #44)
+shell.rm('-rf', 'tmp/*');
+shell.cp('-r', 'resources/issue44/*', 'tmp/dir2');
 assert.equal(shell.error(), null);
-assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '')
-assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'))
+assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '');
+assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'));
 
-shell.rm('-rf', 'tmp/*')
-shell.cp('-r', 'resources/issue44', 'tmp/dir2')
-assert.equal(shell.error(), null);
-assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '')
-assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'))
-
-shell.rm('-rf', 'tmp/*')
-shell.cp('-r', 'resources/issue44/', 'tmp/dir2/')
-assert.equal(shell.error(), null);
-assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '')
-assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'))
-
-shell.rm('-rf', 'tmp/*')
-shell.cp('-R', 'resources/issue44/', 'tmp/dir2')
-assert.equal(shell.error(), null);
-assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '')
-assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'))
+//recursive, does *not* create dest dir since it's too deep (see Github issue #44)
+shell.rm('-rf', 'tmp/*');
+shell.cp('-r', 'resources/issue44/*', 'tmp/dir2/dir3');
+assert.ok(shell.error());
+assert.equal(fs.existsSync('tmp/dir2'), false);
 
 shell.exit(123);

@@ -31,7 +31,7 @@ var state = {
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
-//@ 
+//@
 
 
 //@
@@ -126,7 +126,7 @@ function _ls(options, paths) {
         pushFile(p, p);
         return; // continue
       }
-      
+
       // Simple dir?
       if (fs.statSync(p).isDirectory()) {
         // Iterate over p contents
@@ -195,7 +195,7 @@ exports.ls = wrap('ls', _ls);
 //@
 //@ Returns array of all files (however deep) in the given paths.
 //@
-//@ The main difference from `ls('-R', path)` is that the resulting file names 
+//@ The main difference from `ls('-R', path)` is that the resulting file names
 //@ include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
 function _find(options, paths) {
   if (!paths)
@@ -277,19 +277,20 @@ function _cp(options, sources, dest) {
   if (fs.existsSync(dest) && fs.statSync(dest).isFile() && !options.force)
     error('dest file already exists: ' + dest);
 
-  // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
-  // (see Github issue #15)
-  // Also make sure that src should end in "/*" in case it's a dir and dest
-  // doesn't exist yet (see Github issue #44)
   if (options.recursive) {
+    // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
+    // (see Github issue #15)
     sources.forEach(function(src, i) {
-      if (src.match(/\/\*?$/) || (_test('-d', src) && !_test('-d', dest))) {
-        sources[i] = src.replace(/\/\*?$/, '') + '/*';
-      }
+      if (src[src.length - 1] === '/')
+        sources[i] += '*';
     });
 
-    // Recursively create destination directory
-    _mkdir('-p', dest);
+    // Create dest
+    try {
+      fs.mkdirSync(dest, 0777);
+    } catch (e) {
+      // like Unix's cp, keep going even if we can't create dest dir
+    }
   }
 
   sources = expand(sources);
@@ -356,7 +357,7 @@ exports.cp = wrap('cp', _cp);
 //@ rm(['some_file.txt', 'another_file.txt']); // same as above
 //@ ```
 //@
-//@ Removes files. The wildcard `*` is accepted. 
+//@ Removes files. The wildcard `*` is accepted.
 function _rm(options, files) {
   options = parseOptions(options, {
     'f': 'force',
@@ -391,7 +392,7 @@ function _rm(options, files) {
         _unlinkSync(file);
         return;
       }
-            
+
       if (isWriteable(file))
         _unlinkSync(file);
       else
@@ -680,7 +681,7 @@ function _to(options, file) {
     error('could not write to file (code '+e.code+'): '+file, true);
   }
 };
-// In the future, when Proxies are default, we can add methods like `.to()` to primitive strings. 
+// In the future, when Proxies are default, we can add methods like `.to()` to primitive strings.
 // For now, this is a dummy function to bookmark places we need such strings
 function ShellString(str) {
   return str;
@@ -742,7 +743,7 @@ exports.sed = wrap('sed', _sed);
 //@ grep('GLOBAL_VARIABLE', '*.js');
 //@ ```
 //@
-//@ Reads input string from given files and returns a string containing all lines of the 
+//@ Reads input string from given files and returns a string containing all lines of the
 //@ file that match the given `regex_filter`. Wildcard `*` accepted.
 function _grep(options, regex, files) {
   options = parseOptions(options, {
@@ -831,7 +832,7 @@ function _which(options, cmd) {
       } // if 'win'
     });
   }
-    
+
   // Command not found anywhere?
   if (!fs.existsSync(cmd) && !where)
     return null;
@@ -884,8 +885,8 @@ exports.env = process.env;
 //@ var version = exec('node --version', {silent:true}).output;
 //@
 //@ var child = exec('some_long_running_process', {async:true});
-//@ child.stdout.on('data', function(data) { 
-//@   /* ... do something with data ... */ 
+//@ child.stdout.on('data', function(data) {
+//@   /* ... do something with data ... */
 //@ });
 //@
 //@ exec('some_long_running_process', function(code, output) {
@@ -894,8 +895,8 @@ exports.env = process.env;
 //@ });
 //@ ```
 //@
-//@ Executes the given `command` _synchronously_, unless otherwise specified. 
-//@ When in synchronous mode returns the object `{ code:..., output:... }`, containing the program's 
+//@ Executes the given `command` _synchronously_, unless otherwise specified.
+//@ When in synchronous mode returns the object `{ code:..., output:... }`, containing the program's
 //@ `output` (stdout + stderr)  and its exit `code`. Otherwise returns the child process object, and
 //@ the `callback` gets the arguments `(code, output)`.
 //@
@@ -1015,7 +1016,7 @@ function error(msg, _continue) {
   if (state.error === null)
     state.error = '';
   state.error += state.currentCmd + ': ' + msg + '\n';
-  
+
   log(state.error);
 
   if (config.fatal)
@@ -1215,7 +1216,7 @@ function rmdirSyncRecursive(dir, force) {
       }
   }
 
-  // Now that we know everything in the sub-tree has been deleted, we can delete the main directory. 
+  // Now that we know everything in the sub-tree has been deleted, we can delete the main directory.
   // Huzzah for the shopkeep.
 
   var result;
@@ -1298,7 +1299,7 @@ function tempDir() {
                   writeableDir('/var/tmp') ||
                   writeableDir('/usr/tmp') ||
                   writeableDir('.'); // last resort
-  
+
   return state.tempDir;
 }
 
@@ -1309,9 +1310,9 @@ function execAsync(cmd, opts, callback) {
   var options = extend({
     silent: config.silent
   }, opts);
-  
+
   var c = child.exec(cmd, {env: process.env}, function(err) {
-    if (callback) 
+    if (callback)
       callback(err ? err.code : 0, output);
   });
 
@@ -1333,7 +1334,7 @@ function execAsync(cmd, opts, callback) {
 // Hack to run child_process.exec() synchronously (sync avoids callback hell)
 // Uses a custom wait loop that checks for a flag file, created when the child process is done.
 // (Can't do a wait loop that checks for internal Node variables/messages as
-// Node is single-threaded; callbacks and other internal state changes are done in the 
+// Node is single-threaded; callbacks and other internal state changes are done in the
 // event loop).
 function execSync(cmd, opts) {
   var stdoutFile = path.resolve(tempDir()+'/'+randomFileName()),
@@ -1363,10 +1364,10 @@ function execSync(cmd, opts) {
   function escape(str) {
     return (str+'').replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
   }
-    
+
   cmd += ' > '+stdoutFile+' 2>&1'; // works on both win/unix
 
-  var script = 
+  var script =
    "var child = require('child_process'), \
         fs = require('fs'); \
     child.exec('"+escape(cmd)+"', {env: process.env}, function(err) { \
@@ -1378,7 +1379,7 @@ function execSync(cmd, opts) {
   if (fs.existsSync(codeFile)) _unlinkSync(codeFile);
 
   fs.writeFileSync(scriptFile, script);
-  child.exec('node '+scriptFile, { 
+  child.exec('node '+scriptFile, {
     env: process.env,
     cwd: exports.pwd()
   });
@@ -1403,7 +1404,7 @@ function execSync(cmd, opts) {
   try { _unlinkSync(stdoutFile); } catch(e) {};
   try { _unlinkSync(codeFile); } catch(e) {};
   try { _unlinkSync(sleepFile); } catch(e) {};
-  
+
   // True if successful, false if not
   var obj = {
     code: code,
@@ -1412,15 +1413,15 @@ function execSync(cmd, opts) {
   return obj;
 } // execSync()
 
-// Expands wildcards with matching file names. For a given array of file names 'list', returns 
-// another array containing all file names as per ls(list[i]). 
+// Expands wildcards with matching file names. For a given array of file names 'list', returns
+// another array containing all file names as per ls(list[i]).
 // For example:
 //   expand(['file*.js']) = ['file1.js', 'file2.js', ...]
 //   (if the files 'file1.js', 'file2.js', etc, exist in the current dir)
 function expand(list) {
   var expanded = [];
   list.forEach(function(listEl) {
-    // Wildcard present? 
+    // Wildcard present?
     if (listEl.search(/\*/) > -1) {
       _ls('', listEl).forEach(function(file) {
         expanded.push(file);
@@ -1428,7 +1429,7 @@ function expand(list) {
     } else {
       expanded.push(listEl);
     }
-  });  
+  });
   return expanded;
 }
 
@@ -1452,7 +1453,7 @@ function extend(target) {
     for (var key in source)
       target[key] = source[key];
   });
-  
+
   return target;
 }
 
