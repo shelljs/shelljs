@@ -104,7 +104,7 @@ assert.equal(fs.existsSync('tmp/file2'), true);
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
-assert.equal(JSON.stringify(shell.ls('-R', 'resources/cp')), JSON.stringify(shell.ls('-R', 'tmp/cp')));
+assert.equal(shell.ls('-R', 'resources/cp') + '', shell.ls('-R', 'tmp/cp') + '');
 
 //recursive, nothing exists, source ends in '/' (see Github issue #15)
 shell.rm('-rf', 'tmp/*');
@@ -126,5 +126,30 @@ assert.notEqual(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z'));
 shell.cp('-Rf', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
 assert.equal(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); // after cp
+
+// arturadib/shelljs#44
+shell.rm('-rf', 'tmp/*')
+shell.cp('-r', 'resources/issue44/*', 'tmp/dir2/')
+assert.equal(shell.error(), null);
+assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '')
+assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'))
+
+shell.rm('-rf', 'tmp/*')
+shell.cp('-r', 'resources/issue44', 'tmp/dir2')
+assert.equal(shell.error(), null);
+assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '')
+assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'))
+
+shell.rm('-rf', 'tmp/*')
+shell.cp('-r', 'resources/issue44/', 'tmp/dir2/')
+assert.equal(shell.error(), null);
+assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '')
+assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'))
+
+shell.rm('-rf', 'tmp/*')
+shell.cp('-R', 'resources/issue44/', 'tmp/dir2')
+assert.equal(shell.error(), null);
+assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '')
+assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'))
 
 shell.exit(123);

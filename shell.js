@@ -279,10 +279,13 @@ function _cp(options, sources, dest) {
 
   // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
   // (see Github issue #15)
+  // Also make sure that src should end in "/*" in case it's a dir and dest
+  // doesn't exist yet (see Github issue #44)
   if (options.recursive) {
     sources.forEach(function(src, i) {
-      if (src[src.length - 1] === '/')
-        sources[i] += '*';
+      if (src.match(/\/\*?$/) || (_test('-d', src) && !_test('-d', dest))) {
+        sources[i] = src.replace(/\/\*?$/, '') + '/*';
+      }
     });
   }
 
@@ -295,7 +298,6 @@ function _cp(options, sources, dest) {
     }
 
     // If here, src exists
-
     if (fs.statSync(src).isDirectory()) {
       if (!options.recursive) {
         // Non-Recursive
@@ -303,15 +305,15 @@ function _cp(options, sources, dest) {
       } else {
         // Recursive
         // 'cp /a/source dest' should create 'source' in 'dest'
-        var newDest = dest+'/'+path.basename(src),
-            checkDir = fs.statSync(src);
+        var newDest = path.join(dest, path.basename(src));
         try {
-          fs.mkdirSync(newDest, checkDir.mode);
+          mkdirSyncRecursive(newDest);
         } catch (e) {
           //if the directory already exists, that's okay
           if (e.code !== 'EEXIST') throw e;
         }
-        cpdirSyncRecursive(src, newDest, {force: options.force});
+
+        cpdirSyncRecursive(src, newDest || dest, {force: options.force});
       }
       return; // done with dir
     }
