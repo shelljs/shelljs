@@ -37,8 +37,8 @@ assert.equal(fs.existsSync('resources/file1'), true);
 shell.rm('-f', 'asdfasdf');
 assert.equal(shell.error(), null);
 
- // simple rm
- shell.cp('-f', 'resources/file1', 'tmp/file1');
+// simple rm
+shell.cp('-f', 'resources/file1', 'tmp/file1');
 assert.equal(fs.existsSync('tmp/file1'), true);
 shell.rm('tmp/file1');
 assert.equal(shell.error(), null);
