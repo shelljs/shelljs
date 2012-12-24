@@ -287,6 +287,9 @@ function _cp(options, sources, dest) {
         sources[i] = src.replace(/\/\*?$/, '') + '/*';
       }
     });
+
+    // Recursively create destination directory
+    _mkdir('-p', dest);
   }
 
   sources = expand(sources);
@@ -305,15 +308,16 @@ function _cp(options, sources, dest) {
       } else {
         // Recursive
         // 'cp /a/source dest' should create 'source' in 'dest'
-        var newDest = path.join(dest, path.basename(src));
+        var newDest = path.join(dest, path.basename(src)),
+            checkDir = fs.statSync(src);
         try {
-          mkdirSyncRecursive(newDest);
+          fs.mkdirSync(newDest, checkDir.mode);
         } catch (e) {
           //if the directory already exists, that's okay
           if (e.code !== 'EEXIST') throw e;
         }
 
-        cpdirSyncRecursive(src, newDest || dest, {force: options.force});
+        cpdirSyncRecursive(src, newDest, {force: options.force});
       }
       return; // done with dir
     }
