@@ -862,6 +862,118 @@ function _echo() {
 };
 exports.echo = _echo; // don't wrap() as it could parse '-options'
 
+var _dirStack = (function(stack) {
+  stack.isIndex = function(index) {
+    if (isNaN(index)) {
+      return /^[-+]\d+$/.test(index);
+    } else {
+      return true
+    }
+  }.bind(stack)
+
+  stack.get = function(index) {
+    if (this.isIndex(index)) {
+      if (Math.abs(index) < this.length) {
+        return this.splice(Number(index), 1)[0];
+      } else {
+        error(index + ': directory stack index out of range');
+      }
+    } else {
+      error(index + ': invalid number');
+    }
+  }.bind(stack)
+
+  return stack
+}([]))
+
+function _dirs(options) {
+  return ShellString(_dirStack.join(' ') || process.cwd());
+}
+exports.dirs = wrap('dirs', _dirs)
+
+//@
+//@ ### pushd(['-n'], [dir | '-N' | '+N'])
+//@
+//@ Available options:
+//@
+//@ + `-n`: Suppresses the normal change of directory when adding directories to the stack, so that only the stack is manipulated.
+//@ + `dir`: Makes the current working directory be the top of the stack, and then executes the equivalent of `cd dir`.
+//@ + `+N`: Brings the Nth directory (counting from the left of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
+//@ + `-N`: Brings the Nth directory (counting from the right of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
+//@
+//@ With no arguments, pushd exchanges the top two directories.
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ // process.cwd() === '/usr'
+//@ pushd('/etc'); // Returns /etc /usr
+//@ pushd('+1');   // Returns /usr /etc
+//@ ```
+//@
+//@ Save the current directory on the top of the directory stack and then cd to dir.
+function _pushd(options, dir) {
+  options = parseOptions(options, {
+    'n' : false
+  });
+
+  dir = _dirStack.isIndex(dir) ? _dirStack.get(dir) : path.resolve(dir);
+
+  if (!_dirStack.length) {
+    _dirStack.unshift(process.cwd());
+  }
+
+  _dirStack.unshift(dir);
+
+  if (!options['n']) {
+    exports.cd(_dirStack[0]);
+  }
+
+  return exports.dirs();
+};
+exports.pushd = wrap('pushd', _pushd);
+
+//@
+//@ ### popd(['-n'], ['-N' | '+N'])
+//@
+//@ Available options:
+//@
+//@ + `-n`: Suppresses the normal change of directory when removing directories from the stack, so that only the stack is manipulated.
+//@ + `+N`: Removes the Nth directory (counting from the left of the list printed by dirs), starting with zero.
+//@ + `-N`: Removes the Nth directory (counting from the right of the list printed by dirs), starting with zero.
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ echo(process.cwd()); // '/usr'
+//@ pushd('/etc');       // '/etc /usr'
+//@ echo(process.cwd()); // '/etc'
+//@ popd();              // '/usr'
+//@ 
+//@ echo(process.cwd()); // '/usr'
+//@ popd(); // returns /usr
+//@ ```
+//@
+//@ Remove the top entry from the directory stack, and cd to the new top directory. When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0.
+function _popd(options, index) {
+  options = parseOptions(options, {
+    'n' : false
+  });
+
+  if (_dirStack.length > 1) {
+    var dir = _dirStack.get(index || "+0")
+
+    if (!options['n']) {
+      exports.cd(_dirStack[0]);
+    }
+  } else {
+    error('directory stack empty')
+  }
+
+  return exports.dirs();
+};
+exports.popd = wrap("popd", _popd);
+
 //@
 //@ ### exit(code)
 //@ Exits the current process with the given exit code.
