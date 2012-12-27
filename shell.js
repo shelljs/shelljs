@@ -887,7 +887,7 @@ var _dirStack = (function(stack) {
 }([]))
 
 function _dirs(options) {
-  return ShellString(_dirStack.join(' ') || process.cwd());
+  return _dirStack.length ? _dirStack.slice() : [process.cwd()];
 }
 
 //@
@@ -900,8 +900,6 @@ function _dirs(options) {
 //@ + `+N`: Brings the Nth directory (counting from the left of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
 //@ + `-N`: Brings the Nth directory (counting from the right of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
 //@
-//@ With no arguments, pushd exchanges the top two directories.
-//@
 //@ Examples:
 //@
 //@ ```javascript
@@ -910,7 +908,7 @@ function _dirs(options) {
 //@ pushd('+1');   // Returns /usr /etc
 //@ ```
 //@
-//@ Save the current directory on the top of the directory stack and then cd to dir.
+//@ Save the current directory on the top of the directory stack and then cd to dir. With no arguments, pushd exchanges the top two directories. Returns an array of paths in the stack.
 function _pushd(options, dir) {
   options = parseOptions(options, {
     'n' : false
@@ -941,6 +939,8 @@ exports.pushd = wrap('pushd', _pushd);
 //@ + `+N`: Removes the Nth directory (counting from the left of the list printed by dirs), starting with zero.
 //@ + `-N`: Removes the Nth directory (counting from the right of the list printed by dirs), starting with zero.
 //@
+//@ The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0.
+//@
 //@ Examples:
 //@
 //@ ```javascript
@@ -953,7 +953,7 @@ exports.pushd = wrap('pushd', _pushd);
 //@ popd(); // returns /usr
 //@ ```
 //@
-//@ Remove the top entry from the directory stack, and cd to the new top directory. When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0.
+//@ Remove the top entry from the directory stack, and cd to the new top directory. When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. Returns an array of paths in the stack.
 function _popd(options, index) {
   options = parseOptions(options, {
     'n' : false
