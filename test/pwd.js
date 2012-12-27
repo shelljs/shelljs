@@ -10,7 +10,7 @@ function numLines(str) {
 }
 
 shell.rm('-rf', 'tmp');
-shell.mkdir('tmp')
+shell.mkdir('tmp');
 
 //
 // Valids

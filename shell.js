@@ -19,7 +19,7 @@ fs.existsSync = fs.existsSync || path.existsSync;
 var config = {
   silent: false,
   fatal: false
-}
+};
 
 var state = {
       error: null,
@@ -48,7 +48,7 @@ function _cd(options, dir) {
     error('not a directory: ' + dir);
 
   process.chdir(dir);
-};
+}
 exports.cd = wrap('cd', _cd);
 
 //@
@@ -57,7 +57,7 @@ exports.cd = wrap('cd', _cd);
 function _pwd(options) {
   var pwd = path.resolve(process.cwd());
   return ShellString(pwd);
-};
+}
 exports.pwd = wrap('pwd', _pwd);
 
 
@@ -154,7 +154,7 @@ function _ls(options, paths) {
     // Wildcard present on an existing dir? (e.g. '/tmp/*.js')
     if (basename.search(/\*/) > -1 && fs.existsSync(dirname) && fs.statSync(dirname).isDirectory) {
       // Escape special regular expression chars
-      var regexp = basename.replace(/(\^|\$|\(|\)|\<|\>|\[|\]|\{|\}|\.|\+|\?)/g, '\\$1');
+      var regexp = basename.replace(/(\^|\$|\(|\)|<|>|\[|\]|\{|\}|\.|\+|\?)/g, '\\$1');
       // Translates wildcard into regex
       regexp = '^' + regexp.replace(/\*/g, '.*') + '$';
       // Iterate over directory contents
@@ -178,7 +178,7 @@ function _ls(options, paths) {
   });
 
   return list;
-};
+}
 exports.ls = wrap('ls', _ls);
 
 
@@ -287,7 +287,7 @@ function _cp(options, sources, dest) {
 
     // Create dest
     try {
-      fs.mkdirSync(dest, 0777);
+      fs.mkdirSync(dest, parseInt('0777', 8));
     } catch (e) {
       // like Unix's cp, keep going even if we can't create dest dir
     }
@@ -338,7 +338,7 @@ function _cp(options, sources, dest) {
 
     copyFileSync(src, thisDest);
   }); // forEach(src)
-}; // cp
+}
 exports.cp = wrap('cp', _cp);
 
 //@
@@ -412,7 +412,7 @@ function _rm(options, files) {
       rmdirSyncRecursive(file, options.force);
     }
   }); // forEach(file)
-}; // rm
+} // rm
 exports.rm = wrap('rm', _rm);
 
 //@
@@ -486,7 +486,7 @@ function _mv(options, sources, dest) {
 
     fs.renameSync(src, thisDest);
   }); // forEach(src)
-}; // mv
+} // mv
 exports.mv = wrap('mv', _mv);
 
 //@
@@ -532,9 +532,9 @@ function _mkdir(options, dirs) {
     if (options.fullpath)
       mkdirSyncRecursive(dir);
     else
-      fs.mkdirSync(dir, 0777);
+      fs.mkdirSync(dir, parseInt('0777', 8));
   });
-}; // mkdir
+} // mkdir
 exports.mkdir = wrap('mkdir', _mkdir);
 
 //@
@@ -611,8 +611,8 @@ function _test(options, path) {
     return stats.isFIFO();
 
   if (options.socket)
-    return stats.isSocket()
-}; // test
+    return stats.isSocket();
+} // test
 exports.test = wrap('test', _test);
 
 
@@ -654,7 +654,7 @@ function _cat(options, files) {
     cat = cat.substring(0, cat.length-1);
 
   return ShellString(cat);
-};
+}
 exports.cat = wrap('cat', _cat);
 
 //@
@@ -680,7 +680,7 @@ function _to(options, file) {
   } catch(e) {
     error('could not write to file (code '+e.code+'): '+file, true);
   }
-};
+}
 // In the future, when Proxies are default, we can add methods like `.to()` to primitive strings.
 // For now, this is a dummy function to bookmark places we need such strings
 function ShellString(str) {
@@ -726,7 +726,7 @@ function _sed(options, regex, replacement, file) {
     fs.writeFileSync(file, result, 'utf8');
 
   return ShellString(result);
-};
+}
 exports.sed = wrap('sed', _sed);
 
 //@
@@ -776,7 +776,7 @@ function _grep(options, regex, files) {
   });
 
   return ShellString(grep);
-};
+}
 exports.grep = wrap('grep', _grep);
 
 
@@ -840,7 +840,7 @@ function _which(options, cmd) {
   where = where || path.resolve(cmd);
 
   return ShellString(where);
-};
+}
 exports.which = wrap('which', _which);
 
 //@
@@ -859,7 +859,7 @@ function _echo() {
   var messages = [].slice.call(arguments, 0);
   console.log.apply(this, messages);
   return ShellString(messages.join(' '));
-};
+}
 exports.echo = _echo; // don't wrap() as it could parse '-options'
 
 //@
@@ -921,7 +921,7 @@ function _exec(command, options, callback) {
     return execAsync(command, options, callback);
   else
     return execSync(command, options);
-};
+}
 exports.exec = wrap('exec', _exec, {notUnix:true});
 
 
@@ -986,7 +986,7 @@ exports.tempdir = wrap('tempdir', tempDir);
 //@ otherwise returns string explaining the error
 exports.error = function() {
   return state.error;
-}
+};
 
 
 
@@ -1092,7 +1092,7 @@ function wrap(cmd, fn, options) {
 
     state.currentCmd = 'shell.js';
     return retValue;
-  }
+  };
 } // wrap
 
 // Buffered file copy, synchronous
@@ -1172,7 +1172,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
     }
 
   } // for files
-}; // cpdirSyncRecursive
+} // cpdirSyncRecursive
 
 // Recursively removes 'dir'
 // Adapted from https://github.com/ryanmcgrath/wrench-js
@@ -1227,7 +1227,7 @@ function rmdirSyncRecursive(dir, force) {
   }
 
   return result;
-}; // rmdirSyncRecursive
+} // rmdirSyncRecursive
 
 // Recursively creates 'dir'
 function mkdirSyncRecursive(dir) {
@@ -1235,7 +1235,7 @@ function mkdirSyncRecursive(dir) {
 
   // Base dir exists, no recursion necessary
   if (fs.existsSync(baseDir)) {
-    fs.mkdirSync(dir, 0777);
+    fs.mkdirSync(dir, parseInt('0777', 8));
     return;
   }
 
@@ -1243,14 +1243,14 @@ function mkdirSyncRecursive(dir) {
   mkdirSyncRecursive(baseDir);
 
   // Base dir created, can create dir
-  fs.mkdirSync(dir, 0777);
-};
+  fs.mkdirSync(dir, parseInt('0777', 8));
+}
 
 // e.g. 'makerjs_a5f185d0443ca...'
 function randomFileName() {
   function randomHash(count) {
     if (count === 1)
-      return parseInt(16*Math.random()).toString(16);
+      return parseInt(16*Math.random(), 10).toString(16);
     else {
       var hash = '';
       for (var i=0; i<count; i++)
@@ -1368,11 +1368,11 @@ function execSync(cmd, opts) {
   cmd += ' > '+stdoutFile+' 2>&1'; // works on both win/unix
 
   var script =
-   "var child = require('child_process'), \
-        fs = require('fs'); \
-    child.exec('"+escape(cmd)+"', {env: process.env}, function(err) { \
-      fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0'); \
-    });";
+   "var child = require('child_process')," +
+   "     fs = require('fs');" +
+   "child.exec('"+escape(cmd)+"', {env: process.env}, function(err) {" +
+   "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');" +
+   "});";
 
   if (fs.existsSync(scriptFile)) _unlinkSync(scriptFile);
   if (fs.existsSync(stdoutFile)) _unlinkSync(stdoutFile);
@@ -1388,22 +1388,23 @@ function execSync(cmd, opts) {
   // sleepFile is used as a dummy I/O op to mitigate unnecessary CPU usage
   // (tried many I/O sync ops, writeFileSync() seems to be only one that is effective in reducing
   // CPU usage, though apparently not so much on Windows)
-  while (!fs.existsSync(codeFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); };
-  while (!fs.existsSync(stdoutFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); };
+  while (!fs.existsSync(codeFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
+  while (!fs.existsSync(stdoutFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
 
   // At this point codeFile exists, but it's not necessarily flushed yet.
   // Keep reading it until it is.
-  var code = parseInt('');
-  while (isNaN(code))
-    code = parseInt(fs.readFileSync(codeFile, 'utf8'));
+  var code = parseInt('', 10);
+  while (isNaN(code)) {
+    code = parseInt(fs.readFileSync(codeFile, 'utf8'), 10);
+  }
 
   var stdout = fs.readFileSync(stdoutFile, 'utf8');
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
-  try { _unlinkSync(scriptFile); } catch(e) {};
-  try { _unlinkSync(stdoutFile); } catch(e) {};
-  try { _unlinkSync(codeFile); } catch(e) {};
-  try { _unlinkSync(sleepFile); } catch(e) {};
+  try { _unlinkSync(scriptFile); } catch(e) {}
+  try { _unlinkSync(stdoutFile); } catch(e) {}
+  try { _unlinkSync(codeFile); } catch(e) {}
+  try { _unlinkSync(sleepFile); } catch(e) {}
 
   // True if successful, false if not
   var obj = {

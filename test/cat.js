@@ -17,7 +17,7 @@ function numLines(str) {
 var cur = shell.pwd();
 
 shell.rm('-rf', 'tmp');
-shell.mkdir('tmp')
+shell.mkdir('tmp');
 
 //
 // Invalids

@@ -10,7 +10,7 @@ fs.existsSync = fs.existsSync || path.existsSync;
 shell.config.silent = true;
 
 shell.rm('-rf', 'tmp');
-shell.mkdir('tmp')
+shell.mkdir('tmp');
 
 //
 // Invalids

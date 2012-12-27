@@ -10,7 +10,7 @@ fs.existsSync = fs.existsSync || path.existsSync;
 shell.config.silent = true;
 
 shell.rm('-rf', 'tmp');
-shell.mkdir('tmp')
+shell.mkdir('tmp');
 
 //
 // Invalids
@@ -30,7 +30,7 @@ assert.equal(shell.error(), null);
 assert.equal(result.indexOf('.hidden') > -1, true);
 assert.equal(result.indexOf('dir1/dir11/a_dir11') > -1, true);
 assert.equal(result.length, 10);
-shell.cd('../..')
+shell.cd('../..');
 
 // simple path
 var result = shell.find('resources/find');

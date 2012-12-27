@@ -7,6 +7,7 @@ global.target = {};
 // been evaluated
 var args = process.argv.slice(2);
 setTimeout(function() {
+  var t;
 
   if (args.length === 1 && args[0] === '--help') {
     console.log('Available targets:');
@@ -25,7 +26,7 @@ setTimeout(function() {
           return;
         oldTarget.done = true;
         return oldTarget.apply(oldTarget, arguments);
-      }
+      };
 
     })(t, target[t]);
   }
@@ -33,7 +34,7 @@ setTimeout(function() {
   // Execute desired targets
   if (args.length > 0) {
     args.forEach(function(arg) {
-      if (arg in target) 
+      if (arg in target)
         target[arg]();
       else {
         console.log('no such target: ' + arg);

@@ -14,7 +14,7 @@ function numLines(str) {
 }
 
 shell.rm('-rf', 'tmp');
-shell.mkdir('tmp')
+shell.mkdir('tmp');
 
 //
 // Invalids
@@ -37,7 +37,7 @@ assert.ok(shell.error());
 // Valids
 //
 
-shell.cp('-f', 'resources/file1', 'tmp/file1')
+shell.cp('-f', 'resources/file1', 'tmp/file1');
 var result = shell.sed('test1', 'hello', 'tmp/file1'); // search string
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello');

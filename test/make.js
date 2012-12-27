@@ -4,7 +4,13 @@ var shell = require('..'),
 
 shell.mkdir('-p', 'tmp');
 var file = 'tmp/tempscript'+Math.random()+'.js',
-    script = 'require(\'../../make.js\'); target.all=function(){echo("first"); cp("this_file_doesnt_exist", "."); echo("second");}';
+    script = 'require(\'../../make.js\');' +
+             'target.all=function(){' +
+             '  echo("first"); '+
+             '  cp("this_file_doesnt_exist", ".");' +
+             '  echo("second");' +
+             '}';
+
 script.to(file);
 child.exec('node '+file, function(err, stdout, stderr) {
   assert.ok(stdout.match('first'));
