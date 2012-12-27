@@ -9,7 +9,8 @@ var failed = false;
 JSHINT_BIN = './node_modules/jshint/bin/hint';
 cd(__dirname + '/..');
 if (!test('-f', JSHINT_BIN)) {
-  exec('npm install jshint');
+  echo('Installing JSHint locally');
+  exec('npm install jshint', {silent:true});
 }
 
 if (!test('-f', JSHINT_BIN)) {
