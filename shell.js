@@ -923,10 +923,10 @@ function _pushd(options, dir) {
   _dirStack.unshift(dir);
 
   if (!options['n']) {
-    exports.cd(_dirStack[0]);
+    _cd('', _dirStack[0]);
   }
 
-  return _dirs();
+  return _dirs('');
 };
 exports.pushd = wrap('pushd', _pushd);
 
@@ -963,13 +963,13 @@ function _popd(options, index) {
     var dir = _dirStack.get(index || "+0")
 
     if (!options['n']) {
-      exports.cd(_dirStack[0]);
+      _cd('', _dirStack[0]);
     }
   } else {
     error('directory stack empty')
   }
 
-  return _dirs();
+  return _dirs('');
 };
 exports.popd = wrap("popd", _popd);
 
