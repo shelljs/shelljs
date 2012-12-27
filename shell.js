@@ -867,7 +867,7 @@ var _dirStack = (function(stack) {
     if (isNaN(index)) {
       return /^[-+]\d+$/.test(index);
     } else {
-      return true
+      return true;
     }
   }.bind(stack)
 
@@ -889,7 +889,6 @@ var _dirStack = (function(stack) {
 function _dirs(options) {
   return ShellString(_dirStack.join(' ') || process.cwd());
 }
-exports.dirs = wrap('dirs', _dirs)
 
 //@
 //@ ### pushd(['-n'], [dir | '-N' | '+N'])
@@ -929,7 +928,7 @@ function _pushd(options, dir) {
     exports.cd(_dirStack[0]);
   }
 
-  return exports.dirs();
+  return _dirs();
 };
 exports.pushd = wrap('pushd', _pushd);
 
@@ -970,7 +969,7 @@ function _popd(options, index) {
     error('directory stack empty')
   }
 
-  return exports.dirs();
+  return _dirs();
 };
 exports.popd = wrap("popd", _popd);
 

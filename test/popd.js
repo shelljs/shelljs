@@ -9,7 +9,7 @@ fs.existsSync = fs.existsSync || path.existsSync;
 
 shell.config.silent = false;
 
-var root = path.resolve(), trail
+var root = path.resolve(), trail;
 
 // Pushing to valid directories
 shell.pushd('resources/pushd');
@@ -48,4 +48,4 @@ assert.equal(trail.length, 2);
 assert.equal(trail[0], path.resolve(root, 'resources/pushd'));
 assert.equal(trail[1], root);
 
-shell.exit(123)
+shell.exit(123);
