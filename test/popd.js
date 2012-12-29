@@ -92,6 +92,13 @@ assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [ root ]);
 
+
+reset(); shell.pushd('resources/pushd');
+trail = shell.popd('-n');
+assert.equal(shell.error(), null);
+assert.equal(process.cwd(), trail[0]);
+assert.deepEqual(trail, [ path.resolve(root, 'resources/pushd') ]);
+
 // Invalid
 trail = shell.popd();
 assert.ok(shell.error('popd: directory stack empty\n'));

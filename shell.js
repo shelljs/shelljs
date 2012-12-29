@@ -886,7 +886,7 @@ function _actualDirStack() {
 }
 
 //@
-//@ ### dirs([options,] ['+N' | '-N'])
+//@ ### dirs([options | '+N' | '-N'])
 //@
 //@ Available options:
 //@ + `-c`: Clears the directory stack by deleting all of the elements.
@@ -897,10 +897,15 @@ function _actualDirStack() {
 //@ + `+N`: Displays the Nth directory (counting from the left of the list printed by dirs when invoked without options), starting with zero.
 //@ + `-N`: Displays the Nth directory (counting from the right of the list printed by dirs when invoked without options), starting with zero.
 //@ 
-//@ Display the list of currently remembered directories. Returns an array of paths in the stack.
+//@ Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if +N or -N was specified.
 //@ 
 //@ See also: pushd, popd
 function _dirs(options, index) {
+  if (_isStackIndex(options)) {
+    index = options;
+    options = '';
+  }
+  
   options = parseOptions(options, {
     'c' : 'clear',
     'v' : 'verbose',
@@ -912,6 +917,17 @@ function _dirs(options, index) {
   }
 
   var stack = _actualDirStack();
+
+  if (index) {
+    index = _parseStackIndex(index);
+
+    if (index < 0) {
+      index = stack.length + index;
+    }
+
+    log(stack[index]);
+    return stack[index];
+  }
 
   if (options['verbose'] || options['pretty']) {
     stack.forEach(function(dir, index) {
@@ -949,7 +965,7 @@ exports.dirs = wrap("dirs", _dirs);
 //@
 //@ Save the current directory on the top of the directory stack and then cd to `dir`. With no arguments, pushd exchanges the top two directories. Returns an array of paths in the stack.
 function _pushd(options, dir) {
-  if (arguments.length < 2) {
+  if (_isStackIndex(options)) {
     dir = options;
     options = '';
   }
@@ -1012,7 +1028,7 @@ exports.pushd = wrap('pushd', _pushd);
 //@
 //@ When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0. Returns an array of paths in the stack.
 function _popd(options, index) {
-  if (arguments.length === 1) {
+  if (_isStackIndex(options)) {
     index = options;
     options = '';
   }
