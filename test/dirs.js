@@ -23,7 +23,7 @@ function record(test, assert) {
     };
 
     process.stderr.write = function(data) {
-        _stderr += data
+        _stderr += data;
     };
 
     test();
