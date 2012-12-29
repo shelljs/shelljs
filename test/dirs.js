@@ -20,20 +20,20 @@ function record(test, assert) {
 
     process.stdout.write = function(data) {
         _stdout += data;
-    }
+    };
 
     process.stderr.write = function(data) {
         _stderr += data
-    }
+    };
 
     test();
     process.stdout.write = _outWrite;
     process.stderr.write = _errWrite;
     shell.config.silent = oldSilent;
     assert(_stdout, _stderr);
-};
+}
 
-var root  = path.resolve();
+var root = path.resolve();
 
 shell.pushd('resources/pushd');
 shell.pushd('a');
@@ -68,18 +68,18 @@ record(function() {
 
   var format = function(dir, index) {
     return ' ' + index + ' ' + dir;
-  }
+  };
 
   assert.equal(stdout, shell.dirs().map(format).join('\n') + '\n');
-})
+});
 
 // Single items
-assert.equal(shell.dirs('+0'), trail[0])
-assert.equal(shell.dirs('+1'), trail[1])
-assert.equal(shell.dirs('+2'), trail[2])
-assert.equal(shell.dirs('-0'), trail[2])
-assert.equal(shell.dirs('-1'), trail[1])
-assert.equal(shell.dirs('-2'), trail[0])
+assert.equal(shell.dirs('+0'), trail[0]);
+assert.equal(shell.dirs('+1'), trail[1]);
+assert.equal(shell.dirs('+2'), trail[2]);
+assert.equal(shell.dirs('-0'), trail[2]);
+assert.equal(shell.dirs('-1'), trail[1]);
+assert.equal(shell.dirs('-2'), trail[0]);
 
 // Clearing items
 assert.deepEqual(shell.dirs('-c'), []);
