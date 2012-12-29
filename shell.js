@@ -863,16 +863,16 @@ function _echo() {
 exports.echo = _echo; // don't wrap() as it could parse '-options'
 
 // Pushd/popd/dirs internals
-var _dirStack = []
+var _dirStack = [];
 
 function _isStackIndex(index) {
-  return /^[-+]\d+$/.test(index);
+  return (/^[\-+]\d+$/).test(index);
 }
 
 function _parseStackIndex(index) {
   if (_isStackIndex(index)) {
     if (Math.abs(index) < _dirStack.length + 1) { // +1 for pwd
-      return /^-/.test(index) ? Number(index) - 1 : Number(index);
+      return (/^-/).test(index) ? Number(index) - 1 : Number(index);
     } else {
       error(index + ': directory stack index out of range');
     }
@@ -905,7 +905,7 @@ function _dirs(options, index) {
     'c' : 'clear',
     'v' : 'verbose',
     'p' : 'pretty'
-  })
+  });
 
   if (options['clear']) {
     return (_dirStack = []);
@@ -964,7 +964,7 @@ function _pushd(options, dir) {
     return dirs; // +0 is a noop
   } else if (!dir) {
     if (dirs.length > 1) {
-      dirs = dirs.splice(1, 1).concat(dirs)
+      dirs = dirs.splice(1, 1).concat(dirs);
     } else {
       return error('no other directory');
     }
@@ -988,7 +988,7 @@ function _pushd(options, dir) {
 
   _dirStack = dirs;
   return _dirs('');
-};
+}
 exports.pushd = wrap('pushd', _pushd);
 
 //@
@@ -1036,7 +1036,7 @@ function _popd(options, index) {
   }
 
   return _dirs('');
-};
+}
 exports.popd = wrap("popd", _popd);
 
 //@
