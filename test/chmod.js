@@ -26,7 +26,7 @@ shell.chmod('644', 'resources/chmod/file1');
 assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('777', 8), parseInt('644', 8));
 
 shell.chmod('o+x', 'resources/chmod/file1');
-assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('777', 8), parseInt('645', 8));
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('007', 8), parseInt('005', 8));
 shell.chmod('644', 'resources/chmod/file1');
 
 shell.chmod('+x', 'resources/chmod/file1');
@@ -73,8 +73,8 @@ assert.equal(fs.statSync('resources/chmod/b/a/b').mode & parseInt('777', 8), par
 // Test symbolic links w/ recursion  - WARNING: *nix only
 fs.symlinkSync('resources/chmod/b/a', 'resources/chmod/a/b/c/link', 'dir');
 shell.chmod('-R', 'u-w', 'resources/chmod/a/b');
-assert.equal(fs.statSync('resources/chmod/a/b/c').mode & parseInt('777', 8), parseInt('555', 8));
-assert.equal(fs.statSync('resources/chmod/b/a').mode & parseInt('777', 8), parseInt('755', 8));
+assert.equal(fs.statSync('resources/chmod/a/b/c').mode & parseInt('700', 8), parseInt('500', 8));
+assert.equal(fs.statSync('resources/chmod/b/a').mode & parseInt('700', 8), parseInt('700', 8));
 shell.chmod('-R', 'u+w', 'resources/chmod/a/b');
 fs.unlinkSync('resources/chmod/a/b/c/link');
 
