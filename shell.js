@@ -924,7 +924,202 @@ function _exec(command, options, callback) {
 }
 exports.exec = wrap('exec', _exec, {notUnix:true});
 
+var PERM_EXEC  = 1;
+var PERM_WRITE = 2;
+var PERM_READ  = 4;
 
+var OTHER_PERM_EXEC  = PERM_EXEC;
+var OTHER_PERM_WRITE = PERM_WRITE;
+var OTHER_PERM_READ  = PERM_READ;
+
+var GROUP_PERM_EXEC  = PERM_EXEC  << 3;
+var GROUP_PERM_WRITE = PERM_WRITE << 3;
+var GROUP_PERM_READ  = PERM_READ  << 3;
+
+var OWNER_PERM_EXEC  = PERM_EXEC  << 6;
+var OWNER_PERM_WRITE = PERM_WRITE << 6;
+var OWNER_PERM_READ  = PERM_READ  << 6;
+
+// Literal octal numbers are apparently not allowed in "strict" javascript.  Using parseInt is
+// the preferred way, else a jshint warning is thrown.
+var STICKY_PERM = parseInt('01000', 8);
+var SETGID_PERM = parseInt('02000', 8);
+var SETUID_PERM = parseInt('04000', 8);
+
+var TYPE_MASK = parseInt('0770000', 8);
+
+//@
+//@ ### chmod(octal_mode, file)
+//@ ### chmod(symbolic_mode, file)
+//@ Available options:
+//@
+//@ + `-v`: output a diagnostic for every file processed//@
+//@ + `-c`: like verbose but report only when a change is made//@
+//@ + `-R`: change files and directories recursively//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ chmod(755, '/Users/brandon')
+//@ chmod('u+x', '/Users/brandon')
+//@ ```
+//@
+//@ Alters the permissions of a file or directory by either specifying the
+//@ absolute permissions in octal form or expressing the changes in symbols.
+//@ This command tries to mimic the POSIX behavior as much as possible.
+//@ Notable exceptions:
+//@ - In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
+//@   given to the umask.
+//@ - There is no "quiet" option since default behavior is to run silent.
+function _chmod(options, mode, filePattern) {
+  if (!filePattern) {
+    if (options.length > 0 && options.charAt(0) === '-') {
+      // Special case where the specified file permissions started with - to subtract perms, which
+      // get picked up by the option parser as command flags.
+      // If we are down by one argument and options starts with -, shift everything over.
+      filePattern = mode;
+      mode = options;
+      options = '';
+    }
+    else {
+      error('You must specify a file.');
+    }
+  }
+
+  options = parseOptions(options, {
+    'R': 'recursive',
+    'c': 'changes',
+    'v': 'verbose'
+  });
+
+  if (typeof filePattern === 'string') {
+    filePattern = [ filePattern ];
+  }
+
+  var files;
+
+  if (options.recursive) {
+    files = [];
+    expand(filePattern).forEach(function addFile(expandedFile) {
+      var stat = fs.lstatSync(expandedFile);
+
+      if (!stat.isSymbolicLink()) {
+        files.push(expandedFile);
+
+        if (stat.isDirectory()) {  // intentionally does not follow symlinks.
+          fs.readdirSync(expandedFile).forEach(function (child) {
+            addFile(expandedFile + '/' + child);
+          });
+        }
+      }
+    });
+  }
+  else {
+    files = expand(filePattern);
+  }
+
+  files.forEach(function innerChmod(file) {
+    file = path.resolve(file);
+    if (!fs.existsSync(file)) {
+      error('File not found: ' + file);
+    }
+
+    // When recursing, don't follow symlinks.
+    if (options.recursive && fs.lstatSync(file).isSymbolicLink()) {
+      return;
+    }
+
+    var perms = fs.statSync(file).mode;
+    var type = perms & TYPE_MASK;
+
+    var newPerms = perms;
+
+    if (isNaN(parseInt(mode, 8))) {
+      // parse options
+      mode.split(',').forEach(function (symbolicMode) {
+        /*jshint regexdash:true */
+        var pattern = /([ugoa]*)([=\+-])([rwxXst]*)/i;
+        var matches = pattern.exec(symbolicMode);
+
+        if (matches) {
+          var applyTo = matches[1];
+          var operator = matches[2];
+          var change = matches[3];
+
+          var changeOwner = applyTo.indexOf('u') != -1 || applyTo === 'a' || applyTo === '';
+          var changeGroup = applyTo.indexOf('g') != -1 || applyTo === 'a' || applyTo === '';
+          var changeOther = applyTo.indexOf('o') != -1 || applyTo === 'a' || applyTo === '';
+
+          var changeRead   = change.indexOf('r') != -1;
+          var changeWrite  = change.indexOf('w') != -1;
+          var changeExec   = change.indexOf('x') != -1;
+          var changeSticky = change.indexOf('t') != -1;
+          var changeSetuid = change.indexOf('s') != -1;
+
+          var mask = 0;
+          if (changeOwner) {
+            mask |= (changeRead ? OWNER_PERM_READ : 0) + (changeWrite ? OWNER_PERM_WRITE : 0) + (changeExec ? OWNER_PERM_EXEC : 0) + (changeSetuid ? SETUID_PERM : 0);
+          }
+          if (changeGroup) {
+            mask |= (changeRead ? GROUP_PERM_READ : 0) + (changeWrite ? GROUP_PERM_WRITE : 0) + (changeExec ? GROUP_PERM_EXEC : 0) + (changeSetuid ? SETGID_PERM : 0);
+          }
+          if (changeOther) {
+            mask |= (changeRead ? OTHER_PERM_READ : 0) + (changeWrite ? OTHER_PERM_WRITE : 0) + (changeExec ? OTHER_PERM_EXEC : 0);
+          }
+
+          // Sticky bit is special - it's not tied to user, group or other.
+          if (changeSticky) {
+            mask |= STICKY_PERM;
+          }
+
+          switch (operator) {
+            case '+':
+              newPerms |= mask;
+              break;
+
+            case '-':
+              newPerms &= ~mask;
+              break;
+
+            case '=':
+              newPerms = type + mask;
+
+              // According to POSIX, when using = to explicitly set the permissions, setuid and setgid can never be cleared.
+              if (fs.statSync(file).isDirectory()) {
+                newPerms |= (SETUID_PERM + SETGID_PERM) & perms;
+              }
+              break;
+          }
+
+          if (options.verbose) {
+            log(file + ' -> ' + newPerms.toString(8));
+          }
+
+          if (perms != newPerms) {
+            if (!options.verbose && options.changes) {
+              log(file + ' -> ' + newPerms.toString(8));
+            }
+            fs.chmodSync(file, newPerms);
+          }
+        }
+        else {
+          error('Invalid symbolic mode change: ' + symbolicMode);
+        }
+      });
+    }
+    else {
+      // they gave us a full number
+      newPerms = type + parseInt(mode, 8);
+
+      // POSIX rules are that setuid and setgid can only be added using numeric form, but not cleared.
+      if (fs.statSync(file).isDirectory()) {
+        newPerms |= (SETUID_PERM + SETGID_PERM) & perms;
+      }
+
+      fs.chmodSync(file, newPerms);
+    }
+  });
+}
+exports.chmod = wrap('chmod', _chmod);
 
 
 //@
