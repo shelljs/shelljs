@@ -890,26 +890,22 @@ function _actualDirStack() {
 //@
 //@ Available options:
 //@ + `-c`: Clears the directory stack by deleting all of the elements.
-//@ + `-p`: Causes dirs to print the directory stack with one entry per line.
-//@ + `-v`: Causes dirs to print the directory stack with one entry per line, prefixing each entry with its index in the stack.
 //@
 //@ Arguments:
 //@ + `+N`: Displays the Nth directory (counting from the left of the list printed by dirs when invoked without options), starting with zero.
 //@ + `-N`: Displays the Nth directory (counting from the right of the list printed by dirs when invoked without options), starting with zero.
-//@ 
+//@
 //@ Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if +N or -N was specified.
-//@ 
+//@
 //@ See also: pushd, popd
 function _dirs(options, index) {
   if (_isStackIndex(options)) {
     index = options;
     options = '';
   }
-  
+
   options = parseOptions(options, {
-    'c' : 'clear',
-    'v' : 'verbose',
-    'p' : 'pretty'
+    'c' : 'clear'
   });
 
   if (options['clear']) {
@@ -929,17 +925,7 @@ function _dirs(options, index) {
     return stack[index];
   }
 
-  if (options['verbose'] || options['pretty']) {
-    stack.forEach(function(dir, index) {
-      if (options['verbose']) {
-        log('', index, dir);
-      } else {
-        log(dir);
-      }
-    });
-  } else {
-    log(stack.join(' '));
-  }
+  log(stack.join(' '));
 
   return stack;
 }
