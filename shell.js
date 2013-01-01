@@ -889,9 +889,11 @@ function _actualDirStack() {
 //@ ### dirs([options | '+N' | '-N'])
 //@
 //@ Available options:
+//@
 //@ + `-c`: Clears the directory stack by deleting all of the elements.
 //@
 //@ Arguments:
+//@
 //@ + `+N`: Displays the Nth directory (counting from the left of the list printed by dirs when invoked without options), starting with zero.
 //@ + `-N`: Displays the Nth directory (counting from the right of the list printed by dirs when invoked without options), starting with zero.
 //@
@@ -935,14 +937,17 @@ exports.dirs = wrap("dirs", _dirs);
 //@ ### pushd([options,] [dir | '-N' | '+N'])
 //@
 //@ Available options:
+//@
 //@ + `-n`: Suppresses the normal change of directory when adding directories to the stack, so that only the stack is manipulated.
 //@
-//@ Arguments
+//@ Arguments:
+//@
 //@ + `dir`: Makes the current working directory be the top of the stack, and then executes the equivalent of `cd dir`.
 //@ + `+N`: Brings the Nth directory (counting from the left of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
 //@ + `-N`: Brings the Nth directory (counting from the right of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
 //@
 //@ Examples:
+//@
 //@ ```javascript
 //@ // process.cwd() === '/usr'
 //@ pushd('/etc'); // Returns /etc /usr
@@ -997,13 +1002,16 @@ exports.pushd = wrap('pushd', _pushd);
 //@ ### popd([options,] ['-N' | '+N'])
 //@
 //@ Available options:
+//@
 //@ + `-n`: Suppresses the normal change of directory when removing directories from the stack, so that only the stack is manipulated.
 //@
 //@ Arguments:
+//@
 //@ + `+N`: Removes the Nth directory (counting from the left of the list printed by dirs), starting with zero.
 //@ + `-N`: Removes the Nth directory (counting from the right of the list printed by dirs), starting with zero.
 //@
 //@ Examples:
+//@
 //@ ```javascript
 //@ echo(process.cwd()); // '/usr'
 //@ pushd('/etc');       // '/etc /usr'
