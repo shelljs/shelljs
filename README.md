@@ -181,7 +181,7 @@ find('.').filter(function(file) { return file.match(/\.js$/); });
 
 Returns array of all files (however deep) in the given paths.
 
-The main difference from `ls('-R', path)` is that the resulting file names 
+The main difference from `ls('-R', path)` is that the resulting file names
 include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
 
 ### cp([options ,] source [,source ...], dest)
@@ -216,7 +216,7 @@ rm('some_file.txt', 'another_file.txt');
 rm(['some_file.txt', 'another_file.txt']); // same as above
 ```
 
-Removes files. The wildcard `*` is accepted. 
+Removes files. The wildcard `*` is accepted.
 
 ### mv(source [, source ...], dest')
 ### mv(source_array, dest')
@@ -324,7 +324,7 @@ grep('-v', 'GLOBAL_VARIABLE', '*.js');
 grep('GLOBAL_VARIABLE', '*.js');
 ```
 
-Reads input string from given files and returns a string containing all lines of the 
+Reads input string from given files and returns a string containing all lines of the
 file that match the given `regex_filter`. Wildcard `*` accepted.
 
 ### which(command)
@@ -350,6 +350,58 @@ var str = echo('hello world');
 Prints string to stdout, and returns string with additional utility methods
 like `.to()`.
 
+### dirs([options | '+N' | '-N'])
+
+Available options:
++ `-c`: Clears the directory stack by deleting all of the elements.
+
+Arguments:
++ `+N`: Displays the Nth directory (counting from the left of the list printed by dirs when invoked without options), starting with zero.
++ `-N`: Displays the Nth directory (counting from the right of the list printed by dirs when invoked without options), starting with zero.
+
+Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if +N or -N was specified.
+
+See also: pushd, popd
+
+### pushd([options,] [dir | '-N' | '+N'])
+
+Available options:
++ `-n`: Suppresses the normal change of directory when adding directories to the stack, so that only the stack is manipulated.
+
+Arguments
++ `dir`: Makes the current working directory be the top of the stack, and then executes the equivalent of `cd dir`.
++ `+N`: Brings the Nth directory (counting from the left of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
++ `-N`: Brings the Nth directory (counting from the right of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
+
+Examples:
+```javascript
+// process.cwd() === '/usr'
+pushd('/etc'); // Returns /etc /usr
+pushd('+1');   // Returns /usr /etc
+```
+
+Save the current directory on the top of the directory stack and then cd to `dir`. With no arguments, pushd exchanges the top two directories. Returns an array of paths in the stack.
+
+### popd([options,] ['-N' | '+N'])
+
+Available options:
++ `-n`: Suppresses the normal change of directory when removing directories from the stack, so that only the stack is manipulated.
+
+Arguments:
++ `+N`: Removes the Nth directory (counting from the left of the list printed by dirs), starting with zero.
++ `-N`: Removes the Nth directory (counting from the right of the list printed by dirs), starting with zero.
+
+Examples:
+```javascript
+echo(process.cwd()); // '/usr'
+pushd('/etc');       // '/etc /usr'
+echo(process.cwd()); // '/etc'
+popd();              // '/usr'
+echo(process.cwd()); // '/usr'
+```
+
+When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0. Returns an array of paths in the stack.
+
 ### exit(code)
 Exits the current process with the given exit code.
 
@@ -368,8 +420,8 @@ Examples:
 var version = exec('node --version', {silent:true}).output;
 
 var child = exec('some_long_running_process', {async:true});
-child.stdout.on('data', function(data) { 
-  /* ... do something with data ... */ 
+child.stdout.on('data', function(data) {
+  /* ... do something with data ... */
 });
 
 exec('some_long_running_process', function(code, output) {
@@ -378,8 +430,8 @@ exec('some_long_running_process', function(code, output) {
 });
 ```
 
-Executes the given `command` _synchronously_, unless otherwise specified. 
-When in synchronous mode returns the object `{ code:..., output:... }`, containing the program's 
+Executes the given `command` _synchronously_, unless otherwise specified.
+When in synchronous mode returns the object `{ code:..., output:... }`, containing the program's
 `output` (stdout + stderr)  and its exit `code`. Otherwise returns the child process object, and
 the `callback` gets the arguments `(code, output)`.
 
