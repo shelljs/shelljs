@@ -1111,6 +1111,75 @@ function _exec(command, options, callback) {
 }
 exports.exec = wrap('exec', _exec, {notUnix:true});
 
+//@
+//@ #### chgrp(group, file)
+//@
+//@ Examples
+//@ ```javascript
+//@ chgrp("admin", "/var/log/foo");
+//@ ```
+//@
+//@ Changes the UNIX group of a file or directory. Currently Sync.
+function _chgrp(options, group, file) {
+  if(!group) {
+    error('must specify group');
+  }
+
+  if(!file) {
+    error('must specify file');
+  }
+  return execSync(util.format("chgrp %s %s", group, file));
+}
+exports.chgrp = wrap('chgrp', _chgrp);
+
+//@
+//@ #### chmod(mode, file)
+//@
+//@ Examples
+//@ ```javascript
+//@ chmod("g+w", "/var/log/foo");
+//@ ```
+//@
+//@ Changes UNIX modes of a file or directory. Currently Sync.
+function _chmod(options, mode, file) {
+  if(!mode) {
+    error('must specify mode');
+  }
+
+  if(!file) {
+    error('must specify file');
+  }
+  return execSync(util.format("chmod %s %s", mode, file));
+}
+exports.chmod = wrap('chmod', _chmod);
+
+//@
+//@ #### chown(user[, group], file)
+//@
+//@ Examples
+//@ ```javascript
+//@ chown("jondoe", "/var/log/foo");
+//@ ```
+//@ ```javascript
+//@ chown("jondoe", "staff", "/var/log/foo");
+//@ ```
+//@
+//@ Changes the UNIX user of a file or directory. Currently Sync.
+function _chown(options, user, group, file) {
+  if(!user) {
+    error('must specify user');
+  }
+
+  if(!file) {
+    file = group;
+    group = ""
+  } else {
+    group = ":" + group;
+  }
+
+  return execSync(util.format("chown %s%s %s", user, group, file));
+}
+exports.chown = wrap('chown', _chown);
 
 
 
