@@ -924,29 +924,34 @@ function _exec(command, options, callback) {
 }
 exports.exec = wrap('exec', _exec, {notUnix:true});
 
-var PERM_EXEC  = 1;
-var PERM_WRITE = 2;
-var PERM_READ  = 4;
+var PERMS = (function (base) {
+  return {
+    OTHER_EXEC  : base.EXEC,
+    OTHER_WRITE : base.WRITE,
+    OTHER_READ  : base.READ,
 
-var OTHER_PERM_EXEC  = PERM_EXEC;
-var OTHER_PERM_WRITE = PERM_WRITE;
-var OTHER_PERM_READ  = PERM_READ;
+    GROUP_EXEC  : base.EXEC  << 3,
+    GROUP_WRITE : base.WRITE << 3,
+    GROUP_READ  : base.READ << 3,
 
-var GROUP_PERM_EXEC  = PERM_EXEC  << 3;
-var GROUP_PERM_WRITE = PERM_WRITE << 3;
-var GROUP_PERM_READ  = PERM_READ  << 3;
+    OWNER_EXEC  : base.EXEC << 6,
+    OWNER_WRITE : base.WRITE << 6,
+    OWNER_READ  : base.READ << 6,
 
-var OWNER_PERM_EXEC  = PERM_EXEC  << 6;
-var OWNER_PERM_WRITE = PERM_WRITE << 6;
-var OWNER_PERM_READ  = PERM_READ  << 6;
+    // Literal octal numbers are apparently not allowed in "strict" javascript.  Using parseInt is
+    // the preferred way, else a jshint warning is thrown.
+    STICKY      : parseInt('01000', 8),
+    SETGID      : parseInt('02000', 8),
+    SETUID      : parseInt('04000', 8),
 
-// Literal octal numbers are apparently not allowed in "strict" javascript.  Using parseInt is
-// the preferred way, else a jshint warning is thrown.
-var STICKY_PERM = parseInt('01000', 8);
-var SETGID_PERM = parseInt('02000', 8);
-var SETUID_PERM = parseInt('04000', 8);
+    TYPE_MASK   : parseInt('0770000', 8)
+  };
+})({
+  EXEC  : 1,
+  WRITE : 2,
+  READ  : 4
+});
 
-var TYPE_MASK = parseInt('0770000', 8);
 
 //@
 //@ ### chmod(octal_mode, file)
@@ -1029,7 +1034,7 @@ function _chmod(options, mode, filePattern) {
     }
 
     var perms = fs.statSync(file).mode;
-    var type = perms & TYPE_MASK;
+    var type = perms & PERMS.TYPE_MASK;
 
     var newPerms = perms;
 
@@ -1057,18 +1062,18 @@ function _chmod(options, mode, filePattern) {
 
           var mask = 0;
           if (changeOwner) {
-            mask |= (changeRead ? OWNER_PERM_READ : 0) + (changeWrite ? OWNER_PERM_WRITE : 0) + (changeExec ? OWNER_PERM_EXEC : 0) + (changeSetuid ? SETUID_PERM : 0);
+            mask |= (changeRead ? PERMS.OWNER_READ : 0) + (changeWrite ? PERMS.OWNER_WRITE : 0) + (changeExec ? PERMS.OWNER_EXEC : 0) + (changeSetuid ? PERMS.SETUID : 0);
           }
           if (changeGroup) {
-            mask |= (changeRead ? GROUP_PERM_READ : 0) + (changeWrite ? GROUP_PERM_WRITE : 0) + (changeExec ? GROUP_PERM_EXEC : 0) + (changeSetuid ? SETGID_PERM : 0);
+            mask |= (changeRead ? PERMS.GROUP_READ : 0) + (changeWrite ? PERMS.GROUP_WRITE : 0) + (changeExec ? PERMS.GROUP_EXEC : 0) + (changeSetuid ? PERMS.SETGID : 0);
           }
           if (changeOther) {
-            mask |= (changeRead ? OTHER_PERM_READ : 0) + (changeWrite ? OTHER_PERM_WRITE : 0) + (changeExec ? OTHER_PERM_EXEC : 0);
+            mask |= (changeRead ? PERMS.OTHER_READ : 0) + (changeWrite ? PERMS.OTHER_WRITE : 0) + (changeExec ? PERMS.OTHER_EXEC : 0);
           }
 
           // Sticky bit is special - it's not tied to user, group or other.
           if (changeSticky) {
-            mask |= STICKY_PERM;
+            mask |= PERMS.STICKY;
           }
 
           switch (operator) {
@@ -1085,7 +1090,7 @@ function _chmod(options, mode, filePattern) {
 
               // According to POSIX, when using = to explicitly set the permissions, setuid and setgid can never be cleared.
               if (fs.statSync(file).isDirectory()) {
-                newPerms |= (SETUID_PERM + SETGID_PERM) & perms;
+                newPerms |= (PERMS.SETUID + PERMS.SETGID) & perms;
               }
               break;
           }
@@ -1112,7 +1117,7 @@ function _chmod(options, mode, filePattern) {
 
       // POSIX rules are that setuid and setgid can only be added using numeric form, but not cleared.
       if (fs.statSync(file).isDirectory()) {
-        newPerms |= (SETUID_PERM + SETGID_PERM) & perms;
+        newPerms |= (PERMS.SETUID + PERMS.SETGID) & perms;
       }
 
       fs.chmodSync(file, newPerms);
