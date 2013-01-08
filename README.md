@@ -447,7 +447,7 @@ the `callback` gets the arguments `(code, output)`.
 the current synchronous implementation uses a lot of CPU. This should be getting
 fixed soon.
 
-### chmod(octal_mode, file)
+### chmod(octal_mode || octal_string, file)
 ### chmod(symbolic_mode, file)
 
 Available options:
@@ -459,8 +459,9 @@ Available options:
 Examples:
 
 ```javascript
-chmod(755, '/Users/brandon')
-chmod('u+x', '/Users/brandon')
+chmod(755, '/Users/brandon');
+chmod('755', '/Users/brandon'); // same as above 
+chmod('u+x', '/Users/brandon');
 ```
 
 Alters the permissions of a file or directory by either specifying the

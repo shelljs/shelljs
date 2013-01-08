@@ -1141,7 +1141,7 @@ var PERMS = (function (base) {
 
 
 //@
-//@ ### chmod(octal_mode, file)
+//@ ### chmod(octal_mode || octal_string, file)
 //@ ### chmod(symbolic_mode, file)
 //@
 //@ Available options:
@@ -1153,8 +1153,9 @@ var PERMS = (function (base) {
 //@ Examples:
 //@
 //@ ```javascript
-//@ chmod(755, '/Users/brandon')
-//@ chmod('u+x', '/Users/brandon')
+//@ chmod(755, '/Users/brandon');
+//@ chmod('755', '/Users/brandon'); // same as above 
+//@ chmod('u+x', '/Users/brandon');
 //@ ```
 //@
 //@ Alters the permissions of a file or directory by either specifying the
