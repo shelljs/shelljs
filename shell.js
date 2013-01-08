@@ -1143,11 +1143,13 @@ var PERMS = (function (base) {
 //@
 //@ ### chmod(octal_mode, file)
 //@ ### chmod(symbolic_mode, file)
+//@
 //@ Available options:
 //@
 //@ + `-v`: output a diagnostic for every file processed//@
 //@ + `-c`: like verbose but report only when a change is made//@
 //@ + `-R`: change files and directories recursively//@
+//@
 //@ Examples:
 //@
 //@ ```javascript
@@ -1159,9 +1161,10 @@ var PERMS = (function (base) {
 //@ absolute permissions in octal form or expressing the changes in symbols.
 //@ This command tries to mimic the POSIX behavior as much as possible.
 //@ Notable exceptions:
-//@ - In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
+//@
+//@ + In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
 //@   given to the umask.
-//@ - There is no "quiet" option since default behavior is to run silent.
+//@ + There is no "quiet" option since default behavior is to run silent.
 function _chmod(options, mode, filePattern) {
   if (!filePattern) {
     if (options.length > 0 && options.charAt(0) === '-') {
