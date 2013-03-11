@@ -911,7 +911,8 @@ function _dirs(options, index) {
   });
 
   if (options['clear']) {
-    return (_dirStack = []);
+    _dirStack = [];
+    return _dirStack;
   }
 
   var stack = _actualDirStack();
@@ -1094,9 +1095,15 @@ function _exec(command, options, callback) {
   if (!command)
     error('must specify command');
 
+  // Callback is defined instead of options.
   if (typeof options === 'function') {
     callback = options;
     options = { async: true };
+  }
+
+  // Callback is defined with options.
+  if (typeof options === 'object' && typeof callback === 'function') {
+      options.async = true;
   }
 
   options = extend({
@@ -1442,11 +1449,11 @@ function parseOptions(str, map) {
   // e.g. chars = ['R', 'f']
   var chars = match[1].split('');
 
-  chars.forEach(function(char) {
-    if (char in map)
-      options[map[char]] = true;
+  chars.forEach(function(character) {
+    if (character in map)
+      options[map[character]] = true;
     else
-      error('option not recognized: '+char);
+      error('option not recognized: '+ character);
   });
 
   return options;

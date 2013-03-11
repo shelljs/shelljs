@@ -8,7 +8,7 @@ var failed = false;
 //
 // Lint
 //
-JSHINT_BIN = './node_modules/jshint/bin/hint';
+JSHINT_BIN = './node_modules/jshint/bin/jshint';
 cd(__dirname + '/..');
 if (!test('-f', JSHINT_BIN)) {
   echo('Installing JSHint locally');
