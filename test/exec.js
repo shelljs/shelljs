@@ -95,6 +95,14 @@ shell.exec('node -e \"console.log(5678);\"', function(code, output) {
 
   });
 
+  //
+  // callback as 3rd argument (slient:true)
+  //
+  shell.exec('node -e \"console.log(5678);\"', {silent:true}, function(code, output) {
+    assert.equal(code, 0);
+    assert.ok(output === '5678\n' || output === '5678\nundefined\n');  // 'undefined' for v0.4
+  });
+
 });
 
 assert.equal(shell.error(), null);
