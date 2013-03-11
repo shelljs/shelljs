@@ -1102,8 +1102,8 @@ function _exec(command, options, callback) {
   }
 
   // Callback is defined with options.
-  if (typeof callback === 'function') {
-    options = { async: true };
+  if (typeof options === 'object' && typeof callback === 'function') {
+      options.async = true;
   }
 
   options = extend({
