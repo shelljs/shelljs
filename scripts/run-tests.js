@@ -8,26 +8,21 @@ var failed = false;
 //
 // Lint
 //
-JSHINT_BIN = './node_modules/jshint/bin/hint';
+JSHINT_BIN = './node_modules/jshint/bin/jshint';
 cd(__dirname + '/..');
-if (!test('-f', JSHINT_BIN)) {
-  echo('Installing JSHint locally');
-  exec('npm install jshint', {silent:true});
-}
 
 if (!test('-f', JSHINT_BIN)) {
+  echo('JSHint not found. Run `npm install` in the root dir first.');
+  exit(1);
+}
+
+if (exec(JSHINT_BIN + ' --config jshint.json *.js test/*.js').code !== 0) {
   failed = true;
-  echo('*** FAILED TO INSTALL JSHINT!');
+  echo('*** JSHINT FAILED! (return code != 0)');
   echo();
 } else {
-  if (exec(JSHINT_BIN + ' --config jshint.json *.js test/*.js').code !== 0) {
-    failed = true;
-    echo('*** JSHINT FAILED! (return code != 0)');
-    echo();
-  } else {
-    echo('All JSHint tests passed');
-    echo();
-  }
+  echo('All JSHint tests passed');
+  echo();
 }
 
 //

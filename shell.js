@@ -911,7 +911,8 @@ function _dirs(options, index) {
   });
 
   if (options['clear']) {
-    return (_dirStack = []);
+    _dirStack = [];
+    return _dirStack;
   }
 
   var stack = _actualDirStack();
@@ -1442,11 +1443,11 @@ function parseOptions(str, map) {
   // e.g. chars = ['R', 'f']
   var chars = match[1].split('');
 
-  chars.forEach(function(char) {
-    if (char in map)
-      options[map[char]] = true;
+  chars.forEach(function(c) {
+    if (c in map)
+      options[map[c]] = true;
     else
-      error('option not recognized: '+char);
+      error('option not recognized: '+c);
   });
 
   return options;
