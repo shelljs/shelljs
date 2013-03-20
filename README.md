@@ -7,6 +7,7 @@ The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and battled
 + [PDF.js](http://github.com/mozilla/pdf.js) - Firefox's next-gen PDF reader
 + [Firebug](http://getfirebug.com/) - Firefox's infamous debugger
 + [JSHint](http://jshint.com) - Most popular JavaScript linter
++ [Zepto](http://zeptojs.com) - jQuery-compatible JavaScript library for modern browsers
 + [Yeoman](http://yeoman.io/) - Web application stack and development tool
 + [Deployd.com](http://deployd.com) - Open source PaaS for quick API backend generation
 
