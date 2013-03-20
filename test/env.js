@@ -13,7 +13,7 @@ shell.mkdir('tmp');
 
 assert.equal(shell.env['PATH'], process.env['PATH']);
 
-shell.env['MAKERJS_TEST'] = 'hello world';
-assert.equal(shell.env['MAKERJS_TEST'], process.env['MAKERJS_TEST']);
+shell.env['SHELLJS_TEST'] = 'hello world';
+assert.equal(shell.env['SHELLJS_TEST'], process.env['SHELLJS_TEST']);
 
 shell.exit(123);

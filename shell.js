@@ -1154,7 +1154,7 @@ var PERMS = (function (base) {
 //@
 //@ ```javascript
 //@ chmod(755, '/Users/brandon');
-//@ chmod('755', '/Users/brandon'); // same as above 
+//@ chmod('755', '/Users/brandon'); // same as above
 //@ chmod('u+x', '/Users/brandon');
 //@ ```
 //@
@@ -1637,7 +1637,7 @@ function mkdirSyncRecursive(dir) {
   fs.mkdirSync(dir, parseInt('0777', 8));
 }
 
-// e.g. 'makerjs_a5f185d0443ca...'
+// e.g. 'shelljs_a5f185d0443ca...'
 function randomFileName() {
   function randomHash(count) {
     if (count === 1)
@@ -1650,7 +1650,7 @@ function randomFileName() {
     }
   }
 
-  return 'makerjs_'+randomHash(20);
+  return 'shelljs_'+randomHash(20);
 }
 
 // Returns false if 'dir' is not a writeable directory, 'dir' otherwise
