@@ -584,14 +584,19 @@ function _test(options, path) {
   if (!canInterpret)
     error('could not interpret expression');
 
+  if (options.link) {
+    try {
+      return fs.lstatSync(path).isSymbolicLink();
+    } catch(e) {
+      return false;
+    }
+  }
+  
   if (!fs.existsSync(path))
     return false;
 
   if (options.exists)
     return true;
-
-  if (options.link)
-    return fs.lstatSync(path).isSymbolicLink();
 
   var stats = fs.statSync(path);
 
