@@ -1095,9 +1095,15 @@ function _exec(command, options, callback) {
   if (!command)
     error('must specify command');
 
+  // Callback is defined instead of options.
   if (typeof options === 'function') {
     callback = options;
     options = { async: true };
+  }
+
+  // Callback is defined with options.
+  if (typeof options === 'object' && typeof callback === 'function') {
+    options.async = true;
   }
 
   options = extend({
