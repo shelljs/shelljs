@@ -713,7 +713,7 @@ function _sed(options, regex, replacement, file) {
     'i': 'inplace'
   });
 
-  if (typeof replacement === 'string')
+  if (typeof replacement === 'string' || typeof replacement === 'function')
     replacement = replacement; // no-op
   else if (typeof replacement === 'number')
     replacement = replacement.toString(); // fallback
