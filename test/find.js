@@ -29,7 +29,7 @@ var result = shell.find('.');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('.hidden') > -1, true);
 assert.equal(result.indexOf('dir1/dir11/a_dir11') > -1, true);
-assert.equal(result.length, 10);
+assert.equal(result.length, 11);
 shell.cd('../..');
 
 // simple path
@@ -37,7 +37,7 @@ var result = shell.find('resources/find');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('resources/find/.hidden') > -1, true);
 assert.equal(result.indexOf('resources/find/dir1/dir11/a_dir11') > -1, true);
-assert.equal(result.length, 10);
+assert.equal(result.length, 11);
 
 // multiple paths - comma
 var result = shell.find('resources/find/dir1', 'resources/find/dir2');

@@ -166,7 +166,7 @@ function _ls(options, paths) {
           // Recursive?
           if (options.recursive) {
             var pp = dirname + '/' + file;
-            if (fs.statSync(pp).isDirectory())
+            if (fs.lstatSync(pp).isDirectory())
               list = list.concat(_ls('-R'+(options.all?'A':''), pp+'/*'));
           } // recursive
         } // if file matches
