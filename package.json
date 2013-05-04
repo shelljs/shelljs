@@ -23,10 +23,10 @@
   "bin": {
     "shjs": "./bin/shjs"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "jshint": "~1.1.0"
   },
-  "devDependencies": {},
   "optionalDependencies": {},
   "engines": {
     "node": "*"
