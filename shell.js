@@ -1714,7 +1714,7 @@ function execAsync(cmd, opts, callback) {
     silent: config.silent
   }, opts);
 
-  var c = child.exec(cmd, {env: process.env}, function(err) {
+  var c = child.exec(cmd, {env: process.env, maxBuffer: 20*1024*1024}, function(err) {
     if (callback)
       callback(err ? err.code : 0, output);
   });
@@ -1773,7 +1773,7 @@ function execSync(cmd, opts) {
   var script =
    "var child = require('child_process')," +
    "     fs = require('fs');" +
-   "child.exec('"+escape(cmd)+"', {env: process.env}, function(err) {" +
+   "child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {" +
    "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');" +
    "});";
 
@@ -1784,7 +1784,8 @@ function execSync(cmd, opts) {
   fs.writeFileSync(scriptFile, script);
   child.exec('"'+process.execPath+'" '+scriptFile, {
     env: process.env,
-    cwd: exports.pwd()
+    cwd: exports.pwd(),
+    maxBuffer: 20*1024*1024
   });
 
   // The wait loop
