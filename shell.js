@@ -44,7 +44,7 @@ function _cd(options, dir) {
   if (!fs.existsSync(dir))
     error('no such file or directory: ' + dir);
 
-  if (fs.existsSync(dir) && !fs.statSync(dir).isDirectory())
+  if (!fs.statSync(dir).isDirectory())
     error('not a directory: ' + dir);
 
   process.chdir(dir);
@@ -121,14 +121,15 @@ function _ls(options, paths) {
 
   paths.forEach(function(p) {
     if (fs.existsSync(p)) {
+      var stats = fs.statSync(p);
       // Simple file?
-      if (fs.statSync(p).isFile()) {
+      if (stats.isFile()) {
         pushFile(p, p);
         return; // continue
       }
 
       // Simple dir?
-      if (fs.statSync(p).isDirectory()) {
+      if (stats.isDirectory()) {
         // Iterate over p contents
         fs.readdirSync(p).forEach(function(file) {
           if (!pushFile(file, p))
@@ -269,12 +270,15 @@ function _cp(options, sources, dest) {
     error('invalid arguments');
   }
 
+  var exists = fs.existsSync(dest),
+      stats = exists && fs.statSync(dest);
+
   // Dest is not existing dir, but multiple sources given
-  if ((!fs.existsSync(dest) || !fs.statSync(dest).isDirectory()) && sources.length > 1)
+  if ((!exists || !stats.isDirectory()) && sources.length > 1)
     error('dest is not a directory (too many sources)');
 
   // Dest is an existing file, but no -f given
-  if (fs.existsSync(dest) && fs.statSync(dest).isFile() && !options.force)
+  if (exists && stats.isFile() && !options.force)
     error('dest file already exists: ' + dest);
 
   if (options.recursive) {
@@ -384,8 +388,9 @@ function _rm(options, files) {
 
     // If here, path exists
 
+    var stats = fs.statSync(file);
     // Remove simple file
-    if (fs.statSync(file).isFile()) {
+    if (stats.isFile()) {
 
       // Do not check for file writing permissions
       if (options.force) {
@@ -402,13 +407,13 @@ function _rm(options, files) {
     } // simple file
 
     // Path is an existing directory, but no -r flag given
-    if (fs.statSync(file).isDirectory() && !options.recursive) {
+    if (stats.isDirectory() && !options.recursive) {
       error('path is a directory', true);
       return; // skip path
     }
 
     // Recursively remove existing directory
-    if (fs.statSync(file).isDirectory() && options.recursive) {
+    if (stats.isDirectory() && options.recursive) {
       rmdirSyncRecursive(file, options.force);
     }
   }); // forEach(file)
@@ -452,12 +457,15 @@ function _mv(options, sources, dest) {
 
   sources = expand(sources);
 
+  var exists = fs.existsSync(dest),
+      stats = exists && fs.statSync(dest);
+
   // Dest is not existing dir, but multiple sources given
-  if ((!fs.existsSync(dest) || !fs.statSync(dest).isDirectory()) && sources.length > 1)
+  if ((!exists || !stats.isDirectory()) && sources.length > 1)
     error('dest is not a directory (too many sources)');
 
   // Dest is an existing file, but no -f given
-  if (fs.existsSync(dest) && fs.statSync(dest).isFile() && !options.force)
+  if (exists && stats.isFile() && !options.force)
     error('dest file already exists: ' + dest);
 
   sources.forEach(function(src) {
@@ -591,7 +599,7 @@ function _test(options, path) {
       return false;
     }
   }
-  
+
   if (!fs.existsSync(path))
     return false;
 
