@@ -35,9 +35,13 @@ var state = {
 
 
 //@
-//@ ### cd('dir')
-//@ Changes to directory `dir` for the duration of the script
-function _cd(options, dir) {
+//@ ### cd('dir' [,fn])
+//@ Changes to directory `dir` for the duration of the script. Alternatively, if
+//@ a function is provided, changes to directory `dir`, calls the function, and
+//@ changes back to the original directory.
+function _cd(options, dir, fn) {
+  var oldDir;
+
   if (!dir)
     error('directory not specified');
 
@@ -47,7 +51,15 @@ function _cd(options, dir) {
   if (!fs.statSync(dir).isDirectory())
     error('not a directory: ' + dir);
 
+  if (fn)
+    oldDir = _pwd();
+
   process.chdir(dir);
+
+  if (fn) {
+    fn();
+    _cd('', oldDir);
+  }
 }
 exports.cd = wrap('cd', _cd);
 
