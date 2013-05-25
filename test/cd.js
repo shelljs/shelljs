@@ -16,6 +16,8 @@ function numLines(str) {
 // save current dir
 var cur = shell.pwd();
 
+var calledCount;
+
 shell.rm('-rf', 'tmp');
 shell.mkdir('tmp');
 
@@ -47,6 +49,19 @@ shell.cd(cur);
 shell.cd('/');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), path.resolve('/'));
+
+calledCount = 0;
+shell.cd(cur);
+shell.cd('tmp', function() {
+    assert.equal(path.basename(process.cwd()), 'tmp');
+    shell.cd('/', function() {
+        calledCount++;
+        assert.equal(process.cwd(), path.resolve('/'));
+    });
+    assert.equal(path.basename(process.cwd()), 'tmp');
+});
+assert.equal(process.cwd(), cur);
+assert.equal(calledCount, 1);
 
 // cd + other commands
 
