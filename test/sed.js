@@ -50,6 +50,10 @@ var result = shell.sed(/test1/, 1234, 'tmp/file1'); // numeric replacement
 assert.equal(shell.error(), null);
 assert.equal(result, '1234');
 
+var result = shell.sed('test1', function() { return 'hello' }, 'tmp/file1'); // function replacement
+assert.equal(shell.error(), null);
+assert.equal(result, 'hello');
+
 var result = shell.sed('-i', /test1/, 'hello', 'tmp/file1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello');
