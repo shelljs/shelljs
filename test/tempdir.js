@@ -2,7 +2,8 @@ var shell = require('..');
 
 var assert = require('assert'),
     path = require('path'),
-    fs = require('fs');
+    fs = require('fs'),
+    os = require('os');
 
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
@@ -21,6 +22,10 @@ shell.mkdir('tmp');
 //
 
 var tmp = shell.tempdir();
+// node 0.8+
+if (os.tmpDir) {
+  assert.equal(os.tmpDir(), tmp);
+}
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync(tmp), true);
 

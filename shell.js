@@ -1698,18 +1698,22 @@ function tempDir() {
   if (state.tempDir)
     return state.tempDir; // from cache
 
-  state.tempDir = writeableDir(process.env['TMPDIR']) ||
-                  writeableDir(process.env['TEMP']) ||
-                  writeableDir(process.env['TMP']) ||
-                  writeableDir(process.env['Wimp$ScrapDir']) || // RiscOS
-                  writeableDir('C:\\TEMP') || // Windows
-                  writeableDir('C:\\TMP') || // Windows
-                  writeableDir('\\TEMP') || // Windows
-                  writeableDir('\\TMP') || // Windows
-                  writeableDir('/tmp') ||
-                  writeableDir('/var/tmp') ||
-                  writeableDir('/usr/tmp') ||
-                  writeableDir('.'); // last resort
+  state.tempDir = os.tmpDir ?
+    // node 0.8+ has `os.tmpDir()`
+    os.tmpDir() :
+    // back-compat for older node installs
+    writeableDir(process.env['TMPDIR']) ||
+    writeableDir(process.env['TEMP']) ||
+    writeableDir(process.env['TMP']) ||
+    writeableDir(process.env['Wimp$ScrapDir']) || // RiscOS
+    writeableDir('C:\\TEMP') || // Windows
+    writeableDir('C:\\TMP') || // Windows
+    writeableDir('\\TEMP') || // Windows
+    writeableDir('\\TMP') || // Windows
+    writeableDir('/tmp') ||
+    writeableDir('/var/tmp') ||
+    writeableDir('/usr/tmp') ||
+    writeableDir('.'); // last resort
 
   return state.tempDir;
 }
