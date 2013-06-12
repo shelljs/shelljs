@@ -22,10 +22,6 @@ shell.mkdir('tmp');
 //
 
 var tmp = shell.tempdir();
-// node 0.8+
-if (os.tmpDir) {
-  assert.equal(os.tmpDir(), tmp);
-}
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync(tmp), true);
 
