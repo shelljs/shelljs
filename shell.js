@@ -1698,7 +1698,8 @@ function tempDir() {
   if (state.tempDir)
     return state.tempDir; // from cache
 
-  state.tempDir = writeableDir(process.env['TMPDIR']) ||
+  state.tempDir = writeableDir(os.tempDir && os.tempDir()) || // node 0.8+
+                  writeableDir(process.env['TMPDIR']) ||
                   writeableDir(process.env['TEMP']) ||
                   writeableDir(process.env['TMP']) ||
                   writeableDir(process.env['Wimp$ScrapDir']) || // RiscOS
