@@ -31,42 +31,55 @@ assert.ok(result.code > 0);
 // sync
 //
 
-// check if stdout goes to output
-var result = shell.exec('node -e \"console.log(1234);\"');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.ok(result.output === '1234\n' || result.output === '1234\nundefined\n'); // 'undefined' for v0.4
+function testSync(opt) {
+  var result;
+  // check if stdout goes to output
+  result = shell.exec('node -e \"console.log(1234);\"', opt);
+  assert.equal(shell.error(), null);
+  assert.equal(result.code, 0);
+  assert.ok(result.output === '1234\n' || result.output === '1234\nundefined\n'); // 'undefined' for v0.4
 
-// check if stderr goes to output
-var result = shell.exec('node -e \"console.error(1234);\"');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.ok(result.output === '1234\n' || result.output === '1234\nundefined\n'); // 'undefined' for v0.4
+  // check if stderr goes to output
+  result = shell.exec('node -e \"console.error(1234);\"', opt);
+  assert.equal(shell.error(), null);
+  assert.equal(result.code, 0);
+  assert.ok(result.output === '1234\n' || result.output === '1234\nundefined\n'); // 'undefined' for v0.4
 
-// check if stdout + stderr go to output
-var result = shell.exec('node -e \"console.error(1234); console.log(666);\"');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.ok(result.output === '1234\n666\n' || result.output === '1234\n666\nundefined\n');  // 'undefined' for v0.4
+  // check if stdout + stderr go to output
+  result = shell.exec('node -e \"console.error(1234); console.log(666);\"', opt);
+  assert.equal(shell.error(), null);
+  assert.equal(result.code, 0);
+  assert.ok(result.output === '1234\n666\n' || result.output === '1234\n666\nundefined\n');  // 'undefined' for v0.4
 
-// check exit code
-var result = shell.exec('node -e \"process.exit(12);\"');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 12);
+  // check exit code
+  result = shell.exec('node -e \"process.exit(12);\"', opt);
+  assert.equal(shell.error(), null);
+  assert.equal(result.code, 12);
 
-// interaction with cd
-shell.cd('resources/external');
-var result = shell.exec('node node_script.js');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result.output, 'node_script_1234\n');
-shell.cd('../..');
+  // interaction with cd
+  shell.cd('resources/external');
+  result = shell.exec('node node_script.js', opt);
+  assert.equal(shell.error(), null);
+  assert.equal(result.code, 0);
+  assert.equal(result.output, 'node_script_1234\n');
+  shell.cd('../..');
 
-// check quotes escaping
-var result = shell.exec( util.format('node -e "console.log(%s);"', "\\\"\\'+\\'_\\'+\\'\\\"") );
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result.output, "'+'_'+'\n");
+  // check quotes escaping
+  result = shell.exec( util.format('node -e "console.log(%s);"', "\\\"\\'+\\'_\\'+\\'\\\""), opt );
+  assert.equal(shell.error(), null);
+  assert.equal(result.code, 0);
+  assert.equal(result.output, "'+'_'+'\n");
+
+
+
+}
+
+// test native sync implementation first
+testSync();
+
+// test hack sync implementation second
+testSync({_native:false});
+
 
 //
 // async

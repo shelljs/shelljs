@@ -13,6 +13,19 @@ var fs = require('fs'),
     child = require('child_process'),
     os = require('os');
 
+var execSyncNG;
+
+
+// Try to load execsync-ng based on node-ffi, unless
+// execsync-ng failed to install or node-ffi is
+// unable to load the msvcrt library (on windows),
+try {
+  execSyncNG = require('execsync-ng');
+} catch (e) {
+  execSyncNG = null;
+}
+
+
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
 
@@ -1510,6 +1523,8 @@ function wrap(cmd, fn, options) {
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
 //  with large files)
 function copyFileSync(srcFile, destFile) {
+
+  //console.log("copying", srcFile, "to", destFile);
   if (!fs.existsSync(srcFile))
     error('copyFileSync: no such file or directory: ' + srcFile);
 
@@ -1540,6 +1555,7 @@ function copyFileSync(srcFile, destFile) {
 
   fs.closeSync(fdr);
   fs.closeSync(fdw);
+  //console.log("done copying", srcFile, "to", destFile);
 }
 
 // Recursively copies 'sourceDir' into 'destDir'
@@ -1743,20 +1759,31 @@ function execAsync(cmd, opts, callback) {
   return c;
 }
 
+
+
+
+function execSyncFfi(cmd, opts) {
+  var res = execSyncNG.exec(cmd, opts);
+  return { 
+    code: res.code, 
+    output: res.stdout 
+  };
+
+}
+
+
 // Hack to run child_process.exec() synchronously (sync avoids callback hell)
 // Uses a custom wait loop that checks for a flag file, created when the child process is done.
 // (Can't do a wait loop that checks for internal Node variables/messages as
 // Node is single-threaded; callbacks and other internal state changes are done in the
 // event loop).
-function execSync(cmd, opts) {
+
+function execSyncHack(cmd, options) {
   var stdoutFile = path.resolve(tempDir()+'/'+randomFileName()),
       codeFile = path.resolve(tempDir()+'/'+randomFileName()),
       scriptFile = path.resolve(tempDir()+'/'+randomFileName()),
       sleepFile = path.resolve(tempDir()+'/'+randomFileName());
 
-  var options = extend({
-    silent: config.silent
-  }, opts);
 
   var previousStdoutContent = '';
   // Echoes stdout changes from running process, if not silent
@@ -1825,7 +1852,24 @@ function execSync(cmd, opts) {
     output: stdout
   };
   return obj;
-} // execSync()
+} // execSyncHack()
+
+
+function execSync(cmd, opts) {
+  var options = extend({
+    silent: config.silent,
+    _native: true
+  }, opts);
+
+  // Use the ffi execsync module if available
+  if (execSyncNG && options._native)
+    return execSyncFfi(cmd, options);
+  // Otherwise fallback to the hack.
+  else
+    return execSyncHack(cmd, options);
+}
+
+
 
 // Expands wildcards with matching file names. For a given array of file names 'list', returns
 // another array containing all file names as per ls(list[i]).
