@@ -562,7 +562,7 @@ exports.mkdir = wrap('mkdir', _mkdir);
 //@
 //@ ```javascript
 //@ if (test('-d', path)) { /* do something with dir */ };
-//@ if (!test('-f', path)) continue; // skip if it's a regular file
+//@ if (!test('-f', path)) continue; // skip if it's not a regular file
 //@ ```
 //@
 //@ Evaluates expression using the available primaries and returns corresponding value.
@@ -694,12 +694,38 @@ function _to(options, file) {
     error('could not write to file (code '+e.code+'): '+file, true);
   }
 }
+//@
+//@ ### 'string'.toAppend(file)
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ cat('input.txt').toAppend('output.txt');
+//@ ```
+//@
+//@ Analogous to the redirection operator `>>` in Unix, but works with JavaScript strings (such as
+//@ those returned by `cat`, `grep`, etc). _Like it's Unix counterpart, this function will attempt to
+//@ append the text passed to it onto the exisiting file._
+function _toAppend(options, file) {
+  if (!file)
+    error('wrong arguments');
+
+  if (!fs.existsSync( path.dirname(file) ))
+      error('no such file or directory: ' + path.dirname(file));
+
+  try {
+    fs.appendFileSync(file, this.toString(), 'utf8');
+  } catch(e) {
+    error('could not write to file (code '+e.code+'): '+file, true);
+  }
+}
 // In the future, when Proxies are default, we can add methods like `.to()` to primitive strings.
 // For now, this is a dummy function to bookmark places we need such strings
 function ShellString(str) {
   return str;
 }
 String.prototype.to = wrap('to', _to);
+String.prototype.toAppend = wrap('toAppend', _toAppend);
 
 //@
 //@ ### sed([options ,] search_regex, replace_str, file)
@@ -1174,7 +1200,7 @@ var PERMS = (function (base) {
 //@
 //@ ```javascript
 //@ chmod(755, '/Users/brandon');
-//@ chmod('755', '/Users/brandon'); // same as above
+//@ chmod('755', '/Users/brandon'); // same as above 
 //@ chmod('u+x', '/Users/brandon');
 //@ ```
 //@
