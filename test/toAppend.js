@@ -31,10 +31,10 @@ assert.ok(shell.error());
 // Valids
 //
 
-'hello world\n'.toAppend('tmp/toAppend1');
+'hello world'.toAppend('tmp/toAppend1');
 'hello world'.toAppend('tmp/toAppend1');
 var result = shell.cat('tmp/toAppend1');
 assert.equal(shell.error(), null);
-assert.equal(result, 'hello world\nhello world');
+assert.equal(result, 'hello worldhello world');
 
 shell.exit(123);
