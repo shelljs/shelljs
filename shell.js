@@ -234,30 +234,7 @@ String.prototype.to = wrap('to', _to);
 //@
 //@ Reads an input string from `file` and performs a JavaScript `replace()` on the input
 //@ using the given search regex and replacement string. Returns the new string after replacement.
-function _sed(options, regex, replacement, file) {
-  options = parseOptions(options, {
-    'i': 'inplace'
-  });
-
-  if (typeof replacement === 'string')
-    replacement = replacement; // no-op
-  else if (typeof replacement === 'number')
-    replacement = replacement.toString(); // fallback
-  else
-    error('invalid replacement string');
-
-  if (!file)
-    error('no file given');
-
-  if (!fs.existsSync(file))
-    error('no such file or directory: ' + file);
-
-  var result = fs.readFileSync(file, 'utf8').replace(regex, replacement);
-  if (options.inplace)
-    fs.writeFileSync(file, result, 'utf8');
-
-  return ShellString(result);
-}
+var _sed = require('./src/sed');
 exports.sed = wrap('sed', _sed);
 
 //@
