@@ -253,38 +253,7 @@ exports.sed = wrap('sed', _sed);
 //@
 //@ Reads input string from given files and returns a string containing all lines of the
 //@ file that match the given `regex_filter`. Wildcard `*` accepted.
-function _grep(options, regex, files) {
-  options = parseOptions(options, {
-    'v': 'inverse'
-  });
-
-  if (!files)
-    error('no paths given');
-
-  if (typeof files === 'string')
-    files = [].slice.call(arguments, 2);
-  // if it's array leave it as it is
-
-  files = expand(files);
-
-  var grep = '';
-  files.forEach(function(file) {
-    if (!fs.existsSync(file)) {
-      error('no such file or directory: ' + file, true);
-      return;
-    }
-
-    var contents = fs.readFileSync(file, 'utf8'),
-        lines = contents.split(/\r*\n/);
-    lines.forEach(function(line) {
-      var matched = line.match(regex);
-      if ((options.inverse && !matched) || (!options.inverse && matched))
-        grep += line + '\n';
-    });
-  });
-
-  return ShellString(grep);
-}
+var _grep = require('./src/grep');
 exports.grep = wrap('grep', _grep);
 
 
