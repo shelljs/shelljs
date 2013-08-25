@@ -216,19 +216,7 @@ exports.cat = wrap('cat', _cat);
 //@
 //@ Analogous to the redirection operator `>` in Unix, but works with JavaScript strings (such as
 //@ those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will overwrite any existing file!_
-function _to(options, file) {
-  if (!file)
-    error('wrong arguments');
-
-  if (!fs.existsSync( path.dirname(file) ))
-      error('no such file or directory: ' + path.dirname(file));
-
-  try {
-    fs.writeFileSync(file, this.toString(), 'utf8');
-  } catch(e) {
-    error('could not write to file (code '+e.code+'): '+file, true);
-  }
-}
+var _to = require('./src/to');
 String.prototype.to = wrap('to', _to);
 
 //@
