@@ -307,6 +307,16 @@ cat('input.txt').to('output.txt');
 Analogous to the redirection operator `>` in Unix, but works with JavaScript strings (such as
 those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will overwrite any existing file!_
 
+### 'string'.appendTo(file)
+
+Examples:
+
+```javascript
+cat('input.txt').appendTo('output.txt');
+```
+
+Analogous to the redirect-and-append operator `>>` in Unix, but works with JavaScript strings (such as
+those returned by `cat`, `grep`, etc).
 
 ### sed([options ,] search_regex, replace_str, file)
 Available options:
