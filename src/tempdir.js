@@ -21,9 +21,10 @@ function writeableDir(dir) {
 }
 
 
-// Cross-platform method for getting an available temporary directory.
-// Follows the algorithm of Python's tempfile.tempdir
-// http://docs.python.org/library/tempfile.html#tempfile.tempdir
+//@
+//@ ### tempdir()
+//@ Searches and returns string containing a writeable, platform-dependent temporary directory.
+//@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 function _tempDir() {
   var state = common.state;
   if (state.tempDir)

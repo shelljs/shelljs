@@ -70,6 +70,23 @@ function isWriteable(file) {
   return writePermission;
 }
 
+//@
+//@ ### rm([options ,] file [, file ...])
+//@ ### rm([options ,] file_array)
+//@ Available options:
+//@
+//@ + `-f`: force
+//@ + `-r, -R`: recursive
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ rm('-rf', '/tmp/*');
+//@ rm('some_file.txt', 'another_file.txt');
+//@ rm(['some_file.txt', 'another_file.txt']); // same as above
+//@ ```
+//@
+//@ Removes files. The wildcard `*` is accepted.
 function _rm(options, files) {
   options = common.parseOptions(options, {
     'f': 'force',

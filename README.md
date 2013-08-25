@@ -150,8 +150,10 @@ All commands run synchronously, unless otherwise stated.
 ### cd('dir')
 Changes to directory `dir` for the duration of the script
 
+
 ### pwd()
 Returns the current directory.
+
 
 ### ls([options ,] path [,path ...])
 ### ls([options ,] path_array)
@@ -170,6 +172,7 @@ ls('-R', ['/users/me', '/tmp']); // same as above
 
 Returns array of files in the given path, or in current directory if no path provided.
 
+
 ### find(path [,path ...])
 ### find(path_array)
 Examples:
@@ -184,6 +187,7 @@ Returns array of all files (however deep) in the given paths.
 
 The main difference from `ls('-R', path)` is that the resulting file names
 include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
+
 
 ### cp([options ,] source [,source ...], dest)
 ### cp([options ,] source_array, dest)
@@ -202,6 +206,7 @@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 
 Copies files. The wildcard `*` is accepted.
 
+
 ### rm([options ,] file [, file ...])
 ### rm([options ,] file_array)
 Available options:
@@ -219,6 +224,7 @@ rm(['some_file.txt', 'another_file.txt']); // same as above
 
 Removes files. The wildcard `*` is accepted.
 
+
 ### mv(source [, source ...], dest')
 ### mv(source_array, dest')
 Available options:
@@ -235,6 +241,7 @@ mv(['file1', 'file2'], 'dir/'); // same as above
 
 Moves files. The wildcard `*` is accepted.
 
+
 ### mkdir([options ,] dir [, dir ...])
 ### mkdir([options ,] dir_array)
 Available options:
@@ -249,6 +256,7 @@ mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 ```
 
 Creates directories.
+
 
 ### test(expression)
 Available expression primaries:
@@ -266,10 +274,11 @@ Examples:
 
 ```javascript
 if (test('-d', path)) { /* do something with dir */ };
-if (!test('-f', path)) continue; // skip if it's not a regular file
+if (!test('-f', path)) continue; // skip if it's a regular file
 ```
 
 Evaluates expression using the available primaries and returns corresponding value.
+
 
 ### cat(file [, file ...])
 ### cat(file_array)
@@ -286,6 +295,7 @@ Returns a string containing the given file, or a concatenated string
 containing the files if more than one file is given (a new line character is
 introduced between each file). Wildcard `*` accepted.
 
+
 ### 'string'.to(file)
 
 Examples:
@@ -296,6 +306,7 @@ cat('input.txt').to('output.txt');
 
 Analogous to the redirection operator `>` in Unix, but works with JavaScript strings (such as
 those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will overwrite any existing file!_
+
 
 ### sed([options ,] search_regex, replace_str, file)
 Available options:
@@ -311,6 +322,7 @@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 
 Reads an input string from `file` and performs a JavaScript `replace()` on the input
 using the given search regex and replacement string. Returns the new string after replacement.
+
 
 ### grep([options ,] regex_filter, file [, file ...])
 ### grep([options ,] regex_filter, file_array)
@@ -328,6 +340,7 @@ grep('GLOBAL_VARIABLE', '*.js');
 Reads input string from given files and returns a string containing all lines of the
 file that match the given `regex_filter`. Wildcard `*` accepted.
 
+
 ### which(command)
 
 Examples:
@@ -338,6 +351,7 @@ var nodeExec = which('node');
 
 Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`, and `.bat` extensions.
 Returns string containing the absolute path to the command.
+
 
 ### echo(string [,string ...])
 
@@ -351,20 +365,6 @@ var str = echo('hello world');
 Prints string to stdout, and returns string with additional utility methods
 like `.to()`.
 
-### dirs([options | '+N' | '-N'])
-
-Available options:
-
-+ `-c`: Clears the directory stack by deleting all of the elements.
-
-Arguments:
-
-+ `+N`: Displays the Nth directory (counting from the left of the list printed by dirs when invoked without options), starting with zero.
-+ `-N`: Displays the Nth directory (counting from the right of the list printed by dirs when invoked without options), starting with zero.
-
-Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if +N or -N was specified.
-
-See also: pushd, popd
 
 ### pushd([options,] [dir | '-N' | '+N'])
 
@@ -411,6 +411,22 @@ echo(process.cwd()); // '/usr'
 
 When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0. Returns an array of paths in the stack.
 
+### dirs([options | '+N' | '-N'])
+
+Available options:
+
++ `-c`: Clears the directory stack by deleting all of the elements.
+
+Arguments:
+
++ `+N`: Displays the Nth directory (counting from the left of the list printed by dirs when invoked without options), starting with zero.
++ `-N`: Displays the Nth directory (counting from the right of the list printed by dirs when invoked without options), starting with zero.
+
+Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if +N or -N was specified.
+
+See also: pushd, popd
+
+
 ### exit(code)
 Exits the current process with the given exit code.
 
@@ -448,6 +464,7 @@ the `callback` gets the arguments `(code, output)`.
 the current synchronous implementation uses a lot of CPU. This should be getting
 fixed soon.
 
+
 ### chmod(octal_mode || octal_string, file)
 ### chmod(symbolic_mode, file)
 
@@ -461,7 +478,7 @@ Examples:
 
 ```javascript
 chmod(755, '/Users/brandon');
-chmod('755', '/Users/brandon'); // same as above 
+chmod('755', '/Users/brandon'); // same as above
 chmod('u+x', '/Users/brandon');
 ```
 
@@ -473,6 +490,20 @@ Notable exceptions:
 + In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
   given to the umask.
 + There is no "quiet" option since default behavior is to run silent.
+
+
+## Non-Unix commands
+
+
+### tempdir()
+Searches and returns string containing a writeable, platform-dependent temporary directory.
+Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
+
+
+### error()
+Tests if error occurred in the last command. Returns `null` if no error occurred,
+otherwise returns string explaining the error
+
 
 ## Configuration
 
@@ -500,14 +531,3 @@ cp('this_file_does_not_exist', '/dev/null'); // dies here
 ```
 
 If `true` the script will die on errors. Default is `false`.
-
-## Non-Unix commands
-
-
-### tempdir()
-Searches and returns string containing a writeable, platform-dependent temporary directory.
-Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
-
-### error()
-Tests if error occurred in the last command. Returns `null` if no error occurred,
-otherwise returns string explaining the error

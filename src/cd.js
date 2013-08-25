@@ -1,6 +1,9 @@
 var fs = require('fs');
 var common = require('./common');
 
+//@
+//@ ### cd('dir')
+//@ Changes to directory `dir` for the duration of the script
 function _cd(options, dir) {
   if (!dir)
     common.error('directory not specified');

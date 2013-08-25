@@ -13,6 +13,17 @@ function splitPath(p) {
     return p.split(':');
 }
 
+//@
+//@ ### which(command)
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ var nodeExec = which('node');
+//@ ```
+//@
+//@ Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`, and `.bat` extensions.
+//@ Returns string containing the absolute path to the command.
 function _which(options, cmd) {
   if (!cmd)
     common.error('must specify command');

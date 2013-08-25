@@ -2,6 +2,22 @@ var fs = require('fs');
 var path = require('path');
 var common = require('./common');
 
+//@
+//@ ### mv(source [, source ...], dest')
+//@ ### mv(source_array, dest')
+//@ Available options:
+//@
+//@ + `f`: force
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ mv('-f', 'file', 'dir/');
+//@ mv('file1', 'file2', 'dir/');
+//@ mv(['file1', 'file2'], 'dir/'); // same as above
+//@ ```
+//@
+//@ Moves files. The wildcard `*` is accepted.
 function _mv(options, sources, dest) {
   options = common.parseOptions(options, {
     'f': 'force'

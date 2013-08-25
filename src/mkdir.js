@@ -19,6 +19,21 @@ function mkdirSyncRecursive(dir) {
   fs.mkdirSync(dir, parseInt('0777', 8));
 }
 
+//@
+//@ ### mkdir([options ,] dir [, dir ...])
+//@ ### mkdir([options ,] dir_array)
+//@ Available options:
+//@
+//@ + `p`: full path (will create intermediate dirs if necessary)
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ mkdir('-p', '/tmp/a/b/c/d', '/tmp/e/f/g');
+//@ mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
+//@ ```
+//@
+//@ Creates directories.
 function _mkdir(options, dirs) {
   options = common.parseOptions(options, {
     'p': 'fullpath'

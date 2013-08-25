@@ -1,6 +1,22 @@
 var common = require('./common');
 var fs = require('fs');
 
+//@
+//@ ### grep([options ,] regex_filter, file [, file ...])
+//@ ### grep([options ,] regex_filter, file_array)
+//@ Available options:
+//@
+//@ + `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ grep('-v', 'GLOBAL_VARIABLE', '*.js');
+//@ grep('GLOBAL_VARIABLE', '*.js');
+//@ ```
+//@
+//@ Reads input string from given files and returns a string containing all lines of the
+//@ file that match the given `regex_filter`. Wildcard `*` accepted.
 function _grep(options, regex, files) {
   options = common.parseOptions(options, {
     'v': 'inverse'

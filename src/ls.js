@@ -4,6 +4,23 @@ var common = require('./common');
 var _cd = require('./cd');
 var _pwd = require('./pwd');
 
+//@
+//@ ### ls([options ,] path [,path ...])
+//@ ### ls([options ,] path_array)
+//@ Available options:
+//@
+//@ + `-R`: recursive
+//@ + `-A`: all files (include files beginning with `.`, except for `.` and `..`)
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ ls('projs/*.js');
+//@ ls('-R', '/users/me', '/tmp');
+//@ ls('-R', ['/users/me', '/tmp']); // same as above
+//@ ```
+//@
+//@ Returns array of files in the given path, or in current directory if no path provided.
 function _ls(options, paths) {
   options = common.parseOptions(options, {
     'R': 'recursive',

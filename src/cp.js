@@ -82,6 +82,23 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 } // cpdirSyncRecursive
 
 
+//@
+//@ ### cp([options ,] source [,source ...], dest)
+//@ ### cp([options ,] source_array, dest)
+//@ Available options:
+//@
+//@ + `-f`: force
+//@ + `-r, -R`: recursive
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ cp('file1', 'dir1');
+//@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
+//@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
+//@ ```
+//@
+//@ Copies files. The wildcard `*` is accepted.
 function _cp(options, sources, dest) {
   options = common.parseOptions(options, {
     'f': 'force',
