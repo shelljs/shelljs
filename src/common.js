@@ -1,4 +1,5 @@
 var os = require('os');
+var fs = require('fs');
 var _ls = require('./ls');
 
 // Module globals
@@ -102,3 +103,20 @@ function expand(list) {
   return expanded;
 }
 exports.expand = expand;
+
+// Normalizes _unlinkSync() across platforms to match Unix behavior, i.e.
+// file can be unlinked even if it's read-only, see https://github.com/joyent/node/issues/3006
+function unlinkSync(file) {
+  try {
+    fs.unlinkSync(file);
+  } catch(e) {
+    // Try to override file permission
+    if (e.code === 'EPERM') {
+      fs.chmodSync(file, '0666');
+      fs.unlinkSync(file);
+    } else {
+      throw e;
+    }
+  }
+}
+exports.unlinkSync = unlinkSync;
