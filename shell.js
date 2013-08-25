@@ -24,6 +24,7 @@ var ShellString = common.ShellString;
 var parseOptions = common.parseOptions;
 var log = common.log;
 var error = common.error;
+var expand = common.expand;
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
@@ -100,100 +101,7 @@ exports.find = wrap('find', _find);
 //@ ```
 //@
 //@ Copies files. The wildcard `*` is accepted.
-function _cp(options, sources, dest) {
-  options = parseOptions(options, {
-    'f': 'force',
-    'R': 'recursive',
-    'r': 'recursive'
-  });
-
-  // Get sources, dest
-  if (arguments.length < 3) {
-    error('missing <source> and/or <dest>');
-  } else if (arguments.length > 3) {
-    sources = [].slice.call(arguments, 1, arguments.length - 1);
-    dest = arguments[arguments.length - 1];
-  } else if (typeof sources === 'string') {
-    sources = [sources];
-  } else if ('length' in sources) {
-    sources = sources; // no-op for array
-  } else {
-    error('invalid arguments');
-  }
-
-  var exists = fs.existsSync(dest),
-      stats = exists && fs.statSync(dest);
-
-  // Dest is not existing dir, but multiple sources given
-  if ((!exists || !stats.isDirectory()) && sources.length > 1)
-    error('dest is not a directory (too many sources)');
-
-  // Dest is an existing file, but no -f given
-  if (exists && stats.isFile() && !options.force)
-    error('dest file already exists: ' + dest);
-
-  if (options.recursive) {
-    // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
-    // (see Github issue #15)
-    sources.forEach(function(src, i) {
-      if (src[src.length - 1] === '/')
-        sources[i] += '*';
-    });
-
-    // Create dest
-    try {
-      fs.mkdirSync(dest, parseInt('0777', 8));
-    } catch (e) {
-      // like Unix's cp, keep going even if we can't create dest dir
-    }
-  }
-
-  sources = expand(sources);
-
-  sources.forEach(function(src) {
-    if (!fs.existsSync(src)) {
-      error('no such file or directory: '+src, true);
-      return; // skip file
-    }
-
-    // If here, src exists
-    if (fs.statSync(src).isDirectory()) {
-      if (!options.recursive) {
-        // Non-Recursive
-        log(src + ' is a directory (not copied)');
-      } else {
-        // Recursive
-        // 'cp /a/source dest' should create 'source' in 'dest'
-        var newDest = path.join(dest, path.basename(src)),
-            checkDir = fs.statSync(src);
-        try {
-          fs.mkdirSync(newDest, checkDir.mode);
-        } catch (e) {
-          //if the directory already exists, that's okay
-          if (e.code !== 'EEXIST') throw e;
-        }
-
-        cpdirSyncRecursive(src, newDest, {force: options.force});
-      }
-      return; // done with dir
-    }
-
-    // If here, src is a file
-
-    // When copying to '/path/dir':
-    //    thisDest = '/path/dir/file1'
-    var thisDest = dest;
-    if (fs.existsSync(dest) && fs.statSync(dest).isDirectory())
-      thisDest = path.normalize(dest + '/' + path.basename(src));
-
-    if (fs.existsSync(thisDest) && !options.force) {
-      error('dest file already exists: ' + thisDest, true);
-      return; // skip file
-    }
-
-    copyFileSync(src, thisDest);
-  }); // forEach(src)
-}
+var _cp = require('./src/cp');
 exports.cp = wrap('cp', _cp);
 
 //@
@@ -1297,85 +1205,6 @@ function wrap(cmd, fn, options) {
   };
 } // wrap
 
-// Buffered file copy, synchronous
-// (Using readFileSync() + writeFileSync() could easily cause a memory overflow
-//  with large files)
-function copyFileSync(srcFile, destFile) {
-  if (!fs.existsSync(srcFile))
-    error('copyFileSync: no such file or directory: ' + srcFile);
-
-  var BUF_LENGTH = 64*1024,
-      buf = new Buffer(BUF_LENGTH),
-      bytesRead = BUF_LENGTH,
-      pos = 0,
-      fdr = null,
-      fdw = null;
-
-  try {
-    fdr = fs.openSync(srcFile, 'r');
-  } catch(e) {
-    error('copyFileSync: could not read src file ('+srcFile+')');
-  }
-
-  try {
-    fdw = fs.openSync(destFile, 'w');
-  } catch(e) {
-    error('copyFileSync: could not write to dest file (code='+e.code+'):'+destFile);
-  }
-
-  while (bytesRead === BUF_LENGTH) {
-    bytesRead = fs.readSync(fdr, buf, 0, BUF_LENGTH, pos);
-    fs.writeSync(fdw, buf, 0, bytesRead);
-    pos += bytesRead;
-  }
-
-  fs.closeSync(fdr);
-  fs.closeSync(fdw);
-}
-
-// Recursively copies 'sourceDir' into 'destDir'
-// Adapted from https://github.com/ryanmcgrath/wrench-js
-//
-// Copyright (c) 2010 Ryan McGrath
-// Copyright (c) 2012 Artur Adib
-//
-// Licensed under the MIT License
-// http://www.opensource.org/licenses/mit-license.php
-function cpdirSyncRecursive(sourceDir, destDir, opts) {
-  if (!opts) opts = {};
-
-  /* Create the directory where all our junk is moving to; read the mode of the source directory and mirror it */
-  var checkDir = fs.statSync(sourceDir);
-  try {
-    fs.mkdirSync(destDir, checkDir.mode);
-  } catch (e) {
-    //if the directory already exists, that's okay
-    if (e.code !== 'EEXIST') throw e;
-  }
-
-  var files = fs.readdirSync(sourceDir);
-
-  for(var i = 0; i < files.length; i++) {
-    var currFile = fs.lstatSync(sourceDir + "/" + files[i]);
-
-    if (currFile.isDirectory()) {
-      /* recursion this thing right on back. */
-      cpdirSyncRecursive(sourceDir + "/" + files[i], destDir + "/" + files[i], opts);
-    } else if (currFile.isSymbolicLink()) {
-      var symlinkFull = fs.readlinkSync(sourceDir + "/" + files[i]);
-      fs.symlinkSync(symlinkFull, destDir + "/" + files[i]);
-    } else {
-      /* At this point, we've hit a file actually worth copying... so copy it on over. */
-      if (fs.existsSync(destDir + "/" + files[i]) && !opts.force) {
-        log('skipping existing file: ' + files[i]);
-      } else {
-        copyFileSync(sourceDir + "/" + files[i], destDir + "/" + files[i]);
-      }
-    }
-
-  } // for files
-} // cpdirSyncRecursive
-
 // Recursively removes 'dir'
 // Adapted from https://github.com/ryanmcgrath/wrench-js
 //
@@ -1617,26 +1446,6 @@ function execSync(cmd, opts) {
   };
   return obj;
 } // execSync()
-
-// Expands wildcards with matching file names. For a given array of file names 'list', returns
-// another array containing all file names as per ls(list[i]).
-// For example:
-//   expand(['file*.js']) = ['file1.js', 'file2.js', ...]
-//   (if the files 'file1.js', 'file2.js', etc, exist in the current dir)
-function expand(list) {
-  var expanded = [];
-  list.forEach(function(listEl) {
-    // Wildcard present?
-    if (listEl.search(/\*/) > -1) {
-      _ls('', listEl).forEach(function(file) {
-        expanded.push(file);
-      });
-    } else {
-      expanded.push(listEl);
-    }
-  });
-  return expanded;
-}
 
 // Cross-platform method for splitting environment PATH variables
 function splitPath(p) {

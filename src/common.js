@@ -1,4 +1,5 @@
 var os = require('os');
+var _ls = require('./ls');
 
 // Module globals
 var config = {
@@ -81,3 +82,23 @@ function parseOptions(str, map) {
   return options;
 }
 exports.parseOptions = parseOptions;
+
+// Expands wildcards with matching (ie. existing) file names.
+// For example:
+//   expand(['file*.js']) = ['file1.js', 'file2.js', ...]
+//   (if the files 'file1.js', 'file2.js', etc, exist in the current dir)
+function expand(list) {
+  var expanded = [];
+  list.forEach(function(listEl) {
+    // Wildcard present?
+    if (listEl.search(/\*/) > -1) {
+      _ls('', listEl).forEach(function(file) {
+        expanded.push(file);
+      });
+    } else {
+      expanded.push(listEl);
+    }
+  });
+  return expanded;
+}
+exports.expand = expand;
