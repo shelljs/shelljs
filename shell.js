@@ -20,7 +20,7 @@ var common = require('./src/common');
 var config = common.config;
 var state = common.state;
 var platform = common.platform;
-
+var ShellString = common.ShellString;
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
@@ -36,10 +36,7 @@ exports.cd = wrap('cd', _cd);
 //@
 //@ ### pwd()
 //@ Returns the current directory.
-function _pwd(options) {
-  var pwd = path.resolve(process.cwd());
-  return ShellString(pwd);
-}
+var _pwd = require('./src/pwd');
 exports.pwd = wrap('pwd', _pwd);
 
 
@@ -675,11 +672,6 @@ function _to(options, file) {
   } catch(e) {
     error('could not write to file (code '+e.code+'): '+file, true);
   }
-}
-// In the future, when Proxies are default, we can add methods like `.to()` to primitive strings.
-// For now, this is a dummy function to bookmark places we need such strings
-function ShellString(str) {
-  return str;
 }
 String.prototype.to = wrap('to', _to);
 

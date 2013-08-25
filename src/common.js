@@ -32,3 +32,10 @@ function error(msg, _continue) {
     throw '';
 }
 exports.error = error;
+
+// In the future, when Proxies are default, we can add methods like `.to()` to primitive strings.
+// For now, this is a dummy function to bookmark places we need such strings
+function ShellString(str) {
+  return str;
+}
+exports.ShellString = ShellString;
