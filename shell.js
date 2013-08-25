@@ -6,27 +6,46 @@
 // http://github.com/arturadib/shelljs
 //
 
-var fs = require('fs'),
-    path = require('path'),
-    util = require('util'),
-    vm = require('vm'),
-    child = require('child_process'),
-    os = require('os');
-
-// Node shims for < v0.7
-fs.existsSync = fs.existsSync || path.existsSync;
+var fs = require('fs');
+var path = require('path');
+fs.existsSync = fs.existsSync || path.existsSync; // shim for < v0.7
 
 var common = require('./src/common');
-var config = common.config;
-var state = common.state;
-var platform = common.platform;
-var ShellString = common.ShellString;
-var parseOptions = common.parseOptions;
-var log = common.log;
-var error = common.error;
-var expand = common.expand;
-var _unlinkSync = common.unlinkSync;
-var randomFileName = common.randomFileName;
+
+// Common wrapper for all Unix-like commands
+function wrap(cmd, fn, options) {
+  return function() {
+    var retValue = null;
+
+    common.state.currentCmd = cmd;
+    common.state.error = null;
+
+    try {
+      var args = [].slice.call(arguments, 0);
+
+      if (options && options.notUnix) {
+        retValue = fn.apply(this, args);
+      } else {
+        if (args.length === 0 || typeof args[0] !== 'string' || args[0][0] !== '-')
+          args.unshift(''); // only add dummy option if '-option' not already present
+        retValue = fn.apply(this, args);
+      }
+    } catch (e) {
+      if (!common.state.error) {
+        // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
+        console.log('shell.js: internal error');
+        console.log(e.stack || e);
+        process.exit(1);
+      }
+      if (common.config.fatal)
+        throw e;
+    }
+
+    common.state.currentCmd = 'shell.js';
+    return retValue;
+  };
+} // wrap
+
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
@@ -400,34 +419,6 @@ exports.env = process.env;
 var _exec = require('./src/exec');
 exports.exec = wrap('exec', _exec, {notUnix:true});
 
-var PERMS = (function (base) {
-  return {
-    OTHER_EXEC  : base.EXEC,
-    OTHER_WRITE : base.WRITE,
-    OTHER_READ  : base.READ,
-
-    GROUP_EXEC  : base.EXEC  << 3,
-    GROUP_WRITE : base.WRITE << 3,
-    GROUP_READ  : base.READ << 3,
-
-    OWNER_EXEC  : base.EXEC << 6,
-    OWNER_WRITE : base.WRITE << 6,
-    OWNER_READ  : base.READ << 6,
-
-    // Literal octal numbers are apparently not allowed in "strict" javascript.  Using parseInt is
-    // the preferred way, else a jshint warning is thrown.
-    STICKY      : parseInt('01000', 8),
-    SETGID      : parseInt('02000', 8),
-    SETUID      : parseInt('04000', 8),
-
-    TYPE_MASK   : parseInt('0770000', 8)
-  };
-})({
-  EXEC  : 1,
-  WRITE : 2,
-  READ  : 4
-});
-
 
 //@
 //@ ### chmod(octal_mode || octal_string, file)
@@ -455,165 +446,19 @@ var PERMS = (function (base) {
 //@ + In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
 //@   given to the umask.
 //@ + There is no "quiet" option since default behavior is to run silent.
-function _chmod(options, mode, filePattern) {
-  if (!filePattern) {
-    if (options.length > 0 && options.charAt(0) === '-') {
-      // Special case where the specified file permissions started with - to subtract perms, which
-      // get picked up by the option parser as command flags.
-      // If we are down by one argument and options starts with -, shift everything over.
-      filePattern = mode;
-      mode = options;
-      options = '';
-    }
-    else {
-      error('You must specify a file.');
-    }
-  }
-
-  options = parseOptions(options, {
-    'R': 'recursive',
-    'c': 'changes',
-    'v': 'verbose'
-  });
-
-  if (typeof filePattern === 'string') {
-    filePattern = [ filePattern ];
-  }
-
-  var files;
-
-  if (options.recursive) {
-    files = [];
-    expand(filePattern).forEach(function addFile(expandedFile) {
-      var stat = fs.lstatSync(expandedFile);
-
-      if (!stat.isSymbolicLink()) {
-        files.push(expandedFile);
-
-        if (stat.isDirectory()) {  // intentionally does not follow symlinks.
-          fs.readdirSync(expandedFile).forEach(function (child) {
-            addFile(expandedFile + '/' + child);
-          });
-        }
-      }
-    });
-  }
-  else {
-    files = expand(filePattern);
-  }
-
-  files.forEach(function innerChmod(file) {
-    file = path.resolve(file);
-    if (!fs.existsSync(file)) {
-      error('File not found: ' + file);
-    }
-
-    // When recursing, don't follow symlinks.
-    if (options.recursive && fs.lstatSync(file).isSymbolicLink()) {
-      return;
-    }
-
-    var perms = fs.statSync(file).mode;
-    var type = perms & PERMS.TYPE_MASK;
-
-    var newPerms = perms;
-
-    if (isNaN(parseInt(mode, 8))) {
-      // parse options
-      mode.split(',').forEach(function (symbolicMode) {
-        /*jshint regexdash:true */
-        var pattern = /([ugoa]*)([=\+-])([rwxXst]*)/i;
-        var matches = pattern.exec(symbolicMode);
-
-        if (matches) {
-          var applyTo = matches[1];
-          var operator = matches[2];
-          var change = matches[3];
-
-          var changeOwner = applyTo.indexOf('u') != -1 || applyTo === 'a' || applyTo === '';
-          var changeGroup = applyTo.indexOf('g') != -1 || applyTo === 'a' || applyTo === '';
-          var changeOther = applyTo.indexOf('o') != -1 || applyTo === 'a' || applyTo === '';
-
-          var changeRead   = change.indexOf('r') != -1;
-          var changeWrite  = change.indexOf('w') != -1;
-          var changeExec   = change.indexOf('x') != -1;
-          var changeSticky = change.indexOf('t') != -1;
-          var changeSetuid = change.indexOf('s') != -1;
-
-          var mask = 0;
-          if (changeOwner) {
-            mask |= (changeRead ? PERMS.OWNER_READ : 0) + (changeWrite ? PERMS.OWNER_WRITE : 0) + (changeExec ? PERMS.OWNER_EXEC : 0) + (changeSetuid ? PERMS.SETUID : 0);
-          }
-          if (changeGroup) {
-            mask |= (changeRead ? PERMS.GROUP_READ : 0) + (changeWrite ? PERMS.GROUP_WRITE : 0) + (changeExec ? PERMS.GROUP_EXEC : 0) + (changeSetuid ? PERMS.SETGID : 0);
-          }
-          if (changeOther) {
-            mask |= (changeRead ? PERMS.OTHER_READ : 0) + (changeWrite ? PERMS.OTHER_WRITE : 0) + (changeExec ? PERMS.OTHER_EXEC : 0);
-          }
-
-          // Sticky bit is special - it's not tied to user, group or other.
-          if (changeSticky) {
-            mask |= PERMS.STICKY;
-          }
-
-          switch (operator) {
-            case '+':
-              newPerms |= mask;
-              break;
-
-            case '-':
-              newPerms &= ~mask;
-              break;
-
-            case '=':
-              newPerms = type + mask;
-
-              // According to POSIX, when using = to explicitly set the permissions, setuid and setgid can never be cleared.
-              if (fs.statSync(file).isDirectory()) {
-                newPerms |= (PERMS.SETUID + PERMS.SETGID) & perms;
-              }
-              break;
-          }
-
-          if (options.verbose) {
-            log(file + ' -> ' + newPerms.toString(8));
-          }
-
-          if (perms != newPerms) {
-            if (!options.verbose && options.changes) {
-              log(file + ' -> ' + newPerms.toString(8));
-            }
-            fs.chmodSync(file, newPerms);
-          }
-        }
-        else {
-          error('Invalid symbolic mode change: ' + symbolicMode);
-        }
-      });
-    }
-    else {
-      // they gave us a full number
-      newPerms = type + parseInt(mode, 8);
-
-      // POSIX rules are that setuid and setgid can only be added using numeric form, but not cleared.
-      if (fs.statSync(file).isDirectory()) {
-        newPerms |= (PERMS.SETUID + PERMS.SETGID) & perms;
-      }
-
-      fs.chmodSync(file, newPerms);
-    }
-  });
-}
+var _chmod = require('./src/chmod');
 exports.chmod = wrap('chmod', _chmod);
+
+
+
+
 
 
 //@
 //@ ## Configuration
 //@
 
-
-
-exports.config = config;
+exports.config = common.config;
 
 //@
 //@ ### config.silent
@@ -649,10 +494,6 @@ exports.config = config;
 //@
 
 
-
-
-
-
 //@
 //@ ### tempdir()
 //@ Searches and returns string containing a writeable, platform-dependent temporary directory.
@@ -665,58 +506,5 @@ exports.tempdir = wrap('tempdir', _tempDir);
 //@ ### error()
 //@ Tests if error occurred in the last command. Returns `null` if no error occurred,
 //@ otherwise returns string explaining the error
-exports.error = function() {
-  return state.error;
-};
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Auxiliary functions (internal use only)
-//
-
-function deprecate(what, msg) {
-  console.log('*** ShellJS.'+what+': This function is deprecated.', msg);
-}
-
-function write(msg) {
-  if (!config.silent)
-    process.stdout.write(msg);
-}
-
-// Common wrapper for all Unix-like commands
-function wrap(cmd, fn, options) {
-  return function() {
-    var retValue = null;
-
-    state.currentCmd = cmd;
-    state.error = null;
-
-    try {
-      var args = [].slice.call(arguments, 0);
-
-      if (options && options.notUnix) {
-        retValue = fn.apply(this, args);
-      } else {
-        if (args.length === 0 || typeof args[0] !== 'string' || args[0][0] !== '-')
-          args.unshift(''); // only add dummy option if '-option' not already present
-        retValue = fn.apply(this, args);
-      }
-    } catch (e) {
-      if (!state.error) {
-        // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
-        console.log('shell.js: internal error');
-        console.log(e.stack || e);
-        process.exit(1);
-      }
-      if (config.fatal)
-        throw e;
-    }
-
-    state.currentCmd = 'shell.js';
-    return retValue;
-  };
-} // wrap
+var _error = require('./src/error');
+exports.error = _error;
