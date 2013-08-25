@@ -151,3 +151,38 @@ function extend(target) {
   return target;
 }
 exports.extend = extend;
+
+// Common wrapper for all Unix-like commands
+function wrap(cmd, fn, options) {
+  return function() {
+    var retValue = null;
+
+    common.state.currentCmd = cmd;
+    common.state.error = null;
+
+    try {
+      var args = [].slice.call(arguments, 0);
+
+      if (options && options.notUnix) {
+        retValue = fn.apply(this, args);
+      } else {
+        if (args.length === 0 || typeof args[0] !== 'string' || args[0][0] !== '-')
+          args.unshift(''); // only add dummy option if '-option' not already present
+        retValue = fn.apply(this, args);
+      }
+    } catch (e) {
+      if (!common.state.error) {
+        // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
+        console.log('shell.js: internal error');
+        console.log(e.stack || e);
+        process.exit(1);
+      }
+      if (common.config.fatal)
+        throw e;
+    }
+
+    common.state.currentCmd = 'shell.js';
+    return retValue;
+  };
+} // wrap
+exports.wrap = wrap;

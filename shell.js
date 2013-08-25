@@ -12,40 +12,6 @@ fs.existsSync = fs.existsSync || path.existsSync; // shim for < v0.7
 
 var common = require('./src/common');
 
-// Common wrapper for all Unix-like commands
-function wrap(cmd, fn, options) {
-  return function() {
-    var retValue = null;
-
-    common.state.currentCmd = cmd;
-    common.state.error = null;
-
-    try {
-      var args = [].slice.call(arguments, 0);
-
-      if (options && options.notUnix) {
-        retValue = fn.apply(this, args);
-      } else {
-        if (args.length === 0 || typeof args[0] !== 'string' || args[0][0] !== '-')
-          args.unshift(''); // only add dummy option if '-option' not already present
-        retValue = fn.apply(this, args);
-      }
-    } catch (e) {
-      if (!common.state.error) {
-        // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
-        console.log('shell.js: internal error');
-        console.log(e.stack || e);
-        process.exit(1);
-      }
-      if (common.config.fatal)
-        throw e;
-    }
-
-    common.state.currentCmd = 'shell.js';
-    return retValue;
-  };
-} // wrap
-
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
@@ -56,13 +22,13 @@ function wrap(cmd, fn, options) {
 //@ ### cd('dir')
 //@ Changes to directory `dir` for the duration of the script
 var _cd = require('./src/cd');
-exports.cd = wrap('cd', _cd);
+exports.cd = common.wrap('cd', _cd);
 
 //@
 //@ ### pwd()
 //@ Returns the current directory.
 var _pwd = require('./src/pwd');
-exports.pwd = wrap('pwd', _pwd);
+exports.pwd = common.wrap('pwd', _pwd);
 
 
 //@
@@ -83,7 +49,7 @@ exports.pwd = wrap('pwd', _pwd);
 //@
 //@ Returns array of files in the given path, or in current directory if no path provided.
 var _ls = require('./src/ls');
-exports.ls = wrap('ls', _ls);
+exports.ls = common.wrap('ls', _ls);
 
 
 //@
@@ -102,7 +68,7 @@ exports.ls = wrap('ls', _ls);
 //@ The main difference from `ls('-R', path)` is that the resulting file names
 //@ include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
 var _find = require('./src/find');
-exports.find = wrap('find', _find);
+exports.find = common.wrap('find', _find);
 
 
 //@
@@ -123,7 +89,7 @@ exports.find = wrap('find', _find);
 //@
 //@ Copies files. The wildcard `*` is accepted.
 var _cp = require('./src/cp');
-exports.cp = wrap('cp', _cp);
+exports.cp = common.wrap('cp', _cp);
 
 //@
 //@ ### rm([options ,] file [, file ...])
@@ -143,7 +109,7 @@ exports.cp = wrap('cp', _cp);
 //@
 //@ Removes files. The wildcard `*` is accepted.
 var _rm = require('./src/rm');
-exports.rm = wrap('rm', _rm);
+exports.rm = common.wrap('rm', _rm);
 
 //@
 //@ ### mv(source [, source ...], dest')
@@ -162,7 +128,7 @@ exports.rm = wrap('rm', _rm);
 //@
 //@ Moves files. The wildcard `*` is accepted.
 var _mv = require('./src/mv');
-exports.mv = wrap('mv', _mv);
+exports.mv = common.wrap('mv', _mv);
 
 //@
 //@ ### mkdir([options ,] dir [, dir ...])
@@ -180,7 +146,7 @@ exports.mv = wrap('mv', _mv);
 //@
 //@ Creates directories.
 var _mkdir = require('./src/mkdir');
-exports.mkdir = wrap('mkdir', _mkdir);
+exports.mkdir = common.wrap('mkdir', _mkdir);
 
 //@
 //@ ### test(expression)
@@ -204,7 +170,7 @@ exports.mkdir = wrap('mkdir', _mkdir);
 //@
 //@ Evaluates expression using the available primaries and returns corresponding value.
 var _test = require('./src/test');
-exports.test = wrap('test', _test);
+exports.test = common.wrap('test', _test);
 
 
 //@
@@ -223,7 +189,7 @@ exports.test = wrap('test', _test);
 //@ containing the files if more than one file is given (a new line character is
 //@ introduced between each file). Wildcard `*` accepted.
 var _cat = require('./src/cat');
-exports.cat = wrap('cat', _cat);
+exports.cat = common.wrap('cat', _cat);
 
 //@
 //@ ### 'string'.to(file)
@@ -237,7 +203,7 @@ exports.cat = wrap('cat', _cat);
 //@ Analogous to the redirection operator `>` in Unix, but works with JavaScript strings (such as
 //@ those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will overwrite any existing file!_
 var _to = require('./src/to');
-String.prototype.to = wrap('to', _to);
+String.prototype.to = common.wrap('to', _to);
 
 //@
 //@ ### sed([options ,] search_regex, replace_str, file)
@@ -255,7 +221,7 @@ String.prototype.to = wrap('to', _to);
 //@ Reads an input string from `file` and performs a JavaScript `replace()` on the input
 //@ using the given search regex and replacement string. Returns the new string after replacement.
 var _sed = require('./src/sed');
-exports.sed = wrap('sed', _sed);
+exports.sed = common.wrap('sed', _sed);
 
 //@
 //@ ### grep([options ,] regex_filter, file [, file ...])
@@ -274,7 +240,7 @@ exports.sed = wrap('sed', _sed);
 //@ Reads input string from given files and returns a string containing all lines of the
 //@ file that match the given `regex_filter`. Wildcard `*` accepted.
 var _grep = require('./src/grep');
-exports.grep = wrap('grep', _grep);
+exports.grep = common.wrap('grep', _grep);
 
 
 //@
@@ -289,7 +255,7 @@ exports.grep = wrap('grep', _grep);
 //@ Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`, and `.bat` extensions.
 //@ Returns string containing the absolute path to the command.
 var _which = require('./src/which');
-exports.which = wrap('which', _which);
+exports.which = common.wrap('which', _which);
 
 //@
 //@ ### echo(string [,string ...])
@@ -304,7 +270,7 @@ exports.which = wrap('which', _which);
 //@ Prints string to stdout, and returns string with additional utility methods
 //@ like `.to()`.
 var _echo = require('./src/echo');
-exports.echo = _echo; // don't wrap() as it could parse '-options'
+exports.echo = _echo; // don't common.wrap() as it could parse '-options'
 
 //@
 //@ ### dirs([options | '+N' | '-N'])
@@ -322,7 +288,7 @@ exports.echo = _echo; // don't wrap() as it could parse '-options'
 //@
 //@ See also: pushd, popd
 var _dirs = require('./src/dirs').dirs;
-exports.dirs = wrap("dirs", _dirs);
+exports.dirs = common.wrap("dirs", _dirs);
 
 //@
 //@ ### pushd([options,] [dir | '-N' | '+N'])
@@ -347,7 +313,7 @@ exports.dirs = wrap("dirs", _dirs);
 //@
 //@ Save the current directory on the top of the directory stack and then cd to `dir`. With no arguments, pushd exchanges the top two directories. Returns an array of paths in the stack.
 var _pushd = require('./src/dirs').pushd;
-exports.pushd = wrap('pushd', _pushd);
+exports.pushd = common.wrap('pushd', _pushd);
 
 //@
 //@ ### popd([options,] ['-N' | '+N'])
@@ -373,7 +339,7 @@ exports.pushd = wrap('pushd', _pushd);
 //@
 //@ When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0. Returns an array of paths in the stack.
 var _popd = require('./src/dirs').popd;
-exports.popd = wrap("popd", _popd);
+exports.popd = common.wrap("popd", _popd);
 
 //@
 //@ ### exit(code)
@@ -417,7 +383,7 @@ exports.env = process.env;
 //@ the current synchronous implementation uses a lot of CPU. This should be getting
 //@ fixed soon.
 var _exec = require('./src/exec');
-exports.exec = wrap('exec', _exec, {notUnix:true});
+exports.exec = common.wrap('exec', _exec, {notUnix:true});
 
 
 //@
@@ -447,7 +413,7 @@ exports.exec = wrap('exec', _exec, {notUnix:true});
 //@   given to the umask.
 //@ + There is no "quiet" option since default behavior is to run silent.
 var _chmod = require('./src/chmod');
-exports.chmod = wrap('chmod', _chmod);
+exports.chmod = common.wrap('chmod', _chmod);
 
 
 
@@ -499,7 +465,7 @@ exports.config = common.config;
 //@ Searches and returns string containing a writeable, platform-dependent temporary directory.
 //@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 var _tempDir = require('./src/tempdir');
-exports.tempdir = wrap('tempdir', _tempDir);
+exports.tempdir = common.wrap('tempdir', _tempDir);
 
 
 //@
