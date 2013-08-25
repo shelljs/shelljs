@@ -16,17 +16,10 @@ var fs = require('fs'),
 // Node shims for < v0.7
 fs.existsSync = fs.existsSync || path.existsSync;
 
-var config = {
-  silent: false,
-  fatal: false
-};
-
-var state = {
-      error: null,
-      currentCmd: 'shell.js',
-      tempDir: null
-    },
-    platform = os.type().match(/^Win/) ? 'win' : 'unix';
+var common = require('./src/common');
+var config = common.config;
+var state = common.state;
+var platform = common.platform;
 
 
 //@
@@ -37,18 +30,7 @@ var state = {
 //@
 //@ ### cd('dir')
 //@ Changes to directory `dir` for the duration of the script
-function _cd(options, dir) {
-  if (!dir)
-    error('directory not specified');
-
-  if (!fs.existsSync(dir))
-    error('no such file or directory: ' + dir);
-
-  if (!fs.statSync(dir).isDirectory())
-    error('not a directory: ' + dir);
-
-  process.chdir(dir);
-}
+var _cd = require('./src/cd');
 exports.cd = wrap('cd', _cd);
 
 //@
