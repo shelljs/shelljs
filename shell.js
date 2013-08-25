@@ -283,11 +283,7 @@ exports.which = wrap('which', _which);
 //@
 //@ Prints string to stdout, and returns string with additional utility methods
 //@ like `.to()`.
-function _echo() {
-  var messages = [].slice.call(arguments, 0);
-  console.log.apply(this, messages);
-  return ShellString(messages.join(' '));
-}
+var _echo = require('./src/echo');
 exports.echo = _echo; // don't wrap() as it could parse '-options'
 
 // Pushd/popd/dirs internals
