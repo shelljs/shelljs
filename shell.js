@@ -21,6 +21,9 @@ var config = common.config;
 var state = common.state;
 var platform = common.platform;
 var ShellString = common.ShellString;
+var parseOptions = common.parseOptions;
+var log = common.log;
+var error = common.error;
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
@@ -57,108 +60,7 @@ exports.pwd = wrap('pwd', _pwd);
 //@ ```
 //@
 //@ Returns array of files in the given path, or in current directory if no path provided.
-function _ls(options, paths) {
-  options = parseOptions(options, {
-    'R': 'recursive',
-    'A': 'all',
-    'a': 'all_deprecated'
-  });
-
-  if (options.all_deprecated) {
-    // We won't support the -a option as it's hard to image why it's useful
-    // (it includes '.' and '..' in addition to '.*' files)
-    // For backwards compatibility we'll dump a deprecated message and proceed as before
-    log('ls: Option -a is deprecated. Use -A instead');
-    options.all = true;
-  }
-
-  if (!paths)
-    paths = ['.'];
-  else if (typeof paths === 'object')
-    paths = paths; // assume array
-  else if (typeof paths === 'string')
-    paths = [].slice.call(arguments, 1);
-
-  var list = [];
-
-  // Conditionally pushes file to list - returns true if pushed, false otherwise
-  // (e.g. prevents hidden files to be included unless explicitly told so)
-  function pushFile(file, query) {
-    // hidden file?
-    if (path.basename(file)[0] === '.') {
-      // not explicitly asking for hidden files?
-      if (!options.all && !(path.basename(query)[0] === '.' && path.basename(query).length > 1))
-        return false;
-    }
-
-    if (platform === 'win')
-      file = file.replace(/\\/g, '/');
-
-    list.push(file);
-    return true;
-  }
-
-  paths.forEach(function(p) {
-    if (fs.existsSync(p)) {
-      var stats = fs.statSync(p);
-      // Simple file?
-      if (stats.isFile()) {
-        pushFile(p, p);
-        return; // continue
-      }
-
-      // Simple dir?
-      if (stats.isDirectory()) {
-        // Iterate over p contents
-        fs.readdirSync(p).forEach(function(file) {
-          if (!pushFile(file, p))
-            return;
-
-          // Recursive?
-          if (options.recursive) {
-            var oldDir = _pwd();
-            _cd('', p);
-            if (fs.statSync(file).isDirectory())
-              list = list.concat(_ls('-R'+(options.all?'A':''), file+'/*'));
-            _cd('', oldDir);
-          }
-        });
-        return; // continue
-      }
-    }
-
-    // p does not exist - possible wildcard present
-
-    var basename = path.basename(p);
-    var dirname = path.dirname(p);
-    // Wildcard present on an existing dir? (e.g. '/tmp/*.js')
-    if (basename.search(/\*/) > -1 && fs.existsSync(dirname) && fs.statSync(dirname).isDirectory) {
-      // Escape special regular expression chars
-      var regexp = basename.replace(/(\^|\$|\(|\)|<|>|\[|\]|\{|\}|\.|\+|\?)/g, '\\$1');
-      // Translates wildcard into regex
-      regexp = '^' + regexp.replace(/\*/g, '.*') + '$';
-      // Iterate over directory contents
-      fs.readdirSync(dirname).forEach(function(file) {
-        if (file.match(new RegExp(regexp))) {
-          if (!pushFile(path.normalize(dirname+'/'+file), basename))
-            return;
-
-          // Recursive?
-          if (options.recursive) {
-            var pp = dirname + '/' + file;
-            if (fs.lstatSync(pp).isDirectory())
-              list = list.concat(_ls('-R'+(options.all?'A':''), pp+'/*'));
-          } // recursive
-        } // if file matches
-      }); // forEach
-      return;
-    }
-
-    error('no such file or directory: ' + p, true);
-  });
-
-  return list;
-}
+var _ls = require('./src/ls');
 exports.ls = wrap('ls', _ls);
 
 
@@ -1382,11 +1284,6 @@ exports.error = function() {
 // Auxiliary functions (internal use only)
 //
 
-function log() {
-  if (!config.silent)
-    console.log.apply(this, arguments);
-}
-
 function deprecate(what, msg) {
   console.log('*** ShellJS.'+what+': This function is deprecated.', msg);
 }
@@ -1394,56 +1291,6 @@ function deprecate(what, msg) {
 function write(msg) {
   if (!config.silent)
     process.stdout.write(msg);
-}
-
-// Shows error message. Throws unless _continue or config.fatal are true
-function error(msg, _continue) {
-  if (state.error === null)
-    state.error = '';
-  state.error += state.currentCmd + ': ' + msg + '\n';
-
-  log(state.error);
-
-  if (config.fatal)
-    process.exit(1);
-
-  if (!_continue)
-    throw '';
-}
-
-// Returns {'alice': true, 'bob': false} when passed:
-//   parseOptions('-a', {'a':'alice', 'b':'bob'});
-function parseOptions(str, map) {
-  if (!map)
-    error('parseOptions() internal error: no map given');
-
-  // All options are false by default
-  var options = {};
-  for (var letter in map)
-    options[map[letter]] = false;
-
-  if (!str)
-    return options; // defaults
-
-  if (typeof str !== 'string')
-    error('parseOptions() internal error: wrong str');
-
-  // e.g. match[1] = 'Rf' for str = '-Rf'
-  var match = str.match(/^\-(.+)/);
-  if (!match)
-    return options;
-
-  // e.g. chars = ['R', 'f']
-  var chars = match[1].split('');
-
-  chars.forEach(function(c) {
-    if (c in map)
-      options[map[c]] = true;
-    else
-      error('option not recognized: '+c);
-  });
-
-  return options;
 }
 
 // Common wrapper for all Unix-like commands

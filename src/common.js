@@ -17,6 +17,12 @@ exports.state = state;
 var platform = os.type().match(/^Win/) ? 'win' : 'unix';
 exports.platform = platform;
 
+function log() {
+  if (!config.silent)
+    console.log.apply(this, arguments);
+}
+exports.log = log;
+
 // Shows error message. Throws unless _continue or config.fatal are true
 function error(msg, _continue) {
   if (state.error === null)
@@ -39,3 +45,39 @@ function ShellString(str) {
   return str;
 }
 exports.ShellString = ShellString;
+
+// Returns {'alice': true, 'bob': false} when passed a dictionary, e.g.:
+//   parseOptions('-a', {'a':'alice', 'b':'bob'});
+function parseOptions(str, map) {
+  if (!map)
+    error('parseOptions() internal error: no map given');
+
+  // All options are false by default
+  var options = {};
+  for (var letter in map)
+    options[map[letter]] = false;
+
+  if (!str)
+    return options; // defaults
+
+  if (typeof str !== 'string')
+    error('parseOptions() internal error: wrong str');
+
+  // e.g. match[1] = 'Rf' for str = '-Rf'
+  var match = str.match(/^\-(.+)/);
+  if (!match)
+    return options;
+
+  // e.g. chars = ['R', 'f']
+  var chars = match[1].split('');
+
+  chars.forEach(function(c) {
+    if (c in map)
+      options[map[c]] = true;
+    else
+      error('option not recognized: '+c);
+  });
+
+  return options;
+}
+exports.parseOptions = parseOptions;

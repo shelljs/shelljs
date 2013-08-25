@@ -1,7 +1,7 @@
 var fs = require('fs');
 var common = require('./common');
 
-function cd(options, dir) {
+function _cd(options, dir) {
   if (!dir)
     common.error('directory not specified');
 
@@ -13,4 +13,4 @@ function cd(options, dir) {
 
   process.chdir(dir);
 }
-module.exports = cd;
+module.exports = _cd;
