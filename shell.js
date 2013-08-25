@@ -141,65 +141,7 @@ exports.rm = wrap('rm', _rm);
 //@ ```
 //@
 //@ Moves files. The wildcard `*` is accepted.
-function _mv(options, sources, dest) {
-  options = parseOptions(options, {
-    'f': 'force'
-  });
-
-  // Get sources, dest
-  if (arguments.length < 3) {
-    error('missing <source> and/or <dest>');
-  } else if (arguments.length > 3) {
-    sources = [].slice.call(arguments, 1, arguments.length - 1);
-    dest = arguments[arguments.length - 1];
-  } else if (typeof sources === 'string') {
-    sources = [sources];
-  } else if ('length' in sources) {
-    sources = sources; // no-op for array
-  } else {
-    error('invalid arguments');
-  }
-
-  sources = expand(sources);
-
-  var exists = fs.existsSync(dest),
-      stats = exists && fs.statSync(dest);
-
-  // Dest is not existing dir, but multiple sources given
-  if ((!exists || !stats.isDirectory()) && sources.length > 1)
-    error('dest is not a directory (too many sources)');
-
-  // Dest is an existing file, but no -f given
-  if (exists && stats.isFile() && !options.force)
-    error('dest file already exists: ' + dest);
-
-  sources.forEach(function(src) {
-    if (!fs.existsSync(src)) {
-      error('no such file or directory: '+src, true);
-      return; // skip file
-    }
-
-    // If here, src exists
-
-    // When copying to '/path/dir':
-    //    thisDest = '/path/dir/file1'
-    var thisDest = dest;
-    if (fs.existsSync(dest) && fs.statSync(dest).isDirectory())
-      thisDest = path.normalize(dest + '/' + path.basename(src));
-
-    if (fs.existsSync(thisDest) && !options.force) {
-      error('dest file already exists: ' + thisDest, true);
-      return; // skip file
-    }
-
-    if (path.resolve(src) === path.dirname(path.resolve(thisDest))) {
-      error('cannot move to self: '+src, true);
-      return; // skip file
-    }
-
-    fs.renameSync(src, thisDest);
-  }); // forEach(src)
-} // mv
+var _mv = require('./src/mv');
 exports.mv = wrap('mv', _mv);
 
 //@
