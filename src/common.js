@@ -120,3 +120,34 @@ function unlinkSync(file) {
   }
 }
 exports.unlinkSync = unlinkSync;
+
+// e.g. 'shelljs_a5f185d0443ca...'
+function randomFileName() {
+  function randomHash(count) {
+    if (count === 1)
+      return parseInt(16*Math.random(), 10).toString(16);
+    else {
+      var hash = '';
+      for (var i=0; i<count; i++)
+        hash += randomHash(1);
+      return hash;
+    }
+  }
+
+  return 'shelljs_'+randomHash(20);
+}
+exports.randomFileName = randomFileName;
+
+// extend(target_obj, source_obj1 [, source_obj2 ...])
+// Shallow extend, e.g.:
+//    extend({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
+function extend(target) {
+  var sources = [].slice.call(arguments, 1);
+  sources.forEach(function(source) {
+    for (var key in source)
+      target[key] = source[key];
+  });
+
+  return target;
+}
+exports.extend = extend;

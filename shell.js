@@ -26,6 +26,7 @@ var log = common.log;
 var error = common.error;
 var expand = common.expand;
 var _unlinkSync = common.unlinkSync;
+var randomFileName = common.randomFileName;
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
@@ -396,31 +397,7 @@ exports.env = process.env;
 //@ **Note:** For long-lived processes, it's best to run `exec()` asynchronously as
 //@ the current synchronous implementation uses a lot of CPU. This should be getting
 //@ fixed soon.
-function _exec(command, options, callback) {
-  if (!command)
-    error('must specify command');
-
-  // Callback is defined instead of options.
-  if (typeof options === 'function') {
-    callback = options;
-    options = { async: true };
-  }
-
-  // Callback is defined with options.
-  if (typeof options === 'object' && typeof callback === 'function') {
-    options.async = true;
-  }
-
-  options = extend({
-    silent: config.silent,
-    async: false
-  }, options);
-
-  if (options.async)
-    return execAsync(command, options, callback);
-  else
-    return execSync(command, options);
-}
+var _exec = require('./src/exec');
 exports.exec = wrap('exec', _exec, {notUnix:true});
 
 var PERMS = (function (base) {
@@ -680,7 +657,8 @@ exports.config = config;
 //@ ### tempdir()
 //@ Searches and returns string containing a writeable, platform-dependent temporary directory.
 //@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
-exports.tempdir = wrap('tempdir', tempDir);
+var _tempDir = require('./src/tempdir');
+exports.tempdir = wrap('tempdir', _tempDir);
 
 
 //@
@@ -742,186 +720,3 @@ function wrap(cmd, fn, options) {
     return retValue;
   };
 } // wrap
-
-// e.g. 'shelljs_a5f185d0443ca...'
-function randomFileName() {
-  function randomHash(count) {
-    if (count === 1)
-      return parseInt(16*Math.random(), 10).toString(16);
-    else {
-      var hash = '';
-      for (var i=0; i<count; i++)
-        hash += randomHash(1);
-      return hash;
-    }
-  }
-
-  return 'shelljs_'+randomHash(20);
-}
-
-// Returns false if 'dir' is not a writeable directory, 'dir' otherwise
-function writeableDir(dir) {
-  if (!dir || !fs.existsSync(dir))
-    return false;
-
-  if (!fs.statSync(dir).isDirectory())
-    return false;
-
-  var testFile = dir+'/'+randomFileName();
-  try {
-    fs.writeFileSync(testFile, ' ');
-    _unlinkSync(testFile);
-    return dir;
-  } catch (e) {
-    return false;
-  }
-}
-
-// Cross-platform method for getting an available temporary directory.
-// Follows the algorithm of Python's tempfile.tempdir
-// http://docs.python.org/library/tempfile.html#tempfile.tempdir
-function tempDir() {
-  if (state.tempDir)
-    return state.tempDir; // from cache
-
-  state.tempDir = writeableDir(os.tempDir && os.tempDir()) || // node 0.8+
-                  writeableDir(process.env['TMPDIR']) ||
-                  writeableDir(process.env['TEMP']) ||
-                  writeableDir(process.env['TMP']) ||
-                  writeableDir(process.env['Wimp$ScrapDir']) || // RiscOS
-                  writeableDir('C:\\TEMP') || // Windows
-                  writeableDir('C:\\TMP') || // Windows
-                  writeableDir('\\TEMP') || // Windows
-                  writeableDir('\\TMP') || // Windows
-                  writeableDir('/tmp') ||
-                  writeableDir('/var/tmp') ||
-                  writeableDir('/usr/tmp') ||
-                  writeableDir('.'); // last resort
-
-  return state.tempDir;
-}
-
-// Wrapper around exec() to enable echoing output to console in real time
-function execAsync(cmd, opts, callback) {
-  var output = '';
-
-  var options = extend({
-    silent: config.silent
-  }, opts);
-
-  var c = child.exec(cmd, {env: process.env, maxBuffer: 20*1024*1024}, function(err) {
-    if (callback)
-      callback(err ? err.code : 0, output);
-  });
-
-  c.stdout.on('data', function(data) {
-    output += data;
-    if (!options.silent)
-      process.stdout.write(data);
-  });
-
-  c.stderr.on('data', function(data) {
-    output += data;
-    if (!options.silent)
-      process.stdout.write(data);
-  });
-
-  return c;
-}
-
-// Hack to run child_process.exec() synchronously (sync avoids callback hell)
-// Uses a custom wait loop that checks for a flag file, created when the child process is done.
-// (Can't do a wait loop that checks for internal Node variables/messages as
-// Node is single-threaded; callbacks and other internal state changes are done in the
-// event loop).
-function execSync(cmd, opts) {
-  var stdoutFile = path.resolve(tempDir()+'/'+randomFileName()),
-      codeFile = path.resolve(tempDir()+'/'+randomFileName()),
-      scriptFile = path.resolve(tempDir()+'/'+randomFileName()),
-      sleepFile = path.resolve(tempDir()+'/'+randomFileName());
-
-  var options = extend({
-    silent: config.silent
-  }, opts);
-
-  var previousStdoutContent = '';
-  // Echoes stdout changes from running process, if not silent
-  function updateStdout() {
-    if (options.silent || !fs.existsSync(stdoutFile))
-      return;
-
-    var stdoutContent = fs.readFileSync(stdoutFile, 'utf8');
-    // No changes since last time?
-    if (stdoutContent.length <= previousStdoutContent.length)
-      return;
-
-    process.stdout.write(stdoutContent.substr(previousStdoutContent.length));
-    previousStdoutContent = stdoutContent;
-  }
-
-  function escape(str) {
-    return (str+'').replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
-  }
-
-  cmd += ' > '+stdoutFile+' 2>&1'; // works on both win/unix
-
-  var script =
-   "var child = require('child_process')," +
-   "     fs = require('fs');" +
-   "child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {" +
-   "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');" +
-   "});";
-
-  if (fs.existsSync(scriptFile)) _unlinkSync(scriptFile);
-  if (fs.existsSync(stdoutFile)) _unlinkSync(stdoutFile);
-  if (fs.existsSync(codeFile)) _unlinkSync(codeFile);
-
-  fs.writeFileSync(scriptFile, script);
-  child.exec('"'+process.execPath+'" '+scriptFile, {
-    env: process.env,
-    cwd: exports.pwd(),
-    maxBuffer: 20*1024*1024
-  });
-
-  // The wait loop
-  // sleepFile is used as a dummy I/O op to mitigate unnecessary CPU usage
-  // (tried many I/O sync ops, writeFileSync() seems to be only one that is effective in reducing
-  // CPU usage, though apparently not so much on Windows)
-  while (!fs.existsSync(codeFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
-  while (!fs.existsSync(stdoutFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
-
-  // At this point codeFile exists, but it's not necessarily flushed yet.
-  // Keep reading it until it is.
-  var code = parseInt('', 10);
-  while (isNaN(code)) {
-    code = parseInt(fs.readFileSync(codeFile, 'utf8'), 10);
-  }
-
-  var stdout = fs.readFileSync(stdoutFile, 'utf8');
-
-  // No biggie if we can't erase the files now -- they're in a temp dir anyway
-  try { _unlinkSync(scriptFile); } catch(e) {}
-  try { _unlinkSync(stdoutFile); } catch(e) {}
-  try { _unlinkSync(codeFile); } catch(e) {}
-  try { _unlinkSync(sleepFile); } catch(e) {}
-
-  // True if successful, false if not
-  var obj = {
-    code: code,
-    output: stdout
-  };
-  return obj;
-} // execSync()
-
-// extend(target_obj, source_obj1 [, source_obj2 ...])
-// Shallow extend, e.g.:
-//    extend({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
-function extend(target) {
-  var sources = [].slice.call(arguments, 1);
-  sources.forEach(function(source) {
-    for (var key in source)
-      target[key] = source[key];
-  });
-
-  return target;
-}
