@@ -286,29 +286,6 @@ exports.which = wrap('which', _which);
 var _echo = require('./src/echo');
 exports.echo = _echo; // don't wrap() as it could parse '-options'
 
-// Pushd/popd/dirs internals
-var _dirStack = [];
-
-function _isStackIndex(index) {
-  return (/^[\-+]\d+$/).test(index);
-}
-
-function _parseStackIndex(index) {
-  if (_isStackIndex(index)) {
-    if (Math.abs(index) < _dirStack.length + 1) { // +1 for pwd
-      return (/^-/).test(index) ? Number(index) - 1 : Number(index);
-    } else {
-      error(index + ': directory stack index out of range');
-    }
-  } else {
-    error(index + ': invalid number');
-  }
-}
-
-function _actualDirStack() {
-  return [process.cwd()].concat(_dirStack);
-}
-
 //@
 //@ ### dirs([options | '+N' | '-N'])
 //@
@@ -324,38 +301,7 @@ function _actualDirStack() {
 //@ Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if +N or -N was specified.
 //@
 //@ See also: pushd, popd
-function _dirs(options, index) {
-  if (_isStackIndex(options)) {
-    index = options;
-    options = '';
-  }
-
-  options = parseOptions(options, {
-    'c' : 'clear'
-  });
-
-  if (options['clear']) {
-    _dirStack = [];
-    return _dirStack;
-  }
-
-  var stack = _actualDirStack();
-
-  if (index) {
-    index = _parseStackIndex(index);
-
-    if (index < 0) {
-      index = stack.length + index;
-    }
-
-    log(stack[index]);
-    return stack[index];
-  }
-
-  log(stack.join(' '));
-
-  return stack;
-}
+var _dirs = require('./src/dirs').dirs;
 exports.dirs = wrap("dirs", _dirs);
 
 //@
@@ -380,47 +326,7 @@ exports.dirs = wrap("dirs", _dirs);
 //@ ```
 //@
 //@ Save the current directory on the top of the directory stack and then cd to `dir`. With no arguments, pushd exchanges the top two directories. Returns an array of paths in the stack.
-function _pushd(options, dir) {
-  if (_isStackIndex(options)) {
-    dir = options;
-    options = '';
-  }
-
-  options = parseOptions(options, {
-    'n' : 'no-cd'
-  });
-
-  var dirs = _actualDirStack();
-
-  if (dir === '+0') {
-    return dirs; // +0 is a noop
-  } else if (!dir) {
-    if (dirs.length > 1) {
-      dirs = dirs.splice(1, 1).concat(dirs);
-    } else {
-      return error('no other directory');
-    }
-  } else if (_isStackIndex(dir)) {
-    var n = _parseStackIndex(dir);
-    dirs = dirs.slice(n).concat(dirs.slice(0, n));
-  } else {
-    if (options['no-cd']) {
-      dirs.splice(1, 0, dir);
-    } else {
-      dirs.unshift(dir);
-    }
-  }
-
-  if (options['no-cd']) {
-    dirs = dirs.slice(1);
-  } else {
-    dir = path.resolve(dirs.shift());
-    _cd('', dir);
-  }
-
-  _dirStack = dirs;
-  return _dirs('');
-}
+var _pushd = require('./src/dirs').pushd;
 exports.pushd = wrap('pushd', _pushd);
 
 //@
@@ -446,32 +352,7 @@ exports.pushd = wrap('pushd', _pushd);
 //@ ```
 //@
 //@ When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0. Returns an array of paths in the stack.
-function _popd(options, index) {
-  if (_isStackIndex(options)) {
-    index = options;
-    options = '';
-  }
-
-  options = parseOptions(options, {
-    'n' : 'no-cd'
-  });
-
-  if (!_dirStack.length) {
-    return error('directory stack empty');
-  }
-
-  index = _parseStackIndex(index || '+0');
-
-  if (options['no-cd'] || index > 0 || _dirStack.length + index === 0) {
-    index = index > 0 ? index - 1 : index;
-    _dirStack.splice(index, 1);
-  } else {
-    var dir = path.resolve(_dirStack.shift());
-    _cd('', dir);
-  }
-
-  return _dirs('');
-}
+var _popd = require('./src/dirs').popd;
 exports.popd = wrap("popd", _popd);
 
 //@
