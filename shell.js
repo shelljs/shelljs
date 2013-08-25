@@ -159,37 +159,7 @@ exports.mv = wrap('mv', _mv);
 //@ ```
 //@
 //@ Creates directories.
-function _mkdir(options, dirs) {
-  options = parseOptions(options, {
-    'p': 'fullpath'
-  });
-  if (!dirs)
-    error('no paths given');
-
-  if (typeof dirs === 'string')
-    dirs = [].slice.call(arguments, 1);
-  // if it's array leave it as it is
-
-  dirs.forEach(function(dir) {
-    if (fs.existsSync(dir)) {
-      if (!options.fullpath)
-          error('path already exists: ' + dir, true);
-      return; // skip dir
-    }
-
-    // Base dir does not exist, and no -p option given
-    var baseDir = path.dirname(dir);
-    if (!fs.existsSync(baseDir) && !options.fullpath) {
-      error('no such file or directory: ' + baseDir, true);
-      return; // skip dir
-    }
-
-    if (options.fullpath)
-      mkdirSyncRecursive(dir);
-    else
-      fs.mkdirSync(dir, parseInt('0777', 8));
-  });
-} // mkdir
+var _mkdir = require('./src/mkdir');
 exports.mkdir = wrap('mkdir', _mkdir);
 
 //@
@@ -1092,23 +1062,6 @@ function wrap(cmd, fn, options) {
     return retValue;
   };
 } // wrap
-
-// Recursively creates 'dir'
-function mkdirSyncRecursive(dir) {
-  var baseDir = path.dirname(dir);
-
-  // Base dir exists, no recursion necessary
-  if (fs.existsSync(baseDir)) {
-    fs.mkdirSync(dir, parseInt('0777', 8));
-    return;
-  }
-
-  // Base dir does not exist, go recursive
-  mkdirSyncRecursive(baseDir);
-
-  // Base dir created, can create dir
-  fs.mkdirSync(dir, parseInt('0777', 8));
-}
 
 // e.g. 'shelljs_a5f185d0443ca...'
 function randomFileName() {
