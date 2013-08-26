@@ -308,6 +308,18 @@ Analogous to the redirection operator `>` in Unix, but works with JavaScript str
 those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will overwrite any existing file!_
 
 
+### 'string'.toEnd(file)
+
+Examples:
+
+```javascript
+cat('input.txt').toEnd('output.txt');
+```
+
+Analogous to the redirect-and-append operator `>>` in Unix, but works with JavaScript strings (such as
+those returned by `cat`, `grep`, etc).
+
+
 ### sed([options ,] search_regex, replace_str, file)
 Available options:
 
