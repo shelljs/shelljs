@@ -61,6 +61,10 @@ exports.cat = common.wrap('cat', _cat);
 var _to = require('./src/to');
 String.prototype.to = common.wrap('to', _to);
 
+//@include ./src/toEnd
+var _toEnd = require('./src/toEnd');
+String.prototype.toEnd = common.wrap('toEnd', _toEnd);
+
 //@include ./src/sed
 var _sed = require('./src/sed');
 exports.sed = common.wrap('sed', _sed);
