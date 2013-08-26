@@ -3,7 +3,7 @@ var fs = require('fs');
 var path = require('path');
 
 //@
-//@ ### 'string'.to(file)
+//@ ### 'string'.toEnd(file)
 //@
 //@ Examples:
 //@
@@ -11,9 +11,9 @@ var path = require('path');
 //@ cat('input.txt').to('output.txt');
 //@ ```
 //@
-//@ Analogous to the redirection operator `>` in Unix, but works with JavaScript strings (such as
-//@ those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will overwrite any existing file!_
-function _appendTo(options, file) {
+//@ Analogous to the redirect-and-append operator `>>` in Unix, but works with JavaScript strings (such as
+//@ those returned by `cat`, `grep`, etc).
+function _toEnd(options, file) {
   if (!file)
     common.error('wrong arguments');
 
@@ -26,4 +26,4 @@ function _appendTo(options, file) {
     common.error('could not append to file (code '+e.code+'): '+file, true);
   }
 }
-module.exports = _appendTo;
+module.exports = _toEnd;
