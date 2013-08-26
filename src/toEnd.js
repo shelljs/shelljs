@@ -8,7 +8,7 @@ var path = require('path');
 //@ Examples:
 //@
 //@ ```javascript
-//@ cat('input.txt').to('output.txt');
+//@ cat('input.txt').toEnd('output.txt');
 //@ ```
 //@
 //@ Analogous to the redirect-and-append operator `>>` in Unix, but works with JavaScript strings (such as
