@@ -6,10 +6,6 @@
 // http://github.com/arturadib/shelljs
 //
 
-var fs = require('fs');
-var path = require('path');
-fs.existsSync = fs.existsSync || path.existsSync; // shim for < v0.7
-
 var common = require('./src/common');
 
 
