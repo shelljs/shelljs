@@ -140,4 +140,11 @@ shell.cp('-r', 'resources/issue44/*', 'tmp/dir2/dir3');
 assert.ok(shell.error());
 assert.equal(fs.existsSync('tmp/dir2'), false);
 
+//preserve mode bits
+shell.rm('-rf', 'tmp/*');
+var execBit = parseInt('001', 8);
+assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
+shell.cp('resources/cp-mode-bits/executable', 'tmp/executable');
+assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode, fs.statSync('tmp/executable').mode);
+
 shell.exit(123);

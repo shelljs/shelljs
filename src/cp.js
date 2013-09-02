@@ -36,6 +36,8 @@ function copyFileSync(srcFile, destFile) {
 
   fs.closeSync(fdr);
   fs.closeSync(fdw);
+
+  fs.chmodSync(destFile, fs.statSync(srcFile).mode);
 }
 
 // Recursively copies 'sourceDir' into 'destDir'
@@ -60,21 +62,23 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 
   var files = fs.readdirSync(sourceDir);
 
-  for(var i = 0; i < files.length; i++) {
-    var currFile = fs.lstatSync(sourceDir + "/" + files[i]);
+  for (var i = 0; i < files.length; i++) {
+    var srcFile = sourceDir + "/" + files[i];
+    var destFile = destDir + "/" + files[i];
+    var srcFileStat = fs.lstatSync(srcFile);
 
-    if (currFile.isDirectory()) {
+    if (srcFileStat.isDirectory()) {
       /* recursion this thing right on back. */
-      cpdirSyncRecursive(sourceDir + "/" + files[i], destDir + "/" + files[i], opts);
-    } else if (currFile.isSymbolicLink()) {
-      var symlinkFull = fs.readlinkSync(sourceDir + "/" + files[i]);
-      fs.symlinkSync(symlinkFull, destDir + "/" + files[i]);
+      cpdirSyncRecursive(srcFile, destFile, opts);
+    } else if (srcFileStat.isSymbolicLink()) {
+      var symlinkFull = fs.readlinkSync(srcFile);
+      fs.symlinkSync(symlinkFull, destFile);
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
-      if (fs.existsSync(destDir + "/" + files[i]) && !opts.force) {
+      if (fs.existsSync(destFile) && !opts.force) {
         common.log('skipping existing file: ' + files[i]);
       } else {
-        copyFileSync(sourceDir + "/" + files[i], destDir + "/" + files[i]);
+        copyFileSync(srcFile, destFile);
       }
     }
 
