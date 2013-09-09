@@ -82,6 +82,10 @@ function execSync(cmd, opts) {
   try { common.unlinkSync(codeFile); } catch(e) {}
   try { common.unlinkSync(sleepFile); } catch(e) {}
 
+  // some shell return codes are defined as errors, per http://tldp.org/LDP/abs/html/exitcodes.html
+  if (code === 1 || code === 2 || code >= 126)  {
+      common.error('Exec returned error code' + code, true);
+  }
   // True if successful, false if not
   var obj = {
     code: code,

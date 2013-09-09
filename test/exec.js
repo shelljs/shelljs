@@ -22,6 +22,22 @@ assert.ok(shell.error());
 var result = shell.exec('asdfasdf'); // could not find command
 assert.ok(result.code > 0);
 
+// Test 'fatal' mode for exec, temporarily overriding process.exit
+var old_fatal = shell.config.fatal;
+var old_exit = process.exit;
+
+var exitcode = 9999;
+process.exit = function (_exitcode) {
+    exitcode = _exitcode;
+};
+
+shell.config.fatal = true;
+
+var result = shell.exec('asdfasdf'); // could not find command
+assert.equal(exitcode, 1);
+
+shell.config.fatal = old_fatal;
+process.exit = old_exit;
 
 //
 // Valids
