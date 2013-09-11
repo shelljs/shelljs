@@ -84,7 +84,7 @@ function execSync(cmd, opts) {
 
   // some shell return codes are defined as errors, per http://tldp.org/LDP/abs/html/exitcodes.html
   if (code === 1 || code === 2 || code >= 126)  {
-      common.error('Exec returned error code' + code, true);
+      common.error('', true); // unix/shell doesn't really give an error message after non-zero exit codes
   }
   // True if successful, false if not
   var obj = {

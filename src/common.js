@@ -31,7 +31,8 @@ function error(msg, _continue) {
     state.error = '';
   state.error += state.currentCmd + ': ' + msg + '\n';
 
-  log(state.error);
+  if (msg.length > 0)
+    log(state.error);
 
   if (config.fatal)
     process.exit(1);
