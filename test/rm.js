@@ -88,7 +88,7 @@ assert.equal(fs.existsSync('tmp/a/b/c'), true);
 assert.equal(fs.existsSync('tmp/b'), true);
 assert.equal(fs.existsSync('tmp/c'), true);
 assert.equal(fs.existsSync('tmp/.hidden'), true);
-shell.rm('-rf', 'tmp/*'); 
+shell.rm('-rf', 'tmp/*');
 assert.equal(shell.error(), null);
 var contents = fs.readdirSync('tmp');
 assert.equal(contents.length, 1);
@@ -179,5 +179,13 @@ fs.chmodSync('tmp/tree4/subtree/file', '0444'); // -r--r--r--
 fs.chmodSync('tmp/tree4/.hidden/file', '0444'); // -r--r--r--
 shell.rm('-rf', 'tmp/tree4'); // erase dir contents
 assert.equal(fs.existsSync('tmp/tree4'), false);
+
+// remove symbolic link to a dir
+shell.rm('-rf', 'tmp');
+shell.cp('-R', 'resources/rm', 'tmp');
+shell.rm('-f', 'tmp/rm/link_to_a_dir');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/rm/link_to_a_dir'), false);
+assert.equal(fs.existsSync('tmp/rm/a_dir'), true);
 
 shell.exit(123);

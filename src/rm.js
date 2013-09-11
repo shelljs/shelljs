@@ -113,9 +113,8 @@ function _rm(options, files) {
 
     // If here, path exists
 
-    var stats = fs.statSync(file);
-    // Remove simple file
-    if (stats.isFile()) {
+    var stats = fs.lstatSync(file);
+    if (stats.isFile() || stats.isSymbolicLink()) {
 
       // Do not check for file writing permissions
       if (options.force) {
