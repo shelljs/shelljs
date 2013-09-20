@@ -118,6 +118,9 @@ exports.tempdir = common.wrap('tempdir', _tempDir);
 var _error = require('./src/error');
 exports.error = _error;
 
+//@include ./src/path
+var _path = require('./src/path');
+exports.path = common.wrap('path', _path);
 
 
 //@

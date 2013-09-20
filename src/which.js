@@ -1,17 +1,7 @@
 var common = require('./common');
 var fs = require('fs');
 var path = require('path');
-
-// Cross-platform method for splitting environment PATH variables
-function splitPath(p) {
-  if (!p)
-    return [];
-
-  if (common.platform === 'win')
-    return p.split(';');
-  else
-    return p.split(':');
-}
+var _path = require('./path');
 
 //@
 //@ ### which(command)
@@ -28,8 +18,7 @@ function _which(options, cmd) {
   if (!cmd)
     common.error('must specify command');
 
-  var pathEnv = process.env.path || process.env.Path || process.env.PATH,
-      pathArray = splitPath(pathEnv),
+  var pathArray = _path(),
       where = null;
 
   // No relative/absolute paths provided?
