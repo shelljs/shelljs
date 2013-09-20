@@ -1,6 +1,9 @@
 
 var path = require('path'),
-    delimiter = path.delimiter;
+    common = require('./common'),
+    delimiter = path.delimiter // not available in 0.8.x
+      || (common.platform === 'win' ? ';' : ':');
+
 
 //@
 //@ ### path()
@@ -42,7 +45,7 @@ function _path(opts, dir) {
 function getPathKey() {
   var keys = [ 'path', 'Path', 'PATH' ];
   for (var i = keys.length - 1; i >= 0; i--) {
-    if (process.env.hasOwnProperty(keys[i])) {
+    if (typeof process.env[keys[i]] === 'string') {
       return keys[i];
     }
   }
