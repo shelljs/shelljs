@@ -1,16 +1,9 @@
 var shell = require('..');
 
 var assert = require('assert'),
-    path = require('path'),
-    fs = require('fs'),
-    util = require('util'),
-    child = require('child_process');
+    util = require('util');
 
 shell.config.silent = true;
-
-function numLines(str) {
-  return typeof str === 'string' ? str.match(/\n/g).length : 0;
-}
 
 //
 // Invalids

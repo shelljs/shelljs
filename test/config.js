@@ -3,10 +3,6 @@ var shell = require('..');
 var assert = require('assert'),
     child = require('child_process');
 
-function numLines(str) {
-  return typeof str === 'string' ? str.match(/\n/g).length : 0;
-}
-
 //
 // config.silent
 //
@@ -32,7 +28,7 @@ shell.mkdir('-p', 'tmp');
 var file = 'tmp/tempscript'+Math.random()+'.js',
     script = 'require(\'../../global.js\'); config.silent=true; config.fatal=false; cp("this_file_doesnt_exist", "."); echo("got here");';
 script.to(file);
-child.exec('node '+file, function(err, stdout, stderr) {
+child.exec('node '+file, function(err, stdout) {
   assert.ok(stdout.match('got here'));
 
   //
@@ -42,7 +38,7 @@ child.exec('node '+file, function(err, stdout, stderr) {
   var file = 'tmp/tempscript'+Math.random()+'.js',
       script = 'require(\'../../global.js\'); config.silent=true; config.fatal=true; cp("this_file_doesnt_exist", "."); echo("got here");';
   script.to(file);
-  child.exec('node '+file, function(err, stdout, stderr) {
+  child.exec('node '+file, function(err, stdout) {
     assert.ok(!stdout.match('got here'));
 
     shell.exit(123);

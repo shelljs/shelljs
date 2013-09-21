@@ -16,7 +16,7 @@ if (!test('-f', JSHINT_BIN)) {
   exit(1);
 }
 
-if (exec(JSHINT_BIN + ' --config jshint.json *.js test/*.js').code !== 0) {
+if (exec(JSHINT_BIN + ' *.js test/*.js').code !== 0) {
   failed = true;
   echo('*** JSHINT FAILED! (return code != 0)');
   echo();

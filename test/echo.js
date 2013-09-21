@@ -10,10 +10,6 @@ fs.existsSync = fs.existsSync || path.existsSync;
 
 shell.config.silent = true;
 
-function numLines(str) {
-  return typeof str === 'string' ? str.match(/\n/g).length : 0;
-}
-
 shell.rm('-rf', 'tmp');
 shell.mkdir('tmp');
 
@@ -30,7 +26,7 @@ shell.mkdir('-p', 'tmp');
 var file = 'tmp/tempscript'+Math.random()+'.js',
     script = 'require(\'../../global.js\'); echo("-asdf", "111");'; // test '-' bug (see issue #20)
 script.to(file);
-child.exec('node '+file, function(err, stdout, stderr) {
+child.exec('node '+file, function(err, stdout) {
   assert.ok(stdout === '-asdf 111\n' || stdout === '-asdf 111\nundefined\n'); // 'undefined' for v0.4
 
   // simple test with silent(true)
@@ -38,7 +34,7 @@ child.exec('node '+file, function(err, stdout, stderr) {
   var file = 'tmp/tempscript'+Math.random()+'.js',
       script = 'require(\'../../global.js\'); config.silent=true; echo(555);';
   script.to(file);
-  child.exec('node '+file, function(err, stdout, stderr) {
+  child.exec('node '+file, function(err, stdout) {
     assert.ok(stdout === '555\n' || stdout === '555\nundefined\n'); // 'undefined' for v0.4
 
     theEnd();
