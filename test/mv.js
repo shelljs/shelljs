@@ -1,11 +1,7 @@
 var shell = require('..');
 
 var assert = require('assert'),
-    path = require('path'),
     fs = require('fs');
-
-// Node shims for < v0.7
-fs.existsSync = fs.existsSync || path.existsSync;
 
 shell.config.silent = true;
 
