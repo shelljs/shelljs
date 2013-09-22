@@ -38,7 +38,6 @@ setTimeout(function() {
         global.target[arg]();
       else {
         console.log('no such target: ' + arg);
-        global.exit(1);
       }
     });
   } else if ('all' in global.target) {
