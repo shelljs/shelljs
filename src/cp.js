@@ -71,8 +71,17 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       /* recursion this thing right on back. */
       cpdirSyncRecursive(srcFile, destFile, opts);
     } else if (srcFileStat.isSymbolicLink()) {
-      var symlinkFull = fs.readlinkSync(srcFile);
-      fs.symlinkSync(symlinkFull, destFile);
+      var exists = fs.existsSync(destFile);
+      if (exists && !opts.force) {
+          common.log('skipping existing symlink: ' + files[i]);
+      } else {
+        if (exists) { // If it exists but force is set, delete the link first and then recreate.
+          fs.unlinkSync(destFile);
+        }
+        var symlinkTarget = fs.readlinkSync(srcFile);
+        var symlinkFull = path.resolve(sourceDir, symlinkTarget);
+        fs.symlinkSync(symlinkFull, destFile);
+      }
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && !opts.force) {

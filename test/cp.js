@@ -123,6 +123,13 @@ shell.cp('-Rf', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
 assert.equal(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); // after cp
 
+//recursive, everything exists, adjusting symlinks correctly
+shell.rm('-rf', 'tmp/*');
+shell.cp('-R', 'resources/cp', 'tmp');
+assert.equal(shell.error(), null);
+assert.equal(shell.cat('resources/cp/file1'), shell.cat('tmp/cp/file1')); // after cp
+assert.equal(shell.error(), null);
+
 //recursive, creates dest dir since it's only one level deep (see Github issue #44)
 shell.rm('-rf', 'tmp/*');
 shell.cp('-r', 'resources/issue44/*', 'tmp/dir2');
