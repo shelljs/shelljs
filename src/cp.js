@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
+var os = require('os');
 
 // Buffered file copy, synchronous
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
