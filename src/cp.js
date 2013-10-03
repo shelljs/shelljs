@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
+var os = require('os');
 
 // Buffered file copy, synchronous
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
@@ -72,7 +73,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       cpdirSyncRecursive(srcFile, destFile, opts);
     } else if (srcFileStat.isSymbolicLink()) {
       var symlinkFull = fs.readlinkSync(srcFile);
-      fs.symlinkSync(symlinkFull, destFile);
+      fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && !opts.force) {
