@@ -28,8 +28,8 @@ function _ln(options, source, dest) {
     common.error('Missing <source> and/or <dest>');
   }
 
-  source = path.join(process.cwd(), String(source));
-  dest = path.join(process.cwd(), String(dest));
+  source = path.resolve(process.cwd(), String(source));
+  dest = path.resolve(process.cwd(), String(dest));
 
   if (!fs.existsSync(source)) {
     common.error('Source file does not exist', true);
