@@ -1,7 +1,8 @@
 var shell = require('..');
 
 var assert = require('assert'),
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 shell.config.silent = true;
 
@@ -80,6 +81,19 @@ fs.writeFileSync('tmp/file1.txt', 'new content txt');
 assert.equal(
   fs.readFileSync('tmp/file2.txt').toString(),
   'new content txt'
+);
+
+// Abspath regression
+shell.ln('-sf', 'tmp/file1', path.resolve('tmp/abspath'));
+assert(fs.existsSync('tmp/abspath'));
+assert.equal(
+  fs.readFileSync('tmp/file1').toString(),
+  fs.readFileSync('tmp/abspath').toString()
+);
+fs.writeFileSync('tmp/file1', 'new content 3');
+assert.equal(
+  fs.readFileSync('tmp/abspath').toString(),
+  'new content 3'
 );
 
 shell.exit(123);
