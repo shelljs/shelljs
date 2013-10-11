@@ -439,6 +439,23 @@ Display the list of currently remembered directories. Returns an array of paths 
 See also: pushd, popd
 
 
+### ln(options, source, dest)
+### ln(source, dest)
+Available options:
+
++ `s`: symlink
++ `f`: force
+
+Examples:
+
+```javascript
+ln('file', 'newlink');
+ln('-sf', 'file', 'existing');
+```
+
+Links source to dest. Use -f to force the link, should dest already exist.
+
+
 ### exit(code)
 Exits the current process with the given exit code.
 
