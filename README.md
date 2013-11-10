@@ -467,6 +467,7 @@ Available options (all `false` by default):
 
 + `async`: Asynchronous execution. Defaults to true if a callback is provided.
 + `silent`: Do not echo program output to console.
++ `stderr`: echo stdout separately to stderr, and do not append to output in callback.
 
 Examples:
 

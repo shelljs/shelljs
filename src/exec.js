@@ -114,6 +114,9 @@ function execAsync(cmd, opts, callback) {
   });
 
   c.stderr.on('data', function(data) {
+    if (options.stderr)
+      process.stderr.write(data);
+      return
     output += data;
     if (!options.silent)
       process.stdout.write(data);
