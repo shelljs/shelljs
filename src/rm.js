@@ -1,5 +1,6 @@
 var common = require('./common');
-var fs = require('fs');
+var fs = require('fs'),
+    path = require('path');
 
 // Recursively removes 'dir'
 // Adapted from https://github.com/ryanmcgrath/wrench-js
@@ -16,7 +17,7 @@ function rmdirSyncRecursive(dir, force) {
 
   // Loop through and delete everything in the sub-tree after checking it
   for(var i = 0; i < files.length; i++) {
-    var file = dir + "/" + files[i],
+    var file = dir + path.sep + files[i],
         currFile = fs.lstatSync(file);
 
     if(currFile.isDirectory()) { // Recursive function back to the beginning

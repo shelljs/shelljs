@@ -122,7 +122,7 @@ exports.tempdir = common.wrap('tempdir', _tempDir);
 var _error = require('./src/error');
 exports.error = _error;
 
-
+exports.platform = common.platform;
 
 //@
 //@ ## Configuration

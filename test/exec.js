@@ -1,7 +1,8 @@
 var shell = require('..');
 
 var assert = require('assert'),
-    util = require('util');
+    util = require('util'),
+    os = require('os');
 
 shell.config.silent = true;
 
@@ -11,6 +12,10 @@ shell.config.silent = true;
 
 shell.exec();
 assert.ok(shell.error());
+
+// Fails?
+if(os.platform() === 'freebsd');
+    shell.exit(123);
 
 var result = shell.exec('asdfasdf'); // could not find command
 assert.ok(result.code > 0);

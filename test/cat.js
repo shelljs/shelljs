@@ -38,6 +38,7 @@ var result = shell.cat(['resources/file2', 'resources/file1']);
 assert.equal(shell.error(), null);
 assert.equal(result, 'test2\ntest1');
 
+// TODO: test fails on a windows network share
 var result = shell.cat('resources/file*.txt');
 assert.equal(shell.error(), null);
 assert.ok(result.search('test1') > -1); // file order might be random

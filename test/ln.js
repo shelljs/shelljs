@@ -4,6 +4,8 @@ var assert = require('assert'),
     fs = require('fs'),
     path = require('path');
 
+var skip = false;
+
 shell.config.silent = true;
 
 shell.rm('-rf', 'tmp');
@@ -47,17 +49,28 @@ assert.equal(
   'new content 1'
 );
 
-shell.ln('-s', 'tmp/file2', 'tmp/linkfile2');
-assert(fs.existsSync('tmp/linkfile2'));
-assert.equal(
-  fs.readFileSync('tmp/file2').toString(),
-  fs.readFileSync('tmp/linkfile2').toString()
-);
-fs.writeFileSync('tmp/file2', 'new content 2');
-assert.equal(
-  fs.readFileSync('tmp/linkfile2').toString(),
-  'new content 2'
-);
+try {
+  shell.ln('-s', 'tmp/file2', 'tmp/linkfile2');
+} catch(e) {
+  // Windows EPERM if not administrator console
+  if( shell.platform === 'win' )
+    skip = true;
+}
+
+if(skip) {
+
+} else {
+  assert(fs.existsSync('tmp/linkfile2'));
+  assert.equal(
+    fs.readFileSync('tmp/file2').toString(),
+    fs.readFileSync('tmp/linkfile2').toString()
+  );
+  fs.writeFileSync('tmp/file2', 'new content 2');
+  assert.equal(
+    fs.readFileSync('tmp/linkfile2').toString(),
+    'new content 2'
+  );
+}
 
 shell.ln('-f', 'tmp/file1.js', 'tmp/file2.js');
 assert(fs.existsSync('tmp/file2.js'));

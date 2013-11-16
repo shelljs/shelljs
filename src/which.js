@@ -41,7 +41,7 @@ function _which(options, cmd) {
       if (where)
         return; // already found it
 
-      var attempt = path.resolve(dir + '/' + cmd);
+      var attempt = path.resolve(dir + path.sep + cmd);
       if (fs.existsSync(attempt)) {
         where = attempt;
         return;
