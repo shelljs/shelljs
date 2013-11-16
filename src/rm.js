@@ -1,5 +1,6 @@
 var common = require('./common');
-var fs = require('fs');
+var fs = require('fs'),
+    path = require('path');
 
 // Recursively removes 'dir'
 // Adapted from https://github.com/ryanmcgrath/wrench-js

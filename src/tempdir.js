@@ -1,6 +1,7 @@
 var common = require('./common');
-var os = require('os');
-var fs = require('fs');
+var os = require('os'),
+    fs = require('fs'),
+    path = require('path');
 
 // Returns false if 'dir' is not a writeable directory, 'dir' otherwise
 function writeableDir(dir) {
@@ -10,7 +11,7 @@ function writeableDir(dir) {
   if (!fs.statSync(dir).isDirectory())
     return false;
 
-  var testFile = dir+'/'+common.randomFileName();
+  var testFile = dir+path.sep+common.randomFileName();
   try {
     fs.writeFileSync(testFile, ' ');
     common.unlinkSync(testFile);

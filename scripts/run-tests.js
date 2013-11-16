@@ -8,15 +8,14 @@ var failed = false;
 //
 // Lint
 //
-JSHINT_BIN = './node_modules/jshint/bin/jshint';
+JSHINT_BIN = path.join('.', 'node_modules', 'jshint', 'bin', 'jshint');
 cd(__dirname + '/..');
 
 if (!test('-f', JSHINT_BIN)) {
   echo('JSHint not found. Run `npm install` in the root dir first.');
   exit(1);
 }
-
-if (exec(JSHINT_BIN + ' *.js test/*.js').code !== 0) {
+if (exec('node '+ JSHINT_BIN + ' *.js test/*.js').code !== 0) {
   failed = true;
   echo('*** JSHINT FAILED! (return code != 0)');
   echo();
@@ -28,8 +27,9 @@ if (exec(JSHINT_BIN + ' *.js test/*.js').code !== 0) {
 //
 // Unit tests
 //
+var runTest = process.argv[2] ? process.argv[2] : '*';
 cd(__dirname + '/../test');
-ls('*.js').forEach(function(file) {
+ls(runTest + '.js').forEach(function(file) {
   echo('Running test:', file);
   if (exec('node ' + file).code !== 123) { // 123 avoids false positives (e.g. premature exit)
     failed = true;
