@@ -1,6 +1,7 @@
 var shell = require('..');
 
 var assert = require('assert'),
+    path = require('path'),
     util = require('util');
 
 shell.config.silent = true;
@@ -76,6 +77,12 @@ var result = shell.exec( util.format('node -e "console.log(%s);"', "\\\"\\'+\\'_
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result.output, "'+'_'+'\n");
+
+// check pwd option to exec by using pwd as the parent directory
+var result = shell.exec('node -e "console.log(process.cwd())"', {'pwd': shell.pwd() + path.sep + '..'});
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result.output.trim(), shell.pwd().substr(0, shell.pwd().lastIndexOf(path.sep)));
 
 //
 // async
