@@ -56,7 +56,7 @@ function execSync(cmd, opts) {
   fs.writeFileSync(scriptFile, script);
   child.exec('"'+process.execPath+'" '+scriptFile, {
     env: process.env,
-    cwd: _pwd(),
+    cwd: opts.pwd || _pwd(),
     maxBuffer: 20*1024*1024
   });
 
@@ -126,7 +126,8 @@ function execAsync(cmd, opts, callback) {
 //@ ### exec(command [, options] [, callback])
 //@ Available options (all `false` by default):
 //@
-//@ + `async`: Asynchronous execution. Defaults to true if a callback is provided.
+//@ + `async`: Asynchronous execution. Defaults to `true` if a callback is provided.
+//@ + `pwd`: The current working directory to use for the command.
 //@ + `silent`: Do not echo program output to console.
 //@
 //@ Examples:
