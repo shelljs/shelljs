@@ -196,6 +196,8 @@ Available options:
 + `-f`: force
 + `-r, -R`: recursive
 
+This DOES NOT include files beginning with `.` (ref #79)
+
 Examples:
 
 ```javascript
