@@ -81,7 +81,7 @@ cd 'lib'
 for file in ls '*.js'
   sed '-i', 'BUILD_VERSION', 'v0.1.2', file
   sed '-i', /.*REMOVE_THIS_LINE.*\n/, '', file
-  sed '-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, cat 'macro.js', file
+  sed '-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, cat('macro.js'), file
 cd '..'
 
 # Run external tool synchronously
