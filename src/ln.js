@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
+var os = require('os');
 
 //@
 //@ ### ln(options, source, dest)
@@ -44,9 +45,9 @@ function _ln(options, source, dest) {
   }
 
   if (options.symlink) {
-    fs.symlinkSync(source, dest);
+    fs.symlinkSync(source, dest, os.platform() === "win32" ? "junction" : null);
   } else {
-    fs.linkSync(source, dest);
+    fs.linkSync(source, dest, os.platform() === "win32" ? "junction" : null);
   }
 }
 module.exports = _ln;
