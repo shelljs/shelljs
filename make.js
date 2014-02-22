@@ -5,9 +5,12 @@ global.target = {};
 
 // This ensures we only execute the script targets after the entire script has
 // been evaluated
-var args = process.argv.slice(2);
-setTimeout(function() {
+var args = process.argv.slice(2),
+  runOnce = 0;
+exports.run = function() {
   var t;
+
+  if (runOnce++) return;
 
   if (args.length === 1 && args[0] === '--help') {
     console.log('Available targets:');
@@ -44,4 +47,5 @@ setTimeout(function() {
     global.target.all();
   }
 
-}, 0);
+}
+setTimeout(exports.run, 0)
