@@ -48,4 +48,28 @@ var result = shell.grep(/test/, ['resources/file1.txt', 'resources/file2.txt']);
 assert.equal(shell.error(), null);
 assert.equal(result, 'test1\ntest2\n');
 
+// list file names of matches
+var result = shell.grep('-l', /test/, ['resources/file1.txt', 'resources/file2.txt']);
+assert.equal(shell.error(), null);
+assert.equal(result, 'resources/file1.txt\nresources/file2.txt\n');
+
+// glob (and -s to silence missing files found via glob)
+shell.cd('./resources');
+var result = shell.grep('-s', /test/, '*');
+assert.equal(shell.error(), null);
+assert.equal(result, 'test1\ntest\ntest1\ntest2\ntest\ntest2\n');
+shell.cd('..');
+
+// glob (and -s to silence missing files found via glob)
+shell.cd('./resources');
+var result = shell.grep('-s', /test/, '*');
+assert.equal(shell.error(), null);
+assert.equal(result, 'test1\ntest\ntest1\ntest2\ntest\ntest2\n');
+
+// glob listing file names of matches
+shell.cd('./resources');
+var result = shell.grep('-ls', /test/, '*');
+assert.equal(shell.error(), null);
+assert.equal(result, "file1\nfile1.js\nfile1.txt\nfile2\nfile2.js\nfile2.txt\n");
+
 shell.exit(123);
