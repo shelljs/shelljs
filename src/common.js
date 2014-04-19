@@ -1,6 +1,7 @@
 var os = require('os');
 var fs = require('fs');
 var _ls = require('./ls');
+var minimatch = require('minimatch');
 
 // Module globals
 var config = {
@@ -92,8 +93,18 @@ exports.parseOptions = parseOptions;
 function expand(list) {
   var expanded = [];
   list.forEach(function(listEl) {
-    // Wildcard present?
-    if (listEl.search(/\*/) > -1) {
+    // Wildcard present on directory names ?
+    if(listEl.search(/\*[^\/]*\//) > -1 || listEl.search(/\*\*[^\/]*\//) > -1) {
+      var match = listEl.match(/^([^*]+\/|)(.*)/);
+      var root = match[1];
+      var rest = match[2];
+      
+      _ls('-R', root).filter(minimatch.filter(rest)).forEach(function(file) {
+        expanded.push(file);
+      });
+    }
+    // Wildcard present on file names ?
+    else if (listEl.search(/\*/) > -1) {
       _ls('', listEl).forEach(function(file) {
         expanded.push(file);
       });
