@@ -48,4 +48,9 @@ var result = shell.grep(/test/, ['resources/file1.txt', 'resources/file2.txt']);
 assert.equal(shell.error(), null);
 assert.equal(result, 'test1\ntest2\n');
 
+// multiple files, glob syntax, * for file name
+var result = shell.grep(/test/, 'resources/file*.txt');
+assert.equal(shell.error(), null);
+assert.equal(result, 'test1\ntest2\n');
+
 shell.exit(123);
