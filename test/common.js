@@ -36,6 +36,16 @@ var result = common.expand(['resources/file*.txt']);
 assert.equal(shell.error(), null);
 assert.deepEqual(result, ['resources/file1.txt', 'resources/file2.txt']);
 
+// multiple file, glob syntax, * for directory name
+var result = common.expand(['*/file*.txt']);
+assert.equal(shell.error(), null);
+assert.deepEqual(result, ['resources/file1.txt', 'resources/file2.txt']);
+
+// multiple file, glob syntax, ** for directory name
+var result = common.expand(['**/file*.txt']);
+assert.equal(shell.error(), null);
+assert.deepEqual(result, ['resources/file1.txt', 'resources/file2.txt']);
+
 shell.exit(123);
 
 
