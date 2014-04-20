@@ -34,17 +34,17 @@ assert.deepEqual(result, ['resources/file1.txt']);
 // multiple file, glob syntax, * for file name
 var result = common.expand(['resources/file*.txt']);
 assert.equal(shell.error(), null);
-assert.deepEqual(result, ['resources/file1.txt', 'resources/file2.txt']);
+assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 
 // multiple file, glob syntax, * for directory name
 var result = common.expand(['*/file*.txt']);
 assert.equal(shell.error(), null);
-assert.deepEqual(result, ['resources/file1.txt', 'resources/file2.txt']);
+assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 
 // multiple file, glob syntax, ** for directory name
 var result = common.expand(['**/file*.txt']);
 assert.equal(shell.error(), null);
-assert.deepEqual(result, ['resources/file1.txt', 'resources/file2.txt']);
+assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 
 shell.exit(123);
 

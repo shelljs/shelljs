@@ -51,16 +51,16 @@ assert.equal(result, 'test1\ntest2\n');
 // multiple files, glob syntax, * for file name
 var result = shell.grep(/test/, 'resources/file*.txt');
 assert.equal(shell.error(), null);
-assert.equal(result, 'test1\ntest2\n');
+assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
 
 // multiple files, glob syntax, * for directory name
 var result = shell.grep(/test/, '*/file*.txt');
 assert.equal(shell.error(), null);
-assert.equal(result, 'test1\ntest2\n');
+assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
 
 // multiple files, glob syntax, ** for directory name
 var result = shell.grep(/test/, '**/file*.txt');
 assert.equal(shell.error(), null);
-assert.equal(result, 'test1\ntest2\n');
+assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
 
 shell.exit(123);
