@@ -24,9 +24,7 @@
   "bin": {
     "shjs": "./bin/shjs"
   },
-  "dependencies": {
-    "minimatch": "0.2.14"
-  },
+  "dependencies": {},
   "devDependencies": {
     "jshint": "~2.1.11"
   },

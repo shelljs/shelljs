@@ -1,7 +1,6 @@
 var os = require('os');
 var fs = require('fs');
 var _ls = require('./ls');
-var minimatch = require('minimatch');
 
 // Module globals
 var config = {
@@ -98,8 +97,12 @@ function expand(list) {
       var match = listEl.match(/^([^*]+\/|)(.*)/);
       var root = match[1];
       var rest = match[2];
+      var restRegex = rest.replace(/\*\*/g, ".*").replace(/\*/g, "[^\\/]*");
+      restRegex = new RegExp(restRegex);
       
-      _ls('-R', root).filter(minimatch.filter(rest)).forEach(function(file) {
+      _ls('-R', root).filter(function (e) {
+        return restRegex.test(e);
+      }).forEach(function(file) {
         expanded.push(file);
       });
     }
