@@ -42,9 +42,9 @@ assert.equal(shell.error(), null);
 assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 
 // multiple file, glob syntax, ** for directory name
-var result = common.expand(['**/file*.txt']);
+var result = common.expand(['**/file*.js']);
 assert.equal(shell.error(), null);
-assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
+assert.deepEqual(result.sort(), ["resources/file1.js","resources/file2.js","resources/ls/file1.js","resources/ls/file2.js"].sort());
 
 shell.exit(123);
 

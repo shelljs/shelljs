@@ -59,8 +59,8 @@ assert.equal(shell.error(), null);
 assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
 
 // multiple files, glob syntax, ** for directory name
-var result = shell.grep(/test/, '**/file*.txt');
+var result = shell.grep(/test/, '**/file*.js');
 assert.equal(shell.error(), null);
-assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
+assert.equal(result, 'test\ntest\ntest\ntest\n');
 
 shell.exit(123);
