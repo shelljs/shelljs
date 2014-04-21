@@ -92,8 +92,22 @@ exports.parseOptions = parseOptions;
 function expand(list) {
   var expanded = [];
   list.forEach(function(listEl) {
-    // Wildcard present?
-    if (listEl.search(/\*/) > -1) {
+    // Wildcard present on directory names ?
+    if(listEl.search(/\*[^\/]*\//) > -1 || listEl.search(/\*\*[^\/]*\//) > -1) {
+      var match = listEl.match(/^([^*]+\/|)(.*)/);
+      var root = match[1];
+      var rest = match[2];
+      var restRegex = rest.replace(/\*\*/g, ".*").replace(/\*/g, "[^\\/]*");
+      restRegex = new RegExp(restRegex);
+      
+      _ls('-R', root).filter(function (e) {
+        return restRegex.test(e);
+      }).forEach(function(file) {
+        expanded.push(file);
+      });
+    }
+    // Wildcard present on file names ?
+    else if (listEl.search(/\*/) > -1) {
       _ls('', listEl).forEach(function(file) {
         expanded.push(file);
       });
