@@ -2,7 +2,7 @@ var common = require('./common');
 var fs = require('fs');
 
 //@
-//@ ### sed([options ,] search_regex, replace_str, file)
+//@ ### sed([options ,] search_regex, replacement, file)
 //@ Available options:
 //@
 //@ + `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_
@@ -15,13 +15,13 @@ var fs = require('fs');
 //@ ```
 //@
 //@ Reads an input string from `file` and performs a JavaScript `replace()` on the input
-//@ using the given search regex and replacement string. Returns the new string after replacement.
+//@ using the given search regex and replacement string or function. Returns the new string after replacement.
 function _sed(options, regex, replacement, file) {
   options = common.parseOptions(options, {
     'i': 'inplace'
   });
 
-  if (typeof replacement === 'string')
+  if (typeof replacement === 'string' || typeof replacement === 'function')
     replacement = replacement; // no-op
   else if (typeof replacement === 'number')
     replacement = replacement.toString(); // fallback

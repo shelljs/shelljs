@@ -42,6 +42,13 @@ var result = shell.sed(/test1/, 1234, 'tmp/file1'); // numeric replacement
 assert.equal(shell.error(), null);
 assert.equal(result, '1234');
 
+var replaceFun = function (match) {
+	return match.toUpperCase() + match;
+};
+var result = shell.sed(/test1/, replaceFun, 'tmp/file1'); // replacement function
+assert.equal(shell.error(), null);
+assert.equal(result, 'TEST1test1');
+
 var result = shell.sed('-i', /test1/, 'hello', 'tmp/file1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello');

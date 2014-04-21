@@ -320,7 +320,7 @@ Analogous to the redirect-and-append operator `>>` in Unix, but works with JavaS
 those returned by `cat`, `grep`, etc).
 
 
-### sed([options ,] search_regex, replace_str, file)
+### sed([options ,] search_regex, replacement, file)
 Available options:
 
 + `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_
@@ -333,7 +333,7 @@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 ```
 
 Reads an input string from `file` and performs a JavaScript `replace()` on the input
-using the given search regex and replacement string. Returns the new string after replacement.
+using the given search regex and replacement string or function. Returns the new string after replacement.
 
 
 ### grep([options ,] regex_filter, file [, file ...])
