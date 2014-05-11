@@ -97,7 +97,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ cp('file1', 'dir1');
 //@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
 //@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above

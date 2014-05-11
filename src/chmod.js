@@ -42,7 +42,7 @@ var PERMS = (function (base) {
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ chmod(755, '/Users/brandon');
 //@ chmod('755', '/Users/brandon'); // same as above
 //@ chmod('u+x', '/Users/brandon');
