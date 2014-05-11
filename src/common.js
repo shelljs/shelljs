@@ -2,11 +2,11 @@ var fs = require('fs');
 var _ls = require('./ls');
 
 // Module globals
-var config = {
+var _config = {
   silent: false,
   fatal: false
 };
-exports.config = config;
+exports.config = _config;
 
 var state = {
   error: null,
@@ -19,12 +19,12 @@ var platform = process.platform === 'win32' ? 'win' : 'unix';
 exports.platform = platform;
 
 function log() {
-  if (!config.silent)
+  if (!_config.silent)
     console.log.apply(this, arguments);
 }
 exports.log = log;
 
-// Shows error message. Throws unless _continue or config.fatal are true
+// Shows error message. Throws unless _continue or _config.fatal are true
 function error(msg, _continue) {
   if (state.error === null)
     state.error = '';
@@ -33,7 +33,7 @@ function error(msg, _continue) {
   if (msg.length > 0)
     log(state.error);
 
-  if (config.fatal)
+  if (_config.fatal)
     process.exit(1);
 
   if (!_continue)
@@ -191,7 +191,7 @@ function wrap(cmd, fn, options) {
         console.log(e.stack || e);
         process.exit(1);
       }
-      if (config.fatal)
+      if (_config.fatal)
         throw e;
     }
 
