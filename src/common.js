@@ -1,4 +1,3 @@
-var os = require('os');
 var fs = require('fs');
 var _ls = require('./ls');
 
@@ -16,7 +15,7 @@ var state = {
 };
 exports.state = state;
 
-var platform = os.type().match(/^Win/) ? 'win' : 'unix';
+var platform = process.platform === 'win32' ? 'win' : 'unix';
 exports.platform = platform;
 
 function log() {
