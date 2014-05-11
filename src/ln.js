@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
-var os = require('os');
 
 //@
 //@ ### ln(options, source, dest)
@@ -13,7 +12,7 @@ var os = require('os');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ ln('file', 'newlink');
 //@ ln('-sf', 'file', 'existing');
 //@ ```
@@ -45,9 +44,9 @@ function _ln(options, source, dest) {
   }
 
   if (options.symlink) {
-    fs.symlinkSync(source, dest, os.platform() === "win32" ? "junction" : null);
+    fs.symlinkSync(source, dest, common.platform === 'win' ? 'junction' : null);
   } else {
-    fs.linkSync(source, dest, os.platform() === "win32" ? "junction" : null);
+    fs.linkSync(source, dest, common.platform === 'win' ? 'junction' : null);
   }
 }
 module.exports = _ln;

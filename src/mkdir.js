@@ -28,7 +28,7 @@ function mkdirSyncRecursive(dir) {
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ mkdir('-p', '/tmp/a/b/c/d', '/tmp/e/f/g');
 //@ mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 //@ ```

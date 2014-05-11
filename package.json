@@ -26,9 +26,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "jshint": "~2.1.11"
+    "jshint": "~2.5.0"
   },
-  "optionalDependencies": {},
   "engines": {
     "node": ">=0.8.0"
   }

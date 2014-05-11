@@ -14,7 +14,7 @@ var _pwd = require('./pwd');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ ls('projs/*.js');
 //@ ls('-R', '/users/me', '/tmp');
 //@ ls('-R', ['/users/me', '/tmp']); // same as above

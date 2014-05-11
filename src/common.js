@@ -1,13 +1,12 @@
-var os = require('os');
 var fs = require('fs');
 var _ls = require('./ls');
 
 // Module globals
-var config = {
+var _config = {
   silent: false,
   fatal: false
 };
-exports.config = config;
+exports.config = _config;
 
 var state = {
   error: null,
@@ -16,16 +15,16 @@ var state = {
 };
 exports.state = state;
 
-var platform = os.type().match(/^Win/) ? 'win' : 'unix';
+var platform = process.platform === 'win32' ? 'win' : 'unix';
 exports.platform = platform;
 
 function log() {
-  if (!config.silent)
+  if (!_config.silent)
     console.log.apply(this, arguments);
 }
 exports.log = log;
 
-// Shows error message. Throws unless _continue or config.fatal are true
+// Shows error message. Throws unless _continue or _config.fatal are true
 function error(msg, _continue) {
   if (state.error === null)
     state.error = '';
@@ -34,7 +33,7 @@ function error(msg, _continue) {
   if (msg.length > 0)
     log(state.error);
 
-  if (config.fatal)
+  if (_config.fatal)
     process.exit(1);
 
   if (!_continue)
@@ -97,9 +96,9 @@ function expand(list) {
       var match = listEl.match(/^([^*]+\/|)(.*)/);
       var root = match[1];
       var rest = match[2];
-      var restRegex = rest.replace(/\*\*/g, ".*").replace(/\*/g, "[^\\/]*");
+      var restRegex = rest.replace(/\*\*/g, '.*').replace(/\*/g, '[^\\/]*');
       restRegex = new RegExp(restRegex);
-      
+
       _ls('-R', root).filter(function (e) {
         return restRegex.test(e);
       }).forEach(function(file) {
@@ -192,7 +191,7 @@ function wrap(cmd, fn, options) {
         console.log(e.stack || e);
         process.exit(1);
       }
-      if (config.fatal)
+      if (_config.fatal)
         throw e;
     }
 

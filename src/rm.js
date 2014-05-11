@@ -16,7 +16,7 @@ function rmdirSyncRecursive(dir, force) {
 
   // Loop through and delete everything in the sub-tree after checking it
   for(var i = 0; i < files.length; i++) {
-    var file = dir + "/" + files[i],
+    var file = dir + '/' + files[i],
         currFile = fs.lstatSync(file);
 
     if(currFile.isDirectory()) { // Recursive function back to the beginning
@@ -80,7 +80,7 @@ function isWriteable(file) {
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ rm('-rf', '/tmp/*');
 //@ rm('some_file.txt', 'another_file.txt');
 //@ rm(['some_file.txt', 'another_file.txt']); // same as above

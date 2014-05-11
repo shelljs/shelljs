@@ -35,7 +35,7 @@ You can also just copy `shell.js` into your project's directory, and `require()`
 
 ### JavaScript
 
-```javascript
+```js
 require('shelljs/global');
 
 if (!which('git')) {
@@ -96,7 +96,7 @@ The example above uses the convenience script `shelljs/global` to reduce verbosi
 
 Example:
 
-```javascript
+```js
 var shell = require('shelljs');
 shell.echo('hello world');
 ```
@@ -134,7 +134,7 @@ To run the target `all`, call the above script without arguments: `$ node make`.
 
 
 
-<!-- 
+<!--
 
   DO NOT MODIFY BEYOND THIS POINT - IT'S AUTOMATICALLY GENERATED
 
@@ -164,7 +164,7 @@ Available options:
 
 Examples:
 
-```javascript
+```js
 ls('projs/*.js');
 ls('-R', '/users/me', '/tmp');
 ls('-R', ['/users/me', '/tmp']); // same as above
@@ -177,7 +177,7 @@ Returns array of files in the given path, or in current directory if no path pro
 ### find(path_array)
 Examples:
 
-```javascript
+```js
 find('src', 'lib');
 find(['src', 'lib']); // same as above
 find('.').filter(function(file) { return file.match(/\.js$/); });
@@ -198,7 +198,7 @@ Available options:
 
 Examples:
 
-```javascript
+```js
 cp('file1', 'dir1');
 cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
 cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
@@ -216,7 +216,7 @@ Available options:
 
 Examples:
 
-```javascript
+```js
 rm('-rf', '/tmp/*');
 rm('some_file.txt', 'another_file.txt');
 rm(['some_file.txt', 'another_file.txt']); // same as above
@@ -233,7 +233,7 @@ Available options:
 
 Examples:
 
-```javascript
+```js
 mv('-f', 'file', 'dir/');
 mv('file1', 'file2', 'dir/');
 mv(['file1', 'file2'], 'dir/'); // same as above
@@ -250,7 +250,7 @@ Available options:
 
 Examples:
 
-```javascript
+```js
 mkdir('-p', '/tmp/a/b/c/d', '/tmp/e/f/g');
 mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 ```
@@ -272,7 +272,7 @@ Available expression primaries:
 
 Examples:
 
-```javascript
+```js
 if (test('-d', path)) { /* do something with dir */ };
 if (!test('-f', path)) continue; // skip if it's a regular file
 ```
@@ -285,7 +285,7 @@ Evaluates expression using the available primaries and returns corresponding val
 
 Examples:
 
-```javascript
+```js
 var str = cat('file*.txt');
 var str = cat('file1', 'file2');
 var str = cat(['file1', 'file2']); // same as above
@@ -300,7 +300,7 @@ introduced between each file). Wildcard `*` accepted.
 
 Examples:
 
-```javascript
+```js
 cat('input.txt').to('output.txt');
 ```
 
@@ -312,7 +312,7 @@ those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will over
 
 Examples:
 
-```javascript
+```js
 cat('input.txt').toEnd('output.txt');
 ```
 
@@ -327,7 +327,7 @@ Available options:
 
 Examples:
 
-```javascript
+```js
 sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js');
 sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 ```
@@ -344,7 +344,7 @@ Available options:
 
 Examples:
 
-```javascript
+```js
 grep('-v', 'GLOBAL_VARIABLE', '*.js');
 grep('GLOBAL_VARIABLE', '*.js');
 ```
@@ -357,7 +357,7 @@ file that match the given `regex_filter`. Wildcard `*` accepted.
 
 Examples:
 
-```javascript
+```js
 var nodeExec = which('node');
 ```
 
@@ -369,7 +369,7 @@ Returns string containing the absolute path to the command.
 
 Examples:
 
-```javascript
+```js
 echo('hello world');
 var str = echo('hello world');
 ```
@@ -392,7 +392,7 @@ Arguments:
 
 Examples:
 
-```javascript
+```js
 // process.cwd() === '/usr'
 pushd('/etc'); // Returns /etc /usr
 pushd('+1');   // Returns /usr /etc
@@ -413,7 +413,7 @@ Arguments:
 
 Examples:
 
-```javascript
+```js
 echo(process.cwd()); // '/usr'
 pushd('/etc');       // '/etc /usr'
 echo(process.cwd()); // '/etc'
@@ -448,7 +448,7 @@ Available options:
 
 Examples:
 
-```javascript
+```js
 ln('file', 'newlink');
 ln('-sf', 'file', 'existing');
 ```
@@ -470,7 +470,7 @@ Available options (all `false` by default):
 
 Examples:
 
-```javascript
+```js
 var version = exec('node --version', {silent:true}).output;
 
 var child = exec('some_long_running_process', {async:true});
@@ -505,7 +505,7 @@ Available options:
 
 Examples:
 
-```javascript
+```js
 chmod(755, '/Users/brandon');
 chmod('755', '/Users/brandon'); // same as above
 chmod('u+x', '/Users/brandon');
@@ -518,7 +518,7 @@ Notable exceptions:
 
 + In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
   given to the umask.
-+ There is no "quiet" option since default behavior is to run silent.
++ There is no 'quiet' option since default behavior is to run silent.
 
 
 ## Non-Unix commands
@@ -528,8 +528,8 @@ Notable exceptions:
 
 Examples:
 
-```javascript
-var tmp = tempdir(); // "/tmp" for most *nix platforms
+```js
+var tmp = tempdir(); // '/tmp' for most *nix platforms
 ```
 
 Searches and returns string containing a writeable, platform-dependent temporary directory.
@@ -547,7 +547,7 @@ otherwise returns string explaining the error
 ### config.silent
 Example:
 
-```javascript
+```js
 var silentState = config.silent; // save old silent state
 config.silent = true;
 /* ... */
@@ -560,7 +560,7 @@ Default is `false`.
 ### config.fatal
 Example:
 
-```javascript
+```js
 config.fatal = true;
 cp('this_file_does_not_exist', '/dev/null'); // dies here
 /* more commands... */
