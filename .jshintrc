@@ -1,7 +1,20 @@
 {
+  "bitwise": false,
+  "camelcase": false,
+  "curly": false,
+  "eqeqeq": true,
+  "forin": false,
+  "immed": true,
+  "indent": 2,
+  "latedef": false,
   "loopfunc": true,
+  "noarg": true,
+  "node": true,
+  "noempty": true,
+  "quotmark": false,
+  "shelljs": true,
+  "strict": false,
   "sub": true,
   "undef": true,
-  "unused": true,
-  "node": true
+  "unused": true
 }
