@@ -26,7 +26,7 @@ function writeableDir(dir) {
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ var tmp = tempdir(); // '/tmp' for most *nix platforms
 //@ ```
 //@

@@ -12,7 +12,7 @@ var common = require('./common');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ ln('file', 'newlink');
 //@ ln('-sf', 'file', 'existing');
 //@ ```

@@ -80,7 +80,7 @@ function isWriteable(file) {
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ rm('-rf', '/tmp/*');
 //@ rm('some_file.txt', 'another_file.txt');
 //@ rm(['some_file.txt', 'another_file.txt']); // same as above

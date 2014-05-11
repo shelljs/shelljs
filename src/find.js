@@ -7,7 +7,7 @@ var _ls = require('./ls');
 //@ ### find(path_array)
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ find('src', 'lib');
 //@ find(['src', 'lib']); // same as above
 //@ find('.').filter(function(file) { return file.match(/\.js$/); });

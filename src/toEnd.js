@@ -7,7 +7,7 @@ var path = require('path');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ cat('input.txt').toEnd('output.txt');
 //@ ```
 //@

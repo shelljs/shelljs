@@ -22,7 +22,7 @@ function checkPath(path) {
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ var nodeExec = which('node');
 //@ ```
 //@

@@ -5,7 +5,7 @@ var common = require('./common');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ echo('hello world');
 //@ var str = echo('hello world');
 //@ ```

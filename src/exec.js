@@ -131,7 +131,7 @@ function execAsync(cmd, opts, callback) {
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ var version = exec('node --version', {silent:true}).output;
 //@
 //@ var child = exec('some_long_running_process', {async:true});
