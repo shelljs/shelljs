@@ -16,7 +16,7 @@ var PERMS = (function (base) {
     OWNER_WRITE : base.WRITE << 6,
     OWNER_READ  : base.READ << 6,
 
-    // Literal octal numbers are apparently not allowed in "strict" javascript.  Using parseInt is
+    // Literal octal numbers are apparently not allowed in 'strict' javascript.  Using parseInt is
     // the preferred way, else a jshint warning is thrown.
     STICKY      : parseInt('01000', 8),
     SETGID      : parseInt('02000', 8),
@@ -55,7 +55,7 @@ var PERMS = (function (base) {
 //@
 //@ + In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
 //@   given to the umask.
-//@ + There is no "quiet" option since default behavior is to run silent.
+//@ + There is no 'quiet' option since default behavior is to run silent.
 function _chmod(options, mode, filePattern) {
   if (!filePattern) {
     if (options.length > 0 && options.charAt(0) === '-') {
@@ -131,15 +131,15 @@ function _chmod(options, mode, filePattern) {
           var operator = matches[2];
           var change = matches[3];
 
-          var changeOwner = applyTo.indexOf('u') != -1 || applyTo === 'a' || applyTo === '';
-          var changeGroup = applyTo.indexOf('g') != -1 || applyTo === 'a' || applyTo === '';
-          var changeOther = applyTo.indexOf('o') != -1 || applyTo === 'a' || applyTo === '';
+          var changeOwner = applyTo.indexOf('u') !== -1 || applyTo === 'a' || applyTo === '';
+          var changeGroup = applyTo.indexOf('g') !== -1 || applyTo === 'a' || applyTo === '';
+          var changeOther = applyTo.indexOf('o') !== -1 || applyTo === 'a' || applyTo === '';
 
-          var changeRead   = change.indexOf('r') != -1;
-          var changeWrite  = change.indexOf('w') != -1;
-          var changeExec   = change.indexOf('x') != -1;
-          var changeSticky = change.indexOf('t') != -1;
-          var changeSetuid = change.indexOf('s') != -1;
+          var changeRead   = change.indexOf('r') !== -1;
+          var changeWrite  = change.indexOf('w') !== -1;
+          var changeExec   = change.indexOf('x') !== -1;
+          var changeSticky = change.indexOf('t') !== -1;
+          var changeSetuid = change.indexOf('s') !== -1;
 
           var mask = 0;
           if (changeOwner) {
@@ -177,12 +177,12 @@ function _chmod(options, mode, filePattern) {
           }
 
           if (options.verbose) {
-            log(file + ' -> ' + newPerms.toString(8));
+            common.log(file + ' -> ' + newPerms.toString(8));
           }
 
-          if (perms != newPerms) {
+          if (perms !== newPerms) {
             if (!options.verbose && options.changes) {
-              log(file + ' -> ' + newPerms.toString(8));
+              common.log(file + ' -> ' + newPerms.toString(8));
             }
             fs.chmodSync(file, newPerms);
           }

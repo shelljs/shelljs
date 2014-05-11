@@ -37,7 +37,7 @@ function execSync(cmd, opts) {
   }
 
   function escape(str) {
-    return (str+'').replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
+    return (str+'').replace(/([\\"'])/g, '\\$1').replace(/\0/g, '\\0');
   }
 
   cmd += ' > '+stdoutFile+' 2>&1'; // works on both win/unix

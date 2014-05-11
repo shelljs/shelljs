@@ -8,17 +8,18 @@ var failed = false;
 //
 // Lint
 //
-JSHINT_BIN = './node_modules/jshint/bin/jshint';
 cd(__dirname + '/..');
+
+var JSHINT_BIN = path.normalize('./node_modules/jshint/bin/jshint');
 
 if (!test('-f', JSHINT_BIN)) {
   echo('JSHint not found. Run `npm install` in the root dir first.');
   exit(1);
 }
 
-if (exec(JSHINT_BIN + ' *.js test/*.js').code !== 0) {
+if (exec('node ' + JSHINT_BIN + ' .').code !== 0) {
   failed = true;
-  echo('*** JSHINT FAILED! (return code != 0)');
+  echo('*** JSHINT FAILED! (return code !== 0)');
   echo();
 } else {
   echo('All JSHint tests passed');

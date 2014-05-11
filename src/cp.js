@@ -64,8 +64,8 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
   var files = fs.readdirSync(sourceDir);
 
   for (var i = 0; i < files.length; i++) {
-    var srcFile = sourceDir + "/" + files[i];
-    var destFile = destDir + "/" + files[i];
+    var srcFile = sourceDir + '/' + files[i];
+    var destFile = destDir + '/' + files[i];
     var srcFileStat = fs.lstatSync(srcFile);
 
     if (srcFileStat.isDirectory()) {
@@ -73,7 +73,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       cpdirSyncRecursive(srcFile, destFile, opts);
     } else if (srcFileStat.isSymbolicLink()) {
       var symlinkFull = fs.readlinkSync(srcFile);
-      fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
+      fs.symlinkSync(symlinkFull, destFile, os.platform() === 'win32' ? 'junction' : null);
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && !opts.force) {
@@ -137,7 +137,7 @@ function _cp(options, sources, dest) {
     common.error('dest file already exists: ' + dest);
 
   if (options.recursive) {
-    // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
+    // Recursive allows the shortcut syntax 'sourcedir/' for 'sourcedir/*'
     // (see Github issue #15)
     sources.forEach(function(src, i) {
       if (src[src.length - 1] === '/')

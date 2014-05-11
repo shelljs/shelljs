@@ -4,8 +4,6 @@ var path = require('path');
 
 // Cross-platform method for splitting environment PATH variables
 function splitPath(p) {
-  for (i=1;i<2;i++) {}
-
   if (!p)
     return [];
 
@@ -16,7 +14,7 @@ function splitPath(p) {
 }
 
 function checkPath(path) {
-  return fs.existsSync(path) && fs.statSync(path).isDirectory() == false;
+  return fs.existsSync(path) && fs.statSync(path).isDirectory() === false;
 }
 
 //@

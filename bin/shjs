@@ -27,7 +27,7 @@ if (!test('-f', scriptName)) {
 args = process.argv.slice(3);
 
 for (var i = 0, l = args.length; i < l; i++) {
-  if (args[i][0] !== "-"){
+  if (args[i][0] !== '-'){
     args[i] = '"' + args[i] + '"'; // fixes arguments with multiple words
   }
 }

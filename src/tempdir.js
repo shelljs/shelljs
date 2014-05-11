@@ -27,7 +27,7 @@ function writeableDir(dir) {
 //@ Examples:
 //@
 //@ ```javascript
-//@ var tmp = tempdir(); // "/tmp" for most *nix platforms
+//@ var tmp = tempdir(); // '/tmp' for most *nix platforms
 //@ ```
 //@
 //@ Searches and returns string containing a writeable, platform-dependent temporary directory.

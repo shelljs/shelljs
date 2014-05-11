@@ -518,7 +518,7 @@ Notable exceptions:
 
 + In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
   given to the umask.
-+ There is no "quiet" option since default behavior is to run silent.
++ There is no 'quiet' option since default behavior is to run silent.
 
 
 ## Non-Unix commands
@@ -529,7 +529,7 @@ Notable exceptions:
 Examples:
 
 ```javascript
-var tmp = tempdir(); // "/tmp" for most *nix platforms
+var tmp = tempdir(); // '/tmp' for most *nix platforms
 ```
 
 Searches and returns string containing a writeable, platform-dependent temporary directory.

@@ -43,7 +43,7 @@ assert.equal(shell.error(), null);
 assert.equal(result, '1234');
 
 var replaceFun = function (match) {
-	return match.toUpperCase() + match;
+  return match.toUpperCase() + match;
 };
 var result = shell.sed(/test1/, replaceFun, 'tmp/file1'); // replacement function
 assert.equal(shell.error(), null);
