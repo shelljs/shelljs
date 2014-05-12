@@ -190,31 +190,31 @@ assert.equal(process.cwd(), trail[0]);
 reset(); trail = shell.pushd('resources/pushd');
 assert.equal(shell.error(), null);
 assert.equal(trail.length, 2);
-assert.equal(path.relative(root, trail[0]), 'resources/pushd');
+assert.equal(path.relative(root, trail[0]), path.normalize('resources/pushd'));
 assert.equal(trail[1], root);
 assert.equal(process.cwd(), trail[0]);
 trail = shell.pushd();
 assert.equal(shell.error(), null);
 assert.equal(trail.length, 2);
 assert.equal(trail[0], root);
-assert.equal(path.relative(root, trail[1]), 'resources/pushd');
+assert.equal(path.relative(root, trail[1]), path.normalize('resources/pushd'));
 assert.equal(process.cwd(), trail[0]);
 
 // Push without arguments should swap top two directories when stack length is > 2
 trail = shell.pushd('resources/pushd/a');
 assert.equal(shell.error(), null);
 assert.equal(trail.length, 3);
-assert.equal(path.relative(root, trail[0]), 'resources/pushd/a');
+assert.equal(path.relative(root, trail[0]), path.normalize('resources/pushd/a'));
 assert.equal(trail[1], root);
-assert.equal(path.relative(root, trail[2]), 'resources/pushd');
+assert.equal(path.relative(root, trail[2]), path.normalize('resources/pushd'));
 assert.equal(process.cwd(), trail[0]);
 
 trail = shell.pushd();
 assert.equal(shell.error(), null);
 assert.equal(trail.length, 3);
 assert.equal(trail[0], root);
-assert.equal(path.relative(root, trail[1]), 'resources/pushd/a');
-assert.equal(path.relative(root, trail[2]), 'resources/pushd');
+assert.equal(path.relative(root, trail[1]), path.normalize('resources/pushd/a'));
+assert.equal(path.relative(root, trail[2]), path.normalize('resources/pushd'));
 assert.equal(process.cwd(), trail[0]);
 
 // Push without arguments invalid when stack is empty
