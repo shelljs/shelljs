@@ -13,7 +13,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/arturadib/shelljs.git"
+    "url": "https://github.com/arturadib/shelljs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arturadib/shelljs/issues"
   },
   "license": "BSD*",
   "homepage": "http://github.com/arturadib/shelljs",
@@ -28,8 +31,15 @@
   "devDependencies": {
     "jshint": "~2.1.11"
   },
-  "optionalDependencies": {},
   "engines": {
     "node": ">=0.8.0"
-  }
+  },
+  "files": [
+    "bin",
+    "global.js",
+    "LICENSE",
+    "make.js",
+    "shell.js",
+    "src"
+  ]
 }
