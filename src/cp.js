@@ -174,7 +174,10 @@ function _cp(options, sources, dest) {
           fs.mkdirSync(newDest, checkDir.mode);
         } catch (e) {
           //if the directory already exists, that's okay
-          if (e.code !== 'EEXIST') throw e;
+          if (e.code !== 'EEXIST') {
+            common.error('dest file no such file or directory: ' + newDest, true);
+            throw e;
+          }
         }
 
         cpdirSyncRecursive(src, newDest, {force: options.force});
