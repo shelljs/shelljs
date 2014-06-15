@@ -40,13 +40,48 @@ assert.equal(result, 'This is line one\n');
 
 // multiple files
 var result = shell.grep(/test/, 'resources/file1.txt', 'resources/file2.txt');
+var values = result.trim().split('\n');
 assert.equal(shell.error(), null);
-assert.equal(result, 'test1\ntest2\n');
+assert.equal(values.length, 2);
+assert.equal(values.sort().join('\n'), 'test1\ntest2');
 
 // multiple files, array syntax
 var result = shell.grep(/test/, ['resources/file1.txt', 'resources/file2.txt']);
+var values = result.trim().split('\n');
 assert.equal(shell.error(), null);
-assert.equal(result, 'test1\ntest2\n');
+assert.equal(values.length, 2);
+assert.equal(values.sort().join('\n'), 'test1\ntest2');
+
+// list file names of matches
+var result = shell.grep('-l', /test/, ['resources/file1.txt', 'resources/file2.txt']);
+var values = result.trim().split('\n');
+assert.equal(shell.error(), null);
+assert.equal(values.length, 2);
+assert.equal(values.sort().join('\n'), 'resources/file1.txt\nresources/file2.txt');
+
+// glob (and -s to silence missing files found via glob)
+shell.cd('./resources');
+var result = shell.grep('-s', /test/, '*');
+var values = result.trim().split('\n');
+assert.equal(shell.error(), null);
+assert.equal(values.length, 6);
+assert.equal(values.sort().join('\n'), 'test\ntest\ntest1\ntest1\ntest2\ntest2');
+shell.cd('..');
+
+// glob (and -s to silence missing files found via glob)
+shell.cd('./resources');
+var result = shell.grep('-s', /test/, '*');
+var values = result.trim().split('\n');
+assert.equal(shell.error(), null);
+assert.equal(values.length, 6);
+assert.equal(values.sort().join('\n'), 'test\ntest\ntest1\ntest1\ntest2\ntest2');
+
+// glob listing file names of matches
+shell.cd('./resources');
+var result = shell.grep('-ls', /test/, '*');
+var values = result.trim().split('\n');
+assert.equal(shell.error(), null);
+assert.equal(values.sort().join('\n'), "file1\nfile1.js\nfile1.txt\nfile2\nfile2.js\nfile2.txt");
 
 // multiple files, glob syntax, * for file name
 var result = shell.grep(/test/, 'resources/file*.txt');
