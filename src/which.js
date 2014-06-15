@@ -2,6 +2,9 @@ var common = require('./common');
 var fs = require('fs');
 var path = require('path');
 
+// XP's system default value for PATHEXT system variable
+var XP_DEFAULT_PATHEXT = '.com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh';
+
 // Cross-platform method for splitting environment PATH variables
 function splitPath(p) {
   for (i=1;i<2;i++) {}
@@ -28,7 +31,9 @@ function checkPath(path) {
 //@ var nodeExec = which('node');
 //@ ```
 //@
-//@ Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`, and `.bat` extensions.
+//@ Searches for `command` in the system's PATH. On Windows, looks for extensions in the PATHEXT
+//@ environment variable, or if it doesn't exist, defaults to using the XP system default:
+//@ ".com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh".
 //@ Returns string containing the absolute path to the command.
 function _which(options, cmd) {
   if (!cmd)
@@ -52,21 +57,18 @@ function _which(options, cmd) {
       }
 
       if (common.platform === 'win') {
-        var baseAttempt = attempt;
-        attempt = baseAttempt + '.exe';
-        if (checkPath(attempt)) {
-          where = attempt;
-          return;
-        }
-        attempt = baseAttempt + '.cmd';
-        if (checkPath(attempt)) {
-          where = attempt;
-          return;
-        }
-        attempt = baseAttempt + '.bat';
-        if (checkPath(attempt)) {
-          where = attempt;
-          return;
+        var baseAttempt = attempt,
+            pathExtEnv = process.env.PATHEXT || XP_DEFAULT_PATHEXT,
+            pathExtArray = splitPath(pathExtEnv),
+            len = pathExtArray.length;
+        
+        // parse PATHEXT
+        for (var i = 0; i < len; i++) {
+          attempt = baseAttempt + pathExtArray[i];
+          if (checkPath(attempt)) {
+            where = attempt;
+            return;
+          }
         }
       } // if 'win'
     });
