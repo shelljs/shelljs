@@ -62,7 +62,6 @@ function _which(options, cmd) {
             pathExtArray = splitPath(pathExtEnv),
             len = pathExtArray.length;
         
-        // parse PATHEXT
         for (var i = 0; i < len; i++) {
           attempt = baseAttempt + pathExtArray[i];
           if (checkPath(attempt)) {
