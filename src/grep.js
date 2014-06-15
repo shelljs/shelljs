@@ -19,18 +19,14 @@ var fs = require('fs');
 //@ file that match the given `regex_filter`. Wildcard `*` accepted.
 function _grep(options, regex, files) {
   options = common.parseOptions(options, {
-    'v': 'inverse',
-    'l': 'files-with-matches',
-    's': 'no-messages'
+    'v': 'inverse'
   });
 
-  if (!files) {
+  if (!files)
     common.error('no paths given');
-  }
 
-  if (typeof files === 'string') {
+  if (typeof files === 'string')
     files = [].slice.call(arguments, 2);
-  }
   // if it's array leave it as it is
 
   files = common.expand(files);
@@ -38,13 +34,7 @@ function _grep(options, regex, files) {
   var grep = '';
   files.forEach(function(file) {
     if (!fs.existsSync(file)) {
-      if (!options['no-messages']) {
-        common.error('no such file or directory: ' + file, true);
-      }
-      return;
-    }
-
-    if (!fs.lstatSync(file).isFile()) {
+      common.error('no such file or directory: ' + file, true);
       return;
     }
 
@@ -52,15 +42,8 @@ function _grep(options, regex, files) {
         lines = contents.split(/\r*\n/);
     lines.forEach(function(line) {
       var matched = line.match(regex);
-      if ((options.inverse && !matched) || (!options.inverse && matched)) {
-        if (options['files-with-matches']) {
-          if (grep.indexOf(file) === -1) {
-            grep += file + '\n';
-          }
-        } else {
-          grep += line + '\n';
-        }
-      }
+      if ((options.inverse && !matched) || (!options.inverse && matched))
+        grep += line + '\n';
     });
   });
 
