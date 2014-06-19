@@ -7,7 +7,7 @@ var fs = require('fs');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ var str = cat('file*.txt');
 //@ var str = cat('file1', 'file2');
 //@ var str = cat(['file1', 'file2']); // same as above

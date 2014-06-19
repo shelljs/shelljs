@@ -9,7 +9,7 @@ var fs = require('fs');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js');
 //@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 //@ ```

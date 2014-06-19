@@ -40,7 +40,7 @@ function _actualDirStack() {
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ // process.cwd() === '/usr'
 //@ pushd('/etc'); // Returns /etc /usr
 //@ pushd('+1');   // Returns /usr /etc
@@ -104,7 +104,7 @@ exports.pushd = _pushd;
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ echo(process.cwd()); // '/usr'
 //@ pushd('/etc');       // '/etc /usr'
 //@ echo(process.cwd()); // '/etc'

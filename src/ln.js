@@ -13,7 +13,7 @@ var os = require('os');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ ln('file', 'newlink');
 //@ ln('-sf', 'file', 'existing');
 //@ ```

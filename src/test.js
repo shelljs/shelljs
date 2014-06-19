@@ -16,7 +16,7 @@ var fs = require('fs');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ if (test('-d', path)) { /* do something with dir */ };
 //@ if (!test('-f', path)) continue; // skip if it's a regular file
 //@ ```

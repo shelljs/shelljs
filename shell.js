@@ -134,7 +134,7 @@ exports.config = common.config;
 //@ ### config.silent
 //@ Example:
 //@
-//@ ```javascript
+//@ ```js
 //@ var silentState = config.silent; // save old silent state
 //@ config.silent = true;
 //@ /* ... */
@@ -148,7 +148,7 @@ exports.config = common.config;
 //@ ### config.fatal
 //@ Example:
 //@
-//@ ```javascript
+//@ ```js
 //@ config.fatal = true;
 //@ cp('this_file_does_not_exist', '/dev/null'); // dies here
 //@ /* more commands... */

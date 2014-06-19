@@ -11,7 +11,7 @@ var common = require('./common');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ mv('-f', 'file', 'dir/');
 //@ mv('file1', 'file2', 'dir/');
 //@ mv(['file1', 'file2'], 'dir/'); // same as above

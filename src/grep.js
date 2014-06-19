@@ -10,7 +10,7 @@ var fs = require('fs');
 //@
 //@ Examples:
 //@
-//@ ```javascript
+//@ ```js
 //@ grep('-v', 'GLOBAL_VARIABLE', '*.js');
 //@ grep('GLOBAL_VARIABLE', '*.js');
 //@ ```
