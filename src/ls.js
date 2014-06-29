@@ -121,6 +121,11 @@ function _ls(options, paths) {
     common.error('no such file or directory: ' + p, true);
   });
 
+  function inspect(depth) {
+    return this.join('\n')
+  }
+  Object.defineProperty(list, 'inspect', {value: inspect});
+
   return list;
 }
 module.exports = _ls;
