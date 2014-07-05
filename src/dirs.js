@@ -25,6 +25,10 @@ function _actualDirStack() {
   return [process.cwd()].concat(_dirStack);
 }
 
+function inspect(depth) {
+  return this.join('\n')
+}
+
 //@
 //@ ### pushd([options,] [dir | '-N' | '+N'])
 //@
@@ -60,6 +64,7 @@ function _pushd(options, dir) {
   var dirs = _actualDirStack();
 
   if (dir === '+0') {
+    Object.defineProperty(dirs, 'inspect', {value: inspect});
     return dirs; // +0 is a noop
   } else if (!dir) {
     if (dirs.length > 1) {
@@ -180,11 +185,10 @@ function _dirs(options, index) {
       index = stack.length + index;
     }
 
-    common.log(stack[index]);
     return stack[index];
   }
 
-  common.log(stack.join(' '));
+  Object.defineProperty(stack, 'inspect', {value: inspect});
 
   return stack;
 }

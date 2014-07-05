@@ -65,6 +65,7 @@ function _ls(options, paths) {
   paths.forEach(function(p) {
     if (fs.existsSync(p)) {
       var stats = fs.statSync(p);
+
       // Simple file?
       if (stats.isFile()) {
         pushFile(p, p);

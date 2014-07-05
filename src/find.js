@@ -46,6 +46,11 @@ function _find(options, paths) {
     }
   });
 
+  function inspect(depth) {
+    return this.join('\n')
+  }
+  Object.defineProperty(list, 'inspect', {value: inspect});
+
   return list;
 }
 module.exports = _find;

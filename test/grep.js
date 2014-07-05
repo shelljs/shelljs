@@ -28,39 +28,41 @@ assert.ok(shell.error());
 
 var result = shell.grep('line', 'resources/a.txt');
 assert.equal(shell.error(), null);
-assert.equal(result.split('\n').length - 1, 4);
+assert.equal(result.length, 4);
 
 var result = shell.grep('-v', 'line', 'resources/a.txt');
 assert.equal(shell.error(), null);
-assert.equal(result.split('\n').length - 1, 8);
+assert.equal(result.length, 8);
 
 var result = shell.grep('line one', 'resources/a.txt');
 assert.equal(shell.error(), null);
-assert.equal(result, 'This is line one\n');
+assert.deepEqual(result, ['This is line one']);
 
 // multiple files
 var result = shell.grep(/test/, 'resources/file1.txt', 'resources/file2.txt');
 assert.equal(shell.error(), null);
-assert.equal(result, 'test1\ntest2\n');
+assert.deepEqual(result, ['test1','test2']);
 
 // multiple files, array syntax
 var result = shell.grep(/test/, ['resources/file1.txt', 'resources/file2.txt']);
 assert.equal(shell.error(), null);
-assert.equal(result, 'test1\ntest2\n');
+assert.deepEqual(result, ['test1','test2']);
 
 // multiple files, glob syntax, * for file name
 var result = shell.grep(/test/, 'resources/file*.txt');
 assert.equal(shell.error(), null);
-assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
+assert.ok(result[0] == 'test1' && result[1] == 'test2' ||
+          result[0] == 'test2' && result[1] == 'test1');
 
 // multiple files, glob syntax, * for directory name
 var result = shell.grep(/test/, '*/file*.txt');
 assert.equal(shell.error(), null);
-assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
+assert.ok(result[0] == 'test1' && result[1] == 'test2' ||
+          result[0] == 'test2' && result[1] == 'test1');
 
 // multiple files, glob syntax, ** for directory name
 var result = shell.grep(/test/, '**/file*.js');
 assert.equal(shell.error(), null);
-assert.equal(result, 'test\ntest\ntest\ntest\n');
+assert.deepEqual(result, ['test','test','test','test']);
 
 shell.exit(123);
