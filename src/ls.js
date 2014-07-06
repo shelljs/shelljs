@@ -1,5 +1,7 @@
 var path = require('path');
 var fs = require('fs');
+var constants = require('constants');
+
 var common = require('./common');
 var _cd = require('./cd');
 var _pwd = require('./pwd');
@@ -10,6 +12,7 @@ var _pwd = require('./pwd');
 //@ Available options:
 //@
 //@ + `-l`: long list format
+//@ + `-C`: classify
 //@ + `-R`: recursive
 //@ + `-A`: all files (include files beginning with `.`, except for `.` and `..`)
 //@
@@ -25,6 +28,7 @@ var _pwd = require('./pwd');
 function _ls(options, paths) {
   options = common.parseOptions(options, {
     'l': 'long',
+    'C': 'classify',
     'R': 'recursive',
     'A': 'all',
     'a': 'all_deprecated'
@@ -144,6 +148,20 @@ function _ls(options, paths) {
       }
 
       result += file.name
+
+      if(options.classify)
+      {
+        var S_IX = constants.S_IXUSR
+                 | constants.S_IXGRP
+                 | constants.S_IXOTH
+
+        if(file.isDirectory())         result += '/'
+        else if(file.isSocket())       result += '='
+//        else if(file.isDoor())         result += '>'
+        else if(file.isSymbolicLink()) result += '@'
+        else if(file.isFIFO())         result += '|'
+        else if(file.mode & S_IX)      result += '*'
+      }
 
       return result
     }).join('\n')
