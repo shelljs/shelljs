@@ -9,6 +9,7 @@ var _pwd = require('./pwd');
 //@ ### ls([options ,] path_array)
 //@ Available options:
 //@
+//@ + `-l`: long list format
 //@ + `-R`: recursive
 //@ + `-A`: all files (include files beginning with `.`, except for `.` and `..`)
 //@
@@ -23,6 +24,7 @@ var _pwd = require('./pwd');
 //@ Returns array of files in the given path, or in current directory if no path provided.
 function _ls(options, paths) {
   options = common.parseOptions(options, {
+    'l': 'long',
     'R': 'recursive',
     'A': 'all',
     'a': 'all_deprecated'
@@ -49,16 +51,16 @@ function _ls(options, paths) {
   // (e.g. prevents hidden files to be included unless explicitly told so)
   function pushFile(file, query) {
     // hidden file?
-    if (path.basename(file)[0] === '.') {
+    if (path.basename(file.name)[0] === '.') {
       // not explicitly asking for hidden files?
       if (!options.all && !(path.basename(query)[0] === '.' && path.basename(query).length > 1))
         return false;
     }
 
     if (common.platform === 'win')
-      file = file.replace(/\\/g, '/');
+      file.name = file.name.replace(/\\/g, '/');
 
-    list.push(file);
+    list.push(options.long ? file : file.name);
     return true;
   }
 
@@ -68,7 +70,8 @@ function _ls(options, paths) {
 
       // Simple file?
       if (stats.isFile()) {
-        pushFile(p, p);
+        stats.name = p;
+        pushFile(stats, p);
         return; // continue
       }
 
@@ -76,7 +79,10 @@ function _ls(options, paths) {
       if (stats.isDirectory()) {
         // Iterate over p contents
         fs.readdirSync(p).forEach(function(file) {
-          if (!pushFile(file, p))
+          var stats = options.long ? fs.statSync(file) : {};
+          stats.name = file;
+
+          if (!pushFile(stats, p))
             return;
 
           // Recursive?
@@ -105,7 +111,10 @@ function _ls(options, paths) {
       // Iterate over directory contents
       fs.readdirSync(dirname).forEach(function(file) {
         if (file.match(new RegExp(regexp))) {
-          if (!pushFile(path.normalize(dirname+'/'+file), basename))
+          var stats = options.long ? fs.statSync(file) : {};
+          stats.name = path.normalize(dirname+'/'+file);
+
+          if (!pushFile(stats, basename))
             return;
 
           // Recursive?
@@ -123,6 +132,15 @@ function _ls(options, paths) {
   });
 
   function inspect(depth) {
+    if(options.long)
+      return this.map(function(file)
+      {
+        return file.mode+' '+file.nlink                 +' '+
+               file.uid +' '+file.gid                   +' '+
+               file.size+' '+file.mtime.toLocaleString()+' '+
+               file.name
+      }).join('\n')
+
     return this.join('\n')
   }
   Object.defineProperty(list, 'inspect', {value: inspect});
