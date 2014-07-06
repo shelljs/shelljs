@@ -6,6 +6,69 @@ var common = require('./common');
 var _cd = require('./cd');
 var _pwd = require('./pwd');
 
+
+function classify(file)
+{
+  var S_IX = constants.S_IXUSR
+           | constants.S_IXGRP
+           | constants.S_IXOTH
+
+  // Devices
+  if(file.isBlockDevice())     return 'bd'
+  if(file.isCharacterDevice()) return 'cd'
+
+  // Straighforward types
+  if(file.isDirectory()) return 'di'
+//  if(file.isDoor())      return 'do'  // SolarisOS
+  if(file.isFile())      return 'fi'
+  if(file.isFIFO())      return 'pi'
+  if(file.isSocket())    return 'so'
+
+  // Simbolic links
+  if(file.isSymbolicLink())
+  {
+    // ToDo: orphan and missing links
+    return 'ln'
+  }
+
+  // Executable
+  if(file.mode & S_IX) return 'ex'
+
+  // By default, return 'file' class
+  return 'fi'
+}
+
+function lsColor(str, type)
+{
+  var colors = {}
+
+  process.env['LS_COLORS'].split(':')
+  .forEach(function(color)
+  {
+    color = color.split('=')
+
+    var key = color[0]
+    if(key[0] == '*')
+       key = key.substr(1);
+
+    colors[key] = color[1]
+  })
+
+  // Get color from extension
+  var color = colors[path.extname(str)]
+  if(color)
+    return '\x1b['+color+'m' + str + '\x1b[0m'
+
+  // Get color from filetype
+  var color = colors[type]
+  if(color)
+    return '\x1b['+color+'m' + str + '\x1b[0m'
+
+  // Unknown file, default color
+  return str
+}
+
+
 //@
 //@ ### ls([options ,] path [,path ...])
 //@ ### ls([options ,] path_array)
@@ -138,8 +201,11 @@ function _ls(options, paths) {
   function inspect(depth) {
     return this.map(function(file)
     {
+      var type = classify(file)
+
       var result = '';
 
+      // Long list
       if(options.long)
       {
         result += file.mode+' '+file.nlink              +' '+
@@ -147,21 +213,20 @@ function _ls(options, paths) {
                file.size+' '+file.mtime.toLocaleString()+' '
       }
 
-      result += file.name
+      // Color
+      result += lsColor(file.name, type)
 
+      // Classify
       if(options.classify)
-      {
-        var S_IX = constants.S_IXUSR
-                 | constants.S_IXGRP
-                 | constants.S_IXOTH
-
-        if(file.isDirectory())         result += '/'
-        else if(file.isSocket())       result += '='
-//        else if(file.isDoor())         result += '>'
-        else if(file.isSymbolicLink()) result += '@'
-        else if(file.isFIFO())         result += '|'
-        else if(file.mode & S_IX)      result += '*'
-      }
+        switch(type)
+        {
+          case 'di': result += '/'; break;
+//          case 'do': result += '>'; break;
+          case 'ex': result += '*'; break;
+          case 'li': result += '@'; break;
+          case 'pi': result += '|'; break;
+          case 'so': result += '='; break;
+        }
 
       return result
     }).join('\n')
