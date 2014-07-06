@@ -99,17 +99,17 @@ function expand(list) {
       var rest = match[2];
       var restRegex = rest.replace(/\*\*/g, ".*").replace(/\*/g, "[^\\/]*");
       restRegex = new RegExp(restRegex);
-      
+
       _ls('-R', root).filter(function (e) {
-        return restRegex.test(e);
+        return restRegex.test(e.name);
       }).forEach(function(file) {
-        expanded.push(file);
+        expanded.push(file.name);
       });
     }
     // Wildcard present on file names ?
     else if (listEl.search(/\*/) > -1) {
       _ls('', listEl).forEach(function(file) {
-        expanded.push(file);
+        expanded.push(file.name);
       });
     } else {
       expanded.push(listEl);

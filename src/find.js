@@ -41,7 +41,7 @@ function _find(options, paths) {
 
     if (fs.statSync(file).isDirectory()) {
       _ls('-RA', file+'/*').forEach(function(subfile) {
-        pushFile(subfile);
+        pushFile(subfile.name);
       });
     }
   });

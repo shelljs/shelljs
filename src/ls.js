@@ -60,13 +60,13 @@ function _ls(options, paths) {
     if (common.platform === 'win')
       file.name = file.name.replace(/\\/g, '/');
 
-    list.push(options.long ? file : file.name);
+    list.push(file);
     return true;
   }
 
   paths.forEach(function(p) {
     if (fs.existsSync(p)) {
-      var stats = fs.statSync(p);
+      var stats = fs.lstatSync(p);
 
       // Simple file?
       if (stats.isFile()) {
@@ -79,7 +79,7 @@ function _ls(options, paths) {
       if (stats.isDirectory()) {
         // Iterate over p contents
         fs.readdirSync(p).forEach(function(file) {
-          var stats = options.long ? fs.statSync(file) : {};
+          var stats = fs.lstatSync(p + '/' + file);
           stats.name = file;
 
           if (!pushFile(stats, p))
@@ -89,7 +89,7 @@ function _ls(options, paths) {
           if (options.recursive) {
             var oldDir = _pwd();
             _cd('', p);
-            if (fs.statSync(file).isDirectory())
+            if (stats.isDirectory())
               list = list.concat(_ls('-R'+(options.all?'A':''), file+'/*'));
             _cd('', oldDir);
           }
@@ -103,7 +103,7 @@ function _ls(options, paths) {
     var basename = path.basename(p);
     var dirname = path.dirname(p);
     // Wildcard present on an existing dir? (e.g. '/tmp/*.js')
-    if (basename.search(/\*/) > -1 && fs.existsSync(dirname) && fs.statSync(dirname).isDirectory) {
+    if (basename.search(/\*/) > -1 && fs.existsSync(dirname) && fs.lstatSync(dirname).isDirectory) {
       // Escape special regular expression chars
       var regexp = basename.replace(/(\^|\$|\(|\)|<|>|\[|\]|\{|\}|\.|\+|\?)/g, '\\$1');
       // Translates wildcard into regex
@@ -111,15 +111,15 @@ function _ls(options, paths) {
       // Iterate over directory contents
       fs.readdirSync(dirname).forEach(function(file) {
         if (file.match(new RegExp(regexp))) {
-          var stats = options.long ? fs.statSync(file) : {};
-          stats.name = path.normalize(dirname+'/'+file);
+          var pp = dirname + '/' + file;
+          var stats = fs.lstatSync(pp);
+          stats.name = path.normalize(pp);
 
           if (!pushFile(stats, basename))
             return;
 
           // Recursive?
           if (options.recursive) {
-            var pp = dirname + '/' + file;
             if (fs.lstatSync(pp).isDirectory())
               list = list.concat(_ls('-R'+(options.all?'A':''), pp+'/*'));
           } // recursive
@@ -132,16 +132,21 @@ function _ls(options, paths) {
   });
 
   function inspect(depth) {
-    if(options.long)
-      return this.map(function(file)
-      {
-        return file.mode+' '+file.nlink                 +' '+
-               file.uid +' '+file.gid                   +' '+
-               file.size+' '+file.mtime.toLocaleString()+' '+
-               file.name
-      }).join('\n')
+    return this.map(function(file)
+    {
+      var result = '';
 
-    return this.join('\n')
+      if(options.long)
+      {
+        result += file.mode+' '+file.nlink              +' '+
+               file.uid +' '+file.gid                   +' '+
+               file.size+' '+file.mtime.toLocaleString()+' '
+      }
+
+      result += file.name
+
+      return result
+    }).join('\n')
   }
   Object.defineProperty(list, 'inspect', {value: inspect});
 

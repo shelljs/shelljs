@@ -47,5 +47,3 @@ assert.equal(shell.error(), null);
 assert.deepEqual(result.sort(), ["resources/file1.js","resources/file2.js","resources/ls/file1.js","resources/ls/file2.js"].sort());
 
 shell.exit(123);
-
-

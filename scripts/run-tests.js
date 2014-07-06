@@ -30,8 +30,9 @@ if (exec(JSHINT_BIN + ' *.js test/*.js').code !== 0) {
 //
 cd(__dirname + '/../test');
 ls('*.js').forEach(function(file) {
-  echo('Running test:', file);
-  if (exec('node ' + file).code !== 123) { // 123 avoids false positives (e.g. premature exit)
+  var name = file.name
+  echo('Running test:', name);
+  if (exec('node ' + name).code !== 123) { // 123 avoids false positives (e.g. premature exit)
     failed = true;
     echo('*** TEST FAILED! (missing exit code "123")');
     echo();
