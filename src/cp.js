@@ -137,13 +137,6 @@ function _cp(options, sources, dest) {
     common.error('dest file already exists: ' + dest);
 
   if (options.recursive) {
-    // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
-    // (see Github issue #15)
-    sources.forEach(function(src, i) {
-      if (src[src.length - 1] === '/')
-        sources[i] += '*';
-    });
-
     // Create dest
     try {
       fs.mkdirSync(dest, parseInt('0777', 8));
@@ -155,6 +148,8 @@ function _cp(options, sources, dest) {
   sources = common.expand(sources);
 
   sources.forEach(function(src) {
+    var newDest;
+
     if (!fs.existsSync(src)) {
       common.error('no such file or directory: '+src, true);
       return; // skip file
@@ -166,17 +161,23 @@ function _cp(options, sources, dest) {
         // Non-Recursive
         common.log(src + ' is a directory (not copied)');
       } else {
-        // Recursive
-        // 'cp /a/source dest' should create 'source' in 'dest'
-        var newDest = path.join(dest, path.basename(src)),
+        // Recursive. Per the spec, if the source is a directory and it ends in
+        // '/' then we copy the content to the target, otherwise we copy the
+        // entire directory (aka make a newDest and copy the content to that).
+        if (/\/$/.test(src)) {
+          newDest = dest;
+        } else {
+          // 'cp /a/source dest' should create 'source' in 'dest'
+          newDest = path.join(dest, path.basename(src)),
             checkDir = fs.statSync(src);
-        try {
-          fs.mkdirSync(newDest, checkDir.mode);
-        } catch (e) {
-          //if the directory already exists, that's okay
-          if (e.code !== 'EEXIST') {
-            common.error('dest file no such file or directory: ' + newDest, true);
-            throw e;
+          try {
+            fs.mkdirSync(newDest, checkDir.mode);
+          } catch (e) {
+            //if the directory already exists, that's okay
+            if (e.code !== 'EEXIST') {
+              common.error('dest file no such file or directory: ' + newDest, true);
+              throw e;
+            }
           }
         }
 
