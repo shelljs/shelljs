@@ -548,6 +548,8 @@ otherwise returns string explaining the error
 Example:
 
 ```javascript
+var config = require('shelljs').config;
+
 var silentState = config.silent; // save old silent state
 config.silent = true;
 /* ... */
