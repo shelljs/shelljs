@@ -177,12 +177,12 @@ function _chmod(options, mode, filePattern) {
           }
 
           if (options.verbose) {
-            log(file + ' -> ' + newPerms.toString(8));
+            common.log(file + ' -> ' + newPerms.toString(8));
           }
 
           if (perms != newPerms) {
             if (!options.verbose && options.changes) {
-              log(file + ' -> ' + newPerms.toString(8));
+              common.log(file + ' -> ' + newPerms.toString(8));
             }
             fs.chmodSync(file, newPerms);
           }
