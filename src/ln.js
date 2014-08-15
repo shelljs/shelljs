@@ -40,8 +40,12 @@ function _ln(options, source, dest) {
     if (!options.force) {
       common.error('Destination file exists', true);
     }
-
-    fs.unlinkSync(dest);
+    var stat = fs.lstatSync(dest);
+    if (stat.isDirectory()) {
+      fs.rmdirSync(dest);
+    } else {
+      fs.unlinkSync(dest);
+    }
   }
 
   if (options.symlink) {

@@ -96,4 +96,13 @@ assert.equal(
   'new content 3'
 );
 
+// Force link directory
+shell.mkdir('tmp/dir');
+shell.ln('-sf', 'tmp/file1', 'tmp/dir');
+assert(fs.existsSync('tmp/dir'));
+assert.equal(
+  fs.readFileSync('tmp/file1').toString(),
+  fs.readFileSync('tmp/dir').toString()
+);
+
 shell.exit(123);
