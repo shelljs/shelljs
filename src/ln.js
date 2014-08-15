@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var common = require('./common');
 var os = require('os');
+var rm = require('./rm');
 
 //@
 //@ ### ln(options, source, dest)
@@ -40,12 +41,7 @@ function _ln(options, source, dest) {
     if (!options.force) {
       common.error('Destination file exists', true);
     }
-    var stat = fs.lstatSync(dest);
-    if (stat.isDirectory()) {
-      fs.rmdirSync(dest);
-    } else {
-      fs.unlinkSync(dest);
-    }
+    rm('-rf', dest);
   }
 
   if (options.symlink) {
