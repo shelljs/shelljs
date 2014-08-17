@@ -96,11 +96,12 @@ function execSync(cmd, opts) {
 
 // Wrapper around exec() to enable echoing output to console in real time
 function execAsync(cmd, opts, callback) {
-  var output = '';
-
   var options = common.extend({
     silent: common.config.silent
   }, opts);
+
+  var echo = options.echo || process.stdout.write,
+    output = '';
 
   var c = child.exec(cmd, {env: process.env, maxBuffer: 20*1024*1024}, function(err) {
     if (callback)
@@ -110,13 +111,13 @@ function execAsync(cmd, opts, callback) {
   c.stdout.on('data', function(data) {
     output += data;
     if (!options.silent)
-      process.stdout.write(data);
+      echo(data);
   });
 
   c.stderr.on('data', function(data) {
     output += data;
     if (!options.silent)
-      process.stdout.write(data);
+      echo(data);
   });
 
   return c;
