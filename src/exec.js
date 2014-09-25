@@ -102,7 +102,11 @@ function execAsync(cmd, opts, callback) {
     silent: common.config.silent
   }, opts);
 
-  var c = child.exec(cmd, {env: options.env || process.env, maxBuffer: 20*1024*1024}, function(err) {
+  var c = child.exec(cmd, {
+      cwd: options.cwd || process.cwd(),
+      env: options.env || process.env,
+      maxBuffer: 20*1024*1024
+  }, function(err) {
     if (callback)
       callback(err ? err.code : 0, output);
   });
