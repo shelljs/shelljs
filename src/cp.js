@@ -132,7 +132,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@
 //@ + `-f`: force
 //@ + `-r, -R`: recursive
-//@ + `-L`: symbolic links are followed
+//@ + `-L`: follow symbolic links
 //@
 //@ Examples:
 //@
