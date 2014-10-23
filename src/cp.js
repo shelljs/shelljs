@@ -41,6 +41,24 @@ function copyFileSync(srcFile, destFile) {
   fs.chmodSync(destFile, fs.statSync(srcFile).mode);
 }
 
+function rmdirSyncRecursive(srcPath) {
+    if (fs.existsSync(srcPath)) {
+        if (fs.lstatSync(srcPath).isDirectory()) {
+            fs.readdirSync(srcPath).forEach(function(file, idx) {
+                var curPath = path.join(srcPath, file);
+                if (fs.lstatSync(curPath).isDirectory()) {
+                    rmdirSyncRecursive(curPath);
+                } else {
+                    fs.unlinkSync(curPath);
+                }
+            });
+            fs.rmdirSync(srcPath);
+        } else {
+            fs.unlinkSync(srcPath);
+        }
+    }
+}
+
 // Recursively copies 'sourceDir' into 'destDir'
 // Adapted from https://github.com/ryanmcgrath/wrench-js
 //
@@ -72,8 +90,28 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       /* recursion this thing right on back. */
       cpdirSyncRecursive(srcFile, destFile, opts);
     } else if (srcFileStat.isSymbolicLink()) {
-      var symlinkFull = fs.readlinkSync(srcFile);
-      fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
+        if(opts.fwSymlink) {
+            if (fs.statSync(srcFile).isDirectory()) {
+                cpdirSyncRecursive(srcFile, destFile, opts);
+            } else {
+                if (fs.existsSync(destFile) && !opts.force) {
+                    common.log('skipping existing file: ' + files[i]);
+                } else {
+                    copyFileSync(srcFile, destFile);
+                }
+            }
+        } else {
+            if (fs.existsSync(destFile)) {
+                if (!opts.force) {
+                    common.log('skipping existing file: ' + files[i]);
+                    return;
+                } else {
+                    rmdirSyncRecursive(destFile);
+                }
+            }
+            var symlinkFull = fs.readlinkSync(srcFile);
+            fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
+        }
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && !opts.force) {
@@ -94,6 +132,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@
 //@ + `-f`: force
 //@ + `-r, -R`: recursive
+//@ + `-L`: symbolic links are followed
 //@
 //@ Examples:
 //@
@@ -108,7 +147,8 @@ function _cp(options, sources, dest) {
   options = common.parseOptions(options, {
     'f': 'force',
     'R': 'recursive',
-    'r': 'recursive'
+    'r': 'recursive',
+    'L': 'followSymlink'
   });
 
   // Get sources, dest
@@ -180,7 +220,7 @@ function _cp(options, sources, dest) {
           }
         }
 
-        cpdirSyncRecursive(src, newDest, {force: options.force});
+        cpdirSyncRecursive(src, newDest, {force: options.force, fwSymlink: options.followSymlink});
       }
       return; // done with dir
     }
