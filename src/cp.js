@@ -85,6 +85,9 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
     var srcFile = sourceDir + "/" + files[i];
     var destFile = destDir + "/" + files[i];
     var srcFileStat = fs.lstatSync(srcFile);
+    if (fs.existsSync(destFile)) {
+        if (fs.lstatSync(destFile).isSymbolicLink() && opts.force) fs.unlinkSync(destFile);
+    }
 
     if (srcFileStat.isDirectory()) {
       /* recursion this thing right on back. */
