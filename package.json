@@ -1,6 +1,6 @@
 {
-  "name": "shelljs",
-  "version": "0.3.0",
+  "name": "eluck-shelljs",
+  "version": "0.3.2",
   "author": "Artur Adib <aadib@mozilla.com>",
   "description": "Portable Unix shell commands for Node.js",
   "keywords": [
@@ -13,10 +13,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/arturadib/shelljs.git"
+    "url": "git://github.com/eluck/shelljs.git"
   },
   "license": "BSD*",
-  "homepage": "http://github.com/arturadib/shelljs",
+  "homepage": "http://github.com/eluck/shelljs",
   "main": "./shell.js",
   "scripts": {
     "test": "node scripts/run-tests"
