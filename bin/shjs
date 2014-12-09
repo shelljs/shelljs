@@ -36,7 +36,9 @@ if (scriptName.match(/\.coffee$/)) {
   //
   // CoffeeScript
   //
-  if (which('coffee')) {
+  var coffee = test('-f', 'coffee') && 'coffee' || test('-f', 'node_modules/.bin/coffee') && 'node_modules/.bin/coffee';
+  coffee = coffee || which('coffee');
+  if (coffee) {
     exec('coffee ' + scriptName + ' ' + args.join(' '), function(code) {
       process.exit(code);
     });
