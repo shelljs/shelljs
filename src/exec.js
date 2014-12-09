@@ -4,6 +4,7 @@ var _pwd = require('./pwd');
 var path = require('path');
 var fs = require('fs');
 var child = require('child_process');
+var existsSync = require('./existsSync');
 
 // Hack to run child_process.exec() synchronously (sync avoids callback hell)
 // Uses a custom wait loop that checks for a flag file, created when the child process is done.
@@ -24,7 +25,7 @@ function execSync(cmd, opts) {
   var previousStdoutContent = '';
   // Echoes stdout changes from running process, if not silent
   function updateStdout() {
-    if (options.silent || !fs.existsSync(stdoutFile))
+    if (options.silent || !existsSync(stdoutFile))
       return;
 
     var stdoutContent = fs.readFileSync(stdoutFile, 'utf8');
@@ -49,9 +50,9 @@ function execSync(cmd, opts) {
    "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');" +
    "});";
 
-  if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
-  if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
-  if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
+  if (existsSync(scriptFile)) common.unlinkSync(scriptFile);
+  if (existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
+  if (existsSync(codeFile)) common.unlinkSync(codeFile);
 
   fs.writeFileSync(scriptFile, script);
   child.exec('"'+process.execPath+'" '+scriptFile, {
@@ -64,8 +65,8 @@ function execSync(cmd, opts) {
   // sleepFile is used as a dummy I/O op to mitigate unnecessary CPU usage
   // (tried many I/O sync ops, writeFileSync() seems to be only one that is effective in reducing
   // CPU usage, though apparently not so much on Windows)
-  while (!fs.existsSync(codeFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
-  while (!fs.existsSync(stdoutFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
+  while (!existsSync(codeFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
+  while (!existsSync(stdoutFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
 
   // At this point codeFile exists, but it's not necessarily flushed yet.
   // Keep reading it until it is.

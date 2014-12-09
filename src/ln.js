@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var common = require('./common');
 var os = require('os');
+var existsSync = require('./existsSync');
 
 //@
 //@ ### ln(options, source, dest)
@@ -32,11 +33,11 @@ function _ln(options, source, dest) {
   source = path.resolve(process.cwd(), String(source));
   dest = path.resolve(process.cwd(), String(dest));
 
-  if (!fs.existsSync(source)) {
+  if (!existsSync(source)) {
     common.error('Source file does not exist', true);
   }
 
-  if (fs.existsSync(dest)) {
+  if (existsSync(dest)) {
     if (!options.force) {
       common.error('Destination file exists', true);
     }

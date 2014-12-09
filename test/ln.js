@@ -3,6 +3,7 @@ var shell = require('..');
 var assert = require('assert'),
     fs = require('fs'),
     path = require('path');
+var existsSync = require('../src/existsSync');
 
 shell.config.silent = true;
 
@@ -36,7 +37,7 @@ assert.ok(shell.error());
 //
 
 shell.ln('tmp/file1', 'tmp/linkfile1');
-assert(fs.existsSync('tmp/linkfile1'));
+assert(existsSync('tmp/linkfile1'));
 assert.equal(
   fs.readFileSync('tmp/file1').toString(),
   fs.readFileSync('tmp/linkfile1').toString()
@@ -48,7 +49,7 @@ assert.equal(
 );
 
 shell.ln('-s', 'tmp/file2', 'tmp/linkfile2');
-assert(fs.existsSync('tmp/linkfile2'));
+assert(existsSync('tmp/linkfile2'));
 assert.equal(
   fs.readFileSync('tmp/file2').toString(),
   fs.readFileSync('tmp/linkfile2').toString()
@@ -60,7 +61,7 @@ assert.equal(
 );
 
 shell.ln('-f', 'tmp/file1.js', 'tmp/file2.js');
-assert(fs.existsSync('tmp/file2.js'));
+assert(existsSync('tmp/file2.js'));
 assert.equal(
   fs.readFileSync('tmp/file1.js').toString(),
   fs.readFileSync('tmp/file2.js').toString()
@@ -72,7 +73,7 @@ assert.equal(
 );
 
 shell.ln('-sf', 'tmp/file1.txt', 'tmp/file2.txt');
-assert(fs.existsSync('tmp/file2.txt'));
+assert(existsSync('tmp/file2.txt'));
 assert.equal(
   fs.readFileSync('tmp/file1.txt').toString(),
   fs.readFileSync('tmp/file2.txt').toString()
@@ -85,7 +86,7 @@ assert.equal(
 
 // Abspath regression
 shell.ln('-sf', 'tmp/file1', path.resolve('tmp/abspath'));
-assert(fs.existsSync('tmp/abspath'));
+assert(existsSync('tmp/abspath'));
 assert.equal(
   fs.readFileSync('tmp/file1').toString(),
   fs.readFileSync('tmp/abspath').toString()

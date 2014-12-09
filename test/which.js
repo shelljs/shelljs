@@ -1,7 +1,7 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    fs = require('fs');
+var assert = require('assert');
+var existsSync = require('../src/existsSync');
 
 shell.config.silent = true;
 
@@ -25,6 +25,6 @@ assert.equal(result, null);
 
 var result = shell.which('node');
 assert.equal(shell.error(), null);
-assert.equal(fs.existsSync(result), true);
+assert.equal(existsSync(result), true);
 
 shell.exit(123);

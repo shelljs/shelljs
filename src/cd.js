@@ -1,5 +1,6 @@
 var fs = require('fs');
 var common = require('./common');
+var existsSync = require('./existsSync');
 
 //@
 //@ ### cd('dir')
@@ -8,7 +9,7 @@ function _cd(options, dir) {
   if (!dir)
     common.error('directory not specified');
 
-  if (!fs.existsSync(dir))
+  if (!existsSync(dir))
     common.error('no such file or directory: ' + dir);
 
   if (!fs.statSync(dir).isDirectory())

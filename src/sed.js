@@ -1,5 +1,6 @@
 var common = require('./common');
 var fs = require('fs');
+var existsSync = require('./existsSync');
 
 //@
 //@ ### sed([options ,] search_regex, replacement, file)
@@ -31,7 +32,7 @@ function _sed(options, regex, replacement, file) {
   if (!file)
     common.error('no file given');
 
-  if (!fs.existsSync(file))
+  if (!existsSync(file))
     common.error('no such file or directory: ' + file);
 
   var result = fs.readFileSync(file, 'utf8').replace(regex, replacement);

@@ -1,6 +1,7 @@
 var common = require('./common');
 var fs = require('fs');
 var path = require('path');
+var existsSync = require('./existsSync');
 
 var PERMS = (function (base) {
   return {
@@ -105,7 +106,7 @@ function _chmod(options, mode, filePattern) {
 
   files.forEach(function innerChmod(file) {
     file = path.resolve(file);
-    if (!fs.existsSync(file)) {
+    if (!existsSync(file)) {
       common.error('File not found: ' + file);
     }
 

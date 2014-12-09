@@ -1,5 +1,6 @@
 var common = require('./common');
 var fs = require('fs');
+var existsSync = require('./existsSync');
 
 //@
 //@ ### cat(file [, file ...])
@@ -29,7 +30,7 @@ function _cat(options, files) {
   files = common.expand(files);
 
   files.forEach(function(file) {
-    if (!fs.existsSync(file))
+    if (!existsSync(file))
       common.error('no such file or directory: ' + file);
 
     cat += fs.readFileSync(file, 'utf8') + '\n';

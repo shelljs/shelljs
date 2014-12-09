@@ -1,7 +1,7 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    fs = require('fs');
+var assert = require('assert');
+var existsSync = require('../src/existsSync');
 
 shell.config.silent = true;
 
@@ -15,15 +15,15 @@ shell.mkdir('tmp');
 'hello world'.toEnd();
 assert.ok(shell.error());
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
+assert.equal(existsSync('/asdfasdf'), false); // sanity check
 assert.ok(shell.error());
 //
 // Valids
 //
 
-assert.equal(fs.existsSync('tmp/toEnd1'), false); //Check file toEnd() creates does not already exist
+assert.equal(existsSync('tmp/toEnd1'), false); //Check file toEnd() creates does not already exist
 'hello '.toEnd('tmp/toEnd1');
-assert.equal(fs.existsSync('tmp/toEnd1'), true); //Check that file was created
+assert.equal(existsSync('tmp/toEnd1'), true); //Check that file was created
 'world'.toEnd('tmp/toEnd1'); //Write some more to the file
 var result = shell.cat('tmp/toEnd1');
 assert.equal(shell.error(), null);

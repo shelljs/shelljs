@@ -1,5 +1,6 @@
 var common = require('./common');
 var fs = require('fs');
+var existsSync = require('./existsSync');
 
 //@
 //@ ### test(expression)
@@ -56,7 +57,7 @@ function _test(options, path) {
     }
   }
 
-  if (!fs.existsSync(path))
+  if (!existsSync(path))
     return false;
 
   if (options.exists)
