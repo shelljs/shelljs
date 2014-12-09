@@ -1,6 +1,6 @@
 {
   "name": "eluck-shelljs",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "author": "Artur Adib <aadib@mozilla.com>; Evgeny Lukianchikov <mail@eluck.me>",
   "description": "Portable Unix shell commands for Node.js",
   "keywords": [
