@@ -86,7 +86,7 @@ function _pushd(options, dir) {
   }
 
   _dirStack = dirs;
-  return _dirs('');
+  return _dirs('-q');
 }
 exports.pushd = _pushd;
 
@@ -137,7 +137,7 @@ function _popd(options, index) {
     _cd('', dir);
   }
 
-  return _dirs('');
+  return _dirs('-q');
 }
 exports.popd = _popd;
 
@@ -163,7 +163,8 @@ function _dirs(options, index) {
   }
 
   options = common.parseOptions(options, {
-    'c' : 'clear'
+    'c' : 'clear',
+    'q' : 'quiet'
   });
 
   if (options['clear']) {
@@ -184,7 +185,9 @@ function _dirs(options, index) {
     return stack[index];
   }
 
-  common.log(stack.join(' '));
+  if(!options.quiet) {
+    common.log(stack.join(' '));
+  }
 
   return stack;
 }
