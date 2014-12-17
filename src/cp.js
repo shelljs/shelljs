@@ -17,7 +17,7 @@ function copyFileSync(srcFile, destFile, opts) {
       fdr = null,
       fdw = null;
 
-  if (fs.existsSync(destFile) && opts.update) {
+  if (opts.update && fs.existsSync(destFile)) {
     var srcStat = fs.statSync(srcFile),
         destStat = fs.statSync(destFile);
     if (srcStat.mtime <= destStat.mtime) {
