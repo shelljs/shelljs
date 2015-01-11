@@ -48,7 +48,23 @@ function rmdirSyncRecursive(dir, force) {
 
   var result;
   try {
-    result = fs.rmdirSync(dir);
+    var start = Date.now();
+    while (true) {
+      try {
+        result = fs.rmdirSync(dir);
+        break;
+      } catch(er) {
+        if (process.platform === "win32" && (er.code === "ENOTEMPTY" || er.code === "EBUSY" || er.code === "EPERM" )) {
+          // Retry on windows, sometimes it takes a little time before all the files in the directory
+          // are gone
+          if (Date.now() - start > 1000) throw er;
+        } else if(er.code === "ENOENT") {
+          break;
+        } else {
+          throw er;
+        }
+      }
+    }
   } catch(e) {
     common.error('could not remove directory (code '+e.code+'): ' + dir, true);
   }
