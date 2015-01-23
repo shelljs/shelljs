@@ -53,11 +53,11 @@ function rmdirSyncRecursive(dir, force) {
     while (true) {
       try {
         result = fs.rmdirSync(dir);
-        if (fs.existsSync(dir)) throw { code: "EEXIST" }
+        if (fs.existsSync(dir)) throw { code: "EAGAIN" }
         break;
       } catch(er) {
         // In addition to error codes, also check if the directory still exists and loop again if true
-        if (process.platform === "win32" && (er.code === "ENOTEMPTY" || er.code === "EBUSY" || er.code === "EPERM" || er.code === "EEXIST")) {
+        if (process.platform === "win32" && (er.code === "ENOTEMPTY" || er.code === "EBUSY" || er.code === "EPERM" || er.code === "EAGAIN")) {
           if (Date.now() - start > 1000) throw er;
         } else if (er.code === "ENOENT") {
           // Directory did not exist, deletion was successful
