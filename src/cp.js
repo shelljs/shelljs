@@ -2,12 +2,13 @@ var fs = require('fs');
 var path = require('path');
 var common = require('./common');
 var os = require('os');
+var existsSync = require('./existsSync');
 
 // Buffered file copy, synchronous
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
 //  with large files)
 function copyFileSync(srcFile, destFile) {
-  if (!fs.existsSync(srcFile))
+  if (!existsSync(srcFile))
     common.error('copyFileSync: no such file or directory: ' + srcFile);
 
   var BUF_LENGTH = 64*1024,
@@ -76,7 +77,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
-      if (fs.existsSync(destFile) && !opts.force) {
+      if (existsSync(destFile) && !opts.force) {
         common.log('skipping existing file: ' + files[i]);
       } else {
         copyFileSync(srcFile, destFile);
@@ -125,7 +126,7 @@ function _cp(options, sources, dest) {
     common.error('invalid arguments');
   }
 
-  var exists = fs.existsSync(dest),
+  var exists = existsSync(dest),
       stats = exists && fs.statSync(dest);
 
   // Dest is not existing dir, but multiple sources given
@@ -155,7 +156,7 @@ function _cp(options, sources, dest) {
   sources = common.expand(sources);
 
   sources.forEach(function(src) {
-    if (!fs.existsSync(src)) {
+    if (!existsSync(src)) {
       common.error('no such file or directory: '+src, true);
       return; // skip file
     }
@@ -190,10 +191,10 @@ function _cp(options, sources, dest) {
     // When copying to '/path/dir':
     //    thisDest = '/path/dir/file1'
     var thisDest = dest;
-    if (fs.existsSync(dest) && fs.statSync(dest).isDirectory())
+    if (existsSync(dest) && fs.statSync(dest).isDirectory())
       thisDest = path.normalize(dest + '/' + path.basename(src));
 
-    if (fs.existsSync(thisDest) && !options.force) {
+    if (existsSync(thisDest) && !options.force) {
       common.error('dest file already exists: ' + thisDest, true);
       return; // skip file
     }

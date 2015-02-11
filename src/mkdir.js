@@ -1,13 +1,14 @@
 var common = require('./common');
 var fs = require('fs');
 var path = require('path');
+var existsSync = require('./existsSync');
 
 // Recursively creates 'dir'
 function mkdirSyncRecursive(dir) {
   var baseDir = path.dirname(dir);
 
   // Base dir exists, no recursion necessary
-  if (fs.existsSync(baseDir)) {
+  if (existsSync(baseDir)) {
     fs.mkdirSync(dir, parseInt('0777', 8));
     return;
   }
@@ -46,7 +47,7 @@ function _mkdir(options, dirs) {
   // if it's array leave it as it is
 
   dirs.forEach(function(dir) {
-    if (fs.existsSync(dir)) {
+    if (existsSync(dir)) {
       if (!options.fullpath)
           common.error('path already exists: ' + dir, true);
       return; // skip dir
@@ -54,7 +55,7 @@ function _mkdir(options, dirs) {
 
     // Base dir does not exist, and no -p option given
     var baseDir = path.dirname(dir);
-    if (!fs.existsSync(baseDir) && !options.fullpath) {
+    if (!existsSync(baseDir) && !options.fullpath) {
       common.error('no such file or directory: ' + baseDir, true);
       return; // skip dir
     }

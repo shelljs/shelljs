@@ -1,5 +1,6 @@
 var common = require('./common');
 var fs = require('fs');
+var existsSync = require('./existsSync');
 
 //@
 //@ ### grep([options ,] regex_filter, file [, file ...])
@@ -33,7 +34,7 @@ function _grep(options, regex, files) {
 
   var grep = '';
   files.forEach(function(file) {
-    if (!fs.existsSync(file)) {
+    if (!existsSync(file)) {
       common.error('no such file or directory: ' + file, true);
       return;
     }

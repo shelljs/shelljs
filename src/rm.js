@@ -1,5 +1,6 @@
 var common = require('./common');
 var fs = require('fs');
+var existsSync = require('./existsSync');
 
 // Recursively removes 'dir'
 // Adapted from https://github.com/ryanmcgrath/wrench-js
@@ -103,7 +104,7 @@ function _rm(options, files) {
   files = common.expand(files);
 
   files.forEach(function(file) {
-    if (!fs.existsSync(file)) {
+    if (!existsSync(file)) {
       // Path does not exist, no force flag given
       if (!options.force)
         common.error('no such file or directory: '+file, true);

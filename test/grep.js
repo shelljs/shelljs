@@ -1,7 +1,7 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    fs = require('fs');
+var assert = require('assert');
+var existsSync = require('../src/existsSync');
 
 shell.config.silent = true;
 
@@ -18,7 +18,7 @@ assert.ok(shell.error());
 shell.grep(/asdf/g); // too few args
 assert.ok(shell.error());
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
+assert.equal(existsSync('/asdfasdf'), false); // sanity check
 shell.grep(/asdf/g, '/asdfasdf'); // no such file
 assert.ok(shell.error());
 

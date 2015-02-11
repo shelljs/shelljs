@@ -3,6 +3,7 @@ var fs = require('fs');
 var common = require('./common');
 var _cd = require('./cd');
 var _pwd = require('./pwd');
+var existsSync = require('./existsSync');
 
 //@
 //@ ### ls([options ,] path [,path ...])
@@ -63,7 +64,7 @@ function _ls(options, paths) {
   }
 
   paths.forEach(function(p) {
-    if (fs.existsSync(p)) {
+    if (existsSync(p)) {
       var stats = fs.statSync(p);
       // Simple file?
       if (stats.isFile()) {
@@ -96,7 +97,7 @@ function _ls(options, paths) {
     var basename = path.basename(p);
     var dirname = path.dirname(p);
     // Wildcard present on an existing dir? (e.g. '/tmp/*.js')
-    if (basename.search(/\*/) > -1 && fs.existsSync(dirname) && fs.statSync(dirname).isDirectory) {
+    if (basename.search(/\*/) > -1 && existsSync(dirname) && fs.statSync(dirname).isDirectory) {
       // Escape special regular expression chars
       var regexp = basename.replace(/(\^|\$|\(|\)|<|>|\[|\]|\{|\}|\.|\+|\?)/g, '\\$1');
       // Translates wildcard into regex

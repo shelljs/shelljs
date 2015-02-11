@@ -1,10 +1,11 @@
 var common = require('./common');
 var os = require('os');
 var fs = require('fs');
+var existsSync = require('./existsSync');
 
 // Returns false if 'dir' is not a writeable directory, 'dir' otherwise
 function writeableDir(dir) {
-  if (!dir || !fs.existsSync(dir))
+  if (!dir || !existsSync(dir))
     return false;
 
   if (!fs.statSync(dir).isDirectory())

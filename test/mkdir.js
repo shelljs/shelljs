@@ -2,6 +2,7 @@ var shell = require('..');
 
 var assert = require('assert'),
     fs = require('fs');
+var existsSync = require('../src/existsSync');
 
 shell.config.silent = true;
 
@@ -24,52 +25,52 @@ shell.mkdir('tmp'); // dir already exists
 assert.ok(shell.error());
 assert.equal(fs.statSync('tmp').mtime.toString(), mtime); // didn't mess with dir
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
+assert.equal(existsSync('/asdfasdf'), false); // sanity check
 shell.mkdir('/asdfasdf/asdfasdf'); // root path does not exist
 assert.ok(shell.error());
-assert.equal(fs.existsSync('/asdfasdf'), false);
+assert.equal(existsSync('/asdfasdf'), false);
 
 //
 // Valids
 //
 
-assert.equal(fs.existsSync('tmp/t1'), false);
+assert.equal(existsSync('tmp/t1'), false);
 shell.mkdir('tmp/t1'); // simple dir
 assert.equal(shell.error(), null);
-assert.equal(fs.existsSync('tmp/t1'), true);
+assert.equal(existsSync('tmp/t1'), true);
 
-assert.equal(fs.existsSync('tmp/t2'), false);
-assert.equal(fs.existsSync('tmp/t3'), false);
+assert.equal(existsSync('tmp/t2'), false);
+assert.equal(existsSync('tmp/t3'), false);
 shell.mkdir('tmp/t2', 'tmp/t3'); // multiple dirs
 assert.equal(shell.error(), null);
-assert.equal(fs.existsSync('tmp/t2'), true);
-assert.equal(fs.existsSync('tmp/t3'), true);
+assert.equal(existsSync('tmp/t2'), true);
+assert.equal(existsSync('tmp/t3'), true);
 
-assert.equal(fs.existsSync('tmp/t1'), true);
-assert.equal(fs.existsSync('tmp/t4'), false);
+assert.equal(existsSync('tmp/t1'), true);
+assert.equal(existsSync('tmp/t4'), false);
 shell.mkdir('tmp/t1', 'tmp/t4'); // one dir exists, one doesn't
 assert.equal(numLines(shell.error()), 1);
-assert.equal(fs.existsSync('tmp/t1'), true);
-assert.equal(fs.existsSync('tmp/t4'), true);
+assert.equal(existsSync('tmp/t1'), true);
+assert.equal(existsSync('tmp/t4'), true);
 
-assert.equal(fs.existsSync('tmp/a'), false);
+assert.equal(existsSync('tmp/a'), false);
 shell.mkdir('-p', 'tmp/a/b/c');
 assert.equal(shell.error(), null);
-assert.equal(fs.existsSync('tmp/a/b/c'), true);
+assert.equal(existsSync('tmp/a/b/c'), true);
 shell.rm('-Rf', 'tmp/a'); // revert
 
 // multiple dirs
 shell.mkdir('-p', 'tmp/zzza', 'tmp/zzzb', 'tmp/zzzc');
 assert.equal(shell.error(), null);
-assert.equal(fs.existsSync('tmp/zzza'), true);
-assert.equal(fs.existsSync('tmp/zzzb'), true);
-assert.equal(fs.existsSync('tmp/zzzc'), true);
+assert.equal(existsSync('tmp/zzza'), true);
+assert.equal(existsSync('tmp/zzzb'), true);
+assert.equal(existsSync('tmp/zzzc'), true);
 
 // multiple dirs, array syntax
 shell.mkdir('-p', ['tmp/yyya', 'tmp/yyyb', 'tmp/yyyc']);
 assert.equal(shell.error(), null);
-assert.equal(fs.existsSync('tmp/yyya'), true);
-assert.equal(fs.existsSync('tmp/yyyb'), true);
-assert.equal(fs.existsSync('tmp/yyyc'), true);
+assert.equal(existsSync('tmp/yyya'), true);
+assert.equal(existsSync('tmp/yyyb'), true);
+assert.equal(existsSync('tmp/yyyc'), true);
 
 shell.exit(123);
