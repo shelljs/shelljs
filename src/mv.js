@@ -85,7 +85,8 @@ function _mv(options, sources, dest) {
       }
 
       // Can't rename across devices, but you can copy & then unlink!
-      cp((options.force ? "-f" : ""), src, thisDest);
+      // Copy is always recursive, since it's acting like move
+      cp((options.force ? "-rf" : "-r"), src, thisDest);
       rm((options.force ? "-f" : ""), src);
     }
   }); // forEach(src)
