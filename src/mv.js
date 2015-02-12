@@ -85,8 +85,8 @@ function _mv(options, sources, dest) {
       }
 
       // Can't rename across devices, but you can copy & then unlink!
-      cp(options, src, thisDest);
-      rm(options, src);
+      cp((options.force ? "-f" : ""), src, thisDest);
+      rm((options.force ? "-f" : ""), src);
     }
   }); // forEach(src)
 } // mv
