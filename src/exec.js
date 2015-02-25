@@ -55,8 +55,8 @@ function execSync(cmd, opts) {
 
   fs.writeFileSync(scriptFile, script);
   child.exec('"'+process.execPath+'" '+scriptFile, {
-    env: process.env,
-    cwd: _pwd(),
+    env: options.env || process.env,
+    cwd: options.cwd || _pwd(),
     maxBuffer: 20*1024*1024
   });
 
@@ -102,7 +102,11 @@ function execAsync(cmd, opts, callback) {
     silent: common.config.silent
   }, opts);
 
-  var c = child.exec(cmd, {env: process.env, maxBuffer: 20*1024*1024}, function(err) {
+  var c = child.exec(cmd, {
+      cwd: options.cwd || process.cwd(),
+      env: options.env || process.env,
+      maxBuffer: 20*1024*1024
+  }, function(err) {
     if (callback)
       callback(err ? err.code : 0, output);
   });

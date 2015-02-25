@@ -469,6 +469,8 @@ Available options (all `false` by default):
 
 + `async`: Asynchronous execution. Defaults to true if a callback is provided.
 + `silent`: Do not echo program output to console.
++ `cwd`: Working directory. Defaults to process.cwd().
++ `env`: Custom environments. Defaults to process.env.
 
 Examples:
 
