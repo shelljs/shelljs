@@ -108,7 +108,8 @@ function _cp(options, sources, dest) {
   options = common.parseOptions(options, {
     'f': 'force',
     'R': 'recursive',
-    'r': 'recursive'
+    'r': 'recursive',
+    'n': 'noOverwiteIfExists'
   });
 
   // Get sources, dest
@@ -134,7 +135,10 @@ function _cp(options, sources, dest) {
 
   // Dest is an existing file, but no -f given
   if (exists && stats.isFile() && !options.force)
-    common.error('dest file already exists: ' + dest);
+    if (!options.noOverwiteIfExists)
+      common.error('dest file already exists: ' + dest);
+    else
+      return;
 
   if (options.recursive) {
     // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
