@@ -109,7 +109,7 @@ function _cp(options, sources, dest) {
     'f': 'force',
     'R': 'recursive',
     'r': 'recursive',
-    'n': 'noOverwiteIfExists'
+    'n': 'noOverwriteIfExists'
   });
 
   // Get sources, dest
@@ -135,7 +135,7 @@ function _cp(options, sources, dest) {
 
   // Dest is an existing file, but no -f given
   if (exists && stats.isFile() && !options.force)
-    if (!options.noOverwiteIfExists)
+    if (!options.noOverwriteIfExists)
       common.error('dest file already exists: ' + dest);
     else
       return;
@@ -198,7 +198,8 @@ function _cp(options, sources, dest) {
       thisDest = path.normalize(dest + '/' + path.basename(src));
 
     if (fs.existsSync(thisDest) && !options.force) {
-      common.error('dest file already exists: ' + thisDest, true);
+      if (!options.noOverwriteIfExists)
+        common.error('dest file already exists: ' + thisDest, true);
       return; // skip file
     }
 
