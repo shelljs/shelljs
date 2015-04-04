@@ -148,8 +148,13 @@ To run the target `all`, call the above script without arguments: `$ node make`.
 
 All commands run synchronously, unless otherwise stated.
 
+* [`cd`](#cd)
+* [`cat`](#cat)
 
+
+<a name="cd" />
 ### cd('dir')
+
 Changes to directory `dir` for the duration of the script
 
 
@@ -281,7 +286,7 @@ if (!test('-f', path)) continue; // skip if it's a regular file
 
 Evaluates expression using the available primaries and returns corresponding value.
 
-
+<a name="cat" />
 ### cat(file [, file ...])
 ### cat(file_array)
 
