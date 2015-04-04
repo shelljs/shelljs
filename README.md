@@ -148,8 +148,40 @@ To run the target `all`, call the above script without arguments: `$ node make`.
 
 All commands run synchronously, unless otherwise stated.
 
+### Linux commands
 * [`cd`](#cd)
+* [`pwd`](#pwd)
+* [`ls`](#ls)
+* [`find`](#find)
+* [`cp`](#cp)
+* [`rm`](#rm)
+* [`mv`](#mv)
+* [`mkdir`](#mkdir)
+* [`test`](#test)
 * [`cat`](#cat)
+* [`string.to`](#string.to)
+* [`string.toEnd`](#string.toEnd)
+* [`sed`](#sed)
+* [`grep`](#grep)
+* [`which`](#which)
+* [`echo`](#echo)
+* [`pushd`](#pushd)
+* [`popd`](#popd)
+* [`dirs`](#dirs)
+* [`ln`](#ln)
+* [`exit`](#exit)
+* [`env`](#env)
+* [`exec`](#exec)
+* [`chmod`](#chmod)
+
+### Non linux commands
+* [`tempdir`](#tempdir)
+* [`error`](#error)
+
+
+### Configuration
+* [`config.fatal`](#config.fatal)
+* [`config.silent`](#config.silent)
 
 
 <a name="cd" />
@@ -158,10 +190,12 @@ All commands run synchronously, unless otherwise stated.
 Changes to directory `dir` for the duration of the script
 
 
+<a name="pwd" />
 ### pwd()
 Returns the current directory.
 
 
+<a name="ls" />
 ### ls([options ,] path [,path ...])
 ### ls([options ,] path_array)
 Available options:
@@ -180,6 +214,7 @@ ls('-R', ['/users/me', '/tmp']); // same as above
 Returns array of files in the given path, or in current directory if no path provided.
 
 
+<a name="find" />
 ### find(path [,path ...])
 ### find(path_array)
 Examples:
@@ -196,6 +231,7 @@ The main difference from `ls('-R', path)` is that the resulting file names
 include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
 
 
+<a name="cp" />
 ### cp([options ,] source [,source ...], dest)
 ### cp([options ,] source_array, dest)
 Available options:
@@ -214,6 +250,7 @@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 Copies files. The wildcard `*` is accepted.
 
 
+<a name="rm" />
 ### rm([options ,] file [, file ...])
 ### rm([options ,] file_array)
 Available options:
@@ -232,6 +269,7 @@ rm(['some_file.txt', 'another_file.txt']); // same as above
 Removes files. The wildcard `*` is accepted.
 
 
+<a name="mv" />
 ### mv(source [, source ...], dest')
 ### mv(source_array, dest')
 Available options:
@@ -249,6 +287,7 @@ mv(['file1', 'file2'], 'dir/'); // same as above
 Moves files. The wildcard `*` is accepted.
 
 
+<a name="mkdir" />
 ### mkdir([options ,] dir [, dir ...])
 ### mkdir([options ,] dir_array)
 Available options:
@@ -265,6 +304,7 @@ mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 Creates directories.
 
 
+<a name="test" />
 ### test(expression)
 Available expression primaries:
 
@@ -286,6 +326,7 @@ if (!test('-f', path)) continue; // skip if it's a regular file
 
 Evaluates expression using the available primaries and returns corresponding value.
 
+
 <a name="cat" />
 ### cat(file [, file ...])
 ### cat(file_array)
@@ -303,6 +344,7 @@ containing the files if more than one file is given (a new line character is
 introduced between each file). Wildcard `*` accepted.
 
 
+<a name="string.to" />
 ### 'string'.to(file)
 
 Examples:
@@ -315,6 +357,7 @@ Analogous to the redirection operator `>` in Unix, but works with JavaScript str
 those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will overwrite any existing file!_
 
 
+<a name="string.toEnd" />
 ### 'string'.toEnd(file)
 
 Examples:
@@ -327,6 +370,7 @@ Analogous to the redirect-and-append operator `>>` in Unix, but works with JavaS
 those returned by `cat`, `grep`, etc).
 
 
+<a name="sed" />
 ### sed([options ,] search_regex, replacement, file)
 Available options:
 
@@ -343,6 +387,7 @@ Reads an input string from `file` and performs a JavaScript `replace()` on the i
 using the given search regex and replacement string or function. Returns the new string after replacement.
 
 
+<a name="grep" />
 ### grep([options ,] regex_filter, file [, file ...])
 ### grep([options ,] regex_filter, file_array)
 Available options:
@@ -360,6 +405,7 @@ Reads input string from given files and returns a string containing all lines of
 file that match the given `regex_filter`. Wildcard `*` accepted.
 
 
+<a name="which" />
 ### which(command)
 
 Examples:
@@ -372,6 +418,7 @@ Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`
 Returns string containing the absolute path to the command.
 
 
+<a name="echo"/>
 ### echo(string [,string ...])
 
 Examples:
@@ -385,6 +432,7 @@ Prints string to stdout, and returns string with additional utility methods
 like `.to()`.
 
 
+<a name="pushd"/>
 ### pushd([options,] [dir | '-N' | '+N'])
 
 Available options:
@@ -407,6 +455,8 @@ pushd('+1');   // Returns /usr /etc
 
 Save the current directory on the top of the directory stack and then cd to `dir`. With no arguments, pushd exchanges the top two directories. Returns an array of paths in the stack.
 
+
+<a name="popd"/>
 ### popd([options,] ['-N' | '+N'])
 
 Available options:
@@ -430,6 +480,8 @@ echo(process.cwd()); // '/usr'
 
 When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0. Returns an array of paths in the stack.
 
+
+<a name="dirs"/>
 ### dirs([options | '+N' | '-N'])
 
 Available options:
@@ -446,6 +498,7 @@ Display the list of currently remembered directories. Returns an array of paths 
 See also: pushd, popd
 
 
+<a name="ln"/>
 ### ln(options, source, dest)
 ### ln(source, dest)
 Available options:
@@ -463,12 +516,17 @@ ln('-sf', 'file', 'existing');
 Links source to dest. Use -f to force the link, should dest already exist.
 
 
+<a name="exit"/>
 ### exit(code)
 Exits the current process with the given exit code.
 
+
+<a name="env"/>
 ### env['VAR_NAME']
 Object containing environment variables (both getter and setter). Shortcut to process.env.
 
+
+<a name="exec"/>
 ### exec(command [, options] [, callback])
 Available options (all `false` by default):
 
@@ -501,6 +559,7 @@ the current synchronous implementation uses a lot of CPU. This should be getting
 fixed soon.
 
 
+<a name="chmod"/>
 ### chmod(octal_mode || octal_string, file)
 ### chmod(symbolic_mode, file)
 
@@ -530,7 +589,7 @@ Notable exceptions:
 
 ## Non-Unix commands
 
-
+<a name="tempdir"/>
 ### tempdir()
 
 Examples:
@@ -543,6 +602,7 @@ Searches and returns string containing a writeable, platform-dependent temporary
 Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 
 
+<a name="error"/>
 ### error()
 Tests if error occurred in the last command. Returns `null` if no error occurred,
 otherwise returns string explaining the error
@@ -551,6 +611,7 @@ otherwise returns string explaining the error
 ## Configuration
 
 
+<a name="config.silent"/>
 ### config.silent
 Example:
 
@@ -566,6 +627,8 @@ config.silent = silentState; // restore old silent state
 Suppresses all command output if `true`, except for `echo()` calls.
 Default is `false`.
 
+
+<a name="config.fatal"/>
 ### config.fatal
 Example:
 
