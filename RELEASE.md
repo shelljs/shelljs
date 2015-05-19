@@ -5,4 +5,5 @@
 * Update README manually if the changes are not documented in-code. If so, run `scripts/generate-docs.js`
 * Commit
 * `$ git tag <version>` (see `git tag -l` for latest)
+* `$ git push origin master --tags`
 * `$ npm publish .`
