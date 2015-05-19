@@ -132,8 +132,18 @@ target.docs = ->
     text.to 'docs/my_docs.md'
 ```
 
-To run the target `all`, call the above script without arguments: `$ node make`. To run the target `docs`: `$ node make docs`, and so on.
+To run the target `all`, call the above script without arguments: `$ node make`. To run the target `docs`: `$ node make docs`.
 
+You can also pass arguments to your targets by using the `--` separator. For example, to pass `arg1` and `arg2` to a target `bundle`, do `$ node make bundle -- arg1 arg2`:
+
+```javascript
+require('shelljs/make');
+
+target.bundle = function(argsArray) {
+  // argsArray = ['arg1', 'arg2']
+  /* ... */
+}
+```
 
 
 <!-- 
@@ -550,12 +560,11 @@ otherwise returns string explaining the error
 Example:
 
 ```javascript
-var config = require('shelljs').config;
-
-var silentState = config.silent; // save old silent state
-config.silent = true;
+var sh = require('shelljs');
+var silentState = sh.config.silent; // save old silent state
+sh.config.silent = true;
 /* ... */
-config.silent = silentState; // restore old silent state
+sh.config.silent = silentState; // restore old silent state
 ```
 
 Suppresses all command output if `true`, except for `echo()` calls.
@@ -565,6 +574,7 @@ Default is `false`.
 Example:
 
 ```javascript
+require('shelljs/global');
 config.fatal = true;
 cp('this_file_does_not_exist', '/dev/null'); // dies here
 /* more commands... */
