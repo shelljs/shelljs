@@ -48,7 +48,25 @@ function rmdirSyncRecursive(dir, force) {
 
   var result;
   try {
-    result = fs.rmdirSync(dir);
+    // Retry on windows, sometimes it takes a little time before all the files in the directory are gone
+    var start = Date.now();
+    while (true) {
+      try {
+        result = fs.rmdirSync(dir);
+        if (fs.existsSync(dir)) throw { code: "EAGAIN" }
+        break;
+      } catch(er) {
+        // In addition to error codes, also check if the directory still exists and loop again if true
+        if (process.platform === "win32" && (er.code === "ENOTEMPTY" || er.code === "EBUSY" || er.code === "EPERM" || er.code === "EAGAIN")) {
+          if (Date.now() - start > 1000) throw er;
+        } else if (er.code === "ENOENT") {
+          // Directory did not exist, deletion was successful
+          break;
+        } else {
+          throw er;
+        }
+      }
+    }
   } catch(e) {
     common.error('could not remove directory (code '+e.code+'): ' + dir, true);
   }
