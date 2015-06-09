@@ -146,11 +146,7 @@ target.bundle = function(argsArray) {
 ```
 
 
-<!-- 
-
-  DO NOT MODIFY BEYOND THIS POINT - IT'S AUTOMATICALLY GENERATED
-
--->
+<!-- DO NOT MODIFY BEYOND THIS POINT - IT'S AUTOMATICALLY GENERATED -->
 
 
 ## Command reference
