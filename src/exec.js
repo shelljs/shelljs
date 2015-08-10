@@ -59,8 +59,8 @@ function execSync(cmd, opts) {
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});",
       "var stdoutStream = fs.createWriteStream('"+escape(stdoutFile)+"');",
-      "childProcess.stdout.pipe(stdoutStream);",
-      "childProcess.stderr.pipe(stdoutStream);",
+      "childProcess.stdout.pipe(stdoutStream, {end: false});",
+      "childProcess.stderr.pipe(stdoutStream, {end: false});",
       "childProcess.stdout.pipe(process.stdout);",
       "childProcess.stderr.pipe(process.stderr);"
     ].join('\n');
