@@ -62,7 +62,9 @@ function execSync(cmd, opts) {
       "childProcess.stdout.pipe(stdoutStream, {end: false});",
       "childProcess.stderr.pipe(stdoutStream, {end: false});",
       "childProcess.stdout.pipe(process.stdout);",
-      "childProcess.stderr.pipe(process.stderr);"
+      "childProcess.stderr.pipe(process.stderr);",
+      "process.stdout.on('end', function(){ stdoutStream.end(); });",
+      "process.stderr.on('end', function(){ stdoutStream.end(); });"
     ].join('\n');
 
     fs.writeFileSync(scriptFile, script);
