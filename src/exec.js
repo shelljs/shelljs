@@ -63,8 +63,10 @@ function execSync(cmd, opts) {
       "childProcess.stderr.pipe(stdoutStream, {end: false});",
       "childProcess.stdout.pipe(process.stdout);",
       "childProcess.stderr.pipe(process.stderr);",
-      "process.stdout.on('end', function(){ stdoutStream.end(); });",
-      "process.stderr.on('end', function(){ stdoutStream.end(); });"
+      "var stdoutEnded = false, stderrEnded = false;",
+      "function tryClosing(){ if(stdoutEnded && stderrEnded){ stdoutStream.end(); } }",
+      "childProcess.stdout.on('end', function(){ stdoutEnded = true; tryClosing(); });",
+      "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosing(); });"
     ].join('\n');
 
     fs.writeFileSync(scriptFile, script);
