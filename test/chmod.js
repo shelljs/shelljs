@@ -125,6 +125,17 @@ shell.chmod('a-rwx,u+rw', 'resources/chmod/file1');
 assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('600', 8), parseInt('600', 8));
 shell.chmod('644', 'resources/chmod/file1');
 
+// Support capital X ("entry" permission aka directory-only execute)
 
+shell.chmod('744', 'resources/chmod/xdir');
+shell.chmod('644', 'resources/chmod/xdir/file');
+shell.chmod('744', 'resources/chmod/xdir/deep');
+shell.chmod('644', 'resources/chmod/xdir/deep/file');
+shell.chmod('-R', 'a+X', 'resources/chmod/xdir');
+
+assert.equal(fs.statSync('resources/chmod/xdir').mode & parseInt('755', 8), parseInt('755', 8));
+assert.equal(fs.statSync('resources/chmod/xdir/file').mode & parseInt('644', 8), parseInt('644', 8));
+assert.equal(fs.statSync('resources/chmod/xdir/deep').mode & parseInt('755', 8), parseInt('755', 8));
+assert.equal(fs.statSync('resources/chmod/xdir/deep/file').mode & parseInt('644', 8), parseInt('644', 8));
 
 shell.exit(123);
