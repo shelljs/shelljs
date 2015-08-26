@@ -185,7 +185,7 @@ function _chmod(options, mode, filePattern) {
               log(file + ' -> ' + newPerms.toString(8));
             }
             fs.chmodSync(file, newPerms);
-            //perms = newPerms; // for the next round of changes!
+            perms = newPerms; // for the next round of changes!
           }
         }
         else {
