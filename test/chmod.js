@@ -119,6 +119,12 @@ shell.chmod('u-x,g+rw', 'resources/chmod/file1');
 assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('660', 8), parseInt('660', 8));
 shell.chmod('644', 'resources/chmod/file1');
 
+shell.chmod('a-rwx,u+rw', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('600', 8), parseInt('600', 8));
+shell.chmod('a-rwx,u+rw', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('600', 8), parseInt('600', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
 
 
 shell.exit(123);
