@@ -111,7 +111,7 @@ shell.chmod('644', 'resources/chmod/file1');
 
 shell.chmod('000', 'resources/chmod/file1');
 shell.chmod('u+rw,g+wx', 'resources/chmod/file1');
-assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('462', 8), parseInt('630', 8));
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('630', 8), parseInt('630', 8));
 shell.chmod('644', 'resources/chmod/file1');
 
 shell.chmod('700', 'resources/chmod/file1');
