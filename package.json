@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git://github.com/arturadib/shelljs.git"
   },
-  "license": "BSD*",
+  "license": "BSD-3-Clause",
   "homepage": "http://github.com/arturadib/shelljs",
   "main": "./shell.js",
   "scripts": {
