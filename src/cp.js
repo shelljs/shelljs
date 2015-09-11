@@ -6,7 +6,7 @@ var os = require('os');
 // Buffered file copy, synchronous
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
 //  with large files)
-function copyFileSync(srcFile, destFile) {
+function copyFileSync(srcFile, destFile, opts) {
   if (!fs.existsSync(srcFile))
     common.error('copyFileSync: no such file or directory: ' + srcFile);
 
@@ -16,6 +16,15 @@ function copyFileSync(srcFile, destFile) {
       pos = 0,
       fdr = null,
       fdw = null;
+
+  if (opts.update && fs.existsSync(destFile)) {
+    var srcStat = fs.statSync(srcFile),
+        destStat = fs.statSync(destFile);
+    if (srcStat.mtime <= destStat.mtime) {
+      // src file is not newer than dest file
+      return;
+    }
+  }
 
   try {
     fdr = fs.openSync(srcFile, 'r');
@@ -79,13 +88,12 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       if (fs.existsSync(destFile) && !opts.force) {
         common.log('skipping existing file: ' + files[i]);
       } else {
-        copyFileSync(srcFile, destFile);
+        copyFileSync(srcFile, destFile, opts);
       }
     }
 
   } // for files
 } // cpdirSyncRecursive
-
 
 //@
 //@ ### cp([options ,] source [,source ...], dest)
@@ -94,11 +102,13 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@
 //@ + `-f`: force
 //@ + `-r, -R`: recursive
+//@ + `-u`: update
 //@
 //@ Examples:
 //@
 //@ ```javascript
 //@ cp('file1', 'dir1');
+//@ cp('-u', 'file1', 'dest/file1'); // only copies if source is newer
 //@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
 //@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 //@ ```
@@ -108,7 +118,8 @@ function _cp(options, sources, dest) {
   options = common.parseOptions(options, {
     'f': 'force',
     'R': 'recursive',
-    'r': 'recursive'
+    'r': 'recursive',
+    'u': 'update'
   });
 
   // Get sources, dest
@@ -133,7 +144,7 @@ function _cp(options, sources, dest) {
     common.error('dest is not a directory (too many sources)');
 
   // Dest is an existing file, but no -f given
-  if (exists && stats.isFile() && !options.force)
+  if (exists && stats.isFile() && !options.force && !options.update)
     common.error('dest file already exists: ' + dest);
 
   if (options.recursive) {
@@ -180,7 +191,7 @@ function _cp(options, sources, dest) {
           }
         }
 
-        cpdirSyncRecursive(src, newDest, {force: options.force});
+        cpdirSyncRecursive(src, newDest, {force: options.force, update: options.update});
       }
       return; // done with dir
     }
@@ -193,12 +204,12 @@ function _cp(options, sources, dest) {
     if (fs.existsSync(dest) && fs.statSync(dest).isDirectory())
       thisDest = path.normalize(dest + '/' + path.basename(src));
 
-    if (fs.existsSync(thisDest) && !options.force) {
+    if (fs.existsSync(thisDest) && !options.update && !options.force) {
       common.error('dest file already exists: ' + thisDest, true);
       return; // skip file
     }
 
-    copyFileSync(src, thisDest);
+    copyFileSync(src, thisDest, {update: options.update});
   }); // forEach(src)
 }
 module.exports = _cp;
