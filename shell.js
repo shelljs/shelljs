@@ -103,6 +103,10 @@ exports.env = process.env;
 var _exec = require('./src/exec');
 exports.exec = common.wrap('exec', _exec, {notUnix:true});
 
+//@include ./src/kill
+var _kill = require('./src/kill');
+exports.kill = common.wrap('kill', _kill);
+
 //@include ./src/chmod
 var _chmod = require('./src/chmod');
 exports.chmod = common.wrap('chmod', _chmod);
