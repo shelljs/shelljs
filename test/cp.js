@@ -119,6 +119,10 @@ shell.rm('-rf', 'tmp/*');
 shell.cp('-Rn', 'resources/cp', 'tmp');
 shell.cp('-Rn', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
+'good'.to('tmp/cp/a');
+assert.equal(shell.cat('tmp/cp/a'), 'good');
+shell.cp('-Rn', 'resources/cp', 'tmp');
+assert.equal(shell.cat('tmp/cp/a'), 'good');
 
 //recursive, everything exists, with force flag
 shell.rm('-rf', 'tmp/*');
