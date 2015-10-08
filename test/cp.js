@@ -48,7 +48,7 @@ assert.equal(fs.existsSync('tmp/asdfasdf2'), false);
 shell.cp('asdfasdf1', 'asdfasdf2', 'resources/file1'); // too many sources (dest is file)
 assert.ok(shell.error());
 
-shell.cp('resources/file1', 'resources/file2'); // dest already exists
+shell.cp('resources/file1', 'resources/file2'); // dest already exists, overwrite without force flag
 assert.ok(shell.error());
 
 shell.cp('resources/file1', 'resources/file2', 'tmp/a_file'); // too many sources
@@ -113,6 +113,16 @@ shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
 shell.cp('-R', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null); // crash test only
+
+//recursive, everything exists, no overwrite on exists
+shell.rm('-rf', 'tmp/*');
+shell.cp('-Rn', 'resources/cp', 'tmp');
+shell.cp('-Rn', 'resources/cp', 'tmp');
+assert.equal(shell.error(), null);
+'good'.to('tmp/cp/a');
+assert.equal(shell.cat('tmp/cp/a'), 'good');
+shell.cp('-Rn', 'resources/cp', 'tmp');
+assert.equal(shell.cat('tmp/cp/a'), 'good');
 
 //recursive, everything exists, with force flag
 shell.rm('-rf', 'tmp/*');
