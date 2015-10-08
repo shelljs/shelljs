@@ -135,10 +135,11 @@ exports.config = common.config;
 //@ Example:
 //@
 //@ ```javascript
-//@ var silentState = config.silent; // save old silent state
-//@ config.silent = true;
+//@ var sh = require('shelljs');
+//@ var silentState = sh.config.silent; // save old silent state
+//@ sh.config.silent = true;
 //@ /* ... */
-//@ config.silent = silentState; // restore old silent state
+//@ sh.config.silent = silentState; // restore old silent state
 //@ ```
 //@
 //@ Suppresses all command output if `true`, except for `echo()` calls.
@@ -149,6 +150,7 @@ exports.config = common.config;
 //@ Example:
 //@
 //@ ```javascript
+//@ require('shelljs/global');
 //@ config.fatal = true;
 //@ cp('this_file_does_not_exist', '/dev/null'); // dies here
 //@ /* more commands... */

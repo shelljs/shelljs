@@ -40,32 +40,67 @@ function execSync(cmd, opts) {
     return (str+'').replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
   }
 
-  cmd += ' > '+stdoutFile+' 2>&1'; // works on both win/unix
-
-  var script =
-   "var child = require('child_process')," +
-   "     fs = require('fs');" +
-   "child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {" +
-   "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');" +
-   "});";
-
   if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
   if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
   if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
 
-  fs.writeFileSync(scriptFile, script);
-  child.exec('"'+process.execPath+'" '+scriptFile, {
+  var execCommand = '"'+process.execPath+'" '+scriptFile;
+  var execOptions = {
     env: process.env,
     cwd: _pwd(),
     maxBuffer: 20*1024*1024
-  });
+  };
 
-  // The wait loop
-  // sleepFile is used as a dummy I/O op to mitigate unnecessary CPU usage
-  // (tried many I/O sync ops, writeFileSync() seems to be only one that is effective in reducing
-  // CPU usage, though apparently not so much on Windows)
-  while (!fs.existsSync(codeFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
-  while (!fs.existsSync(stdoutFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
+  if (typeof child.execSync === 'function') {
+    var script = [
+      "var child = require('child_process')",
+      "  , fs = require('fs');",
+      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
+      "});",
+      "var stdoutStream = fs.createWriteStream('"+escape(stdoutFile)+"');",
+      "childProcess.stdout.pipe(stdoutStream, {end: false});",
+      "childProcess.stderr.pipe(stdoutStream, {end: false});",
+      "childProcess.stdout.pipe(process.stdout);",
+      "childProcess.stderr.pipe(process.stderr);",
+      "var stdoutEnded = false, stderrEnded = false;",
+      "function tryClosing(){ if(stdoutEnded && stderrEnded){ stdoutStream.end(); } }",
+      "childProcess.stdout.on('end', function(){ stdoutEnded = true; tryClosing(); });",
+      "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosing(); });"
+    ].join('\n');
+
+    fs.writeFileSync(scriptFile, script);
+
+    if (options.silent) {
+      execOptions.stdio = 'ignore';
+    } else {
+      execOptions.stdio = [0, 1, 2];
+    }
+
+    // Welcome to the future
+    child.execSync(execCommand, execOptions);
+  } else {
+    cmd += ' > '+stdoutFile+' 2>&1'; // works on both win/unix
+
+    var script = [
+      "var child = require('child_process')",
+      "  , fs = require('fs');",
+      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
+      "});"
+    ].join('\n');
+
+    fs.writeFileSync(scriptFile, script);
+
+    child.exec(execCommand, execOptions);
+
+    // The wait loop
+    // sleepFile is used as a dummy I/O op to mitigate unnecessary CPU usage
+    // (tried many I/O sync ops, writeFileSync() seems to be only one that is effective in reducing
+    // CPU usage, though apparently not so much on Windows)
+    while (!fs.existsSync(codeFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
+    while (!fs.existsSync(stdoutFile)) { updateStdout(); fs.writeFileSync(sleepFile, 'a'); }
+  }
 
   // At this point codeFile exists, but it's not necessarily flushed yet.
   // Keep reading it until it is.

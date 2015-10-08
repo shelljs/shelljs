@@ -77,4 +77,65 @@ assert.equal(fs.statSync('resources/chmod/b/a').mode & parseInt('700', 8), parse
 shell.chmod('-R', 'u+w', 'resources/chmod/a/b');
 fs.unlinkSync('resources/chmod/a/b/c/link');
 
+// Test combinations
+shell.chmod('a-rwx', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('000', 8), parseInt('000', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
+shell.chmod('a-rwx,u+r', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('400', 8), parseInt('400', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
+shell.chmod('a-rwx,u+rw', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('600', 8), parseInt('600', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
+shell.chmod('a-rwx,u+rwx', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('700', 8), parseInt('700', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
+shell.chmod('000', 'resources/chmod/file1');
+shell.chmod('u+rw', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('600', 8), parseInt('600', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
+shell.chmod('000', 'resources/chmod/file1');
+shell.chmod('u+wx', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('300', 8), parseInt('300', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
+shell.chmod('000', 'resources/chmod/file1');
+shell.chmod('u+r,g+w,o+x', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('421', 8), parseInt('421', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
+shell.chmod('000', 'resources/chmod/file1');
+shell.chmod('u+rw,g+wx', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('630', 8), parseInt('630', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
+shell.chmod('700', 'resources/chmod/file1');
+shell.chmod('u-x,g+rw', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('660', 8), parseInt('660', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
+shell.chmod('a-rwx,u+rw', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('600', 8), parseInt('600', 8));
+shell.chmod('a-rwx,u+rw', 'resources/chmod/file1');
+assert.equal(fs.statSync('resources/chmod/file1').mode & parseInt('600', 8), parseInt('600', 8));
+shell.chmod('644', 'resources/chmod/file1');
+
+// Support capital X ("entry" permission aka directory-only execute)
+
+shell.chmod('744', 'resources/chmod/xdir');
+shell.chmod('644', 'resources/chmod/xdir/file');
+shell.chmod('744', 'resources/chmod/xdir/deep');
+shell.chmod('644', 'resources/chmod/xdir/deep/file');
+shell.chmod('-R', 'a+X', 'resources/chmod/xdir');
+
+assert.equal(fs.statSync('resources/chmod/xdir').mode & parseInt('755', 8), parseInt('755', 8));
+assert.equal(fs.statSync('resources/chmod/xdir/file').mode & parseInt('644', 8), parseInt('644', 8));
+assert.equal(fs.statSync('resources/chmod/xdir/deep').mode & parseInt('755', 8), parseInt('755', 8));
+assert.equal(fs.statSync('resources/chmod/xdir/deep/file').mode & parseInt('644', 8), parseInt('644', 8));
+
 shell.exit(123);
