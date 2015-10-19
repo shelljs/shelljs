@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+var shell = require('../shell');
+
+if (process.argv.length < 3) {
+  console.log('ShellJS: missing argument (command name)');
+  console.log();
+  process.exit(1);
+}
+
+var command = process.argv[2];
+var args = process.argv.slice(3);
+
+var res = shell[command].apply(null, args);
+if (res) {
+  console.log(res);
+}
+if (shell.error()) {
+  process.exit(1);
+}

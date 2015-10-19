@@ -22,7 +22,8 @@
     "test": "node scripts/run-tests"
   },
   "bin": {
-    "shjs": "./bin/shjs"
+    "shjs": "./bin/shjs",
+    "shl": "./bin/shl"
   },
   "dependencies": {},
   "devDependencies": {
