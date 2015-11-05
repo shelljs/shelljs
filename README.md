@@ -530,6 +530,29 @@ Notable exceptions:
 + There is no "quiet" option since default behavior is to run silent.
 
 
+### touch([options ,] file)
+Available options:
+
++ `'-a'`: Change only the access time
++ `'-c'`: Do not create any files
++ `'-m'`: Change only the modification time
++ `'-d DATE'`: Parse DATE and use it instead of current time
++ `'-r FILE'`: Use FILE's times instead of current time
+
+Examples:
+
+```javascript
+touch('source.js');
+touch('-c', '/path/to/some/dir/source.js');
+touch({ '-r': FILE }, '/path/to/some/dir/source.js');
+```
+
+Update the access and modification times of each FILE to the current time.
+A FILE argument that does not exist is created empty, unless -c is supplied.
+This is a partial implementation of *[touch(1)](http://linux.die.net/man/1/touch)*.
+
+
+
 ## Non-Unix commands
 
 
