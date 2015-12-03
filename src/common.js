@@ -103,7 +103,7 @@ function expand(list) {
       _ls('-R', root).filter(function (e) {
         return restRegex.test(e);
       }).forEach(function(file) {
-        expanded.push(file);
+        expanded.push(root + file);
       });
     }
     // Wildcard present on file names ?
