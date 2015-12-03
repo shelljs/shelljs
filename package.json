@@ -24,7 +24,10 @@
   "bin": {
     "shjs": "./bin/shjs"
   },
-  "dependencies": {},
+  "dependencies": {
+    "interpret": "^1.0.0",
+    "rechoir": "^0.6.2"
+  },
   "devDependencies": {
     "coffee-script": "^1.10.0",
     "jshint": "~2.1.11"
