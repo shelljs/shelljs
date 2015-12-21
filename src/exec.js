@@ -44,7 +44,7 @@ function execSync(cmd, opts) {
   if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
   if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
 
-  var execCommand = '"'+process.execPath+'" '+scriptFile;
+  var execCommand = '"'+process.execPath+'" "'+scriptFile+'"';
   var execOptions = {
     env: process.env,
     cwd: _pwd(),
