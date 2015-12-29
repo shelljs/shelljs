@@ -122,8 +122,10 @@ exports.tempdir = common.wrap('tempdir', _tempDir);
 
 
 //@include ./src/error
-var _error = require('./src/error');
+var _error = require('./src/error').error;
 exports.error = _error;
+var _errorCode = require('./src/error').errorCode;
+exports.errorCode = _errorCode;
 
 
 
