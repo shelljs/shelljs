@@ -1,13 +1,10 @@
 var shell = require('..');
 
 var assert = require('assert'),
-    fs = require('fs');
+    fs = require('fs'),
+    numLines = require('./utils/utils').numLines;
 
 shell.config.silent = true;
-
-function numLines(str) {
-  return typeof str === 'string' ? str.match(/\n/g).length : 0;
-}
 
 shell.rm('-rf', 'tmp');
 shell.mkdir('tmp');

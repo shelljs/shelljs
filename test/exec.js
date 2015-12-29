@@ -50,13 +50,15 @@ assert.ok(result.output === '1234\n' || result.output === '1234\nundefined\n'); 
 var result = shell.exec('node -e \"console.error(1234);\"');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.ok(result.output === '1234\n' || result.output === '1234\nundefined\n'); // 'undefined' for v0.4
+assert.ok(result.output === '' || result.output === 'undefined\n'); // 'undefined' for v0.4
+assert.ok(result.stderr === '1234\n' || result.stderr === '1234\nundefined\n'); // 'undefined' for v0.4
 
 // check if stdout + stderr go to output
 var result = shell.exec('node -e \"console.error(1234); console.log(666);\"');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.ok(result.output === '1234\n666\n' || result.output === '1234\n666\nundefined\n');  // 'undefined' for v0.4
+assert.ok(result.output === '666\n' || result.output === '666\nundefined\n');  // 'undefined' for v0.4
+assert.ok(result.stderr === '1234\n' || result.stderr === '1234\nundefined\n');  // 'undefined' for v0.4
 
 // check exit code
 var result = shell.exec('node -e \"process.exit(12);\"');

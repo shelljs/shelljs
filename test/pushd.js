@@ -183,7 +183,7 @@ assert.deepEqual(trail, [
 
 // Push invalid directory
 shell.pushd('does/not/exist');
-assert.equal(shell.error(), 'pushd: no such file or directory: ' + path.resolve('.', 'does/not/exist') + '\n');
+assert.equal(shell.error(), 'pushd: no such file or directory: ' + path.resolve('.', 'does/not/exist'));
 assert.equal(process.cwd(), trail[0]);
 
 // Push without arguments should swap top two directories when stack length is 2
@@ -219,6 +219,6 @@ assert.equal(process.cwd(), trail[0]);
 
 // Push without arguments invalid when stack is empty
 reset(); shell.pushd();
-assert.equal(shell.error(), 'pushd: no other directory\n');
+assert.equal(shell.error(), 'pushd: no other directory');
 
 shell.exit(123);

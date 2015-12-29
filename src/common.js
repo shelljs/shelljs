@@ -21,7 +21,7 @@ exports.platform = platform;
 
 function log() {
   if (!config.silent)
-    console.log.apply(this, arguments);
+    console.error.apply(this, arguments);
 }
 exports.log = log;
 
@@ -29,10 +29,14 @@ exports.log = log;
 function error(msg, _continue) {
   if (state.error === null)
     state.error = '';
-  state.error += state.currentCmd + ': ' + msg + '\n';
+  var log_entry = state.currentCmd + ': ' + msg;
+  if (state.error === '')
+    state.error = log_entry;
+  else
+    state.error += '\n' + log_entry;
 
   if (msg.length > 0)
-    log(state.error);
+    log(log_entry);
 
   if (config.fatal)
     process.exit(1);
