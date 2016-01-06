@@ -140,8 +140,12 @@ function _cp(options, sources, dest) {
     // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
     // (see Github issue #15)
     sources.forEach(function(src, i) {
-      if (src[src.length - 1] === '/')
+      if (src[src.length - 1] === '/') {
         sources[i] += '*';
+      // If src is a directory and dest doesn't exist, 'cp -r src dest' should copy src/* into dest
+      } else if (fs.statSync(src).isDirectory() && !exists) {
+        sources[i] += '/*';
+      }
     });
 
     // Create dest
