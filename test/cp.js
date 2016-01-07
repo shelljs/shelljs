@@ -136,6 +136,12 @@ shell.cp('-r', 'resources/issue44/*', 'tmp/dir2/dir3');
 assert.ok(shell.error());
 assert.equal(fs.existsSync('tmp/dir2'), false);
 
+//recursive, creates dest dir, implicitly copies contents of source dir
+shell.rm('-rf', 'tmp/*');
+shell.cp('-r', 'resources/cp/dir_a', 'tmp/dest');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/dest/z'), true);
+
 //preserve mode bits
 shell.rm('-rf', 'tmp/*');
 var execBit = parseInt('001', 8);
