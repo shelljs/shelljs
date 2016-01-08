@@ -14,7 +14,7 @@ var common = require('./common');
 //@ like `.to()`.
 function _echo() {
   var messages = [].slice.call(arguments, 0);
-  console.log.apply(this, messages);
+  console.log.apply(console, messages);
   return common.ShellString(messages.join(' '));
 }
 module.exports = _echo;

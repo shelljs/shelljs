@@ -21,7 +21,7 @@ exports.platform = platform;
 
 function log() {
   if (!config.silent)
-    console.error.apply(this, arguments);
+    console.error.apply(console, arguments);
 }
 exports.log = log;
 
@@ -103,7 +103,7 @@ function expand(list) {
       var rest = match[2];
       var restRegex = rest.replace(/\*\*/g, ".*").replace(/\*/g, "[^\\/]*");
       restRegex = new RegExp(restRegex);
-      
+
       _ls('-R', root).filter(function (e) {
         return restRegex.test(e);
       }).forEach(function(file) {
