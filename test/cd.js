@@ -27,6 +27,9 @@ assert.equal(fs.existsSync('resources/file1'), true); // sanity check
 shell.cd('resources/file1'); // file, not dir
 assert.ok(shell.error());
 
+shell.cd('-'); // Haven't changed yet, so there is no previous directory
+assert.ok(shell.error());
+
 //
 // Valids
 //
@@ -40,6 +43,12 @@ shell.cd(cur);
 shell.cd('/');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), path.resolve('/'));
+
+shell.cd(cur);
+shell.cd('/');
+shell.cd('-');
+assert.equal(shell.error(), null);
+assert.equal(process.cwd(), path.resolve(cur));
 
 // cd + other commands
 
