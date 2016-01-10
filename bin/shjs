@@ -12,10 +12,14 @@ var args,
 env['NODE_PATH'] = __dirname + '/../..';
 
 if (!scriptName.match(/\.js/) && !scriptName.match(/\.coffee/)) {
-  if (test('-f', scriptName + '.js'))
-    scriptName += '.js';
-  if (test('-f', scriptName + '.coffee'))
-    scriptName += '.coffee';
+  var prefix = scriptName;
+  if (prefix[prefix.length-1] === '.')
+    prefix = prefix.slice(0, -1);
+
+  if (test('-f', prefix + '.js'))
+    scriptName = prefix + '.js';
+  else if (test('-f', prefix + '.coffee'))
+    scriptName = prefix + '.coffee';
 }
 
 if (!test('-f', scriptName)) {
