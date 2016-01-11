@@ -5,6 +5,8 @@ var path = require('path');
 var fs = require('fs');
 var child = require('child_process');
 
+var DEFAULT_MAXBUFFER_SIZE = 20*1024*1024;
+
 // Hack to run child_process.exec() synchronously (sync avoids callback hell)
 // Uses a custom wait loop that checks for a flag file, created when the child process is done.
 // (Can't do a wait loop that checks for internal Node variables/messages as
@@ -20,6 +22,9 @@ function execSync(cmd, opts) {
   var options = common.extend({
     silent: common.config.silent
   }, opts);
+
+  var maxBuffer = parseInt(opts.maxBuffer, 10) || DEFAULT_MAXBUFFER_SIZE;
+  if (isNaN(maxBuffer)) maxBuffer = DEFAULT_MAXBUFFER_SIZE;
 
   var previousStdoutContent = '';
   // Echoes stdout changes from running process, if not silent
@@ -48,14 +53,15 @@ function execSync(cmd, opts) {
   var execOptions = {
     env: process.env,
     cwd: _pwd(),
-    maxBuffer: 20*1024*1024
+    maxBuffer: maxBuffer
   };
+  var script;
 
   if (typeof child.execSync === 'function') {
-    var script = [
+    script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: "+maxBuffer+"}, function(err) {",
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});",
       "var stdoutStream = fs.createWriteStream('"+escape(stdoutFile)+"');",
@@ -82,10 +88,10 @@ function execSync(cmd, opts) {
   } else {
     cmd += ' > '+stdoutFile+' 2>&1'; // works on both win/unix
 
-    var script = [
+    script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: "+maxBuffer+"}, function(err) {",
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});"
     ].join('\n');
@@ -137,7 +143,10 @@ function execAsync(cmd, opts, callback) {
     silent: common.config.silent
   }, opts);
 
-  var c = child.exec(cmd, {env: process.env, maxBuffer: 20*1024*1024}, function(err) {
+  var maxBuffer = parseInt(opts.maxBuffer, 10) || DEFAULT_MAXBUFFER_SIZE;
+  if (isNaN(maxBuffer)) maxBuffer = DEFAULT_MAXBUFFER_SIZE;
+
+  var c = child.exec(cmd, {env: process.env, maxBuffer: maxBuffer}, function(err) {
     if (callback)
       callback(err ? err.code : 0, output);
   });
@@ -163,6 +172,7 @@ function execAsync(cmd, opts, callback) {
 //@
 //@ + `async`: Asynchronous execution. Defaults to true if a callback is provided.
 //@ + `silent`: Do not echo program output to console.
+//@ + `maxBuffer`: Set maxBuffer size for the child process, in bytes. Default is `20*1024*1024` (20 MiB).
 //@
 //@ Examples:
 //@
@@ -177,6 +187,15 @@ function execAsync(cmd, opts, callback) {
 //@ exec('some_long_running_process', function(code, output) {
 //@   console.log('Exit code:', code);
 //@   console.log('Program output:', output);
+//@ });
+//@
+//@ var child = exec('cut -f1 some_huge_file.csv', {
+//@   async: true,
+//@   silent: true,
+//@   maxBuffer: 1024*1024*1024 // 1 GiB
+//@ });
+//@ child.stdout.on('data', function(data) {
+//@   /* ... do something with data ... */
 //@ });
 //@ ```
 //@

@@ -475,6 +475,7 @@ Available options (all `false` by default):
 
 + `async`: Asynchronous execution. Defaults to true if a callback is provided.
 + `silent`: Do not echo program output to console.
++ `maxBuffer`: Set maxBuffer size for the child process, in bytes. Default is `20*1024*1024` (20 MiB).
 
 Examples:
 
@@ -489,6 +490,15 @@ child.stdout.on('data', function(data) {
 exec('some_long_running_process', function(code, output) {
   console.log('Exit code:', code);
   console.log('Program output:', output);
+});
+
+var child = exec('cut -f1 some_huge_file.csv', {
+  async: true,
+  silent: true,
+  maxBuffer: 1024*1024*1024 // 1 GiB
+});
+child.stdout.on('data', function(data) {
+  /* ... do something with data ... */
 });
 ```
 
