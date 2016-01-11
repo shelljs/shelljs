@@ -21,6 +21,8 @@ function execSync(cmd, opts) {
     silent: common.config.silent
   }, opts);
 
+  var maxBuffer = opts.maxBuffer || 20*1024*1024;
+
   var previousStdoutContent = '';
   // Echoes stdout changes from running process, if not silent
   function updateStdout() {
@@ -48,7 +50,7 @@ function execSync(cmd, opts) {
   var execOptions = {
     env: process.env,
     cwd: _pwd(),
-    maxBuffer: 20*1024*1024
+    maxBuffer: maxBuffer
   };
 
   if (typeof child.execSync === 'function') {
