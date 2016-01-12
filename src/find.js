@@ -41,10 +41,15 @@ function _find(options, paths) {
 
     if (fs.statSync(file).isDirectory()) {
       _ls('-RA', file+'/*').forEach(function(subfile) {
-        pushFile(subfile);
+        pushFile(subfile.name);
       });
     }
   });
+
+  function inspect(depth) {
+    return this.join('\n')
+  }
+  Object.defineProperty(list, 'inspect', {value: inspect});
 
   return list;
 }

@@ -16,9 +16,6 @@ shell.mkdir('tmp');
 // Invalids
 //
 
-shell.cd();
-assert.ok(shell.error());
-
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
 shell.cd('/adsfasdf'); // dir does not exist
 assert.ok(shell.error());
@@ -30,6 +27,10 @@ assert.ok(shell.error());
 //
 // Valids
 //
+
+shell.cd();
+assert.equal(shell.error(), null);
+assert.equal(process.env.PWD, process.env.HOME);
 
 shell.cd(cur);
 shell.cd('tmp');

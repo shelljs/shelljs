@@ -31,7 +31,7 @@ function _grep(options, regex, files) {
 
   files = common.expand(files);
 
-  var grep = '';
+  var list = [];
   files.forEach(function(file) {
     if (!fs.existsSync(file)) {
       common.error('no such file or directory: ' + file, true);
@@ -43,10 +43,15 @@ function _grep(options, regex, files) {
     lines.forEach(function(line) {
       var matched = line.match(regex);
       if ((options.inverse && !matched) || (!options.inverse && matched))
-        grep += line + '\n';
+        list.push(line);
     });
   });
 
-  return common.ShellString(grep);
+  function inspect(depth) {
+    return this.join('\n')
+  }
+  Object.defineProperty(list, 'inspect', {value: inspect});
+
+  return list;
 }
 module.exports = _grep;

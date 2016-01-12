@@ -30,6 +30,7 @@ assert.equal(shell.error(), null);
 // no args
 shell.cd('resources/ls');
 var result = shell.ls();
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('file1') > -1, true);
 assert.equal(result.indexOf('file2') > -1, true);
@@ -42,6 +43,7 @@ shell.cd('../..');
 
 // simple arg
 var result = shell.ls('resources/ls');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('file1') > -1, true);
 assert.equal(result.indexOf('file2') > -1, true);
@@ -54,6 +56,7 @@ assert.equal(result.length, 6);
 // no args, 'all' option
 shell.cd('resources/ls');
 var result = shell.ls('-A');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('file1') > -1, true);
 assert.equal(result.indexOf('file2') > -1, true);
@@ -69,6 +72,7 @@ shell.cd('../..');
 // no args, 'all' option
 shell.cd('resources/ls');
 var result = shell.ls('-a'); // (deprecated) backwards compatibility test
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('file1') > -1, true);
 assert.equal(result.indexOf('file2') > -1, true);
@@ -83,6 +87,7 @@ shell.cd('../..');
 
 // wildcard, simple
 var result = shell.ls('resources/ls/*');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('resources/ls/file1') > -1, true);
 assert.equal(result.indexOf('resources/ls/file2') > -1, true);
@@ -94,6 +99,7 @@ assert.equal(result.length, 6);
 
 // wildcard, hidden only
 var result = shell.ls('resources/ls/.*');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('resources/ls/.hidden_file') > -1, true);
 assert.equal(result.indexOf('resources/ls/.hidden_dir') > -1, true);
@@ -101,6 +107,7 @@ assert.equal(result.length, 2);
 
 // wildcard, mid-file
 var result = shell.ls('resources/ls/f*le*');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.length, 5);
 assert.equal(result.indexOf('resources/ls/file1') > -1, true);
@@ -111,6 +118,7 @@ assert.equal(result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-es
 
 // wildcard, mid-file with dot (should escape dot for regex)
 var result = shell.ls('resources/ls/f*le*.js');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.length, 2);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -123,6 +131,7 @@ assert.equal(result.length, 0);
 
 // wildcard, all files with extension
 var result = shell.ls('resources/ls/*.*');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.length, 3);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -131,6 +140,7 @@ assert.equal(result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-es
 
 // wildcard, with additional path
 var result = shell.ls('resources/ls/f*le*.js', 'resources/ls/a_dir');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.length, 4);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -140,6 +150,7 @@ assert.equal(result.indexOf('nada') > -1, true); // no wildcard == no path prefi
 
 // wildcard for both paths
 var result = shell.ls('resources/ls/f*le*.js', 'resources/ls/a_dir/*');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.length, 4);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -149,6 +160,7 @@ assert.equal(result.indexOf('resources/ls/a_dir/nada') > -1, true);
 
 // wildcard for both paths, array
 var result = shell.ls(['resources/ls/f*le*.js', 'resources/ls/a_dir/*']);
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.length, 4);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -159,6 +171,7 @@ assert.equal(result.indexOf('resources/ls/a_dir/nada') > -1, true);
 // recursive, no path
 shell.cd('resources/ls');
 var result = shell.ls('-R');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
@@ -168,6 +181,7 @@ shell.cd('../..');
 
 // recusive, path given
 var result = shell.ls('-R', 'resources/ls');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
@@ -176,6 +190,7 @@ assert.equal(result.length, 9);
 
 // recusive, path given - 'all' flag
 var result = shell.ls('-RA', 'resources/ls');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
@@ -185,6 +200,7 @@ assert.equal(result.length, 14);
 
 // recursive, wildcard
 var result = shell.ls('-R', 'resources/ls/*');
+result = result.map(function(file){return file.name;});
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('resources/ls/a_dir') > -1, true);
 assert.equal(result.indexOf('resources/ls/a_dir/b_dir') > -1, true);

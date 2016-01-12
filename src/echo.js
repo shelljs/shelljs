@@ -14,7 +14,27 @@ var common = require('./common');
 //@ like `.to()`.
 function _echo() {
   var messages = [].slice.call(arguments, 0);
-  console.log.apply(this, messages);
-  return common.ShellString(messages.join(' '));
+
+  var opts = { newline: true, 'escape': false };
+  for (var i = 0; i < messages.length; i++) {
+      if (messages[i] === '-n') {
+          opts.newline = false;
+          args.splice(i--, 1);
+      }
+      else if (messages[i] === '-e') {
+          opts['escape'] = true;
+          messages.splice(i--, 1);
+      }
+      else if (messages[i] === '-E') {
+          opts['escape'] = false;
+          messages.splice(i--, 1);
+      }
+  }
+
+  var result = messages.join(' ');
+//  if (opts.newline) result += '\n';
+
+  console.log(result)
+  return common.ShellString(result);
 }
 module.exports = _echo;

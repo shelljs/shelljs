@@ -143,15 +143,19 @@ function execAsync(cmd, opts, callback) {
   });
 
   c.stdout.on('data', function(data) {
-    output += data;
+    if (callback)
+      output += data;
+
     if (!options.silent)
       process.stdout.write(data);
   });
 
   c.stderr.on('data', function(data) {
-    output += data;
+    if (callback)
+      output += data;
+
     if (!options.silent)
-      process.stdout.write(data);
+      process.stderr.write(data);
   });
 
   return c;
