@@ -1,6 +1,8 @@
 # ShellJS - Unix shell commands for Node.js
 [![Build Status](https://travis-ci.org/shelljs/shelljs.svg?branch=master)](http://travis-ci.org/shelljs/shelljs) [![Gitter](https://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-brightgreen.svg)](https://gitter.im/shelljs/shelljs)
 
+[![Join the chat at https://gitter.im/shelljs/shelljs](https://badges.gitter.im/shelljs/shelljs.svg)](https://gitter.im/shelljs/shelljs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ShellJS is a portable **(Windows/Linux/OS X)** implementation of Unix shell commands on top of the Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping its familiar and powerful commands. You can also install it globally so you can run it from outside Node projects - say goodbye to those gnarly Bash scripts!
 
 The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and battled-tested in projects like:
