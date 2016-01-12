@@ -107,6 +107,9 @@ exports.exec = common.wrap('exec', _exec, {notUnix:true});
 var _chmod = require('./src/chmod');
 exports.chmod = common.wrap('chmod', _chmod);
 
+//@include ./src/touch
+var _touch = require('./src/touch');
+exports.touch = common.wrap('touch', _touch);
 
 
 //@
