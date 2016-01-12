@@ -29,9 +29,11 @@ function _ln(options, source, dest) {
   }
 
   source = String(source);
+  var sourcePath = path.normalize(source).replace(RegExp(path.sep + '$'), '');
+  var isAbsolute = (path.resolve(source) === sourcePath);
   dest = path.resolve(process.cwd(), String(dest));
 
-  if (!fs.existsSync(source) && !path.isAbsolute(source) && !fs.existsSync(path.dirname(dest) + '/' + source)) {
+  if ((isAbsolute && !fs.existsSync(sourcePath)) || !fs.existsSync(path.resolve(process.cwd(), path.dirname(dest), source))) {
     common.error('Source file does not exist', true);
   }
 
