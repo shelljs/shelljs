@@ -5,6 +5,8 @@ var path = require('path');
 var fs = require('fs');
 var child = require('child_process');
 
+var DEFAULT_MAXBUFFER_SIZE = 20*1024*1024;
+
 // Hack to run child_process.exec() synchronously (sync avoids callback hell)
 // Uses a custom wait loop that checks for a flag file, created when the child process is done.
 // (Can't do a wait loop that checks for internal Node variables/messages as
@@ -21,7 +23,8 @@ function execSync(cmd, opts) {
     silent: common.config.silent
   }, opts);
 
-  var maxBuffer = opts.maxBuffer || 20*1024*1024;
+  var maxBuffer = parseInt(opts.maxBuffer, 10) || DEFAULT_MAXBUFFER_SIZE;
+  if (isNaN(maxBuffer)) maxBuffer = DEFAULT_MAXBUFFER_SIZE;
 
   var previousStdoutContent = '';
   // Echoes stdout changes from running process, if not silent
@@ -52,12 +55,13 @@ function execSync(cmd, opts) {
     cwd: _pwd(),
     maxBuffer: maxBuffer
   };
+  var script;
 
   if (typeof child.execSync === 'function') {
-    var script = [
+    script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: "+maxBuffer+"}, function(err) {",
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});",
       "var stdoutStream = fs.createWriteStream('"+escape(stdoutFile)+"');",
@@ -84,10 +88,10 @@ function execSync(cmd, opts) {
   } else {
     cmd += ' > '+stdoutFile+' 2>&1'; // works on both win/unix
 
-    var script = [
+    script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: "+maxBuffer+"}, function(err) {",
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});"
     ].join('\n');
@@ -139,7 +143,8 @@ function execAsync(cmd, opts, callback) {
     silent: common.config.silent
   }, opts);
 
-  var maxBuffer = opts.maxBuffer || 20*1024*1024;
+  var maxBuffer = parseInt(opts.maxBuffer, 10) || DEFAULT_MAXBUFFER_SIZE;
+  if (isNaN(maxBuffer)) maxBuffer = DEFAULT_MAXBUFFER_SIZE;
 
   var c = child.exec(cmd, {env: process.env, maxBuffer: maxBuffer}, function(err) {
     if (callback)
