@@ -1,6 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
+var cp = require('./cp');
+var rm = require('./rm');
 
 //@
 //@ ### mv(source [, source ...], dest')
@@ -74,7 +76,19 @@ function _mv(options, sources, dest) {
       return; // skip file
     }
 
-    fs.renameSync(src, thisDest);
+    // Wrapped because cross-device renames will throw
+    try {
+      fs.renameSync(src, thisDest);
+    } catch(e) {
+      if(e.code !== 'EXDEV') {
+        throw e;
+      }
+
+      // Can't rename across devices, but you can copy & then unlink!
+      // Copy is always recursive, since it's acting like move
+      cp((options.force ? "-rf" : "-r"), src, thisDest);
+      rm((options.force ? "-f" : ""), src);
+    }
   }); // forEach(src)
 } // mv
 module.exports = _mv;
