@@ -44,19 +44,10 @@ function _which(options, cmd) {
         return; // already found it
 
       var attempt = path.resolve(dir + '/' + cmd);
-      if (checkPath(attempt)) {
-        where = attempt;
-        return;
-      }
 
       if (common.platform === 'win') {
         var baseAttempt = attempt;
         attempt = baseAttempt + '.exe';
-        if (checkPath(attempt)) {
-          where = attempt;
-          return;
-        }
-        attempt = baseAttempt + '.cmd';
         if (checkPath(attempt)) {
           where = attempt;
           return;
@@ -66,7 +57,17 @@ function _which(options, cmd) {
           where = attempt;
           return;
         }
-      } // if 'win'
+        attempt = baseAttempt + '.cmd';
+        if (checkPath(attempt)) {
+          where = attempt;
+          return;
+        }
+      } else {
+        if (checkPath(attempt)) {
+          where = attempt;
+          return;
+        }
+      }
     });
   }
 
