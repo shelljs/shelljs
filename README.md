@@ -481,24 +481,24 @@ Available options (all `false` by default):
 Examples:
 
 ```javascript
-var version = exec('node --version', {silent:true}).output;
+var version = exec('node --version', {silent:true}).stdout;
 
 var child = exec('some_long_running_process', {async:true});
 child.stdout.on('data', function(data) {
   /* ... do something with data ... */
 });
 
-exec('some_long_running_process', function(code, output, stderr) {
+exec('some_long_running_process', function(code, stdout, stderr) {
   console.log('Exit code:', code);
-  console.log('Program output:', output);
+  console.log('Program output:', stdout);
   console.log('Program stderr:', stderr);
 });
 ```
 
 Executes the given `command` _synchronously_, unless otherwise specified.  When in synchronous
-mode returns the object `{ code:..., output:... , stderr:... }`, containing the program's
-`output` (stdout), `stderr`, and its exit `code`. Otherwise returns the child process object,
-and the `callback` gets the arguments `(code, output, stderr)`.
+mode returns the object `{ code:..., stdout:... , stderr:... }`, containing the program's
+`stdout`, `stderr`, and its exit `code`. Otherwise returns the child process object,
+and the `callback` gets the arguments `(code, stdout, stderr)`.
 
 **Note:** For long-lived processes, it's best to run `exec()` asynchronously as
 the current synchronous implementation uses a lot of CPU. This should be getting
