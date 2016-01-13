@@ -81,8 +81,11 @@ assert.equal(result.output, "'+'_'+'\n");
 // async
 //
 
-// no callback
-var c = shell.exec('node -e \"console.log(1234)\"', {async:true});
+// no callback, with custom echo
+var myecho = function(data) {
+  assert.ok(data === '1234\n' || data === '1234\nundefined\n');  // 'undefined' for v0.4
+};
+var c = shell.exec('node -e \"console.log(1234)\"', {async:true, echo: myecho});
 assert.equal(shell.error(), null);
 assert.ok('stdout' in c, 'async exec returns child process object');
 
