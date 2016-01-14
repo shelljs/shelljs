@@ -16,15 +16,24 @@ shell.which();
 assert.ok(shell.error());
 
 var result = shell.which('asdfasdfasdfasdfasdf'); // what are the odds...
-assert.equal(shell.error(), null);
-assert.equal(result, null);
+assert.ok(!shell.error());
+assert.ok(!result);
 
 //
 // Valids
 //
 
-var result = shell.which('node');
-assert.equal(shell.error(), null);
-assert.equal(fs.existsSync(result), true);
+var node = shell.which('node');
+assert.ok(!shell.error());
+assert.ok(fs.existsSync(node));
+
+if (process.platform === 'win32') {
+    // This should be equivalent on Windows
+    var nodeExe = shell.which('node.exe');
+    assert.ok(!shell.error());
+    // If the paths are equal, then this file *should* exist, since that's
+    // already been checked.
+    assert.equal(node, nodeExe);
+}
 
 shell.exit(123);
