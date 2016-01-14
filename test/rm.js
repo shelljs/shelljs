@@ -179,6 +179,7 @@ assert.equal(fs.existsSync('tmp/tree4'), false);
 
 // remove symbolic link to a dir
 shell.rm('-rf', 'tmp');
+shell.mkdir('tmp');
 shell.cp('-R', 'resources/rm', 'tmp');
 shell.rm('-f', 'tmp/rm/link_to_a_dir');
 assert.equal(shell.error(), null);
