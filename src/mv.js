@@ -7,7 +7,7 @@ var common = require('./common');
 //@ ### mv(source_array, dest')
 //@ Available options:
 //@
-//@ + `f`: force
+//@ + `-f`: force
 //@
 //@ Examples:
 //@
