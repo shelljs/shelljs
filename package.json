@@ -13,10 +13,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/arturadib/shelljs.git"
+    "url": "git://github.com/shelljs/shelljs.git"
   },
   "license": "BSD-3-Clause",
-  "homepage": "http://github.com/arturadib/shelljs",
+  "homepage": "http://github.com/shelljs/shelljs",
   "main": "./shell.js",
   "scripts": {
     "test": "node scripts/run-tests"
