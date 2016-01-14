@@ -475,7 +475,8 @@ Object containing environment variables (both getter and setter). Shortcut to pr
 ### exec(command [, options] [, callback])
 Available options (all `false` by default):
 
-+ `async`: Asynchronous execution. Defaults to true if a callback is provided.
++ `async`: Asynchronous execution. If a callback is provided, it will be set to
+  `true`, regardless of the passed value.
 + `silent`: Do not echo program output to console.
 
 Examples:
