@@ -3,7 +3,7 @@
 
 ShellJS is a portable **(Windows/Linux/OS X)** implementation of Unix shell commands on top of the Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping its familiar and powerful commands. You can also install it globally so you can run it from outside Node projects - say goodbye to those gnarly Bash scripts!
 
-The project is [unit-tested](http://travis-ci.org/arturadib/shelljs) and battled-tested in projects like:
+The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battled-tested in projects like:
 
 + [PDF.js](http://github.com/mozilla/pdf.js) - Firefox's next-gen PDF reader
 + [Firebug](http://getfirebug.com/) - Firefox's infamous debugger
@@ -239,7 +239,7 @@ Removes files. The wildcard `*` is accepted.
 ### mv(source_array, dest')
 Available options:
 
-+ `f`: force
++ `-f`: force
 
 Examples:
 
@@ -256,7 +256,7 @@ Moves files. The wildcard `*` is accepted.
 ### mkdir([options ,] dir_array)
 Available options:
 
-+ `p`: full path (will create intermediate dirs if necessary)
++ `-p`: full path (will create intermediate dirs if necessary)
 
 Examples:
 
@@ -453,8 +453,8 @@ See also: pushd, popd
 ### ln(source, dest)
 Available options:
 
-+ `s`: symlink
-+ `f`: force
++ `-s`: symlink
++ `-f`: force
 
 Examples:
 
@@ -536,11 +536,11 @@ Notable exceptions:
 ### touch([options ,] file)
 Available options:
 
-+ `'-a'`: Change only the access time
-+ `'-c'`: Do not create any files
-+ `'-m'`: Change only the modification time
-+ `'-d DATE'`: Parse DATE and use it instead of current time
-+ `'-r FILE'`: Use FILE's times instead of current time
++ `-a`: Change only the access time
++ `-c`: Do not create any files
++ `-m`: Change only the modification time
++ `-d DATE`: Parse DATE and use it instead of current time
++ `-r FILE`: Use FILE's times instead of current time
 
 Examples:
 

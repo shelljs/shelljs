@@ -8,8 +8,8 @@ var os = require('os');
 //@ ### ln(source, dest)
 //@ Available options:
 //@
-//@ + `s`: symlink
-//@ + `f`: force
+//@ + `-s`: symlink
+//@ + `-f`: force
 //@
 //@ Examples:
 //@

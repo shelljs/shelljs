@@ -5,11 +5,11 @@ var fs = require('fs');
 //@ ### touch([options ,] file)
 //@ Available options:
 //@
-//@ + `'-a'`: Change only the access time
-//@ + `'-c'`: Do not create any files
-//@ + `'-m'`: Change only the modification time
-//@ + `'-d DATE'`: Parse DATE and use it instead of current time
-//@ + `'-r FILE'`: Use FILE's times instead of current time
+//@ + `-a`: Change only the access time
+//@ + `-c`: Do not create any files
+//@ + `-m`: Change only the modification time
+//@ + `-d DATE`: Parse DATE and use it instead of current time
+//@ + `-r FILE`: Use FILE's times instead of current time
 //@
 //@ Examples:
 //@
