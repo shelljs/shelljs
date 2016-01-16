@@ -122,16 +122,22 @@ assert.equal(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); //
 
 //recursive, creates dest dir since it's only one level deep (see Github issue #44)
 shell.rm('-rf', 'tmp/*');
-shell.cp('-r', 'resources/issue44/*', 'tmp/dir2');
+shell.cp('-r', 'resources/issue44', 'tmp/dir2');
 assert.equal(shell.error(), null);
 assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '');
 assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'));
 
 //recursive, does *not* create dest dir since it's too deep (see Github issue #44)
 shell.rm('-rf', 'tmp/*');
-shell.cp('-r', 'resources/issue44/*', 'tmp/dir2/dir3');
+shell.cp('-r', 'resources/issue44', 'tmp/dir2/dir3');
 assert.ok(shell.error());
 assert.equal(fs.existsSync('tmp/dir2'), false);
+
+//recursive, creates dest dir, implicitly copies contents of source dir
+shell.rm('-rf', 'tmp/*');
+shell.cp('-r', 'resources/cp/dir_a', 'tmp/dest');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/dest/z'), true);
 
 //preserve mode bits
 shell.rm('-rf', 'tmp/*');
