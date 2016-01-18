@@ -478,6 +478,7 @@ Available options (all `false` by default):
 + `async`: Asynchronous execution. If a callback is provided, it will be set to
   `true`, regardless of the passed value.
 + `silent`: Do not echo program output to console.
++ `logCmd`: Prints the unix like command itself to the console. Similar to `set -o verbose` in shell scripts.
 
 Examples:
 
@@ -604,3 +605,14 @@ cp('this_file_does_not_exist', '/dev/null'); // dies here
 ```
 
 If `true` the script will die on errors. Default is `false`.
+
+### config.logCmd
+Example:
+
+```javascript
+config.logCmd = true;
+mkdir("-p","newfolder");  // prints "mkdir -p newfolder" instead of just doing it 'silently'.
+/* more commands... */
+```
+If `true` the script will print the command itself. Default is `false`.
+Will even print the command, if `config.silent` is set to `true`.
