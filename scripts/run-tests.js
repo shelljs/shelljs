@@ -18,7 +18,7 @@ if (!test('-f', JSHINT_BIN)) {
 
 var jsfiles = common.expand([pwd() + '/*.js',
                              pwd() + '/scripts/*.js',
-                             // pwd() + '/src/*.js',
+                             pwd() + '/src/*.js',
                              pwd() + '/test/*.js'
                             ]).join(' ');
 if (exec('node ' + pwd() + '/' + JSHINT_BIN + ' ' + jsfiles).code !== 0) {

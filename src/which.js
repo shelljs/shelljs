@@ -14,7 +14,7 @@ function splitPath(p) {
 }
 
 function checkPath(path) {
-  return fs.existsSync(path) && fs.statSync(path).isDirectory() == false;
+  return fs.existsSync(path) && !fs.statSync(path).isDirectory();
 }
 
 //@

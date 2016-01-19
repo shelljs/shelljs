@@ -64,8 +64,10 @@ function execSync(cmd, opts) {
     maxBuffer: 20*1024*1024
   };
 
+  var script;
+
   if (typeof child.execSync === 'function') {
-    var script = [
+    script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
       "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
@@ -97,7 +99,7 @@ function execSync(cmd, opts) {
   } else {
     cmd += ' > '+stdoutFile+' 2> '+stderrFile; // works on both win/unix
 
-    var script = [
+    script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
       "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
