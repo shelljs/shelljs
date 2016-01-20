@@ -2,7 +2,7 @@ var common = require('./common');
 var fs = require('fs');
 
 //@
-//@ ### touch([options ,] file)
+//@ ### touch([options,] file)
 //@ Available options:
 //@
 //@ + `-a`: Change only the access time

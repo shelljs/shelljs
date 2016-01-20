@@ -2,7 +2,7 @@ var common = require('./common');
 var fs = require('fs');
 
 //@
-//@ ### sed([options ,] search_regex, replacement, file)
+//@ ### sed([options,] search_regex, replacement, file)
 //@ Available options:
 //@
 //@ + `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_

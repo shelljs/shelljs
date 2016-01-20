@@ -162,8 +162,8 @@ Changes to directory `dir` for the duration of the script
 Returns the current directory.
 
 
-### ls([options ,] path [,path ...])
-### ls([options ,] path_array)
+### ls([options,] path [,path ...])
+### ls([options,] path_array)
 Available options:
 
 + `-R`: recursive
@@ -196,8 +196,8 @@ The main difference from `ls('-R', path)` is that the resulting file names
 include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
 
 
-### cp([options ,] source [,source ...], dest)
-### cp([options ,] source_array, dest)
+### cp([options,] source [,source ...], dest)
+### cp([options,] source_array, dest)
 Available options:
 
 + `-f`: force
@@ -214,8 +214,8 @@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 Copies files. The wildcard `*` is accepted.
 
 
-### rm([options ,] file [, file ...])
-### rm([options ,] file_array)
+### rm([options,] file [, file ...])
+### rm([options,] file_array)
 Available options:
 
 + `-f`: force
@@ -249,8 +249,8 @@ mv(['file1', 'file2'], 'dir/'); // same as above
 Moves files. The wildcard `*` is accepted.
 
 
-### mkdir([options ,] dir [, dir ...])
-### mkdir([options ,] dir_array)
+### mkdir([options,] dir [, dir ...])
+### mkdir([options,] dir_array)
 Available options:
 
 + `-p`: full path (will create intermediate dirs if necessary)
@@ -327,7 +327,7 @@ Analogous to the redirect-and-append operator `>>` in Unix, but works with JavaS
 those returned by `cat`, `grep`, etc).
 
 
-### sed([options ,] search_regex, replacement, file)
+### sed([options,] search_regex, replacement, file)
 Available options:
 
 + `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_
@@ -343,8 +343,8 @@ Reads an input string from `file` and performs a JavaScript `replace()` on the i
 using the given search regex and replacement string or function. Returns the new string after replacement.
 
 
-### grep([options ,] regex_filter, file [, file ...])
-### grep([options ,] regex_filter, file_array)
+### grep([options,] regex_filter, file [, file ...])
+### grep([options,] regex_filter, file_array)
 Available options:
 
 + `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
@@ -446,8 +446,7 @@ Display the list of currently remembered directories. Returns an array of paths 
 See also: pushd, popd
 
 
-### ln(options, source, dest)
-### ln(source, dest)
+### ln([options,] source, dest)
 Available options:
 
 + `-s`: symlink
@@ -530,7 +529,7 @@ Notable exceptions:
 + There is no "quiet" option since default behavior is to run silent.
 
 
-### touch([options ,] file)
+### touch([options,] file)
 Available options:
 
 + `-a`: Change only the access time

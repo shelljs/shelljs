@@ -89,8 +89,8 @@ function isWriteable(file) {
 }
 
 //@
-//@ ### rm([options ,] file [, file ...])
-//@ ### rm([options ,] file_array)
+//@ ### rm([options,] file [, file ...])
+//@ ### rm([options,] file_array)
 //@ Available options:
 //@
 //@ + `-f`: force

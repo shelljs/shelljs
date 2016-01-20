@@ -4,8 +4,7 @@ var common = require('./common');
 var os = require('os');
 
 //@
-//@ ### ln(options, source, dest)
-//@ ### ln(source, dest)
+//@ ### ln([options,] source, dest)
 //@ Available options:
 //@
 //@ + `-s`: symlink
