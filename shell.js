@@ -159,4 +159,5 @@ exports.config = common.config;
 //@ /* more commands... */
 //@ ```
 //@
-//@ If `true` the script will die on errors. Default is `false`.
+//@ If `true` the script will die on errors. Default is `false`. This is
+//@ analogous to Bash's `set -e`

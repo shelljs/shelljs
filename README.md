@@ -32,9 +32,6 @@ run ShellJS scripts much like any shell script from the command line, i.e. witho
 $ shjs my_script
 ```
 
-You can also just copy `shell.js` into your project's directory, and `require()` accordingly.
-
-
 ## Examples
 
 ### JavaScript
@@ -603,4 +600,5 @@ cp('this_file_does_not_exist', '/dev/null'); // dies here
 /* more commands... */
 ```
 
-If `true` the script will die on errors. Default is `false`.
+If `true` the script will die on errors. Default is `false`. This is
+analogous to Bash's `set -e`
