@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* globals cd, echo, grep, sed */
 require('../global');
 
 echo('Appending docs to README.md');
