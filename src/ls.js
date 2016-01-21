@@ -5,7 +5,7 @@ var _cd = require('./cd');
 var _pwd = require('./pwd');
 
 //@
-//@ ### ls([options,] path [,path ...])
+//@ ### ls([options,] path [, path ...])
 //@ ### ls([options,] path_array)
 //@ Available options:
 //@

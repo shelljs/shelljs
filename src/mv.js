@@ -3,8 +3,8 @@ var path = require('path');
 var common = require('./common');
 
 //@
-//@ ### mv(source [, source ...], dest')
-//@ ### mv(source_array, dest')
+//@ ### mv([options ,] source [, source ...], dest')
+//@ ### mv([options ,] source_array, dest')
 //@ Available options:
 //@
 //@ + `-f`: force

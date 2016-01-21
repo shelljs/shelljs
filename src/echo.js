@@ -1,7 +1,7 @@
 var common = require('./common');
 
 //@
-//@ ### echo(string [,string ...])
+//@ ### echo(string [, string ...])
 //@
 //@ Examples:
 //@

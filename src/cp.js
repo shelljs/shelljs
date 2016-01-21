@@ -88,7 +88,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 
 
 //@
-//@ ### cp([options,] source [,source ...], dest)
+//@ ### cp([options,] source [, source ...], dest)
 //@ ### cp([options,] source_array, dest)
 //@ Available options:
 //@

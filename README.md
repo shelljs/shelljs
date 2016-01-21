@@ -162,7 +162,7 @@ Changes to directory `dir` for the duration of the script
 Returns the current directory.
 
 
-### ls([options,] path [,path ...])
+### ls([options,] path [, path ...])
 ### ls([options,] path_array)
 Available options:
 
@@ -180,7 +180,7 @@ ls('-R', ['/users/me', '/tmp']); // same as above
 Returns array of files in the given path, or in current directory if no path provided.
 
 
-### find(path [,path ...])
+### find(path [, path ...])
 ### find(path_array)
 Examples:
 
@@ -196,7 +196,7 @@ The main difference from `ls('-R', path)` is that the resulting file names
 include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
 
 
-### cp([options,] source [,source ...], dest)
+### cp([options,] source [, source ...], dest)
 ### cp([options,] source_array, dest)
 Available options:
 
@@ -232,8 +232,8 @@ rm(['some_file.txt', 'another_file.txt']); // same as above
 Removes files. The wildcard `*` is accepted.
 
 
-### mv(source [, source ...], dest')
-### mv(source_array, dest')
+### mv([options ,] source [, source ...], dest')
+### mv([options ,] source_array, dest')
 Available options:
 
 + `-f`: force
@@ -372,7 +372,7 @@ Searches for `command` in the system's PATH. On Windows looks for `.exe`, `.cmd`
 Returns string containing the absolute path to the command.
 
 
-### echo(string [,string ...])
+### echo(string [, string ...])
 
 Examples:
 
