@@ -12,6 +12,7 @@ exports.config = config;
 var state = {
   error: null,
   currentCmd: 'shell.js',
+  previousDir: null,
   tempDir: null
 };
 exports.state = state;
@@ -185,7 +186,7 @@ function wrap(cmd, fn, options) {
       if (options && options.notUnix) {
         retValue = fn.apply(this, args);
       } else {
-        if (args.length === 0 || typeof args[0] !== 'string' || args[0][0] !== '-')
+        if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-')
           args.unshift(''); // only add dummy option if '-option' not already present
         retValue = fn.apply(this, args);
       }
