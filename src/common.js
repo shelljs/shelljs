@@ -54,6 +54,18 @@ function ShellString(str) {
 }
 exports.ShellString = ShellString;
 
+// Return the home directory in a platform-agnostic way, with consideration for
+// older versions of node
+function getUserHome() {
+  var result;
+  if (os.homedir)
+    result = os.homedir(); // node 3+
+  else
+    result = process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
+  return result;
+}
+exports.getUserHome = getUserHome;
+
 // Returns {'alice': true, 'bob': false} when passed a dictionary, e.g.:
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
 function parseOptions(str, map) {
@@ -188,6 +200,14 @@ function wrap(cmd, fn, options) {
       } else {
         if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-')
           args.unshift(''); // only add dummy option if '-option' not already present
+        // Expand the '~' if appropriate
+        var homeDir = getUserHome();
+        args = args.map(function(arg) {
+          if (typeof arg === 'string' && arg.slice(0, 2) === '~/' || arg === '~')
+            return arg.replace(/^~/, homeDir);
+          else
+            return arg;
+        });
         retValue = fn.apply(this, args);
       }
     } catch (e) {

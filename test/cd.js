@@ -2,7 +2,8 @@ var shell = require('..');
 
 var assert = require('assert'),
     path = require('path'),
-    fs = require('fs');
+    fs = require('fs'),
+    common = require('../src/common');
 
 shell.config.silent = true;
 
@@ -62,5 +63,13 @@ assert.equal(shell.error(), null);
 shell.cd('../tmp');
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('file1'), true);
+
+// Test tilde expansion
+
+shell.cd('~');
+assert.equal(process.cwd(), common.getUserHome());
+shell.cd('..');
+shell.cd('~'); // Change back to home
+assert.equal(process.cwd(), common.getUserHome());
 
 shell.exit(123);
