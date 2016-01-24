@@ -43,7 +43,7 @@ assert.equal(shell.error(), null);
 assert.equal(result, '1234');
 
 var replaceFun = function (match) {
-	return match.toUpperCase() + match;
+  return match.toUpperCase() + match;
 };
 var result = shell.sed(/test1/, replaceFun, 'tmp/file1'); // replacement function
 assert.equal(shell.error(), null);
@@ -53,5 +53,25 @@ var result = shell.sed('-i', /test1/, 'hello', 'tmp/file1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello');
 assert.equal(shell.cat('tmp/file1'), 'hello');
+
+// make sure * in regex is not globbed
+var result = shell.sed(/alpha*beta/, 'hello', 'resources/grep/file');
+assert.equal(shell.error(), null);
+assert.equal(result, 'hello\nhowareyou\nhello\nthis line ends in.js\nlllllllllllllllll.js\n');
+
+// make sure * in string-regex is not globbed
+var result = shell.sed('alpha*beta', 'hello', 'resources/grep/file');
+assert.ok(!shell.error());
+assert.equal(result, 'hello\nhowareyou\nhello\nthis line ends in.js\nlllllllllllllllll.js\n');
+
+// make sure * in regex is not globbed
+var result = shell.sed(/l*\.js/, '', 'resources/grep/file');
+assert.ok(!shell.error());
+assert.equal(result, 'alphaaaaaaabeta\nhowareyou\nalphbeta\nthis line ends in\n\n');
+
+// make sure * in string-regex is not globbed
+var result = shell.sed('l*\\.js', '', 'resources/grep/file');
+assert.ok(!shell.error());
+assert.equal(result, 'alphaaaaaaabeta\nhowareyou\nalphbeta\nthis line ends in\n\n');
 
 shell.exit(123);
