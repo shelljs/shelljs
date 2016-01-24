@@ -28,13 +28,20 @@ function _sed(options, regex, replacement, file) {
   else
     common.error('invalid replacement string');
 
+  // Convert all search strings to RegExp
+  if (typeof regex === 'string')
+    regex = RegExp(regex);
+
   if (!file)
     common.error('no file given');
 
   if (!fs.existsSync(file))
     common.error('no such file or directory: ' + file);
 
-  var result = fs.readFileSync(file, 'utf8').replace(regex, replacement);
+  var result = fs.readFileSync(file, 'utf8').split('\n').map(function (line) {
+    return line.replace(regex, replacement);
+  }).join('\n');
+
   if (options.inplace)
     fs.writeFileSync(file, result, 'utf8');
 

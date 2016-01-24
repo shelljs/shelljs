@@ -63,4 +63,24 @@ var result = shell.grep(/test/, '**/file*.js');
 assert.equal(shell.error(), null);
 assert.equal(result, 'test\ntest\ntest\ntest\n');
 
+// one file, * in regex
+var result = shell.grep(/alpha*beta/, 'resources/grep/file');
+assert.equal(shell.error(), null);
+assert.equal(result, 'alphaaaaaaabeta\nalphbeta\n');
+
+// one file, * in string-regex
+var result = shell.grep('alpha*beta', 'resources/grep/file');
+assert.equal(shell.error(), null);
+assert.equal(result, 'alphaaaaaaabeta\nalphbeta\n');
+
+// one file, * in regex, make sure * is not globbed
+var result = shell.grep(/l*\.js/, 'resources/grep/file');
+assert.equal(shell.error(), null);
+assert.equal(result, 'this line ends in.js\nlllllllllllllllll.js\n');
+
+// one file, * in string-regex, make sure * is not globbed
+var result = shell.grep('l*\\.js', 'resources/grep/file');
+assert.equal(shell.error(), null);
+assert.equal(result, 'this line ends in.js\nlllllllllllllllll.js\n');
+
 shell.exit(123);
