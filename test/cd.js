@@ -17,9 +17,6 @@ shell.mkdir('tmp');
 // Invalids
 //
 
-shell.cd();
-assert.ok(shell.error());
-
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
 shell.cd('/adsfasdf'); // dir does not exist
 assert.ok(shell.error());
@@ -70,6 +67,12 @@ shell.cd('~');
 assert.equal(process.cwd(), common.getUserHome());
 shell.cd('..');
 shell.cd('~'); // Change back to home
+assert.equal(process.cwd(), common.getUserHome());
+
+// Goes to home directory if no arguments are passed
+shell.cd(cur);
+shell.cd();
+assert.ok(!shell.error());
 assert.equal(process.cwd(), common.getUserHome());
 
 shell.exit(123);

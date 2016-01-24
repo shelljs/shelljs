@@ -2,11 +2,12 @@ var fs = require('fs');
 var common = require('./common');
 
 //@
-//@ ### cd('dir')
-//@ Changes to directory `dir` for the duration of the script
+//@ ### cd([dir])
+//@ Changes to directory `dir` for the duration of the script. Changes to home
+//@ directory if no argument is supplied.
 function _cd(options, dir) {
   if (!dir)
-    common.error('directory not specified');
+    dir = common.getUserHome();
 
   if (dir === '-') {
     if (!common.state.previousDir)

@@ -154,8 +154,9 @@ target.bundle = function(argsArray) {
 All commands run synchronously, unless otherwise stated.
 
 
-### cd('dir')
-Changes to directory `dir` for the duration of the script
+### cd([dir])
+Changes to directory `dir` for the duration of the script. Changes to home
+directory if no argument is supplied.
 
 
 ### pwd()
