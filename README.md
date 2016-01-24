@@ -162,7 +162,7 @@ Changes to directory `dir` for the duration of the script
 Returns the current directory.
 
 
-### ls([options,] path [, path ...])
+### ls([options,] [path, ...])
 ### ls([options,] path_array)
 Available options:
 
