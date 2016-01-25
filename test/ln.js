@@ -31,6 +31,15 @@ assert.ok(shell.error());
 shell.ln('tmp/noexist', 'tmp/linkfile1');
 assert.ok(shell.error());
 
+shell.ln('-sf', 'no/exist', 'tmp/badlink');
+assert.ok(shell.error());
+
+shell.ln('-sf', 'noexist', 'tmp/badlink');
+assert.ok(shell.error());
+
+shell.ln('-f', 'noexist', 'tmp/badlink');
+assert.ok(shell.error());
+
 //
 // Valids
 //
