@@ -26,6 +26,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "coffee-script": "^1.10.0",
     "jshint": "~2.1.11"
   },
   "optionalDependencies": {},
