@@ -1,5 +1,4 @@
 var shell = require('..');
-
 var assert = require('assert'),
     util = require('util');
 
@@ -119,5 +118,13 @@ shell.exec('node -e \"console.log(5678);\"', function(code, stdout, stderr) {
   });
 
 });
+
+// series exec
+shell.exec(['node -e \"console.log(1234);\"', 'node -e \"console.log(4321);\"'], function(code, output) {
+  assert.equal(shell.error(), null);
+  assert.equal(code, 0);
+  assert.ok(output === '1234\n4321\n' || output === '1234\nundefined\n4321\nundefined\n');  // 'undefined' for v0.4
+});
+
 
 assert.equal(shell.error(), null);

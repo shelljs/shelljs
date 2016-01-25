@@ -180,6 +180,21 @@ function execAsync(cmd, opts, callback) {
   return c;
 }
 
+// Wrapper for series execAsync() running
+function series (cmds, opts, callback) {
+  var out = '';
+
+  var next = function(output) {
+    execAsync(cmds.shift(), opts, function(code, output) {
+      if (code) return callback(code, null);
+      out += output;
+
+      return cmds.length ? next(out) : callback(code, out);
+    });
+  };
+  next();  
+}
+
 //@
 //@ ### exec(command [, options] [, callback])
 //@ Available options (all `false` by default):
@@ -232,6 +247,10 @@ function _exec(command, options, callback) {
     silent: common.config.silent,
     async: false
   }, options);
+
+  if (command instanceof Array && callback) {
+    return series(command, options, callback);
+  }
 
   if (options.async)
     return execAsync(command, options, callback);
