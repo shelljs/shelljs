@@ -25,7 +25,8 @@ function _ls(options, paths) {
   options = common.parseOptions(options, {
     'R': 'recursive',
     'A': 'all',
-    'a': 'all_deprecated'
+    'a': 'all_deprecated',
+    'd': 'directory'
   });
 
   if (options.all_deprecated) {
@@ -72,7 +73,10 @@ function _ls(options, paths) {
       }
 
       // Simple dir?
-      if (stats.isDirectory()) {
+      if (options.directory) {
+        pushFile(p, p);
+        return;
+      } else if (stats.isDirectory()) {
         // Iterate over p contents
         fs.readdirSync(p).forEach(function(file) {
           if (!pushFile(file, p))
