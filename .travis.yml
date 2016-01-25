@@ -21,3 +21,5 @@ os:
   - osx
 script:
   - npm test
+  - node scripts/generate-docs.js
+  - git diff --quiet # make sure no files have changed
