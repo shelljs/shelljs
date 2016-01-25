@@ -23,8 +23,11 @@ assert.ok(shell.error());
 // Valids
 //
 
-'hello world'.to('tmp/to1');
+'hello world'.to('tmp/to1').to('tmp/to2');
 var result = shell.cat('tmp/to1');
+assert.equal(shell.error(), null);
+assert.equal(result, 'hello world');
+result = shell.cat('tmp/to2');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello world');
 
