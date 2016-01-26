@@ -31,6 +31,15 @@ assert.ok(shell.error());
 shell.ln('tmp/noexist', 'tmp/linkfile1');
 assert.ok(shell.error());
 
+shell.ln('-sf', 'no/exist', 'tmp/badlink');
+assert.ok(shell.error());
+
+shell.ln('-sf', 'noexist', 'tmp/badlink');
+assert.ok(shell.error());
+
+shell.ln('-f', 'noexist', 'tmp/badlink');
+assert.ok(shell.error());
+
 //
 // Valids
 //
@@ -47,7 +56,7 @@ assert.equal(
   'new content 1'
 );
 
-shell.ln('-s', 'tmp/file2', 'tmp/linkfile2');
+shell.ln('-s', 'file2', 'tmp/linkfile2');
 assert(fs.existsSync('tmp/linkfile2'));
 assert.equal(
   fs.readFileSync('tmp/file2').toString(),
@@ -71,7 +80,7 @@ assert.equal(
   'new content js'
 );
 
-shell.ln('-sf', 'tmp/file1.txt', 'tmp/file2.txt');
+shell.ln('-sf', 'file1.txt', 'tmp/file2.txt');
 assert(fs.existsSync('tmp/file2.txt'));
 assert.equal(
   fs.readFileSync('tmp/file1.txt').toString(),
@@ -84,7 +93,7 @@ assert.equal(
 );
 
 // Abspath regression
-shell.ln('-sf', 'tmp/file1', path.resolve('tmp/abspath'));
+shell.ln('-sf', 'file1', path.resolve('tmp/abspath'));
 assert(fs.existsSync('tmp/abspath'));
 assert.equal(
   fs.readFileSync('tmp/file1').toString(),
@@ -94,6 +103,23 @@ fs.writeFileSync('tmp/file1', 'new content 3');
 assert.equal(
   fs.readFileSync('tmp/abspath').toString(),
   'new content 3'
+);
+
+// Relative regression
+shell.ln('-sf', 'file1.txt', 'tmp/file2.txt');
+shell.mkdir('-p', 'tmp/new');
+// Move the symlink first, as the reverse confuses `mv`.
+shell.mv('tmp/file2.txt', 'tmp/new/file2.txt');
+shell.mv('tmp/file1.txt', 'tmp/new/file1.txt');
+assert(fs.existsSync('tmp/new/file2.txt'));
+assert.equal(
+  fs.readFileSync('tmp/new/file1.txt').toString(),
+  fs.readFileSync('tmp/new/file2.txt').toString()
+);
+fs.writeFileSync('tmp/new/file1.txt', 'new content txt');
+assert.equal(
+  fs.readFileSync('tmp/new/file2.txt').toString(),
+  'new content txt'
 );
 
 shell.exit(123);

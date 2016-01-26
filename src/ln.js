@@ -28,12 +28,10 @@ function _ln(options, source, dest) {
     common.error('Missing <source> and/or <dest>');
   }
 
-  source = path.resolve(process.cwd(), String(source));
+  source = String(source);
+  var sourcePath = path.normalize(source).replace(RegExp(path.sep + '$'), '');
+  var isAbsolute = (path.resolve(source) === sourcePath);
   dest = path.resolve(process.cwd(), String(dest));
-
-  if (!fs.existsSync(source)) {
-    common.error('Source file does not exist', true);
-  }
 
   if (fs.existsSync(dest)) {
     if (!options.force) {
@@ -44,8 +42,14 @@ function _ln(options, source, dest) {
   }
 
   if (options.symlink) {
+    if ((isAbsolute && !fs.existsSync(sourcePath)) || !fs.existsSync(path.resolve(process.cwd(), path.dirname(dest), source))) {
+      common.error('Source file does not exist', true);
+    }
     fs.symlinkSync(source, dest, os.platform() === "win32" ? "junction" : null);
   } else {
+    if (!fs.existsSync(source)) {
+      common.error('Source file does not exist', true);
+    }
     fs.linkSync(source, dest, os.platform() === "win32" ? "junction" : null);
   }
 }
