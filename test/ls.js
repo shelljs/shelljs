@@ -191,4 +191,33 @@ assert.equal(result.indexOf('resources/ls/a_dir/b_dir') > -1, true);
 assert.equal(result.indexOf('resources/ls/a_dir/b_dir/z') > -1, true);
 assert.equal(result.length, 9);
 
+// directory option, single arg
+var result = shell.ls('-d', 'resources/ls');
+assert.equal(shell.error(), null);
+assert.equal(result.length, 1);
+
+// directory option, single arg with trailing '/'
+var result = shell.ls('-d', 'resources/ls/');
+assert.equal(shell.error(), null);
+assert.equal(result.length, 1);
+
+// directory option, multiple args
+var result = shell.ls('-d', 'resources/ls/a_dir', 'resources/ls/file1');
+assert.equal(shell.error(), null);
+assert.ok(result.indexOf('resources/ls/a_dir') > -1);
+assert.ok(result.indexOf('resources/ls/file1') > -1);
+assert.equal(result.length, 2);
+
+// directory option, globbed arg
+var result = shell.ls('-d', 'resources/ls/*');
+assert.equal(shell.error(), null);
+assert.ok(result.indexOf('resources/ls/a_dir') > -1);
+assert.ok(result.indexOf('resources/ls/file1') > -1);
+assert.ok(result.indexOf('resources/ls/file1.js') > -1);
+assert.ok(result.indexOf('resources/ls/file2') > -1);
+assert.ok(result.indexOf('resources/ls/file2.js') > -1);
+assert.ok(result.indexOf('resources/ls/file2') > -1);
+assert.ok(result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1);
+assert.equal(result.length, 6);
+
 shell.exit(123);
