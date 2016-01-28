@@ -3,7 +3,9 @@ var path = require('path');
 var assert = require('assert');
 
 function runScript(name) {
-  return shell.exec(path.resolve(__dirname, '../bin/shjs') +
+  // prefix with 'node ' for Windows, don't prefix for OSX/Linux
+  return shell.exec((process.platform === 'win32' ? 'node ' : '') +
+                    path.resolve(__dirname, '../bin/shjs') +
                     ' ' +
                     path.resolve(__dirname, 'resources', 'shjs', name), { silent: true });
 }
