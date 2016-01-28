@@ -1,4 +1,5 @@
 var shell = require('..');
+var common = require('../src/common');
 
 var assert = require('assert'),
     fs = require('fs'),
@@ -139,11 +140,14 @@ shell.cp('-r', 'resources/cp/dir_a', 'tmp/dest');
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/dest/z'), true);
 
-//preserve mode bits
-shell.rm('-rf', 'tmp/*');
-var execBit = parseInt('001', 8);
-assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
-shell.cp('resources/cp-mode-bits/executable', 'tmp/executable');
-assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode, fs.statSync('tmp/executable').mode);
+// On Windows, permission bits are quite different so skip those tests for now
+if (common.platform !== 'win') {
+    //preserve mode bits
+    shell.rm('-rf', 'tmp/*');
+    var execBit = parseInt('001', 8);
+    assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
+    shell.cp('resources/cp-mode-bits/executable', 'tmp/executable');
+    assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode, fs.statSync('tmp/executable').mode);
+}
 
 shell.exit(123);

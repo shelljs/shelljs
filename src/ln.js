@@ -50,7 +50,7 @@ function _ln(options, source, dest) {
     if (!fs.existsSync(source)) {
       common.error('Source file does not exist', true);
     }
-    fs.linkSync(source, dest, os.platform() === "win32" ? "junction" : null);
+    fs.linkSync(source, dest);
   }
 }
 module.exports = _ln;

@@ -1,4 +1,5 @@
 var shell = require('..');
+var common = require('../src/common');
 
 var assert = require('assert'),
     fs = require('fs'),
@@ -43,6 +44,13 @@ assert.ok(shell.error());
 //
 // Valids
 //
+
+// On Windows, symlinks for files need admin permissions.
+// It is also broken now since current implementation simply uses `'junction'` type which is only
+// valid for directories.
+// TODO: Fix this for Windows and also add symlink tests for directories
+if (common.platform === 'win')
+    shell.exit(123);
 
 shell.ln('tmp/file1', 'tmp/linkfile1');
 assert(fs.existsSync('tmp/linkfile1'));
