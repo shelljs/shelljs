@@ -21,8 +21,15 @@ assert.ok(shell.error());
 shell.sed(/asdf/g, 'nada'); // too few args
 assert.ok(shell.error());
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-shell.sed(/asdf/g, 'nada', '/asdfasdf'); // no such file
+assert.equal(fs.existsSync('asdfasdf'), false); // sanity check
+shell.sed(/asdf/g, 'nada', 'asdfasdf'); // no such file
+assert.ok(shell.error());
+
+// if at least one file is missing, this should be an error
+shell.cp('-f', 'resources/file1', 'tmp/file1');
+assert.equal(fs.existsSync('asdfasdf'), false); // sanity check
+assert.equal(fs.existsSync('tmp/file1'), true); // sanity check
+shell.sed(/asdf/g, 'nada', 'tmp/file1', 'asdfasdf');
 assert.ok(shell.error());
 
 //
@@ -73,5 +80,25 @@ assert.equal(result, 'alphaaaaaaabeta\nhowareyou\nalphbeta\nthis line ends in\n\
 var result = shell.sed('l*\\.js', '', 'resources/grep/file');
 assert.ok(!shell.error());
 assert.equal(result, 'alphaaaaaaabeta\nhowareyou\nalphbeta\nthis line ends in\n\n');
+
+shell.cp('-f', 'resources/file1', 'tmp/file1');
+shell.cp('-f', 'resources/file2', 'tmp/file2');
+
+// multiple file names
+var result = shell.sed('test', 'hello', 'tmp/file1', 'tmp/file2');
+assert.equal(shell.error(), null);
+assert.equal(result, 'hello1\nhello2');
+
+// array of file names (and try it out with a simple regex)
+var result = shell.sed(/t.*st/, 'hello', ['tmp/file1', 'tmp/file2']);
+assert.equal(shell.error(), null);
+assert.equal(result, 'hello1\nhello2');
+
+// multiple file names, with in-place-replacement
+var result = shell.sed('-i', 'test', 'hello', ['tmp/file1', 'tmp/file2']);
+assert.equal(shell.error(), null);
+assert.equal(result, 'hello1\nhello2');
+assert.equal(shell.cat('tmp/file1'), 'hello1');
+assert.equal(shell.cat('tmp/file2'), 'hello2');
 
 shell.exit(123);
