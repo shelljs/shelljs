@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
-var os = require('os');
 
 //@
 //@ ### ln([options,] source, dest)
@@ -42,15 +41,29 @@ function _ln(options, source, dest) {
   }
 
   if (options.symlink) {
-    if ((isAbsolute && !fs.existsSync(sourcePath)) || !fs.existsSync(path.resolve(process.cwd(), path.dirname(dest), source))) {
+    var isWindows = common.platform === 'win';
+    var linkType = isWindows ? 'file' : null;
+    var resolvedSourcePath = isAbsolute ? sourcePath : path.resolve(process.cwd(), path.dirname(dest), source);
+    if (!fs.existsSync(resolvedSourcePath)) {
       common.error('Source file does not exist', true);
+    } else if (isWindows && fs.statSync(resolvedSourcePath).isDirectory()) {
+      linkType =  'junction';
     }
-    fs.symlinkSync(source, dest, os.platform() === "win32" ? "junction" : null);
+
+    try {
+      fs.symlinkSync(linkType === 'junction' ? resolvedSourcePath: source, dest, linkType);
+    } catch (err) {
+      common.error(err.message);
+    }
   } else {
     if (!fs.existsSync(source)) {
       common.error('Source file does not exist', true);
     }
-    fs.linkSync(source, dest);
+    try {
+      fs.linkSync(source, dest);
+    } catch (err) {
+      common.error(err.message);
+    }
   }
 }
 module.exports = _ln;
