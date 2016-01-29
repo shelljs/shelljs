@@ -1,0 +1,6 @@
+{
+  "extends": "airbnb/legacy",
+  "rules": {
+    "vars-on-top": 0
+  }
+}
