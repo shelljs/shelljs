@@ -15,7 +15,7 @@ if (dashesLoc > -1) {
 
 // This ensures we only execute the script targets after the entire script has
 // been evaluated
-setTimeout(function() {
+setTimeout(function () {
   var t;
 
   if (args.length === 1 && args[0] === '--help') {
@@ -27,11 +27,11 @@ setTimeout(function() {
 
   // Wrap targets to prevent duplicate execution
   for (t in global.target) {
-    (function(t, oldTarget){
+    (function (t, oldTarget) {
 
       // Wrap it
-      global.target[t] = function() {
-        if (!oldTarget.done){
+      global.target[t] = function () {
+        if (!oldTarget.done) {
           oldTarget.done = true;
           oldTarget.result = oldTarget.apply(oldTarget, arguments);
         }
@@ -43,7 +43,7 @@ setTimeout(function() {
 
   // Execute desired targets
   if (args.length > 0) {
-    args.forEach(function(arg) {
+    args.forEach(function (arg) {
       if (arg in global.target)
         global.target[arg](targetArgs);
       else {

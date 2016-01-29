@@ -42,7 +42,7 @@ function _mv(options, sources, dest) {
   sources = common.expand(sources);
 
   var exists = fs.existsSync(dest),
-      stats = exists && fs.statSync(dest);
+    stats = exists && fs.statSync(dest);
 
   // Dest is not existing dir, but multiple sources given
   if ((!exists || !stats.isDirectory()) && sources.length > 1)
@@ -52,9 +52,9 @@ function _mv(options, sources, dest) {
   if (exists && stats.isFile() && options.no_force)
     common.error('dest file already exists: ' + dest);
 
-  sources.forEach(function(src) {
+  sources.forEach(function (src) {
     if (!fs.existsSync(src)) {
-      common.error('no such file or directory: '+src, true);
+      common.error('no such file or directory: ' + src, true);
       return; // skip file
     }
 
@@ -72,7 +72,7 @@ function _mv(options, sources, dest) {
     }
 
     if (path.resolve(src) === path.dirname(path.resolve(thisDest))) {
-      common.error('cannot move to self: '+src, true);
+      common.error('cannot move to self: ' + src, true);
       return; // skip file
     }
 

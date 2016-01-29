@@ -1,7 +1,7 @@
 var shell = require('..');
 
 var assert = require('assert'),
-    fs = require('fs');
+  fs = require('fs');
 
 shell.config.silent = true;
 

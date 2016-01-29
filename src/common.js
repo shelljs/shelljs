@@ -95,15 +95,15 @@ function parseOptions(str, map) {
   var chars = match[1].split('');
 
   var opt;
-  chars.forEach(function(c) {
+  chars.forEach(function (c) {
     if (c in map) {
       opt = map[c];
       if (opt.match('^!'))
-        options[opt.slice(1, opt.length-1)] = false;
+        options[opt.slice(1, opt.length - 1)] = false;
       else
         options[opt] = true;
     } else {
-      error('option not recognized: '+c);
+      error('option not recognized: ' + c);
     }
   });
 
@@ -117,24 +117,24 @@ exports.parseOptions = parseOptions;
 //   (if the files 'file1.js', 'file2.js', etc, exist in the current dir)
 function expand(list) {
   var expanded = [];
-  list.forEach(function(listEl) {
+  list.forEach(function (listEl) {
     // Wildcard present on directory names ?
-    if(listEl.search(/\*[^\/]*\//) > -1 || listEl.search(/\*\*[^\/]*\//) > -1) {
+    if (listEl.search(/\*[^\/]*\//) > -1 || listEl.search(/\*\*[^\/]*\//) > -1) {
       var match = listEl.match(/^([^*]+\/|)(.*)/);
       var root = match[1];
       var rest = match[2];
-      var restRegex = rest.replace(/\*\*/g, ".*").replace(/\*/g, "[^\\/]*");
+      var restRegex = rest.replace(/\*\*/g, '.*').replace(/\*/g, '[^\\/]*');
       restRegex = new RegExp(restRegex);
 
       _ls('-R', root).filter(function (e) {
         return restRegex.test(e);
-      }).forEach(function(file) {
+      }).forEach(function (file) {
         expanded.push(file);
       });
     }
     // Wildcard present on file names ?
     else if (listEl.search(/\*/) > -1) {
-      _ls('', listEl).forEach(function(file) {
+      _ls('', listEl).forEach(function (file) {
         expanded.push(file);
       });
     } else {
@@ -150,7 +150,7 @@ exports.expand = expand;
 function unlinkSync(file) {
   try {
     fs.unlinkSync(file);
-  } catch(e) {
+  } catch (e) {
     // Try to override file permission
     if (e.code === 'EPERM') {
       fs.chmodSync(file, '0666');
@@ -166,16 +166,16 @@ exports.unlinkSync = unlinkSync;
 function randomFileName() {
   function randomHash(count) {
     if (count === 1)
-      return parseInt(16*Math.random(), 10).toString(16);
+      return parseInt(16 * Math.random(), 10).toString(16);
     else {
       var hash = '';
-      for (var i=0; i<count; i++)
+      for (var i = 0; i < count; i++)
         hash += randomHash(1);
       return hash;
     }
   }
 
-  return 'shelljs_'+randomHash(20);
+  return 'shelljs_' + randomHash(20);
 }
 exports.randomFileName = randomFileName;
 
@@ -184,7 +184,7 @@ exports.randomFileName = randomFileName;
 //    extend({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
 function extend(target) {
   var sources = [].slice.call(arguments, 1);
-  sources.forEach(function(source) {
+  sources.forEach(function (source) {
     for (var key in source)
       target[key] = source[key];
   });
@@ -195,7 +195,7 @@ exports.extend = extend;
 
 // Common wrapper for all Unix-like commands
 function wrap(cmd, fn, options) {
-  return function() {
+  return function () {
     var retValue = null;
 
     state.currentCmd = cmd;
@@ -217,7 +217,7 @@ function wrap(cmd, fn, options) {
           args.unshift(''); // only add dummy option if '-option' not already present
         // Expand the '~' if appropriate
         var homeDir = getUserHome();
-        args = args.map(function(arg) {
+        args = args.map(function (arg) {
           if (typeof arg === 'string' && arg.slice(0, 2) === '~/' || arg === '~')
             return arg.replace(/^~/, homeDir);
           else

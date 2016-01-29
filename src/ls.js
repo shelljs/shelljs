@@ -76,7 +76,7 @@ function _ls(options, paths) {
     return true;
   }
 
-  paths.forEach(function(p) {
+  paths.forEach(function (p) {
     if (fs.existsSync(p)) {
       var stats = ls_stat(p);
       // Simple file?
@@ -95,7 +95,7 @@ function _ls(options, paths) {
         return;
       } else if (stats.isDirectory()) {
         // Iterate over p contents
-        fs.readdirSync(p).forEach(function(file) {
+        fs.readdirSync(p).forEach(function (file) {
           var orig_file = file;
           if (options.long)
             file = ls_stat(path.join(p, file));
@@ -107,7 +107,7 @@ function _ls(options, paths) {
             var oldDir = _pwd();
             _cd('', p);
             if (fs.statSync(orig_file).isDirectory())
-              list = list.concat(_ls('-R'+(options.all?'A':''), orig_file+'/*'));
+              list = list.concat(_ls('-R' + (options.all ? 'A' : ''), orig_file + '/*'));
             _cd('', oldDir);
           }
         });
@@ -126,9 +126,9 @@ function _ls(options, paths) {
       // Translates wildcard into regex
       regexp = '^' + regexp.replace(/\*/g, '.*') + '$';
       // Iterate over directory contents
-      fs.readdirSync(dirname).forEach(function(file) {
+      fs.readdirSync(dirname).forEach(function (file) {
         if (file.match(new RegExp(regexp))) {
-          var file_path = path.join(dirname,  file);
+          var file_path = path.join(dirname, file);
           file_path = options.long ? ls_stat(file_path) : file_path;
           if (file_path.name)
             file_path.name = path.normalize(file_path.name);
@@ -141,7 +141,7 @@ function _ls(options, paths) {
           if (options.recursive) {
             var pp = dirname + '/' + file;
             if (fs.lstatSync(pp).isDirectory())
-              list = list.concat(_ls('-R'+(options.all?'A':''), pp+'/*'));
+              list = list.concat(_ls('-R' + (options.all ? 'A' : ''), pp + '/*'));
           } // recursive
         } // if file matches
       }); // forEach
@@ -160,7 +160,7 @@ function ls_stat(path) {
   var stats = fs.statSync(path);
   // Note: this object will contain more information than .toString() returns
   stats.name = path;
-  stats.toString = function() {
+  stats.toString = function () {
     // Return a string resembling unix's `ls -l` format
     return [this.mode, this.nlink, this.uid, this.gid, this.size, this.mtime, this.name].join(' ');
   };

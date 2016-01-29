@@ -33,7 +33,7 @@ assert.ok(!fs.existsSync(testFile));
 // errors if reference file is not found
 var testFile = tmpFile();
 var refFile = tmpFile(true);
-shell.touch({'-r': refFile}, testFile);
+shell.touch({ '-r': refFile }, testFile);
 assert.ok(shell.error());
 
 // uses a reference file for mtime
@@ -41,7 +41,7 @@ var testFile = tmpFile(false);
 var testFile2 = tmpFile();
 var testFile2Stat = resetUtimes(testFile2);
 
-shell.touch({'-r': testFile2}, testFile);
+shell.touch({ '-r': testFile2 }, testFile);
 var testFileStat = resetUtimes(testFile);
 assert.strictEqual(testFileStat.mtime.getTime(), testFile2Stat.mtime.getTime());
 

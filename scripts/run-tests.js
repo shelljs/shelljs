@@ -37,7 +37,7 @@ if (spawn(ESLINT_BIN, ['.'], { stdio: [0, 1, 2] }) !== 0) {
 // Unit tests
 //
 cd(__dirname + '/../test');
-ls('*.js').forEach(function(file) {
+ls('*.js').forEach(function (file) {
   echo('Running test:', file);
   if (exec('node ' + file).code !== 123) { // 123 avoids false positives (e.g. premature exit)
     failed = true;

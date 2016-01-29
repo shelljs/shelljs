@@ -19,7 +19,7 @@ assert.throws(function () {
 
 // should be a list
 assert.throws(function () {
-  common.expand("resources");
+  common.expand('resources');
 }, TypeError);
 
 //
@@ -44,7 +44,7 @@ assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].s
 // multiple file, glob syntax, ** for directory name
 var result = common.expand(['**/file*.js']);
 assert.equal(shell.error(), null);
-assert.deepEqual(result.sort(), ["resources/file1.js","resources/file2.js","resources/ls/file1.js","resources/ls/file2.js"].sort());
+assert.deepEqual(result.sort(), ['resources/file1.js', 'resources/file2.js', 'resources/ls/file1.js', 'resources/ls/file2.js'].sort());
 
 // common.parseOptions (normal case)
 var result = common.parseOptions('-Rf', {

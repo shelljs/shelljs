@@ -2,8 +2,8 @@ var shell = require('..');
 var common = require('../src/common');
 
 var assert = require('assert'),
-    fs = require('fs'),
-    numLines = require('./utils/utils').numLines;
+  fs = require('fs'),
+  numLines = require('./utils/utils').numLines;
 
 shell.config.silent = true;
 
@@ -143,11 +143,11 @@ assert.equal(fs.existsSync('tmp/dest/z'), true);
 // On Windows, permission bits are quite different so skip those tests for now
 if (common.platform !== 'win') {
     //preserve mode bits
-    shell.rm('-rf', 'tmp/*');
-    var execBit = parseInt('001', 8);
-    assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
-    shell.cp('resources/cp-mode-bits/executable', 'tmp/executable');
-    assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode, fs.statSync('tmp/executable').mode);
+  shell.rm('-rf', 'tmp/*');
+  var execBit = parseInt('001', 8);
+  assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
+  shell.cp('resources/cp-mode-bits/executable', 'tmp/executable');
+  assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode, fs.statSync('tmp/executable').mode);
 }
 
 shell.exit(123);

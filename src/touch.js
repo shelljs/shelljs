@@ -37,7 +37,7 @@ function _touch(opts, files) {
 
 
   if (Array.isArray(files)) {
-    files.forEach(function(f) {
+    files.forEach(function (f) {
       touchFile(opts, f);
     });
   } else if (typeof files === 'string') {
