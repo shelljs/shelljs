@@ -1,7 +1,8 @@
 var shell = require('..');
+var assert = require('assert');
+var fs = require('fs');
 
-var assert = require('assert'),
-    fs = require('fs');
+var result;
 
 shell.config.silent = true;
 
@@ -11,11 +12,10 @@ shell.mkdir('tmp');
 //
 // Invalids
 //
-
 shell.which();
 assert.ok(shell.error());
 
-var result = shell.which('asdfasdfasdfasdfasdf'); // what are the odds...
+result = shell.which('asdfasdfasdfasdfasdf'); // what are the odds...
 assert.ok(!shell.error());
 assert.ok(!result);
 
