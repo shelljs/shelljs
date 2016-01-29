@@ -1,2 +1,19 @@
-node_modules/
-tmp/
+# Project
+npm-debug.log*
+node_modules
+tmp
+
+# Linux
+*~
+
+# JetBrains
+.idea
+
+# Vim
+## swap
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+
+# OS X
+.DS_Store
+
