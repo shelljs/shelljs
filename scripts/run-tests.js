@@ -2,31 +2,28 @@
 /* globals cd, echo, exec, exit, ls, pwd, test */
 require('../global');
 var common = require('../src/common');
+var spawn = require('child_process').spawnSync;
 
 var failed = false;
 
 //
 // Lint
 //
-var JSHINT_BIN = 'node_modules/jshint/bin/jshint';
+var ESLINT_BIN = 'node_modules/.bin/eslint';
 cd(__dirname + '/..');
 
-if (!test('-f', JSHINT_BIN)) {
-  echo('JSHint not found. Run `npm install` in the root dir first.');
+if (!test('-f', ESLINT_BIN)) {
+  echo('ESLint not found. Run `npm install` in the root dir first.');
   exit(1);
 }
 
-var jsfiles = common.expand([pwd() + '/*.js',
-                             pwd() + '/scripts/*.js',
-                             pwd() + '/src/*.js',
-                             pwd() + '/test/*.js'
-                            ]).join(' ');
-if (exec('node ' + pwd() + '/' + JSHINT_BIN + ' ' + jsfiles).code !== 0) {
+// We use child_process.spawnSync so we can have colored output
+if (spawn(ESLINT_BIN, ['.'], { stdio: [0, 1, 2] }).status !== 0) {
   failed = true;
-  echo('*** JSHINT FAILED! (return code != 0)');
+  echo('*** ESLint FAILED! (return code != 0)');
   echo();
 } else {
-  echo('All JSHint tests passed');
+  echo('ESLint Passed!');
   echo();
 }
 
