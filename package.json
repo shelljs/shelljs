@@ -27,7 +27,8 @@
   "dependencies": {},
   "devDependencies": {
     "coffee-script": "^1.10.0",
-    "jshint": "~2.1.11"
+    "eslint": "^1.10.3",
+    "eslint-config-airbnb": "^4.0.0"
   },
   "optionalDependencies": {},
   "engines": {
