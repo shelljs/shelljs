@@ -218,6 +218,12 @@ assert.ok(result.indexOf('resources/ls/file2') > -1);
 assert.ok(result.indexOf('resources/ls/file2.js') > -1);
 assert.ok(result.indexOf('resources/ls/file2') > -1);
 assert.ok(result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1);
+
+// globs without -A
+var result = shell.ls('resources/ls/*');
+assert.equal(shell.error(), null);
+assert.equal(result.indexOf('resources/ls/.hidden_file') === -1, true);
+assert.equal(result.indexOf('resources/ls/.hidden_dir') === -1, true);
 assert.equal(result.length, 6);
 
 shell.exit(123);

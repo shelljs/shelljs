@@ -24,7 +24,9 @@
   "bin": {
     "shjs": "./bin/shjs"
   },
-  "dependencies": {},
+  "dependencies": {
+    "glob": "^6.0.3"
+  },
   "devDependencies": {
     "coffee-script": "^1.10.0",
     "jshint": "~2.1.11"
