@@ -24,19 +24,19 @@ assert.ok(shell.error());
 //
 
 // simple
-var result = shell.cat('resources/file1');
+var result = shell.cat('resources/cat/file1');
 assert.equal(shell.error(), null);
-assert.equal(result, 'test1');
+assert.equal(result, 'test1\n');
 
 // multiple files
-var result = shell.cat('resources/file2', 'resources/file1');
+var result = shell.cat('resources/cat/file2', 'resources/cat/file1');
 assert.equal(shell.error(), null);
-assert.equal(result, 'test2\ntest1');
+assert.equal(result, 'test2\ntest1\n');
 
 // multiple files, array syntax
-var result = shell.cat(['resources/file2', 'resources/file1']);
+var result = shell.cat(['resources/cat/file2', 'resources/cat/file1']);
 assert.equal(shell.error(), null);
-assert.equal(result, 'test2\ntest1');
+assert.equal(result, 'test2\ntest1\n');
 
 var result = shell.cat('resources/file*.txt');
 assert.equal(shell.error(), null);
