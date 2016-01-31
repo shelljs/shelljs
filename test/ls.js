@@ -220,4 +220,78 @@ assert.ok(result.indexOf('resources/ls/file2') > -1);
 assert.ok(result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1);
 assert.equal(result.length, 6);
 
+// long option, single file
+var result = shell.ls('-l', 'resources/ls/file1')[0];
+assert.equal(shell.error(), null);
+assert.equal(result.name, 'resources/ls/file1');
+assert.equal(result.nlink, 1);
+assert.equal(result.size, 5);
+assert.ok(result.mode); // check that these keys exist
+assert.ok(process.platform === 'win32' || result.uid); // only on unix
+assert.ok(process.platform === 'win32' || result.gid); // only on unix
+assert.ok(result.mtime); // check that these keys exist
+assert.ok(result.atime); // check that these keys exist
+assert.ok(result.ctime); // check that these keys exist
+assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
+
+// long option, glob files
+var result = shell.ls('-l', 'resources/ls/f*le1')[0];
+assert.equal(shell.error(), null);
+assert.equal(result.name, 'resources/ls/file1');
+assert.equal(result.nlink, 1);
+assert.equal(result.size, 5);
+assert.ok(result.mode); // check that these keys exist
+assert.ok(process.platform === 'win32' || result.uid); // only on unix
+assert.ok(process.platform === 'win32' || result.gid); // only on unix
+assert.ok(result.mtime); // check that these keys exist
+assert.ok(result.atime); // check that these keys exist
+assert.ok(result.ctime); // check that these keys exist
+assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
+
+// long option, directory
+var result = shell.ls('-l', 'resources/ls');
+assert.equal(shell.error(), null);
+var idx;
+for (var k=0; k < result.length; k++) {
+  if (result[k].name === 'resources/ls/file1') {
+    idx = k;
+    break;
+  }
+}
+assert.ok(idx);
+result = result[idx];
+assert.equal(result.name, 'resources/ls/file1');
+assert.equal(result.nlink, 1);
+assert.equal(result.size, 5);
+assert.ok(result.mode); // check that these keys exist
+assert.ok(process.platform === 'win32' || result.uid); // only on unix
+assert.ok(process.platform === 'win32' || result.gid); // only on unix
+assert.ok(result.mtime); // check that these keys exist
+assert.ok(result.atime); // check that these keys exist
+assert.ok(result.ctime); // check that these keys exist
+assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
+
+// long option, directory, recursive
+var result = shell.ls('-lR', 'resources/ls/');
+assert.equal(shell.error(), null);
+var idx;
+for (var k=0; k < result.length; k++) {
+  if (result[k].name === 'resources/ls/file1') {
+    idx = k;
+    break;
+  }
+}
+assert.ok(idx);
+result = result[idx];
+assert.equal(result.name, 'resources/ls/file1');
+assert.equal(result.nlink, 1);
+assert.equal(result.size, 5);
+assert.ok(result.mode); // check that these keys exist
+assert.ok(process.platform === 'win32' || result.uid); // only on unix
+assert.ok(process.platform === 'win32' || result.gid); // only on unix
+assert.ok(result.mtime); // check that these keys exist
+assert.ok(result.atime); // check that these keys exist
+assert.ok(result.ctime); // check that these keys exist
+assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
+
 shell.exit(123);

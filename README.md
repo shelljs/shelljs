@@ -172,6 +172,11 @@ Available options:
 
 + `-R`: recursive
 + `-A`: all files (include files beginning with `.`, except for `.` and `..`)
++ `-d`: list directories themselves, not their contents
++ `-l`: list objects representing each file, each with fields containing `ls
+        -l` output fields. See
+        [fs.Stats](https://nodejs.org/api/fs.html#fs_class_fs_stats)
+        for more info
 
 Examples:
 
@@ -179,6 +184,7 @@ Examples:
 ls('projs/*.js');
 ls('-R', '/users/me', '/tmp');
 ls('-R', ['/users/me', '/tmp']); // same as above
+ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
 ```
 
 Returns array of files in the given path, or in current directory if no path provided.
