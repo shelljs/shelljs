@@ -45,10 +45,10 @@ function _mkdir(options, dirs) {
     dirs = [].slice.call(arguments, 1);
   // if it's array leave it as it is
 
-  dirs.forEach(function(dir) {
+  dirs.forEach(function (dir) {
     if (fs.existsSync(dir)) {
       if (!options.fullpath)
-          common.error('path already exists: ' + dir, true);
+        common.error('path already exists: ' + dir, true);
       return; // skip dir
     }
 

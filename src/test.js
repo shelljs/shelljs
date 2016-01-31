@@ -51,7 +51,7 @@ function _test(options, path) {
   if (options.link) {
     try {
       return fs.lstatSync(path).isSymbolicLink();
-    } catch(e) {
+    } catch (e) {
       return false;
     }
   }

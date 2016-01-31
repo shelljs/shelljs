@@ -79,11 +79,11 @@ exports.echo = _echo; // don't common.wrap() as it could parse '-options'
 
 //@include ./src/dirs
 var _dirs = require('./src/dirs').dirs;
-exports.dirs = common.wrap("dirs", _dirs);
+exports.dirs = common.wrap('dirs', _dirs);
 var _pushd = require('./src/dirs').pushd;
 exports.pushd = common.wrap('pushd', _pushd);
 var _popd = require('./src/dirs').popd;
-exports.popd = common.wrap("popd", _popd);
+exports.popd = common.wrap('popd', _popd);
 
 //@include ./src/ln
 var _ln = require('./src/ln');
@@ -101,7 +101,7 @@ exports.env = process.env;
 
 //@include ./src/exec
 var _exec = require('./src/exec');
-exports.exec = common.wrap('exec', _exec, {notUnix:true});
+exports.exec = common.wrap('exec', _exec, { notUnix:true });
 
 //@include ./src/chmod
 var _chmod = require('./src/chmod');

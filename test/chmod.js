@@ -2,7 +2,7 @@ var shell = require('..');
 var common = require('../src/common');
 
 var assert = require('assert'),
-    fs = require('fs');
+  fs = require('fs');
 
 shell.config.silent = true;
 
@@ -21,7 +21,7 @@ assert.ok(shell.error());
 
 // On Windows, chmod acts VERY differently so skip those tests for now
 if (common.platform === 'win')
-    shell.exit(123);
+  shell.exit(123);
 
 // Test files - the bitmasking is to ignore the upper bits.
 shell.chmod('755', 'resources/chmod/file1');

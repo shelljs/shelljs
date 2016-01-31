@@ -8,7 +8,7 @@ var PERMS = (function (base) {
     OTHER_WRITE : base.WRITE,
     OTHER_READ  : base.READ,
 
-    GROUP_EXEC  : base.EXEC  << 3,
+    GROUP_EXEC  : base.EXEC << 3,
     GROUP_WRITE : base.WRITE << 3,
     GROUP_READ  : base.READ << 3,
 
@@ -78,7 +78,7 @@ function _chmod(options, mode, filePattern) {
   });
 
   if (typeof filePattern === 'string') {
-    filePattern = [ filePattern ];
+    filePattern = [filePattern];
   }
 
   var files;
@@ -133,16 +133,16 @@ function _chmod(options, mode, filePattern) {
           var operator = matches[2];
           var change = matches[3];
 
-          var changeOwner = applyTo.indexOf('u') != -1 || applyTo === 'a' || applyTo === '';
-          var changeGroup = applyTo.indexOf('g') != -1 || applyTo === 'a' || applyTo === '';
-          var changeOther = applyTo.indexOf('o') != -1 || applyTo === 'a' || applyTo === '';
+          var changeOwner = applyTo.indexOf('u') !== -1 || applyTo === 'a' || applyTo === '';
+          var changeGroup = applyTo.indexOf('g') !== -1 || applyTo === 'a' || applyTo === '';
+          var changeOther = applyTo.indexOf('o') !== -1 || applyTo === 'a' || applyTo === '';
 
-          var changeRead    = change.indexOf('r') != -1;
-          var changeWrite   = change.indexOf('w') != -1;
-          var changeExec    = change.indexOf('x') != -1;
-          var changeExecDir = change.indexOf('X') != -1;
-          var changeSticky  = change.indexOf('t') != -1;
-          var changeSetuid  = change.indexOf('s') != -1;
+          var changeRead = change.indexOf('r') !== -1;
+          var changeWrite = change.indexOf('w') !== -1;
+          var changeExec = change.indexOf('x') !== -1;
+          var changeExecDir = change.indexOf('X') !== -1;
+          var changeSticky = change.indexOf('t') !== -1;
+          var changeSetuid = change.indexOf('s') !== -1;
 
           if (changeExecDir && isDir)
             changeExec = true;
@@ -186,7 +186,7 @@ function _chmod(options, mode, filePattern) {
             console.log(file + ' -> ' + newPerms.toString(8));
           }
 
-          if (perms != newPerms) {
+          if (perms !== newPerms) {
             if (!options.verbose && options.changes) {
               console.log(file + ' -> ' + newPerms.toString(8));
             }

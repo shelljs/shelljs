@@ -43,7 +43,7 @@ function _sed(options, regex, replacement, files) {
   files = common.expand(files);
 
   var sed = [];
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     if (!fs.existsSync(file)) {
       common.error('no such file or directory: ' + file, true);
       return;

@@ -12,25 +12,25 @@ var child = require('child_process');
 // event loop).
 function execSync(cmd, opts) {
   var tempDir = _tempDir();
-  var stdoutFile = path.resolve(tempDir+'/'+common.randomFileName()),
-      stderrFile = path.resolve(tempDir+'/'+common.randomFileName()),
-      codeFile = path.resolve(tempDir+'/'+common.randomFileName()),
-      scriptFile = path.resolve(tempDir+'/'+common.randomFileName()),
-      sleepFile = path.resolve(tempDir+'/'+common.randomFileName());
+  var stdoutFile = path.resolve(tempDir + '/' + common.randomFileName()),
+    stderrFile = path.resolve(tempDir + '/' + common.randomFileName()),
+    codeFile = path.resolve(tempDir + '/' + common.randomFileName()),
+    scriptFile = path.resolve(tempDir + '/' + common.randomFileName()),
+    sleepFile = path.resolve(tempDir + '/' + common.randomFileName());
 
   var options = common.extend({
     silent: common.config.silent
   }, opts);
 
   var previousStdoutContent = '',
-      previousStderrContent = '';
+    previousStderrContent = '';
   // Echoes stdout and stderr changes from running process, if not silent
   function updateStream(streamFile) {
     if (options.silent || !fs.existsSync(streamFile))
       return;
 
     var previousStreamContent,
-        proc_stream;
+      proc_stream;
     if (streamFile === stdoutFile) {
       previousStreamContent = previousStdoutContent;
       proc_stream = process.stdout;
@@ -49,7 +49,7 @@ function execSync(cmd, opts) {
   }
 
   function escape(str) {
-    return (str+'').replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
+    return (str + '').replace(/([\\"'])/g, '\\$1').replace(/\0/g, '\\0');
   }
 
   if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
@@ -57,11 +57,11 @@ function execSync(cmd, opts) {
   if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
   if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
 
-  var execCommand = '"'+process.execPath+'" '+scriptFile;
+  var execCommand = '"' + process.execPath + '" ' + scriptFile;
   var execOptions = {
     env: process.env,
     cwd: _pwd(),
-    maxBuffer: 20*1024*1024
+    maxBuffer: 20 * 1024 * 1024
   };
 
   var script;
@@ -70,18 +70,18 @@ function execSync(cmd, opts) {
     script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
-      "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
-      "});",
-      "var stdoutStream = fs.createWriteStream('"+escape(stdoutFile)+"');",
-      "var stderrStream = fs.createWriteStream('"+escape(stderrFile)+"');",
-      "childProcess.stdout.pipe(stdoutStream, {end: false});",
-      "childProcess.stderr.pipe(stderrStream, {end: false});",
-      "childProcess.stdout.pipe(process.stdout);",
-      "childProcess.stderr.pipe(process.stderr);",
-      "var stdoutEnded = false, stderrEnded = false;",
-      "function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }",
-      "function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }",
+      "var childProcess = child.exec('" + escape(cmd) + "', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "  fs.writeFileSync('" + escape(codeFile) + "', err ? err.code.toString() : '0');",
+      '});',
+      "var stdoutStream = fs.createWriteStream('" + escape(stdoutFile) + "');",
+      "var stderrStream = fs.createWriteStream('" + escape(stderrFile) + "');",
+      'childProcess.stdout.pipe(stdoutStream, {end: false});',
+      'childProcess.stderr.pipe(stderrStream, {end: false});',
+      'childProcess.stdout.pipe(process.stdout);',
+      'childProcess.stderr.pipe(process.stderr);',
+      'var stdoutEnded = false, stderrEnded = false;',
+      'function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }',
+      'function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }',
       "childProcess.stdout.on('end', function(){ stdoutEnded = true; tryClosingStdout(); });",
       "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });"
     ].join('\n');
@@ -97,14 +97,14 @@ function execSync(cmd, opts) {
     // Welcome to the future
     child.execSync(execCommand, execOptions);
   } else {
-    cmd += ' > '+stdoutFile+' 2> '+stderrFile; // works on both win/unix
+    cmd += ' > ' + stdoutFile + ' 2> ' + stderrFile; // works on both win/unix
 
     script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
-      "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
-      "});"
+      "var childProcess = child.exec('" + escape(cmd) + "', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "  fs.writeFileSync('" + escape(codeFile) + "', err ? err.code.toString() : '0');",
+      '});'
     ].join('\n');
 
     fs.writeFileSync(scriptFile, script);
@@ -131,15 +131,15 @@ function execSync(cmd, opts) {
   var stderr = fs.readFileSync(stderrFile, 'utf8');
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
-  try { common.unlinkSync(scriptFile); } catch(e) {}
-  try { common.unlinkSync(stdoutFile); } catch(e) {}
-  try { common.unlinkSync(stderrFile); } catch(e) {}
-  try { common.unlinkSync(codeFile); } catch(e) {}
-  try { common.unlinkSync(sleepFile); } catch(e) {}
+  try { common.unlinkSync(scriptFile); } catch (e) {}
+  try { common.unlinkSync(stdoutFile); } catch (e) {}
+  try { common.unlinkSync(stderrFile); } catch (e) {}
+  try { common.unlinkSync(codeFile); } catch (e) {}
+  try { common.unlinkSync(sleepFile); } catch (e) {}
 
   // some shell return codes are defined as errors, per http://tldp.org/LDP/abs/html/exitcodes.html
-  if (code === 1 || code === 2 || code >= 126)  {
-      common.error('', true); // unix/shell doesn't really give an error message after non-zero exit codes
+  if (code === 1 || code === 2 || code >= 126) {
+    common.error('', true); // unix/shell doesn't really give an error message after non-zero exit codes
   }
   // True if successful, false if not
   var obj = {
@@ -160,18 +160,18 @@ function execAsync(cmd, opts, callback) {
     silent: common.config.silent
   }, opts);
 
-  var c = child.exec(cmd, {env: process.env, maxBuffer: 20*1024*1024}, function(err) {
+  var c = child.exec(cmd, { env: process.env, maxBuffer: 20 * 1024 * 1024 }, function (err) {
     if (callback)
       callback(err ? err.code : 0, stdout, stderr);
   });
 
-  c.stdout.on('data', function(data) {
+  c.stdout.on('data', function (data) {
     stdout += data;
     if (!options.silent)
       process.stdout.write(data);
   });
 
-  c.stderr.on('data', function(data) {
+  c.stderr.on('data', function (data) {
     stderr += data;
     if (!options.silent)
       process.stderr.write(data);

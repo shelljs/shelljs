@@ -76,7 +76,7 @@ function _ls(options, paths) {
     return true;
   }
 
-  paths.forEach(function(p) {
+  paths.forEach(function (p) {
     if (fs.existsSync(p)) {
       var stats = ls_stat(p);
       // Simple file?
@@ -126,7 +126,7 @@ function _ls(options, paths) {
       // Translates wildcard into regex
       regexp = '^' + regexp.replace(/\*/g, '.*') + '$';
       // Iterate over directory contents
-      fs.readdirSync(dirname).forEach(function(file) {
+      fs.readdirSync(dirname).forEach(function (file) {
         if (file.match(new RegExp(regexp))) {
           var file_path = path.join(dirname,  file);
           file_path = options.long ? ls_stat(file_path) : file_path;
@@ -141,7 +141,7 @@ function _ls(options, paths) {
           if (options.recursive) {
             var pp = dirname + '/' + file;
             if (fs.lstatSync(pp).isDirectory())
-              list = list.concat(_ls('-R'+(options.all?'A':''), pp+'/*'));
+              list = list.concat(_ls('-R' + (options.all ? 'A' : ''), pp + '/*'));
           } // recursive
         } // if file matches
       }); // forEach

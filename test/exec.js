@@ -1,7 +1,7 @@
 var shell = require('..');
 
 var assert = require('assert'),
-    util = require('util');
+  util = require('util');
 
 shell.config.silent = true;
 
@@ -21,7 +21,7 @@ var old_exit = process.exit;
 
 var exitcode = 9999;
 process.exit = function (_exitcode) {
-    exitcode = _exitcode;
+  exitcode = _exitcode;
 };
 
 shell.config.fatal = true;
@@ -84,14 +84,14 @@ assert.equal(result.stdout, "'+'_'+'\n");
 //
 
 // no callback
-var c = shell.exec('node -e \"console.log(1234)\"', {async:true});
+var c = shell.exec('node -e \"console.log(1234)\"', { async:true });
 assert.equal(shell.error(), null);
 assert.ok('stdout' in c, 'async exec returns child process object');
 
 //
 // callback as 2nd argument
 //
-shell.exec('node -e \"console.log(5678);\"', function(code, stdout, stderr) {
+shell.exec('node -e \"console.log(5678);\"', function (code, stdout, stderr) {
   assert.equal(code, 0);
   assert.ok(stdout === '5678\n' || stdout === '5678\nundefined\n');  // 'undefined' for v0.4
   assert.ok(stderr === '' || stderr === 'undefined\n');  // 'undefined' for v0.4
@@ -99,7 +99,7 @@ shell.exec('node -e \"console.log(5678);\"', function(code, stdout, stderr) {
   //
   // callback as 3rd argument
   //
-  shell.exec('node -e \"console.log(5566);\"', {async:true}, function(code, stdout, stderr) {
+  shell.exec('node -e \"console.log(5566);\"', { async:true }, function (code, stdout, stderr) {
     assert.equal(code, 0);
     assert.ok(stdout === '5566\n' || stdout === '5566\nundefined\n');  // 'undefined' for v0.4
     assert.ok(stderr === '' || stderr === 'undefined\n');  // 'undefined' for v0.4
@@ -107,7 +107,7 @@ shell.exec('node -e \"console.log(5678);\"', function(code, stdout, stderr) {
     //
     // callback as 3rd argument (slient:true)
     //
-    shell.exec('node -e \"console.log(5678);\"', {silent:true}, function(code, stdout, stderr) {
+    shell.exec('node -e \"console.log(5678);\"', { silent:true }, function (code, stdout, stderr) {
       assert.equal(code, 0);
       assert.ok(stdout === '5678\n' || stdout === '5678\nundefined\n');  // 'undefined' for v0.4
       assert.ok(stderr === '' || stderr === 'undefined\n');  // 'undefined' for v0.4

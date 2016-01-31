@@ -38,13 +38,13 @@ function _which(options, cmd) {
     common.error('must specify command');
 
   var pathEnv = process.env.path || process.env.Path || process.env.PATH,
-      pathArray = splitPath(pathEnv),
-      where = null;
+    pathArray = splitPath(pathEnv),
+    where = null;
 
   // No relative/absolute paths provided?
   if (cmd.search(/\//) === -1) {
     // Search for command in PATH
-    pathArray.forEach(function(dir) {
+    pathArray.forEach(function (dir) {
       if (where)
         return; // already found it
 

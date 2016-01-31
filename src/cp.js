@@ -10,23 +10,23 @@ function copyFileSync(srcFile, destFile) {
   if (!fs.existsSync(srcFile))
     common.error('copyFileSync: no such file or directory: ' + srcFile);
 
-  var BUF_LENGTH = 64*1024,
-      buf = new Buffer(BUF_LENGTH),
-      bytesRead = BUF_LENGTH,
-      pos = 0,
-      fdr = null,
-      fdw = null;
+  var BUF_LENGTH = 64 * 1024,
+    buf = new Buffer(BUF_LENGTH),
+    bytesRead = BUF_LENGTH,
+    pos = 0,
+    fdr = null,
+    fdw = null;
 
   try {
     fdr = fs.openSync(srcFile, 'r');
-  } catch(e) {
-    common.error('copyFileSync: could not read src file ('+srcFile+')');
+  } catch (e) {
+    common.error('copyFileSync: could not read src file (' + srcFile + ')');
   }
 
   try {
     fdw = fs.openSync(destFile, 'w');
-  } catch(e) {
-    common.error('copyFileSync: could not write to dest file (code='+e.code+'):'+destFile);
+  } catch (e) {
+    common.error('copyFileSync: could not write to dest file (code=' + e.code + '):' + destFile);
   }
 
   while (bytesRead === BUF_LENGTH) {
@@ -64,8 +64,8 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
   var files = fs.readdirSync(sourceDir);
 
   for (var i = 0; i < files.length; i++) {
-    var srcFile = sourceDir + "/" + files[i];
-    var destFile = destDir + "/" + files[i];
+    var srcFile = sourceDir + '/' + files[i];
+    var destFile = destDir + '/' + files[i];
     var srcFileStat = fs.lstatSync(srcFile);
 
     if (srcFileStat.isDirectory()) {
@@ -73,7 +73,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       cpdirSyncRecursive(srcFile, destFile, opts);
     } else if (srcFileStat.isSymbolicLink()) {
       var symlinkFull = fs.readlinkSync(srcFile);
-      fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
+      fs.symlinkSync(symlinkFull, destFile, os.platform() === 'win32' ? 'junction' : null);
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && !opts.force) {
@@ -126,7 +126,7 @@ function _cp(options, sources, dest) {
   }
 
   var exists = fs.existsSync(dest),
-      stats = exists && fs.statSync(dest);
+    stats = exists && fs.statSync(dest);
 
   // Dest is not existing dir, but multiple sources given
   if ((!exists || !stats.isDirectory()) && sources.length > 1)
@@ -139,7 +139,7 @@ function _cp(options, sources, dest) {
   if (options.recursive) {
     // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
     // (see Github issue #15)
-    sources.forEach(function(src, i) {
+    sources.forEach(function (src, i) {
       if (src[src.length - 1] === '/') {
         sources[i] += '*';
       // If src is a directory and dest doesn't exist, 'cp -r src dest' should copy src/* into dest
@@ -158,9 +158,9 @@ function _cp(options, sources, dest) {
 
   sources = common.expand(sources);
 
-  sources.forEach(function(src) {
+  sources.forEach(function (src) {
     if (!fs.existsSync(src)) {
-      common.error('no such file or directory: '+src, true);
+      common.error('no such file or directory: ' + src, true);
       return; // skip file
     }
 
@@ -173,7 +173,7 @@ function _cp(options, sources, dest) {
         // Recursive
         // 'cp /a/source dest' should create 'source' in 'dest'
         var newDest = path.join(dest, path.basename(src)),
-            checkDir = fs.statSync(src);
+          checkDir = fs.statSync(src);
         try {
           fs.mkdirSync(newDest, checkDir.mode);
         } catch (e) {
@@ -184,7 +184,7 @@ function _cp(options, sources, dest) {
           }
         }
 
-        cpdirSyncRecursive(src, newDest, {force: options.force});
+        cpdirSyncRecursive(src, newDest, { force: options.force });
       }
       return; // done with dir
     }

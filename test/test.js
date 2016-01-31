@@ -66,25 +66,25 @@ assert.equal(result, false);
 //link
 // Windows is weird with links so skip these tests
 if (common.platform !== 'win') {
-    var result = shell.test('-d', 'resources/link');
-    assert.equal(shell.error(), null);
-    assert.equal(result, false);
+  var result = shell.test('-d', 'resources/link');
+  assert.equal(shell.error(), null);
+  assert.equal(result, false);
 
-    var result = shell.test('-f', 'resources/link');
-    assert.equal(shell.error(), null);
-    assert.equal(result, true);//true
+  var result = shell.test('-f', 'resources/link');
+  assert.equal(shell.error(), null);
+  assert.equal(result, true);//true
 
-    var result = shell.test('-L', 'resources/link');
-    assert.equal(shell.error(), null);
-    assert.equal(result, true);//true
+  var result = shell.test('-L', 'resources/link');
+  assert.equal(shell.error(), null);
+  assert.equal(result, true);//true
 
-    var result = shell.test('-L', 'resources/badlink');
-    assert.equal(shell.error(), null);
-    assert.equal(result, true);//true
+  var result = shell.test('-L', 'resources/badlink');
+  assert.equal(shell.error(), null);
+  assert.equal(result, true);//true
 
-    var result = shell.test('-L', 'resources/404');
-    assert.equal(shell.error(), null);
-    assert.equal(result, false);//false
+  var result = shell.test('-L', 'resources/404');
+  assert.equal(shell.error(), null);
+  assert.equal(result, false);//false
 }
 
 shell.exit(123);

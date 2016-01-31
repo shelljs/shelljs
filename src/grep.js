@@ -32,15 +32,15 @@ function _grep(options, regex, files) {
   files = common.expand(files);
 
   var grep = '';
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     if (!fs.existsSync(file)) {
       common.error('no such file or directory: ' + file, true);
       return;
     }
 
     var contents = fs.readFileSync(file, 'utf8'),
-        lines = contents.split(/\r*\n/);
-    lines.forEach(function(line) {
+      lines = contents.split(/\r*\n/);
+    lines.forEach(function (line) {
       var matched = line.match(regex);
       if ((options.inverse && !matched) || (!options.inverse && matched))
         grep += line + '\n';

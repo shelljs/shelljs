@@ -10,7 +10,7 @@ function writeableDir(dir) {
   if (!fs.statSync(dir).isDirectory())
     return false;
 
-  var testFile = dir+'/'+common.randomFileName();
+  var testFile = dir + '/' + common.randomFileName();
   try {
     fs.writeFileSync(testFile, ' ');
     common.unlinkSync(testFile);

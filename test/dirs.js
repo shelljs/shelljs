@@ -1,7 +1,7 @@
 var shell = require('..');
 
 var assert = require('assert'),
-    path = require('path');
+  path = require('path');
 
 shell.config.silent = true;
 
