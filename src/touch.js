@@ -22,8 +22,6 @@ var fs = require('fs');
 //@ Update the access and modification times of each FILE to the current time.
 //@ A FILE argument that does not exist is created empty, unless -c is supplied.
 //@ This is a partial implementation of *[touch(1)](http://linux.die.net/man/1/touch)*.
-//@
-//
 function _touch(opts, files) {
   opts = common.parseOptions(opts, {
     'a': 'atime_only',

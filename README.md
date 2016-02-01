@@ -563,6 +563,21 @@ A FILE argument that does not exist is created empty, unless -c is supplied.
 This is a partial implementation of *[touch(1)](http://linux.die.net/man/1/touch)*.
 
 
+### set(options)
+Available options:
+
++ `+/-e`: exit upon error (`config.fatal`)
++ `+/-v`: verbose: show all commands (`config.verbose`)
+
+Examples:
+
+```javascript
+set('-e'); // exit upon first error
+set('+e'); // this undoes a "set('-e')"
+```
+
+Sets global configuration variables
+
 
 ## Non-Unix commands
 
@@ -606,10 +621,26 @@ Example:
 
 ```javascript
 require('shelljs/global');
-config.fatal = true;
+config.fatal = true; // or set('-e');
 cp('this_file_does_not_exist', '/dev/null'); // dies here
 /* more commands... */
 ```
 
 If `true` the script will die on errors. Default is `false`. This is
 analogous to Bash's `set -e`
+
+### config.verbose
+Example:
+
+```javascript
+config.verbose = true; // or set('-v');
+cd('dir/');
+ls('subdir/');
+```
+
+Will print each command as follows:
+
+```
+cd dir/
+ls subdir/
+```

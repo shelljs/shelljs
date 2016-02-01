@@ -5,7 +5,8 @@ var _ls = require('./ls');
 // Module globals
 var config = {
   silent: false,
-  fatal: false
+  fatal: false,
+  verbose: false,
 };
 exports.config = config;
 
@@ -202,6 +203,12 @@ function wrap(cmd, fn, options) {
 
     try {
       var args = [].slice.call(arguments, 0);
+
+      if (config.verbose) {
+        args.unshift(cmd);
+        console.log.apply(console, args);
+        args.shift();
+      }
 
       if (options && options.notUnix) {
         retValue = fn.apply(this, args);
