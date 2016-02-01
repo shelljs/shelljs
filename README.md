@@ -17,6 +17,7 @@ The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battled-t
 
 and [many more](https://npmjs.org/browse/depended/shelljs).
 
+If you have feedback, suggestions, or need help, feel free to post in our [issue tracker](https://github.com/shelljs/shelljs/issues).
 
 ## Installing
 
