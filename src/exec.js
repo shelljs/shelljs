@@ -12,44 +12,46 @@ var child = require('child_process');
 // event loop).
 function execSync(cmd, opts) {
   var tempDir = _tempDir();
-  var stdoutFile = path.resolve(tempDir+'/'+common.randomFileName()),
-      stderrFile = path.resolve(tempDir+'/'+common.randomFileName()),
-      codeFile = path.resolve(tempDir+'/'+common.randomFileName()),
-      scriptFile = path.resolve(tempDir+'/'+common.randomFileName()),
-      sleepFile = path.resolve(tempDir+'/'+common.randomFileName());
+  var stdoutFile = path.resolve(tempDir + '/' + common.randomFileName());
+  var stderrFile = path.resolve(tempDir + '/' + common.randomFileName());
+  var codeFile = path.resolve(tempDir + '/' + common.randomFileName());
+  var scriptFile = path.resolve(tempDir + '/' + common.randomFileName());
+  var sleepFile = path.resolve(tempDir + '/' + common.randomFileName());
 
   var options = common.extend({
-    silent: common.config.silent
+    silent: common.config.silent,
   }, opts);
 
-  var previousStdoutContent = '',
-      previousStderrContent = '';
+  var previousStdoutContent = '';
+  var previousStderrContent = '';
   // Echoes stdout and stderr changes from running process, if not silent
   function updateStream(streamFile) {
-    if (options.silent || !fs.existsSync(streamFile))
+    if (options.silent || !fs.existsSync(streamFile)) {
       return;
+    }
 
-    var previousStreamContent,
-        proc_stream;
+    var previousStreamContent;
+    var procStream;
+
     if (streamFile === stdoutFile) {
       previousStreamContent = previousStdoutContent;
-      proc_stream = process.stdout;
+      procStream = process.stdout;
     } else { // assume stderr
       previousStreamContent = previousStderrContent;
-      proc_stream = process.stderr;
+      procStream = process.stderr;
     }
 
     var streamContent = fs.readFileSync(streamFile, 'utf8');
     // No changes since last time?
-    if (streamContent.length <= previousStreamContent.length)
+    if (streamContent.length <= previousStreamContent.length) {
       return;
+    }
 
-    proc_stream.write(streamContent.substr(previousStreamContent.length));
-    previousStreamContent = streamContent;
+    procStream.write(streamContent.substr(previousStreamContent.length));
   }
 
   function escape(str) {
-    return (str+'').replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
+    return (str + '').replace(/([\\"'])/g, '\\$1').replace(/\0/g, '\\0');
   }
 
   if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
@@ -57,11 +59,11 @@ function execSync(cmd, opts) {
   if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
   if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
 
-  var execCommand = '"'+process.execPath+'" '+scriptFile;
+  var execCommand = '"' + process.execPath + '" "' + scriptFile + '"';
   var execOptions = {
     env: process.env,
     cwd: _pwd(),
-    maxBuffer: 20*1024*1024
+    maxBuffer: 20 * 1024 * 1024,
   };
 
   var script;
@@ -70,20 +72,21 @@ function execSync(cmd, opts) {
     script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
-      "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
-      "});",
-      "var stdoutStream = fs.createWriteStream('"+escape(stdoutFile)+"');",
-      "var stderrStream = fs.createWriteStream('"+escape(stderrFile)+"');",
-      "childProcess.stdout.pipe(stdoutStream, {end: false});",
-      "childProcess.stderr.pipe(stderrStream, {end: false});",
-      "childProcess.stdout.pipe(process.stdout);",
-      "childProcess.stderr.pipe(process.stderr);",
-      "var stdoutEnded = false, stderrEnded = false;",
-      "function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }",
-      "function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }",
+      "var childProcess = child.exec('" + escape(cmd) + "',",
+      ' {env: process.env, maxBuffer: 20*1024*1024}, function(err) {',
+      "  fs.writeFileSync('" + escape(codeFile) + "', err ? err.code.toString() : '0');",
+      '});',
+      "var stdoutStream = fs.createWriteStream('" + escape(stdoutFile) + "');",
+      "var stderrStream = fs.createWriteStream('" + escape(stderrFile) + "');",
+      'childProcess.stdout.pipe(stdoutStream, {end: false});',
+      'childProcess.stderr.pipe(stderrStream, {end: false});',
+      'childProcess.stdout.pipe(process.stdout);',
+      'childProcess.stderr.pipe(process.stderr);',
+      'var stdoutEnded = false, stderrEnded = false;',
+      'function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }',
+      'function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }',
       "childProcess.stdout.on('end', function(){ stdoutEnded = true; tryClosingStdout(); });",
-      "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });"
+      "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });",
     ].join('\n');
 
     fs.writeFileSync(scriptFile, script);
@@ -97,14 +100,15 @@ function execSync(cmd, opts) {
     // Welcome to the future
     child.execSync(execCommand, execOptions);
   } else {
-    cmd += ' > '+stdoutFile+' 2> '+stderrFile; // works on both win/unix
+    cmd += ' > ' + stdoutFile + ' 2> ' + stderrFile; // works on both win/unix
 
     script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
-      "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
-      "});"
+      "var childProcess = child.exec('" + escape(cmd) + "',",
+      ' {env: process.env, maxBuffer: 20*1024*1024}, function(err) {',
+      "  fs.writeFileSync('" + escape(codeFile) + "', err ? err.code.toString() : '0');",
+      '});',
     ].join('\n');
 
     fs.writeFileSync(scriptFile, script);
@@ -115,9 +119,18 @@ function execSync(cmd, opts) {
     // sleepFile is used as a dummy I/O op to mitigate unnecessary CPU usage
     // (tried many I/O sync ops, writeFileSync() seems to be only one that is effective in reducing
     // CPU usage, though apparently not so much on Windows)
-    while (!fs.existsSync(codeFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
-    while (!fs.existsSync(stdoutFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
-    while (!fs.existsSync(stderrFile)) { updateStream(stderrFile); fs.writeFileSync(sleepFile, 'a'); }
+    while (!fs.existsSync(codeFile)) {
+      updateStream(stdoutFile);
+      fs.writeFileSync(sleepFile, 'a');
+    }
+    while (!fs.existsSync(stdoutFile)) {
+      updateStream(stdoutFile);
+      fs.writeFileSync(sleepFile, 'a');
+    }
+    while (!fs.existsSync(stderrFile)) {
+      updateStream(stderrFile);
+      fs.writeFileSync(sleepFile, 'a');
+    }
   }
 
   // At this point codeFile exists, but it's not necessarily flushed yet.
@@ -131,22 +144,23 @@ function execSync(cmd, opts) {
   var stderr = fs.readFileSync(stderrFile, 'utf8');
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
-  try { common.unlinkSync(scriptFile); } catch(e) {}
-  try { common.unlinkSync(stdoutFile); } catch(e) {}
-  try { common.unlinkSync(stderrFile); } catch(e) {}
-  try { common.unlinkSync(codeFile); } catch(e) {}
-  try { common.unlinkSync(sleepFile); } catch(e) {}
+  try { common.unlinkSync(scriptFile); } catch (e) { /* ignore */ }
+  try { common.unlinkSync(stdoutFile); } catch (e) { /* ignore */ }
+  try { common.unlinkSync(stderrFile); } catch (e) { /* ignore */ }
+  try { common.unlinkSync(codeFile); } catch (e) { /* ignore */ }
+  try { common.unlinkSync(sleepFile); } catch (e) { /* ignore */ }
 
   // some shell return codes are defined as errors, per http://tldp.org/LDP/abs/html/exitcodes.html
-  if (code === 1 || code === 2 || code >= 126)  {
-      common.error('', true); // unix/shell doesn't really give an error message after non-zero exit codes
+  if (code === 1 || code === 2 || code >= 126) {
+    // unix/shell doesn't really give an error message after non-zero exit codes
+    common.error('', true);
   }
   // True if successful, false if not
   var obj = {
     code: code,
     output: stdout, // deprecated
     stdout: stdout,
-    stderr: stderr
+    stderr: stderr,
   };
   return obj;
 } // execSync()
@@ -157,24 +171,27 @@ function execAsync(cmd, opts, callback) {
   var stderr = '';
 
   var options = common.extend({
-    silent: common.config.silent
+    silent: common.config.silent,
   }, opts);
 
-  var c = child.exec(cmd, {env: process.env, maxBuffer: 20*1024*1024}, function(err) {
-    if (callback)
+  var c = child.exec(cmd, { env: process.env, maxBuffer: 20 * 1024 * 1024 }, function (err) {
+    if (callback) {
       callback(err ? err.code : 0, stdout, stderr);
+    }
   });
 
-  c.stdout.on('data', function(data) {
+  c.stdout.on('data', function (data) {
     stdout += data;
-    if (!options.silent)
+    if (!options.silent) {
       process.stdout.write(data);
+    }
   });
 
-  c.stderr.on('data', function(data) {
+  c.stderr.on('data', function (data) {
     stderr += data;
-    if (!options.silent)
+    if (!options.silent) {
       process.stderr.write(data);
+    }
   });
 
   return c;
@@ -214,8 +231,9 @@ function execAsync(cmd, opts, callback) {
 //@ the current synchronous implementation uses a lot of CPU. This should be getting
 //@ fixed soon.
 function _exec(command, options, callback) {
-  if (!command)
+  if (!command) {
     common.error('must specify command');
+  }
 
   // Callback is defined instead of options.
   if (typeof options === 'function') {
@@ -230,12 +248,14 @@ function _exec(command, options, callback) {
 
   options = common.extend({
     silent: common.config.silent,
-    async: false
+    async: false,
   }, options);
 
-  if (options.async)
+  if (options.async) {
     return execAsync(command, options, callback);
-  else
-    return execSync(command, options);
+  }
+
+  return execSync(command, options);
 }
+
 module.exports = _exec;

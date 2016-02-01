@@ -19,34 +19,38 @@ var fs = require('fs');
 //@ file that match the given `regex_filter`. Wildcard `*` accepted.
 function _grep(options, regex, files) {
   options = common.parseOptions(options, {
-    'v': 'inverse'
+    v: 'inverse',
   });
 
-  if (!files)
+  if (!files) {
     common.error('no paths given');
+  }
 
-  if (typeof files === 'string')
+  if (typeof files === 'string') {
     files = [].slice.call(arguments, 2);
+  }
   // if it's array leave it as it is
 
   files = common.expand(files);
 
   var grep = '';
-  files.forEach(function(file) {
+  files.forEach(function fileExists(file) {
     if (!fs.existsSync(file)) {
       common.error('no such file or directory: ' + file, true);
       return;
     }
 
-    var contents = fs.readFileSync(file, 'utf8'),
-        lines = contents.split(/\r*\n/);
-    lines.forEach(function(line) {
+    var contents = fs.readFileSync(file, 'utf8');
+    var lines = contents.split(/\r*\n/);
+
+    lines.forEach(function lineMatches(line) {
       var matched = line.match(regex);
-      if ((options.inverse && !matched) || (!options.inverse && matched))
+      if ((options.inverse && !matched) || (!options.inverse && matched)) {
         grep += line + '\n';
+      }
     });
   });
 
-  return common.ShellString(grep);
+  return common.shellString(grep);
 }
 module.exports = _grep;

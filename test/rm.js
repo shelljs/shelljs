@@ -1,8 +1,8 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    path = require('path'),
-    fs = require('fs');
+var assert = require('assert');
+var path = require('path');
+var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -76,6 +76,7 @@ assert.equal(fs.existsSync('tmp/file2'), false);
 assert.equal(fs.existsSync('tmp/file1.js'), false);
 assert.equal(fs.existsSync('tmp/file2.js'), false);
 
+var contents;
 // recursive dir removal
 shell.mkdir('-p', 'tmp/a/b/c');
 shell.mkdir('-p', 'tmp/b');
@@ -87,7 +88,7 @@ assert.equal(fs.existsSync('tmp/c'), true);
 assert.equal(fs.existsSync('tmp/.hidden'), true);
 shell.rm('-rf', 'tmp/*');
 assert.equal(shell.error(), null);
-var contents = fs.readdirSync('tmp');
+contents = fs.readdirSync('tmp');
 assert.equal(contents.length, 1);
 assert.equal(contents[0], '.hidden'); // shouldn't remove hiddden if no .* given
 
@@ -102,7 +103,7 @@ assert.equal(fs.existsSync('tmp/c'), true);
 assert.equal(fs.existsSync('tmp/.hidden'), true);
 shell.rm('-rf', 'tmp/*', 'tmp/.*');
 assert.equal(shell.error(), null);
-var contents = fs.readdirSync('tmp');
+contents = fs.readdirSync('tmp');
 assert.equal(contents.length, 0);
 
 // recursive dir removal - array-syntax
@@ -116,7 +117,7 @@ assert.equal(fs.existsSync('tmp/c'), true);
 assert.equal(fs.existsSync('tmp/.hidden'), true);
 shell.rm('-rf', ['tmp/*', 'tmp/.*']);
 assert.equal(shell.error(), null);
-var contents = fs.readdirSync('tmp');
+contents = fs.readdirSync('tmp');
 assert.equal(contents.length, 0);
 
 // removal of a read-only file (unforced)
@@ -124,8 +125,8 @@ shell.mkdir('-p', 'tmp/readonly');
 'asdf'.to('tmp/readonly/file1');
 fs.chmodSync('tmp/readonly/file1', '0444'); // -r--r--r--
 shell.rm('tmp/readonly/file1');
-assert.equal(fs.existsSync('tmp/readonly/file1'), true); // bash's rm always asks before removing read-only files
-                                                         // here we just assume "no"
+// bash's rm always asks before removing read-only files here we just assume "no"
+assert.equal(fs.existsSync('tmp/readonly/file1'), true);
 
 // removal of a read-only file (forced)
 shell.mkdir('-p', 'tmp/readonly');

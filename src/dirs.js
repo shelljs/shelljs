@@ -13,9 +13,9 @@ function _parseStackIndex(index) {
   if (_isStackIndex(index)) {
     if (Math.abs(index) < _dirStack.length + 1) { // +1 for pwd
       return (/^-/).test(index) ? Number(index) - 1 : Number(index);
-    } else {
-      common.error(index + ': directory stack index out of range');
     }
+
+    common.error(index + ': directory stack index out of range');
   } else {
     common.error(index + ': invalid number');
   }
@@ -26,17 +26,72 @@ function _actualDirStack() {
 }
 
 //@
+//@ ### dirs([options | '+N' | '-N'])
+//@
+//@ Available options:
+//@
+//@ + `-c`: Clears the directory stack by deleting all of the elements.
+//@
+//@ Arguments:
+//@
+//@ + `+N`: Displays the Nth directory (counting from the left of the list
+//@         printed by dirs when invoked without options), starting with zero.
+//@ + `-N`: Displays the Nth directory (counting from the right of the list
+//@         printed by dirs when invoked without options), starting with zero.
+//@
+//@ Display the list of currently remembered directories.
+//@ Returns an array of paths in the stack, or a single path if +N or -N was specified.
+//@
+//@ See also: pushd, popd
+function _dirs(options, index) {
+  if (_isStackIndex(options)) {
+    index = options;
+    options = '';
+  }
+
+  options = common.parseOptions(options, {
+    c: 'clear',
+  });
+
+  if (options.clear) {
+    _dirStack = [];
+    return _dirStack;
+  }
+
+  var stack = _actualDirStack();
+
+  if (index) {
+    index = _parseStackIndex(index);
+
+    if (index < 0) {
+      index = stack.length + index;
+    }
+
+    common.log(stack[index]);
+    return stack[index];
+  }
+
+  common.log(stack.join(' '));
+
+  return stack;
+}
+
+//@
 //@ ### pushd([options,] [dir | '-N' | '+N'])
 //@
 //@ Available options:
 //@
-//@ + `-n`: Suppresses the normal change of directory when adding directories to the stack, so that only the stack is manipulated.
+//@ + `-n`: Suppresses the normal change of directory when adding directories
+//@         to the stack, so that only the stack is manipulated.
 //@
 //@ Arguments:
 //@
-//@ + `dir`: Makes the current working directory be the top of the stack, and then executes the equivalent of `cd dir`.
-//@ + `+N`: Brings the Nth directory (counting from the left of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
-//@ + `-N`: Brings the Nth directory (counting from the right of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
+//@ + `dir`: Makes the current working directory be the top of the stack,
+//@          and then executes the equivalent of `cd dir`.
+//@ + `+N`: Brings the Nth directory (counting from the left of the list
+//@         printed by dirs, starting with zero) to the top of the list by rotating the stack.
+//@ + `-N`: Brings the Nth directory (counting from the right of the list
+//@         printed by dirs, starting with zero) to the top of the list by rotating the stack.
 //@
 //@ Examples:
 //@
@@ -46,7 +101,9 @@ function _actualDirStack() {
 //@ pushd('+1');   // Returns /usr /etc
 //@ ```
 //@
-//@ Save the current directory on the top of the directory stack and then cd to `dir`. With no arguments, pushd exchanges the top two directories. Returns an array of paths in the stack.
+//@ Save the current directory on the top of the directory stack and then cd to `dir`.
+//@ With no arguments, pushd exchanges the top two directories.
+//@ Returns an array of paths in the stack.
 function _pushd(options, dir) {
   if (_isStackIndex(options)) {
     dir = options;
@@ -54,7 +111,7 @@ function _pushd(options, dir) {
   }
 
   options = common.parseOptions(options, {
-    'n' : 'no-cd'
+    n: 'no-cd',
   });
 
   var dirs = _actualDirStack();
@@ -88,19 +145,21 @@ function _pushd(options, dir) {
   _dirStack = dirs;
   return _dirs('');
 }
-exports.pushd = _pushd;
 
 //@
 //@ ### popd([options,] ['-N' | '+N'])
 //@
 //@ Available options:
 //@
-//@ + `-n`: Suppresses the normal change of directory when removing directories from the stack, so that only the stack is manipulated.
+//@ + `-n`: Suppresses the normal change of directory when removing directories
+//@         from the stack, so that only the stack is manipulated.
 //@
 //@ Arguments:
 //@
-//@ + `+N`: Removes the Nth directory (counting from the left of the list printed by dirs), starting with zero.
-//@ + `-N`: Removes the Nth directory (counting from the right of the list printed by dirs), starting with zero.
+//@ + `+N`: Removes the Nth directory (counting from the left of the list
+//@         printed by dirs), starting with zero.
+//@ + `-N`: Removes the Nth directory (counting from the right of the list
+//@         printed by dirs), starting with zero.
 //@
 //@ Examples:
 //@
@@ -112,7 +171,10 @@ exports.pushd = _pushd;
 //@ echo(process.cwd()); // '/usr'
 //@ ```
 //@
-//@ When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0. Returns an array of paths in the stack.
+//@ When no arguments are given, popd removes the top directory from the stack and performs
+//@ a cd to the new top directory. The elements are numbered from 0 starting at the first
+//@ directory listed with dirs; i.e., popd is equivalent to popd +0.
+//@ Returns an array of paths in the stack.
 function _popd(options, index) {
   if (_isStackIndex(options)) {
     index = options;
@@ -120,7 +182,7 @@ function _popd(options, index) {
   }
 
   options = common.parseOptions(options, {
-    'n' : 'no-cd'
+    n: 'no-cd',
   });
 
   if (!_dirStack.length) {
@@ -139,53 +201,7 @@ function _popd(options, index) {
 
   return _dirs('');
 }
-exports.popd = _popd;
 
-//@
-//@ ### dirs([options | '+N' | '-N'])
-//@
-//@ Available options:
-//@
-//@ + `-c`: Clears the directory stack by deleting all of the elements.
-//@
-//@ Arguments:
-//@
-//@ + `+N`: Displays the Nth directory (counting from the left of the list printed by dirs when invoked without options), starting with zero.
-//@ + `-N`: Displays the Nth directory (counting from the right of the list printed by dirs when invoked without options), starting with zero.
-//@
-//@ Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if +N or -N was specified.
-//@
-//@ See also: pushd, popd
-function _dirs(options, index) {
-  if (_isStackIndex(options)) {
-    index = options;
-    options = '';
-  }
-
-  options = common.parseOptions(options, {
-    'c' : 'clear'
-  });
-
-  if (options['clear']) {
-    _dirStack = [];
-    return _dirStack;
-  }
-
-  var stack = _actualDirStack();
-
-  if (index) {
-    index = _parseStackIndex(index);
-
-    if (index < 0) {
-      index = stack.length + index;
-    }
-
-    common.log(stack[index]);
-    return stack[index];
-  }
-
-  common.log(stack.join(' '));
-
-  return stack;
-}
 exports.dirs = _dirs;
+exports.pushd = _pushd;
+exports.popd = _popd;

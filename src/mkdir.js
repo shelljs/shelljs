@@ -36,19 +36,23 @@ function mkdirSyncRecursive(dir) {
 //@ Creates directories.
 function _mkdir(options, dirs) {
   options = common.parseOptions(options, {
-    'p': 'fullpath'
+    p: 'fullpath',
   });
-  if (!dirs)
-    common.error('no paths given');
 
-  if (typeof dirs === 'string')
+  if (!dirs) {
+    common.error('no paths given');
+  }
+
+  if (typeof dirs === 'string') {
     dirs = [].slice.call(arguments, 1);
+  }
   // if it's array leave it as it is
 
-  dirs.forEach(function(dir) {
+  dirs.forEach(function checkDir(dir) {
     if (fs.existsSync(dir)) {
-      if (!options.fullpath)
-          common.error('path already exists: ' + dir, true);
+      if (!options.fullpath) {
+        common.error('path already exists: ' + dir, true);
+      }
       return; // skip dir
     }
 
@@ -59,10 +63,11 @@ function _mkdir(options, dirs) {
       return; // skip dir
     }
 
-    if (options.fullpath)
+    if (options.fullpath) {
       mkdirSyncRecursive(dir);
-    else
+    } else {
       fs.mkdirSync(dir, parseInt('0777', 8));
+    }
   });
 } // mkdir
 module.exports = _mkdir;

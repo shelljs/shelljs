@@ -19,8 +19,8 @@ var common = require('./common');
 //@ Links source to dest. Use -f to force the link, should dest already exist.
 function _ln(options, source, dest) {
   options = common.parseOptions(options, {
-    's': 'symlink',
-    'f': 'force'
+    s: 'symlink',
+    f: 'force',
   });
 
   if (!source || !dest) {
@@ -43,15 +43,17 @@ function _ln(options, source, dest) {
   if (options.symlink) {
     var isWindows = common.platform === 'win';
     var linkType = isWindows ? 'file' : null;
-    var resolvedSourcePath = isAbsolute ? sourcePath : path.resolve(process.cwd(), path.dirname(dest), source);
+    var resolvedSourcePath = isAbsolute ?
+                             sourcePath :
+                             path.resolve(process.cwd(), path.dirname(dest), source);
     if (!fs.existsSync(resolvedSourcePath)) {
       common.error('Source file does not exist', true);
     } else if (isWindows && fs.statSync(resolvedSourcePath).isDirectory()) {
-      linkType =  'junction';
+      linkType = 'junction';
     }
 
     try {
-      fs.symlinkSync(linkType === 'junction' ? resolvedSourcePath: source, dest, linkType);
+      fs.symlinkSync(linkType === 'junction' ? resolvedSourcePath : source, dest, linkType);
     } catch (err) {
       common.error(err.message);
     }

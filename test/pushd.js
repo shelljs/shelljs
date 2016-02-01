@@ -1,15 +1,16 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    path = require('path');
+var assert = require('assert');
+var path = require('path');
 
 shell.config.silent = true;
 
-var root = path.resolve(), trail;
+var root = path.resolve();
+var trail;
 
 function reset() {
-    shell.dirs('-c');
-    shell.cd(root);
+  shell.dirs('-c');
+  shell.cd(root);
 }
 
 // Push valid directories
@@ -17,38 +18,38 @@ trail = shell.pushd('resources/pushd');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd'),
+  root,
 ]);
 
 trail = shell.pushd('a');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
+  root,
 ]);
 
 trail = shell.pushd('../b');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
+  root,
 ]);
 
 trail = shell.pushd('c');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/b/c'),
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd/b/c'),
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
+  root,
 ]);
 
 // Push stuff around with positive indices
@@ -56,55 +57,55 @@ trail = shell.pushd('+0');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/b/c'),
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd/b/c'),
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
+  root,
 ]);
 
 trail = shell.pushd('+1');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd'),
-    root,
-    path.resolve(root, 'resources/pushd/b/c')
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
+  root,
+  path.resolve(root, 'resources/pushd/b/c'),
 ]);
 
 trail = shell.pushd('+2');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd'),
-    root,
-    path.resolve(root, 'resources/pushd/b/c'),
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a')
+  path.resolve(root, 'resources/pushd'),
+  root,
+  path.resolve(root, 'resources/pushd/b/c'),
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
 ]);
 
 trail = shell.pushd('+3');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd'),
-    root,
-    path.resolve(root, 'resources/pushd/b/c')
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
+  root,
+  path.resolve(root, 'resources/pushd/b/c'),
 ]);
 
 trail = shell.pushd('+4');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/b/c'),
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd/b/c'),
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
+  root,
 ]);
 
 // Push stuff around with negative indices
@@ -112,55 +113,55 @@ trail = shell.pushd('-0');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    root,
-    path.resolve(root, 'resources/pushd/b/c'),
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd')
+  root,
+  path.resolve(root, 'resources/pushd/b/c'),
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
 ]);
 
 trail = shell.pushd('-1');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd'),
-    root,
-    path.resolve(root, 'resources/pushd/b/c'),
-    path.resolve(root, 'resources/pushd/b')
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
+  root,
+  path.resolve(root, 'resources/pushd/b/c'),
+  path.resolve(root, 'resources/pushd/b'),
 ]);
 
 trail = shell.pushd('-2');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    root,
-    path.resolve(root, 'resources/pushd/b/c'),
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd')
+  root,
+  path.resolve(root, 'resources/pushd/b/c'),
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
 ]);
 
 trail = shell.pushd('-3');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/b/c'),
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd/b/c'),
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
+  root,
 ]);
 
 trail = shell.pushd('-4');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/b/c'),
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd/a'),
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd/b/c'),
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd/a'),
+  path.resolve(root, 'resources/pushd'),
+  root,
 ]);
 
 // Push without changing directory or resolving paths
@@ -168,22 +169,25 @@ reset(); trail = shell.pushd('-n', 'resources/pushd');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    root,
-    'resources/pushd'
+  root,
+  'resources/pushd',
 ]);
 
 trail = shell.pushd('-n', 'resources/pushd/a');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    root,
-    'resources/pushd/a',
-    'resources/pushd'
+  root,
+  'resources/pushd/a',
+  'resources/pushd',
 ]);
 
 // Push invalid directory
 shell.pushd('does/not/exist');
-assert.equal(shell.error(), 'pushd: no such file or directory: ' + path.resolve('.', 'does/not/exist'));
+assert.equal(
+  shell.error(),
+  'pushd: no such file or directory: ' + path.resolve('.', 'does/not/exist')
+);
 assert.equal(process.cwd(), trail[0]);
 
 // Push without arguments should swap top two directories when stack length is 2
