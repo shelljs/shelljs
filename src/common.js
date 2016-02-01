@@ -14,7 +14,7 @@ var state = {
   error: null,
   currentCmd: 'shell.js',
   previousDir: null,
-  tempDir: null
+  tempDir: null,
 };
 exports.state = state;
 
@@ -22,47 +22,54 @@ var platform = os.type().match(/^Win/) ? 'win' : 'unix';
 exports.platform = platform;
 
 function log() {
-  if (!config.silent)
+  if (!config.silent) {
     console.error.apply(console, arguments);
+  }
 }
 exports.log = log;
 
 // Shows error message. Throws unless _continue or config.fatal are true
 function error(msg, _continue) {
-  if (state.error === null)
+  if (state.error === null) {
     state.error = '';
-  var log_entry = state.currentCmd + ': ' + msg;
-  if (state.error === '')
-    state.error = log_entry;
-  else
-    state.error += '\n' + log_entry;
+  }
+  var logEntry = state.currentCmd + ': ' + msg;
+  if (state.error === '') {
+    state.error = logEntry;
+  } else {
+    state.error += '\n' + logEntry;
+  }
 
-  if (msg.length > 0)
-    log(log_entry);
+  if (msg.length > 0) {
+    log(logEntry);
+  }
 
-  if (config.fatal)
+  if (config.fatal) {
     process.exit(1);
+  }
 
-  if (!_continue)
-    throw '';
+  if (!_continue) {
+    throw new Error('');
+  }
 }
 exports.error = error;
 
 // In the future, when Proxies are default, we can add methods like `.to()` to primitive strings.
 // For now, this is a dummy function to bookmark places we need such strings
-function ShellString(str) {
+function shellString(str) {
   return str;
 }
-exports.ShellString = ShellString;
+exports.shellString = shellString;
 
 // Return the home directory in a platform-agnostic way, with consideration for
 // older versions of node
 function getUserHome() {
   var result;
-  if (os.homedir)
+  if (os.homedir) {
     result = os.homedir(); // node 3+
-  else
+  } else {
     result = process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
+  }
   return result;
 }
 exports.getUserHome = getUserHome;
@@ -70,26 +77,31 @@ exports.getUserHome = getUserHome;
 // Returns {'alice': true, 'bob': false} when passed a dictionary, e.g.:
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
 function parseOptions(str, map) {
-  if (!map)
+  if (!map) {
     error('parseOptions() internal error: no map given');
+  }
 
   // All options are false by default
   var options = {};
   for (var letter in map) {
-    if (!map[letter].match('^!'))
+    if (!map[letter].match('^!')) {
       options[map[letter]] = false;
+    }
   }
 
-  if (!str)
+  if (!str) {
     return options; // defaults
+  }
 
-  if (typeof str !== 'string')
+  if (typeof str !== 'string') {
     error('parseOptions() internal error: wrong str');
+  }
 
   // e.g. match[1] = 'Rf' for str = '-Rf'
   var match = str.match(/^\-(.+)/);
-  if (!match)
+  if (!match) {
     return options;
+  }
 
   // e.g. chars = ['R', 'f']
   var chars = match[1].split('');
@@ -98,10 +110,11 @@ function parseOptions(str, map) {
   chars.forEach(function (c) {
     if (c in map) {
       opt = map[c];
-      if (opt.match('^!'))
+      if (opt.match('^!')) {
         options[opt.slice(1, opt.length - 1)] = false;
-      else
+      } else {
         options[opt] = true;
+      }
     } else {
       error('option not recognized: ' + c);
     }
@@ -131,9 +144,7 @@ function expand(list) {
       }).forEach(function (file) {
         expanded.push(file);
       });
-    }
-    // Wildcard present on file names ?
-    else if (listEl.search(/\*/) > -1) {
+    } else if (listEl.search(/\*/) > -1) { // Wildcard present on file names?
       _ls('', listEl).forEach(function (file) {
         expanded.push(file);
       });
@@ -165,14 +176,15 @@ exports.unlinkSync = unlinkSync;
 // e.g. 'shelljs_a5f185d0443ca...'
 function randomFileName() {
   function randomHash(count) {
-    if (count === 1)
+    if (count === 1) {
       return parseInt(16 * Math.random(), 10).toString(16);
-    else {
-      var hash = '';
-      for (var i = 0; i < count; i++)
-        hash += randomHash(1);
-      return hash;
     }
+
+    var hash = '';
+    for (var i = 0; i < count; i++) {
+      hash += randomHash(1);
+    }
+    return hash;
   }
 
   return 'shelljs_' + randomHash(20);
@@ -185,8 +197,11 @@ exports.randomFileName = randomFileName;
 function extend(target) {
   var sources = [].slice.call(arguments, 1);
   sources.forEach(function (source) {
-    for (var key in source)
-      target[key] = source[key];
+    for (var key in source) {
+      if (source.hasOwnProperty(key)) {
+        target[key] = source[key];
+      }
+    }
   });
 
   return target;
@@ -213,15 +228,21 @@ function wrap(cmd, fn, options) {
       if (options && options.notUnix) {
         retValue = fn.apply(this, args);
       } else {
-        if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-')
+        if (args.length === 0 ||
+            typeof args[0] !== 'string' ||
+            args[0].length <= 1 ||
+            args[0][0] !== '-'
+        ) {
           args.unshift(''); // only add dummy option if '-option' not already present
+        }
         // Expand the '~' if appropriate
         var homeDir = getUserHome();
         args = args.map(function (arg) {
-          if (typeof arg === 'string' && arg.slice(0, 2) === '~/' || arg === '~')
+          if (typeof arg === 'string' && arg.slice(0, 2) === '~/' || arg === '~') {
             return arg.replace(/^~/, homeDir);
-          else
-            return arg;
+          }
+
+          return arg;
         });
         retValue = fn.apply(this, args);
       }
@@ -232,8 +253,9 @@ function wrap(cmd, fn, options) {
         console.log(e.stack || e);
         process.exit(1);
       }
-      if (config.fatal)
+      if (config.fatal) {
         throw e;
+      }
     }
 
     state.currentCmd = 'shell.js';

@@ -7,15 +7,16 @@ var os = require('os');
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
 //  with large files)
 function copyFileSync(srcFile, destFile) {
-  if (!fs.existsSync(srcFile))
+  if (!fs.existsSync(srcFile)) {
     common.error('copyFileSync: no such file or directory: ' + srcFile);
+  }
 
-  var BUF_LENGTH = 64 * 1024,
-    buf = new Buffer(BUF_LENGTH),
-    bytesRead = BUF_LENGTH,
-    pos = 0,
-    fdr = null,
-    fdw = null;
+  var BUF_LENGTH = 64 * 1024;
+  var buf = new Buffer(BUF_LENGTH);
+  var bytesRead = BUF_LENGTH;
+  var pos = 0;
+  var fdr = null;
+  var fdw = null;
 
   try {
     fdr = fs.openSync(srcFile, 'r');
@@ -52,12 +53,13 @@ function copyFileSync(srcFile, destFile) {
 function cpdirSyncRecursive(sourceDir, destDir, opts) {
   if (!opts) opts = {};
 
-  /* Create the directory where all our junk is moving to; read the mode of the source directory and mirror it */
+  // Create the directory where all our junk is moving to;
+  // read the mode of the source directory and mirror it
   var checkDir = fs.statSync(sourceDir);
   try {
     fs.mkdirSync(destDir, checkDir.mode);
   } catch (e) {
-    //if the directory already exists, that's okay
+    // if the directory already exists, that's okay
     if (e.code !== 'EEXIST') throw e;
   }
 
@@ -82,7 +84,6 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
         copyFileSync(srcFile, destFile);
       }
     }
-
   } // for files
 } // cpdirSyncRecursive
 
@@ -106,9 +107,9 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@ Copies files. The wildcard `*` is accepted.
 function _cp(options, sources, dest) {
   options = common.parseOptions(options, {
-    'f': 'force',
-    'R': 'recursive',
-    'r': 'recursive'
+    f: 'force',
+    R: 'recursive',
+    r: 'recursive',
   });
 
   // Get sources, dest
@@ -125,16 +126,18 @@ function _cp(options, sources, dest) {
     common.error('invalid arguments');
   }
 
-  var exists = fs.existsSync(dest),
-    stats = exists && fs.statSync(dest);
+  var exists = fs.existsSync(dest);
+  var stats = exists && fs.statSync(dest);
 
   // Dest is not existing dir, but multiple sources given
-  if ((!exists || !stats.isDirectory()) && sources.length > 1)
+  if ((!exists || !stats.isDirectory()) && sources.length > 1) {
     common.error('dest is not a directory (too many sources)');
+  }
 
   // Dest is an existing file, but no -f given
-  if (exists && stats.isFile() && !options.force)
+  if (exists && stats.isFile() && !options.force) {
     common.error('dest file already exists: ' + dest);
+  }
 
   if (options.recursive) {
     // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
@@ -172,12 +175,12 @@ function _cp(options, sources, dest) {
       } else {
         // Recursive
         // 'cp /a/source dest' should create 'source' in 'dest'
-        var newDest = path.join(dest, path.basename(src)),
-          checkDir = fs.statSync(src);
+        var newDest = path.join(dest, path.basename(src));
+        var checkDir = fs.statSync(src);
         try {
           fs.mkdirSync(newDest, checkDir.mode);
         } catch (e) {
-          //if the directory already exists, that's okay
+          // if the directory already exists, that's okay
           if (e.code !== 'EEXIST') {
             common.error('dest file no such file or directory: ' + newDest, true);
             throw e;
@@ -194,8 +197,9 @@ function _cp(options, sources, dest) {
     // When copying to '/path/dir':
     //    thisDest = '/path/dir/file1'
     var thisDest = dest;
-    if (fs.existsSync(dest) && fs.statSync(dest).isDirectory())
+    if (fs.existsSync(dest) && fs.statSync(dest).isDirectory()) {
       thisDest = path.normalize(dest + '/' + path.basename(src));
+    }
 
     if (fs.existsSync(thisDest) && !options.force) {
       common.error('dest file already exists: ' + thisDest, true);

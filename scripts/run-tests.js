@@ -9,10 +9,10 @@ var failed = false;
 //
 // Lint
 //
-var ESLINT_BIN = 'node_modules/.bin/eslint';
+var ESLINT_BIN = common.platform === 'win' ? 'eslint.cmd' : 'eslint';
 cd(__dirname + '/..');
 
-if (!test('-f', ESLINT_BIN)) {
+if (!test('-f', 'node_modules/.bin/' + ESLINT_BIN)) {
   echo('ESLint not found. Run `npm install` in the root dir first.');
   exit(1);
 }
@@ -24,7 +24,7 @@ function spawn(path, args) {
 }
 
 // We use child_process.spawnSync so we can have colored output
-if (spawn(ESLINT_BIN, ['.'], { stdio: [0, 1, 2] }) !== 0) {
+if (spawn(ESLINT_BIN, ['.']) !== 0) {
   failed = true;
   echo('*** ESLint FAILED! (return code != 0)');
   echo();
@@ -37,7 +37,7 @@ if (spawn(ESLINT_BIN, ['.'], { stdio: [0, 1, 2] }) !== 0) {
 // Unit tests
 //
 cd(__dirname + '/../test');
-ls('*.js').forEach(function (file) {
+ls('*.js').forEach(function runTest(file) {
   echo('Running test:', file);
   if (exec('node ' + file).code !== 123) { // 123 avoids false positives (e.g. premature exit)
     failed = true;

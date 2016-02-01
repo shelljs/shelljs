@@ -18,8 +18,9 @@ var common = require('./common');
 function _set(options) {
   if (!options) {
     var args = [].slice.call(arguments, 0);
-    if (args.length < 2)
+    if (args.length < 2) {
       common.error('must provide an argument');
+    }
     options = args[1];
   }
   var negate = (options[0] === '+');
@@ -27,20 +28,23 @@ function _set(options) {
     options = '-' + options.slice(1); // parseOptions needs a '-' prefix
   }
   options = common.parseOptions(options, {
-    'e': 'fatal',
-    'v': 'verbose'
+    e: 'fatal',
+    v: 'verbose',
   });
 
   var key;
   if (negate) {
-    for (key in options)
-      options[key] = !options[key];
+    for (key in options) {
+      if (options.hasOwnProperty(key)) {
+        options[key] = !options[key];
+      }
+    }
   }
 
   for (key in options) {
     // Only change the global config if `negate` is false and the option is true
     // or if `negate` is true and the option is false (aka negate !== option)
-    if (negate !== options[key]) {
+    if (options.hasOwnProperty(key) && negate !== options[key]) {
       common.config[key] = options[key];
     }
   }

@@ -8,17 +8,19 @@ var XP_DEFAULT_PATHEXT = '.com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh';
 
 // Cross-platform method for splitting environment PATH variables
 function splitPath(p) {
-  if (!p)
+  if (!p) {
     return [];
+  }
 
-  if (common.platform === 'win')
+  if (common.platform === 'win') {
     return p.split(';');
-  else
-    return p.split(':');
+  }
+
+  return p.split(':');
 }
 
-function checkPath(path) {
-  return fs.existsSync(path) && !fs.statSync(path).isDirectory();
+function checkPath(dirPath) {
+  return fs.existsSync(dirPath) && !fs.statSync(dirPath).isDirectory();
 }
 
 //@
@@ -34,19 +36,21 @@ function checkPath(path) {
 //@ `PATHEXT` variable to append the extension if it's not already executable.
 //@ Returns string containing the absolute path to the command.
 function _which(options, cmd) {
-  if (!cmd)
+  if (!cmd) {
     common.error('must specify command');
+  }
 
-  var pathEnv = process.env.path || process.env.Path || process.env.PATH,
-    pathArray = splitPath(pathEnv),
-    where = null;
+  var pathEnv = process.env.path || process.env.Path || process.env.PATH;
+  var pathArray = splitPath(pathEnv);
+  var where = null;
 
   // No relative/absolute paths provided?
   if (cmd.search(/\//) === -1) {
     // Search for command in PATH
-    pathArray.forEach(function (dir) {
-      if (where)
+    pathArray.forEach(function processDir(dir) {
+      if (where) {
         return; // already found it
+      }
 
       var attempt = path.resolve(dir, cmd);
 
@@ -88,11 +92,12 @@ function _which(options, cmd) {
   }
 
   // Command not found anywhere?
-  if (!checkPath(cmd) && !where)
+  if (!checkPath(cmd) && !where) {
     return null;
+  }
 
   where = where || path.resolve(cmd);
 
-  return common.ShellString(where);
+  return common.shellString(where);
 }
 module.exports = _which;

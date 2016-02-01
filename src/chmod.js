@@ -4,31 +4,31 @@ var path = require('path');
 
 var PERMS = (function (base) {
   return {
-    OTHER_EXEC  : base.EXEC,
-    OTHER_WRITE : base.WRITE,
-    OTHER_READ  : base.READ,
+    OTHER_EXEC: base.EXEC,
+    OTHER_WRITE: base.WRITE,
+    OTHER_READ: base.READ,
 
-    GROUP_EXEC  : base.EXEC << 3,
-    GROUP_WRITE : base.WRITE << 3,
-    GROUP_READ  : base.READ << 3,
+    GROUP_EXEC: base.EXEC << 3,
+    GROUP_WRITE: base.WRITE << 3,
+    GROUP_READ: base.READ << 3,
 
-    OWNER_EXEC  : base.EXEC << 6,
-    OWNER_WRITE : base.WRITE << 6,
-    OWNER_READ  : base.READ << 6,
+    OWNER_EXEC: base.EXEC << 6,
+    OWNER_WRITE: base.WRITE << 6,
+    OWNER_READ: base.READ << 6,
 
     // Literal octal numbers are apparently not allowed in "strict" javascript.  Using parseInt is
     // the preferred way, else a jshint warning is thrown.
-    STICKY      : parseInt('01000', 8),
-    SETGID      : parseInt('02000', 8),
-    SETUID      : parseInt('04000', 8),
+    STICKY: parseInt('01000', 8),
+    SETGID: parseInt('02000', 8),
+    SETUID: parseInt('04000', 8),
 
-    TYPE_MASK   : parseInt('0770000', 8)
+    TYPE_MASK: parseInt('0770000', 8),
   };
-})({
-  EXEC  : 1,
-  WRITE : 2,
-  READ  : 4
-});
+}({
+  EXEC: 1,
+  WRITE: 2,
+  READ: 4,
+}));
 
 //@
 //@ ### chmod(octal_mode || octal_string, file)
@@ -65,16 +65,15 @@ function _chmod(options, mode, filePattern) {
       filePattern = mode;
       mode = options;
       options = '';
-    }
-    else {
+    } else {
       common.error('You must specify a file.');
     }
   }
 
   options = common.parseOptions(options, {
-    'R': 'recursive',
-    'c': 'changes',
-    'v': 'verbose'
+    R: 'recursive',
+    c: 'changes',
+    v: 'verbose',
   });
 
   if (typeof filePattern === 'string') {
@@ -98,8 +97,7 @@ function _chmod(options, mode, filePattern) {
         }
       }
     });
-  }
-  else {
+  } else {
     files = common.expand(filePattern);
   }
 
@@ -124,7 +122,6 @@ function _chmod(options, mode, filePattern) {
     if (isNaN(parseInt(mode, 8))) {
       // parse options
       mode.split(',').forEach(function (symbolicMode) {
-        /*jshint regexdash:true */
         var pattern = /([ugoa]*)([=\+-])([rwxXst]*)/i;
         var matches = pattern.exec(symbolicMode);
 
@@ -144,18 +141,27 @@ function _chmod(options, mode, filePattern) {
           var changeSticky = change.indexOf('t') !== -1;
           var changeSetuid = change.indexOf('s') !== -1;
 
-          if (changeExecDir && isDir)
+          if (changeExecDir && isDir) {
             changeExec = true;
+          }
 
           var mask = 0;
           if (changeOwner) {
-            mask |= (changeRead ? PERMS.OWNER_READ : 0) + (changeWrite ? PERMS.OWNER_WRITE : 0) + (changeExec ? PERMS.OWNER_EXEC : 0) + (changeSetuid ? PERMS.SETUID : 0);
+            mask |= (changeRead ? PERMS.OWNER_READ : 0) +
+                (changeWrite ? PERMS.OWNER_WRITE : 0) +
+                (changeExec ? PERMS.OWNER_EXEC : 0) +
+                (changeSetuid ? PERMS.SETUID : 0);
           }
           if (changeGroup) {
-            mask |= (changeRead ? PERMS.GROUP_READ : 0) + (changeWrite ? PERMS.GROUP_WRITE : 0) + (changeExec ? PERMS.GROUP_EXEC : 0) + (changeSetuid ? PERMS.SETGID : 0);
+            mask |= (changeRead ? PERMS.GROUP_READ : 0) +
+                (changeWrite ? PERMS.GROUP_WRITE : 0) +
+                (changeExec ? PERMS.GROUP_EXEC : 0) +
+                (changeSetuid ? PERMS.SETGID : 0);
           }
           if (changeOther) {
-            mask |= (changeRead ? PERMS.OTHER_READ : 0) + (changeWrite ? PERMS.OTHER_WRITE : 0) + (changeExec ? PERMS.OTHER_EXEC : 0);
+            mask |= (changeRead ? PERMS.OTHER_READ : 0) +
+                (changeWrite ? PERMS.OTHER_WRITE : 0) +
+                (changeExec ? PERMS.OTHER_EXEC : 0);
           }
 
           // Sticky bit is special - it's not tied to user, group or other.
@@ -175,11 +181,14 @@ function _chmod(options, mode, filePattern) {
             case '=':
               newPerms = type + mask;
 
-              // According to POSIX, when using = to explicitly set the permissions, setuid and setgid can never be cleared.
+              // According to POSIX, when using = to explicitly set the permissions,
+              // setuid and setgid can never be cleared.
               if (fs.statSync(file).isDirectory()) {
                 newPerms |= (PERMS.SETUID + PERMS.SETGID) & perms;
               }
               break;
+            default:
+              common.error('Unknown operator.');
           }
 
           if (options.verbose) {
@@ -193,17 +202,16 @@ function _chmod(options, mode, filePattern) {
             fs.chmodSync(file, newPerms);
             perms = newPerms; // for the next round of changes!
           }
-        }
-        else {
+        } else {
           common.error('Invalid symbolic mode change: ' + symbolicMode);
         }
       });
-    }
-    else {
+    } else {
       // they gave us a full number
       newPerms = type + parseInt(mode, 8);
 
-      // POSIX rules are that setuid and setgid can only be added using numeric form, but not cleared.
+      // POSIX rules are that setuid and setgid can only be added
+      // using numeric form, but not cleared.
       if (fs.statSync(file).isDirectory()) {
         newPerms |= (PERMS.SETUID + PERMS.SETGID) & perms;
       }

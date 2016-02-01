@@ -63,7 +63,7 @@ assert.ok(result === 'test1\ntest2\n' || result === 'test2\ntest1\n');
 // multiple files, glob syntax, ** for directory name
 result = shell.grep(/test/, '**/file*.js');
 assert.equal(shell.error(), null);
-assert.equal(result, 'test\ntest\ntest\ntest\n');
+assert.equal(result, 'test;\ntest;\ntest;\ntest;\n');
 
 // one file, * in regex
 result = shell.grep(/alpha*beta/, 'resources/grep/file');

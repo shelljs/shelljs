@@ -22,31 +22,34 @@ var fs = require('fs');
 //@ ```
 //@
 //@ Evaluates expression using the available primaries and returns corresponding value.
-function _test(options, path) {
-  if (!path)
+function _test(opts, path) {
+  if (!path) {
     common.error('no path given');
+  }
 
   // hack - only works with unary primaries
-  options = common.parseOptions(options, {
-    'b': 'block',
-    'c': 'character',
-    'd': 'directory',
-    'e': 'exists',
-    'f': 'file',
-    'L': 'link',
-    'p': 'pipe',
-    'S': 'socket'
+  var options = common.parseOptions(opts, {
+    b: 'block',
+    c: 'character',
+    d: 'directory',
+    e: 'exists',
+    f: 'file',
+    L: 'link',
+    p: 'pipe',
+    S: 'socket',
   });
 
   var canInterpret = false;
-  for (var key in options)
+  for (var key in options) {
     if (options[key] === true) {
       canInterpret = true;
       break;
     }
+  }
 
-  if (!canInterpret)
+  if (!canInterpret) {
     common.error('could not interpret expression');
+  }
 
   if (options.link) {
     try {
@@ -56,30 +59,39 @@ function _test(options, path) {
     }
   }
 
-  if (!fs.existsSync(path))
+  if (!fs.existsSync(path)) {
     return false;
+  }
 
-  if (options.exists)
+  if (options.exists) {
     return true;
+  }
 
   var stats = fs.statSync(path);
 
-  if (options.block)
+  if (options.block) {
     return stats.isBlockDevice();
+  }
 
-  if (options.character)
+  if (options.character) {
     return stats.isCharacterDevice();
+  }
 
-  if (options.directory)
+  if (options.directory) {
     return stats.isDirectory();
+  }
 
-  if (options.file)
+  if (options.file) {
     return stats.isFile();
+  }
 
-  if (options.pipe)
+  if (options.pipe) {
     return stats.isFIFO();
+  }
 
-  if (options.socket)
+  if (options.socket) {
     return stats.isSocket();
+  }
 } // test
+
 module.exports = _test;
