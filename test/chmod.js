@@ -1,8 +1,8 @@
 var shell = require('..');
 var common = require('../src/common');
 
-var assert = require('assert'),
-  fs = require('fs');
+var assert = require('assert');
+var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -20,8 +20,9 @@ assert.ok(shell.error());
 //
 
 // On Windows, chmod acts VERY differently so skip those tests for now
-if (common.platform === 'win')
+if (common.platform === 'win') {
   shell.exit(123);
+}
 
 // Test files - the bitmasking is to ignore the upper bits.
 shell.chmod('755', 'resources/chmod/file1');
@@ -138,9 +139,21 @@ shell.chmod('744', 'resources/chmod/xdir/deep');
 shell.chmod('644', 'resources/chmod/xdir/deep/file');
 shell.chmod('-R', 'a+X', 'resources/chmod/xdir');
 
-assert.equal(fs.statSync('resources/chmod/xdir').mode & parseInt('755', 8), parseInt('755', 8));
-assert.equal(fs.statSync('resources/chmod/xdir/file').mode & parseInt('644', 8), parseInt('644', 8));
-assert.equal(fs.statSync('resources/chmod/xdir/deep').mode & parseInt('755', 8), parseInt('755', 8));
-assert.equal(fs.statSync('resources/chmod/xdir/deep/file').mode & parseInt('644', 8), parseInt('644', 8));
+assert.equal(
+  fs.statSync('resources/chmod/xdir').mode & parseInt('755', 8),
+  parseInt('755', 8)
+);
+assert.equal(
+    fs.statSync('resources/chmod/xdir/file').mode & parseInt('644', 8),
+    parseInt('644', 8)
+);
+assert.equal(
+    fs.statSync('resources/chmod/xdir/deep').mode & parseInt('755', 8),
+    parseInt('755', 8)
+);
+assert.equal(
+    fs.statSync('resources/chmod/xdir/deep/file').mode & parseInt('644', 8),
+    parseInt('644', 8)
+);
 
 shell.exit(123);
