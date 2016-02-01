@@ -95,15 +95,15 @@ function parseOptions(str, map) {
   var chars = match[1].split('');
 
   var opt;
-  chars.forEach(function(c) {
+  chars.forEach(function (c) {
     if (c in map) {
       opt = map[c];
       if (opt.match('^!'))
-        options[opt.slice(1, opt.length-1)] = false;
+        options[opt.slice(1, opt.length - 1)] = false;
       else
         options[opt] = true;
     } else {
-      error('option not recognized: '+c);
+      error('option not recognized: ' + c);
     }
   });
 

@@ -252,7 +252,7 @@ assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
 var result = shell.ls('-l', 'resources/ls');
 assert.equal(shell.error(), null);
 var idx;
-for (var k=0; k < result.length; k++) {
+for (var k = 0; k < result.length; k++) {
   if (result[k].name === 'resources/ls/file1') {
     idx = k;
     break;
@@ -275,7 +275,7 @@ assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
 var result = shell.ls('-lR', 'resources/ls/');
 assert.equal(shell.error(), null);
 var idx;
-for (var k=0; k < result.length; k++) {
+for (var k = 0; k < result.length; k++) {
   if (result[k].name === 'resources/ls/file1') {
     idx = k;
     break;
