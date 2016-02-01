@@ -1,7 +1,7 @@
 var shell = require('..');
 
-var assert = require('assert'),
-  path = require('path');
+var assert = require('assert');
+var path = require('path');
 
 shell.config.silent = true;
 
@@ -13,7 +13,7 @@ shell.pushd('a');
 var trail = [
   path.resolve(root, 'resources/pushd/a'),
   path.resolve(root, 'resources/pushd'),
-  root
+  root,
 ];
 
 assert.deepEqual(shell.dirs(), trail);

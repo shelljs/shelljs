@@ -1,9 +1,9 @@
 var shell = require('..');
 var common = require('../src/common');
 
-var assert = require('assert'),
-  fs = require('fs'),
-  numLines = require('./utils/utils').numLines;
+var assert = require('assert');
+var fs = require('fs');
+var numLines = require('./utils/utils').numLines;
 
 shell.config.silent = true;
 
@@ -94,25 +94,25 @@ assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/file1'), true);
 assert.equal(fs.existsSync('tmp/file2'), true);
 
-//recursive, nothing exists
+// recursive, nothing exists
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
 assert.equal(shell.ls('-R', 'resources/cp') + '', shell.ls('-R', 'tmp/cp') + '');
 
-//recursive, nothing exists, source ends in '/' (see Github issue #15)
+// recursive, nothing exists, source ends in '/' (see Github issue #15)
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp/', 'tmp/');
 assert.equal(shell.error(), null);
 assert.equal(shell.ls('-R', 'resources/cp') + '', shell.ls('-R', 'tmp') + '');
 
-//recursive, everything exists, no force flag
+// recursive, everything exists, no force flag
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
 shell.cp('-R', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null); // crash test only
 
-//recursive, everything exists, with force flag
+// recursive, everything exists, with force flag
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
 'changing things around'.to('tmp/cp/dir_a/z');
@@ -121,20 +121,20 @@ shell.cp('-Rf', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
 assert.equal(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); // after cp
 
-//recursive, creates dest dir since it's only one level deep (see Github issue #44)
+// recursive, creates dest dir since it's only one level deep (see Github issue #44)
 shell.rm('-rf', 'tmp/*');
 shell.cp('-r', 'resources/issue44', 'tmp/dir2');
 assert.equal(shell.error(), null);
 assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '');
 assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'));
 
-//recursive, does *not* create dest dir since it's too deep (see Github issue #44)
+// recursive, does *not* create dest dir since it's too deep (see Github issue #44)
 shell.rm('-rf', 'tmp/*');
 shell.cp('-r', 'resources/issue44', 'tmp/dir2/dir3');
 assert.ok(shell.error());
 assert.equal(fs.existsSync('tmp/dir2'), false);
 
-//recursive, creates dest dir, implicitly copies contents of source dir
+// recursive, creates dest dir, implicitly copies contents of source dir
 shell.rm('-rf', 'tmp/*');
 shell.cp('-r', 'resources/cp/dir_a', 'tmp/dest');
 assert.equal(shell.error(), null);
@@ -142,12 +142,15 @@ assert.equal(fs.existsSync('tmp/dest/z'), true);
 
 // On Windows, permission bits are quite different so skip those tests for now
 if (common.platform !== 'win') {
-    //preserve mode bits
+    // preserve mode bits
   shell.rm('-rf', 'tmp/*');
   var execBit = parseInt('001', 8);
   assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
   shell.cp('resources/cp-mode-bits/executable', 'tmp/executable');
-  assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode, fs.statSync('tmp/executable').mode);
+  assert.equal(
+      fs.statSync('resources/cp-mode-bits/executable').mode,
+      fs.statSync('tmp/executable').mode
+  );
 }
 
 shell.exit(123);

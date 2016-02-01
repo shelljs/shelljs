@@ -2,9 +2,9 @@ var shell = require('..');
 var common = require('../src/common');
 var isWindows = common.platform === 'win';
 
-var assert = require('assert'),
-  fs = require('fs'),
-  path = require('path');
+var assert = require('assert');
+var fs = require('fs');
+var path = require('path');
 
 shell.config.silent = true;
 
@@ -15,7 +15,10 @@ function skipOnWinForEPERM(action, test) {
   var error = shell.error();
 
   if (isWindows && error && /EPERM:/.test(error)) {
-    console.log('Got EPERM when testing symlinks on Windows. Assuming non-admin environment and skipping test.');
+    console.log( // eslint-disable-line no-console
+        'Got EPERM when testing symlinks on Windows.' +
+        ' Assuming non-admin environment and skipping test.'
+    );
   } else {
     test();
   }
@@ -71,6 +74,7 @@ assert.equal(
   'new content 1'
 );
 
+/* eslint-disable func-names */
 skipOnWinForEPERM(shell.ln.bind(shell, '-s', 'file2', 'tmp/linkfile2'), function () {
   assert(fs.existsSync('tmp/linkfile2'));
   assert.equal(
@@ -147,5 +151,6 @@ skipOnWinForEPERM(shell.ln.bind(shell, '-sf', 'file1.txt', 'tmp/file2.txt'), fun
         'new content txt'
     );
 });
+/* eslint-enable func-names */
 
 shell.exit(123);

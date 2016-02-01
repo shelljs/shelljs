@@ -1,8 +1,8 @@
 var shell = require('..');
 
-var assert = require('assert'),
-  fs = require('fs'),
-  numLines = require('./utils/utils').numLines;
+var assert = require('assert');
+var fs = require('fs');
+var numLines = require('./utils/utils').numLines;
 
 shell.config.silent = true;
 

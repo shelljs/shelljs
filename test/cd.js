@@ -1,9 +1,9 @@
 var shell = require('..');
 
-var assert = require('assert'),
-  path = require('path'),
-  fs = require('fs'),
-  common = require('../src/common');
+var assert = require('assert');
+var path = require('path');
+var fs = require('fs');
+var common = require('../src/common');
 
 shell.config.silent = true;
 

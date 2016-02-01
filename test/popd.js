@@ -1,11 +1,12 @@
 var shell = require('..');
 
-var assert = require('assert'),
-  path = require('path');
+var assert = require('assert');
+var path = require('path');
 
 shell.config.silent = true;
 
-var root = path.resolve(), trail;
+var root = path.resolve();
+var trail;
 
 function reset() {
   shell.dirs('-c');
@@ -26,7 +27,7 @@ assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
   path.resolve(root, 'resources/pushd'),
-  root
+  root,
 ]);
 
 shell.pushd('b');
@@ -35,7 +36,7 @@ assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
   path.resolve(root, 'resources/pushd'),
-  root
+  root,
 ]);
 
 shell.pushd('b');
@@ -46,7 +47,7 @@ assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
   path.resolve(root, 'resources/pushd/b'),
   path.resolve(root, 'resources/pushd'),
-  root
+  root,
 ]);
 
 trail = shell.popd();
@@ -54,7 +55,7 @@ assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
   path.resolve(root, 'resources/pushd'),
-  root
+  root,
 ]);
 
 trail = shell.popd();
