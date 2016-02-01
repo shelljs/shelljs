@@ -1,7 +1,7 @@
 var shell = require('..');
 
-var assert = require('assert'),
-  fs = require('fs');
+var assert = require('assert');
+var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -36,48 +36,50 @@ assert.ok(shell.error());
 // Valids
 //
 
+var result;
+
 shell.cp('-f', 'resources/file1', 'tmp/file1');
-var result = shell.sed('test1', 'hello', 'tmp/file1'); // search string
+result = shell.sed('test1', 'hello', 'tmp/file1'); // search string
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello');
 
-var result = shell.sed(/test1/, 'hello', 'tmp/file1'); // search regex
+result = shell.sed(/test1/, 'hello', 'tmp/file1'); // search regex
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello');
 
-var result = shell.sed(/test1/, 1234, 'tmp/file1'); // numeric replacement
+result = shell.sed(/test1/, 1234, 'tmp/file1'); // numeric replacement
 assert.equal(shell.error(), null);
 assert.equal(result, '1234');
 
-var replaceFun = function (match) {
+function replaceFun(match) {
   return match.toUpperCase() + match;
-};
-var result = shell.sed(/test1/, replaceFun, 'tmp/file1'); // replacement function
+}
+result = shell.sed(/test1/, replaceFun, 'tmp/file1'); // replacement function
 assert.equal(shell.error(), null);
 assert.equal(result, 'TEST1test1');
 
-var result = shell.sed('-i', /test1/, 'hello', 'tmp/file1');
+result = shell.sed('-i', /test1/, 'hello', 'tmp/file1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello');
 assert.equal(shell.cat('tmp/file1'), 'hello');
 
 // make sure * in regex is not globbed
-var result = shell.sed(/alpha*beta/, 'hello', 'resources/grep/file');
+result = shell.sed(/alpha*beta/, 'hello', 'resources/grep/file');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello\nhowareyou\nhello\nthis line ends in.js\nlllllllllllllllll.js\n');
 
 // make sure * in string-regex is not globbed
-var result = shell.sed('alpha*beta', 'hello', 'resources/grep/file');
+result = shell.sed('alpha*beta', 'hello', 'resources/grep/file');
 assert.ok(!shell.error());
 assert.equal(result, 'hello\nhowareyou\nhello\nthis line ends in.js\nlllllllllllllllll.js\n');
 
 // make sure * in regex is not globbed
-var result = shell.sed(/l*\.js/, '', 'resources/grep/file');
+result = shell.sed(/l*\.js/, '', 'resources/grep/file');
 assert.ok(!shell.error());
 assert.equal(result, 'alphaaaaaaabeta\nhowareyou\nalphbeta\nthis line ends in\n\n');
 
 // make sure * in string-regex is not globbed
-var result = shell.sed('l*\\.js', '', 'resources/grep/file');
+result = shell.sed('l*\\.js', '', 'resources/grep/file');
 assert.ok(!shell.error());
 assert.equal(result, 'alphaaaaaaabeta\nhowareyou\nalphbeta\nthis line ends in\n\n');
 
@@ -85,17 +87,17 @@ shell.cp('-f', 'resources/file1', 'tmp/file1');
 shell.cp('-f', 'resources/file2', 'tmp/file2');
 
 // multiple file names
-var result = shell.sed('test', 'hello', 'tmp/file1', 'tmp/file2');
+result = shell.sed('test', 'hello', 'tmp/file1', 'tmp/file2');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello1\nhello2');
 
 // array of file names (and try it out with a simple regex)
-var result = shell.sed(/t.*st/, 'hello', ['tmp/file1', 'tmp/file2']);
+result = shell.sed(/t.*st/, 'hello', ['tmp/file1', 'tmp/file2']);
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello1\nhello2');
 
 // multiple file names, with in-place-replacement
-var result = shell.sed('-i', 'test', 'hello', ['tmp/file1', 'tmp/file2']);
+result = shell.sed('-i', 'test', 'hello', ['tmp/file1', 'tmp/file2']);
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello1\nhello2');
 assert.equal(shell.cat('tmp/file1'), 'hello1');
