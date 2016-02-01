@@ -43,7 +43,17 @@ assert.equal(fs.existsSync('tmp/asdfasdf2'), false);
 shell.mv('asdfasdf1', 'asdfasdf2', 'tmp/file1'); // too many sources (dest is file)
 assert.ok(shell.error());
 
-shell.mv('tmp/file1', 'tmp/file2'); // dest already exists
+// -n is no-force/no-clobber
+shell.mv('-n', 'tmp/file1', 'tmp/file2'); // dest already exists
+assert.ok(shell.error());
+
+// -f is the default behavior
+shell.cp('tmp/file1', 'tmp/tmp_file');
+shell.mv('tmp/tmp_file', 'tmp/file2'); // dest already exists (but that's ok)
+assert.ok(!shell.error());
+
+// -fn is the same as -n
+shell.mv('-fn', 'tmp/file1', 'tmp/file2');
 assert.ok(shell.error());
 
 shell.mv('tmp/file1', 'tmp/file2', 'tmp/a_file'); // too many sources (exist, but dest is file)

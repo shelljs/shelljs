@@ -74,8 +74,10 @@ function parseOptions(str, map) {
 
   // All options are false by default
   var options = {};
-  for (var letter in map)
-    options[map[letter]] = false;
+  for (var letter in map) {
+    if (!map[letter].match('^!'))
+      options[map[letter]] = false;
+  }
 
   if (!str)
     return options; // defaults
@@ -91,11 +93,17 @@ function parseOptions(str, map) {
   // e.g. chars = ['R', 'f']
   var chars = match[1].split('');
 
+  var opt;
   chars.forEach(function(c) {
-    if (c in map)
-      options[map[c]] = true;
-    else
+    if (c in map) {
+      opt = map[c];
+      if (opt.match('^!'))
+        options[opt.slice(1, opt.length-1)] = false;
+      else
+        options[opt] = true;
+    } else {
       error('option not recognized: '+c);
+    }
   });
 
   return options;

@@ -246,12 +246,13 @@ Removes files. The wildcard `*` is accepted.
 ### mv([options ,] source_array, dest')
 Available options:
 
-+ `-f`: force
++ `-f`: force (default behavior)
++ `-n`: no-clobber
 
 Examples:
 
 ```javascript
-mv('-f', 'file', 'dir/');
+mv('-n', 'file', 'dir/');
 mv('file1', 'file2', 'dir/');
 mv(['file1', 'file2'], 'dir/'); // same as above
 ```
