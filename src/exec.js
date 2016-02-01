@@ -204,6 +204,7 @@ function execAsync(cmd, opts, callback) {
 //@ + `async`: Asynchronous execution. If a callback is provided, it will be set to
 //@   `true`, regardless of the passed value.
 //@ + `silent`: Do not echo program output to console.
+//@ + `shell`: A string path to the shell with which to execute the command
 //@
 //@ Examples:
 //@
@@ -245,11 +246,18 @@ function _exec(command, options, callback) {
     options.async = true;
   }
 
-  var bashPath = _which('', 'bash');
+  var shellPath;
+  if (options && options.shell)
+    shellPath = options.shell;
+  else if (common.platform !== 'win')
+    shellPath = _which('', 'bash');
+  else
+    shellPath = '';
+
   options = common.extend({
     silent: common.config.silent,
     async: false,
-    shell: bashPath
+    shell: shellPath
   }, options);
 
   if (options.async)

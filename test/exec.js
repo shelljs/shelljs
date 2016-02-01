@@ -1,7 +1,8 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    util = require('util');
+var assert = require('assert');
+var util = require('util');
+var common = require('../src/common');
 
 shell.config.silent = true;
 
@@ -78,6 +79,36 @@ var result = shell.exec( util.format('node -e "console.log(%s);"', "\\\"\\'+\\'_
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result.stdout, "'+'_'+'\n");
+
+// bash by default on unix
+if (common.platform !== 'win') {
+  var result = shell.exec('echo $0');
+  assert.equal(shell.error(), null);
+  if (shell.which('bash')) {
+    // node v0.10 and earlier don't seem to support the 'shell' option
+    assert.ok(process.version < 'v0.11' || result.stdout.match(/bash/));
+  } else {
+    assert.ok(result.stdout.match(/sh/));
+  }
+}
+
+// cmd.exe by default on windows
+if (common.platform === 'win') {
+  var result = shell.exec('cd'); // equivalent of unix `pwd`
+  assert.equal(shell.error(), null);
+  assert.equal(result.code, 0);
+  assert.equal(result.stdout, shell.pwd() + '\r\n');
+  assert.equal(result.stderr, '');
+}
+
+// 'shell' options
+if (common.platform !== 'win') {
+  var shPath = shell.which('sh');
+  var result = shell.exec('echo $0', {shell: shPath});
+  assert.equal(shell.error(), null);
+  assert.ok(result.stdout.match(/sh/));
+  assert.ok(!result.stdout.match(/bash/));
+}
 
 //
 // async

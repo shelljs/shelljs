@@ -485,6 +485,7 @@ Available options (all `false` by default):
 + `async`: Asynchronous execution. If a callback is provided, it will be set to
   `true`, regardless of the passed value.
 + `silent`: Do not echo program output to console.
++ `shell`: A string path to the shell with which to execute the command
 
 Examples:
 
