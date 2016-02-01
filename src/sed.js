@@ -16,28 +16,33 @@ var fs = require('fs');
 //@ ```
 //@
 //@ Reads an input string from `files` and performs a JavaScript `replace()` on the input
-//@ using the given search regex and replacement string or function. Returns the new string after replacement.
+//@ using the given search regex and replacement string or function.
+//@ Returns the new string after replacement.
 function _sed(options, regex, replacement, files) {
   options = common.parseOptions(options, {
-    'i': 'inplace'
+    i: 'inplace',
   });
 
-  if (typeof replacement === 'string' || typeof replacement === 'function')
+  if (typeof replacement === 'string' || typeof replacement === 'function') {
     replacement = replacement; // no-op
-  else if (typeof replacement === 'number')
+  } else if (typeof replacement === 'number') {
     replacement = replacement.toString(); // fallback
-  else
+  } else {
     common.error('invalid replacement string');
+  }
 
   // Convert all search strings to RegExp
-  if (typeof regex === 'string')
+  if (typeof regex === 'string') {
     regex = RegExp(regex);
+  }
 
-  if (!files)
+  if (!files) {
     common.error('no files given');
+  }
 
-  if (typeof files === 'string')
+  if (typeof files === 'string') {
     files = [].slice.call(arguments, 3);
+  }
   // if it's array leave it as it is
 
   files = common.expand(files);
@@ -55,10 +60,11 @@ function _sed(options, regex, replacement, files) {
 
     sed.push(result);
 
-    if (options.inplace)
+    if (options.inplace) {
       fs.writeFileSync(file, result, 'utf8');
+    }
   });
 
-  return common.ShellString(sed.join('\n'));
+  return common.shellString(sed.join('\n'));
 }
 module.exports = _sed;

@@ -4,6 +4,17 @@ var common = require('./common');
 var _cd = require('./cd');
 var _pwd = require('./pwd');
 
+function lsStat(objPath) {
+  var stats = fs.statSync(objPath);
+  // Note: this object will contain more information than .toString() returns
+  stats.name = objPath;
+  stats.toString = function stringifier() {
+    // Return a string resembling unix's `ls -l` format
+    return [this.mode, this.nlink, this.uid, this.gid, this.size, this.mtime, this.name].join(' ');
+  };
+  return stats;
+}
+
 //@
 //@ ### ls([options,] [path, ...])
 //@ ### ls([options,] path_array)
@@ -29,11 +40,11 @@ var _pwd = require('./pwd');
 //@ Returns array of files in the given path, or in current directory if no path provided.
 function _ls(options, paths) {
   options = common.parseOptions(options, {
-    'R': 'recursive',
-    'A': 'all',
-    'a': 'all_deprecated',
-    'd': 'directory',
-    'l': 'long'
+    R: 'recursive',
+    A: 'all',
+    a: 'all_deprecated',
+    d: 'directory',
+    l: 'long',
   });
 
   if (options.all_deprecated) {
@@ -44,12 +55,13 @@ function _ls(options, paths) {
     options.all = true;
   }
 
-  if (!paths)
+  if (!paths) {
     paths = ['.'];
-  else if (typeof paths === 'object')
+  } else if (typeof paths === 'object') {
     paths = paths; // assume array
-  else if (typeof paths === 'string')
+  } else if (typeof paths === 'string') {
     paths = [].slice.call(arguments, 1);
+  }
 
   var list = [];
 
@@ -60,12 +72,17 @@ function _ls(options, paths) {
     // hidden file?
     if (path.basename(name)[0] === '.') {
       // not explicitly asking for hidden files?
-      if (!options.all && !(path.basename(query)[0] === '.' && path.basename(query).length > 1))
+      if (!options.all &&
+          !(path.basename(query)[0] === '.' &&
+          path.basename(query).length > 1)
+      ) {
         return false;
+      }
     }
 
-    if (common.platform === 'win')
+    if (common.platform === 'win') {
       name = name.replace(/\\/g, '/');
+    }
 
     if (file.name) {
       file.name = name;
@@ -78,7 +95,7 @@ function _ls(options, paths) {
 
   paths.forEach(function (p) {
     if (fs.existsSync(p)) {
-      var stats = ls_stat(p);
+      var stats = lsStat(p);
       // Simple file?
       if (stats.isFile()) {
         if (options.long) {
@@ -96,18 +113,22 @@ function _ls(options, paths) {
       } else if (stats.isDirectory()) {
         // Iterate over p contents
         fs.readdirSync(p).forEach(function (file) {
-          var orig_file = file;
-          if (options.long)
-            file = ls_stat(path.join(p, file));
-          if (!pushFile(file, p))
+          var origFile = file;
+          if (options.long) {
+            file = lsStat(path.join(p, file));
+          }
+
+          if (!pushFile(file, p)) {
             return;
+          }
 
           // Recursive?
           if (options.recursive) {
             var oldDir = _pwd();
             _cd('', p);
-            if (fs.statSync(orig_file).isDirectory())
-              list = list.concat(_ls('-R' + (options.all ? 'A' : ''), orig_file + '/*'));
+            if (fs.statSync(origFile).isDirectory()) {
+              list = list.concat(_ls('-R' + (options.all ? 'A' : ''), origFile + '/*'));
+            }
             _cd('', oldDir);
           }
         });
@@ -128,20 +149,24 @@ function _ls(options, paths) {
       // Iterate over directory contents
       fs.readdirSync(dirname).forEach(function (file) {
         if (file.match(new RegExp(regexp))) {
-          var file_path = path.join(dirname, file);
-          file_path = options.long ? ls_stat(file_path) : file_path;
-          if (file_path.name)
-            file_path.name = path.normalize(file_path.name);
-          else
-            file_path = path.normalize(file_path);
-          if (!pushFile(file_path, basename))
+          var filePath = path.join(dirname, file);
+          filePath = options.long ? lsStat(filePath) : filePath;
+          if (filePath.name) {
+            filePath.name = path.normalize(filePath.name);
+          } else {
+            filePath = path.normalize(filePath);
+          }
+
+          if (!pushFile(filePath, basename)) {
             return;
+          }
 
           // Recursive?
           if (options.recursive) {
             var pp = dirname + '/' + file;
-            if (fs.lstatSync(pp).isDirectory())
+            if (fs.lstatSync(pp).isDirectory()) {
               list = list.concat(_ls('-R' + (options.all ? 'A' : ''), pp + '/*'));
+            }
           } // recursive
         } // if file matches
       }); // forEach
@@ -154,15 +179,3 @@ function _ls(options, paths) {
   return list;
 }
 module.exports = _ls;
-
-
-function ls_stat(path) {
-  var stats = fs.statSync(path);
-  // Note: this object will contain more information than .toString() returns
-  stats.name = path;
-  stats.toString = function () {
-    // Return a string resembling unix's `ls -l` format
-    return [this.mode, this.nlink, this.uid, this.gid, this.size, this.mtime, this.name].join(' ');
-  };
-  return stats;
-}

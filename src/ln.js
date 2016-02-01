@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
-var os = require('os');
 
 //@
 //@ ### ln([options,] source, dest)
@@ -20,8 +19,8 @@ var os = require('os');
 //@ Links source to dest. Use -f to force the link, should dest already exist.
 function _ln(options, source, dest) {
   options = common.parseOptions(options, {
-    's': 'symlink',
-    'f': 'force'
+    s: 'symlink',
+    f: 'force',
   });
 
   if (!source || !dest) {
@@ -42,7 +41,12 @@ function _ln(options, source, dest) {
   }
 
   if (options.symlink) {
-    if ((isAbsolute && !fs.existsSync(sourcePath)) || !fs.existsSync(path.resolve(process.cwd(), path.dirname(dest), source))) {
+    var isWindows = common.platform === 'win';
+    var linkType = isWindows ? 'file' : null;
+    var resolvedSourcePath = isAbsolute ?
+                             sourcePath :
+                             path.resolve(process.cwd(), path.dirname(dest), source);
+    if (!fs.existsSync(resolvedSourcePath)) {
       common.error('Source file does not exist', true);
     } else if (isWindows && fs.statSync(resolvedSourcePath).isDirectory()) {
       linkType = 'junction';
@@ -53,12 +57,15 @@ function _ln(options, source, dest) {
     } catch (err) {
       common.error(err.message);
     }
-    fs.symlinkSync(source, dest, os.platform() === 'win32' ? 'junction' : null);
   } else {
     if (!fs.existsSync(source)) {
       common.error('Source file does not exist', true);
     }
-    fs.linkSync(source, dest, os.platform() === 'win32' ? 'junction' : null);
+    try {
+      fs.linkSync(source, dest);
+    } catch (err) {
+      common.error(err.message);
+    }
   }
 }
 module.exports = _ln;

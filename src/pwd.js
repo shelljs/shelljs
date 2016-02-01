@@ -6,6 +6,6 @@ var common = require('./common');
 //@ Returns the current directory.
 function _pwd() {
   var pwd = path.resolve(process.cwd());
-  return common.ShellString(pwd);
+  return common.shellString(pwd);
 }
 module.exports = _pwd;
