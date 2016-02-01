@@ -15,7 +15,7 @@ shell.mkdir('tmp');
 shell.which();
 assert.ok(shell.error());
 
-var result = shell.which('asdfasdfasdfasdfasdf'); // what are the odds...
+result = shell.which('asdfasdfasdfasdfasdf'); // what are the odds...
 assert.ok(!shell.error());
 assert.ok(!result);
 
