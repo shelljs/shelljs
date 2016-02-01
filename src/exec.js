@@ -1,5 +1,6 @@
 var common = require('./common');
 var _tempDir = require('./tempdir');
+var _which = require('./which');
 var _pwd = require('./pwd');
 var path = require('path');
 var fs = require('fs');
@@ -64,13 +65,21 @@ function execSync(cmd, opts) {
     maxBuffer: 20*1024*1024
   };
 
+  if (opts.shell)
+    execOptions.shell = opts.shell; // use bash if it exists
+
   var script;
+
+  var execOptString = '{env: process.env, maxBuffer: ' +
+    execOptions.maxBuffer +
+    (execOptions.shell ? ", shell: '" + execOptions.shell + "'": '') +
+    '}';
 
   if (typeof child.execSync === 'function') {
     script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "var childProcess = child.exec('"+escape(cmd)+"', "+execOptString+", function(err) {",
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});",
       "var stdoutStream = fs.createWriteStream('"+escape(stdoutFile)+"');",
@@ -102,7 +111,7 @@ function execSync(cmd, opts) {
     script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "var childProcess = child.exec('"+escape(cmd)+"', "+execOptString+", function(err) {",
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});"
     ].join('\n');
@@ -160,7 +169,15 @@ function execAsync(cmd, opts, callback) {
     silent: common.config.silent
   }, opts);
 
-  var c = child.exec(cmd, {env: process.env, maxBuffer: 20*1024*1024}, function(err) {
+  var execOptions = {
+    env: process.env,
+    maxBuffer: 20*1024*1024
+  };
+
+  if (opts.shell)
+    execOptions.shell = opts.shell; // use bash if it exists
+
+  var c = child.exec(cmd, execOptions, function(err) {
     if (callback)
       callback(err ? err.code : 0, stdout, stderr);
   });
@@ -187,6 +204,7 @@ function execAsync(cmd, opts, callback) {
 //@ + `async`: Asynchronous execution. If a callback is provided, it will be set to
 //@   `true`, regardless of the passed value.
 //@ + `silent`: Do not echo program output to console.
+//@ + `shell`: A string path to the shell with which to execute the command
 //@
 //@ Examples:
 //@
@@ -228,9 +246,18 @@ function _exec(command, options, callback) {
     options.async = true;
   }
 
+  var shellPath;
+  if (options && options.shell)
+    shellPath = options.shell;
+  else if (common.platform !== 'win')
+    shellPath = _which('', 'bash');
+  else
+    shellPath = '';
+
   options = common.extend({
     silent: common.config.silent,
-    async: false
+    async: false,
+    shell: shellPath
   }, options);
 
   if (options.async)
