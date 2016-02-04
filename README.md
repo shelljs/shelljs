@@ -223,6 +223,8 @@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 
 Copies files. The wildcard `*` is accepted.
 
+Unlike POSIX `cp`, files will not be overwritten by default. Use `-f` to overwrite files.
+
 
 ### rm([options,] file [, file ...])
 ### rm([options,] file_array)

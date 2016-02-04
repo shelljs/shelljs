@@ -105,6 +105,8 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@ ```
 //@
 //@ Copies files. The wildcard `*` is accepted.
+//@
+//@ Unlike POSIX `cp`, files will not be overwritten by default. Use `-f` to overwrite files.
 function _cp(options, sources, dest) {
   options = common.parseOptions(options, {
     'f': '!no_force',
