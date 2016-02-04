@@ -35,7 +35,6 @@ function _touch(opts, files) {
     common.error('no paths given');
   }
 
-
   if (Array.isArray(files)) {
     files.forEach(function(f) {
       touchFile(opts, f);

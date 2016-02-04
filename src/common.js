@@ -67,46 +67,57 @@ function getUserHome() {
 }
 exports.getUserHome = getUserHome;
 
-// Returns {'alice': true, 'bob': false} when passed a dictionary, e.g.:
+// Returns {'alice': true, 'bob': false} when passed a string and dictionary as follows:
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
-function parseOptions(str, map) {
+// Returns {'reference': 'string-value', 'bob': false} when passed two dictionaries of the form:
+//   parseOptions({'-r': 'string-value'}, {'r':'reference', 'b':'bob'});
+function parseOptions(opt, map) {
   if (!map)
     error('parseOptions() internal error: no map given');
 
   // All options are false by default
   var options = {};
   for (var letter in map) {
-    if (!map[letter].match('^!'))
+    if (map[letter][0] !== '!')
       options[map[letter]] = false;
   }
 
-  if (!str)
+  if (!opt)
     return options; // defaults
 
-  if (typeof str !== 'string')
-    error('parseOptions() internal error: wrong str');
+  var optionName;
+  if (typeof opt === 'string') {
+    if (opt[0] !== '-')
+      return options;
 
-  // e.g. match[1] = 'Rf' for str = '-Rf'
-  var match = str.match(/^\-(.+)/);
-  if (!match)
-    return options;
+    // e.g. chars = ['R', 'f']
+    var chars = opt.slice(1).split('');
 
-  // e.g. chars = ['R', 'f']
-  var chars = match[1].split('');
-
-  var opt;
-  chars.forEach(function(c) {
-    if (c in map) {
-      opt = map[c];
-      if (opt.match('^!'))
-        options[opt.slice(1, opt.length-1)] = false;
-      else
-        options[opt] = true;
-    } else {
-      error('option not recognized: '+c);
+    chars.forEach(function(c) {
+      if (c in map) {
+        optionName = map[c];
+        if (optionName[0] === '!')
+          options[optionName.slice(1, optionName.length-1)] = false;
+        else
+          options[optionName] = true;
+      } else {
+        error('option not recognized: '+c);
+      }
+    });
+  } else if (typeof opt === 'object') {
+    for (var key in opt) {
+      // key is a string of the form '-r', '-d', etc.
+      var c = key[1];
+      if (c in map) {
+        optionName = map[c];
+        options[optionName] = opt[key]; // assign the given value
+      } else {
+        error('option not recognized: '+c);
+      }
     }
-  });
-
+  } else {
+    error('options must be strings or key-value pairs');
+  }
   return options;
 }
 exports.parseOptions = parseOptions;
@@ -213,8 +224,11 @@ function wrap(cmd, fn, options) {
       if (options && options.notUnix) {
         retValue = fn.apply(this, args);
       } else {
-        if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-')
+        if (typeof args[0] === 'object' && args[0].constructor.name === 'Object') {
+          args = args; // object count as options
+        } else if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-') {
           args.unshift(''); // only add dummy option if '-option' not already present
+        }
         // Expand the '~' if appropriate
         var homeDir = getUserHome();
         args = args.map(function(arg) {
