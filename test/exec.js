@@ -1,7 +1,9 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    util = require('util');
+var assert = require('assert');
+var util = require('util');
+var path = require('path');
+var os = require('os');
 
 shell.config.silent = true;
 
@@ -78,6 +80,32 @@ var result = shell.exec( util.format('node -e "console.log(%s);"', "\\\"\\'+\\'_
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result.stdout, "'+'_'+'\n");
+
+// set cwd
+var cmdString = process.platform === 'win32' ? 'cd' : 'pwd';
+result = shell.exec(cmdString, {cwd: '..'});
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result.stdout, path.resolve('..') + os.EOL);
+
+// set maxBuffer (very small)
+result = shell.exec('echo 1234567890'); // default maxBuffer is ok
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result.stdout, '1234567890' + os.EOL);
+if (process.version >= 'v0.11') { // this option doesn't work on v0.10
+  shell.exec('echo 1234567890', {maxBuffer: 6});
+  assert.ok(shell.error());
+}
+
+// set timeout option
+result = shell.exec('node resources/exec/slow.js'); // default timeout is ok
+assert.ok(!shell.error());
+assert.equal(result.code, 0);
+if (process.version >= 'v0.11') { // this option doesn't work on v0.10
+  result = shell.exec('node resources/exec/slow.js', {timeout: 10}); // times out
+  assert.ok(shell.error());
+}
 
 //
 // async
