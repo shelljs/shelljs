@@ -209,7 +209,8 @@ include the base directories, e.g. `lib/resources/file1` instead of just `file1`
 ### cp([options,] source_array, dest)
 Available options:
 
-+ `-f`: force
++ `-f`: force (default behavior)
++ `-n`: no-clobber
 + `-r, -R`: recursive
 
 Examples:

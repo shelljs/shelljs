@@ -46,7 +46,7 @@ assert.equal(fs.existsSync('tmp/asdfasdf2'), false);
 shell.cp('asdfasdf1', 'asdfasdf2', 'resources/file1'); // too many sources (dest is file)
 assert.ok(shell.error());
 
-shell.cp('resources/file1', 'resources/file2'); // dest already exists
+shell.cp('-n', 'resources/file1', 'resources/file2'); // dest already exists
 assert.ok(shell.error());
 
 shell.cp('resources/file1', 'resources/file2', 'tmp/a_file'); // too many sources
@@ -56,6 +56,22 @@ assert.equal(fs.existsSync('tmp/a_file'), false);
 //
 // Valids
 //
+
+// -f by default
+shell.cp('resources/file2', 'resources/copyfile2');
+shell.cp('resources/file1', 'resources/file2'); // dest already exists
+assert.ok(!shell.error());
+assert.equal(shell.cat('resources/file1'), shell.cat('resources/file2')); // after cp
+shell.mv('resources/copyfile2', 'resources/file2'); // restore
+assert.ok(!shell.error());
+
+// -f (explicitly)
+shell.cp('resources/file2', 'resources/copyfile2');
+shell.cp('-f', 'resources/file1', 'resources/file2'); // dest already exists
+assert.ok(!shell.error());
+assert.equal(shell.cat('resources/file1'), shell.cat('resources/file2')); // after cp
+shell.mv('resources/copyfile2', 'resources/file2'); // restore
+assert.ok(!shell.error());
 
 // simple - to dir
 shell.cp('resources/file1', 'tmp');
