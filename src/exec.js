@@ -21,7 +21,10 @@ function execSync(cmd, opts) {
       sleepFile = path.resolve(tempDir+'/'+common.randomFileName());
 
   opts = common.extend({
-    silent: common.config.silent
+    silent: common.config.silent,
+    cwd: _pwd(),
+    env: process.env,
+    maxBuffer: DEFAULT_MAXBUFFER_SIZE
   }, opts);
 
   var previousStdoutContent = '',
@@ -60,9 +63,6 @@ function execSync(cmd, opts) {
   if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
 
   var execCommand = '"'+process.execPath+'" '+scriptFile;
-  opts.cwd = opts.cwd || _pwd();
-  opts.env = opts.env || process.env;
-  opts.maxBuffer = opts.maxBuffer || DEFAULT_MAXBUFFER_SIZE;
   var script;
 
   if (typeof child.execSync === 'function') {
@@ -155,13 +155,12 @@ function execAsync(cmd, opts, callback) {
   var stdout = '';
   var stderr = '';
 
-  var options = common.extend({
-    silent: common.config.silent
+  opts = common.extend({
+    silent: common.config.silent,
+    cwd: _pwd(),
+    env: process.env,
+    maxBuffer: DEFAULT_MAXBUFFER_SIZE
   }, opts);
-
-  opts.env = opts.env || process.env;
-  opts.cwd = opts.cwd || _pwd();
-  opts.maxBuffer = opts.maxBuffer || DEFAULT_MAXBUFFER_SIZE;
 
   var c = child.exec(cmd, opts, function(err) {
     if (callback)
@@ -170,13 +169,13 @@ function execAsync(cmd, opts, callback) {
 
   c.stdout.on('data', function(data) {
     stdout += data;
-    if (!options.silent)
+    if (!opts.silent)
       process.stdout.write(data);
   });
 
   c.stderr.on('data', function(data) {
     stderr += data;
-    if (!options.silent)
+    if (!opts.silent)
       process.stderr.write(data);
   });
 
