@@ -5,6 +5,8 @@ var path = require('path');
 var fs = require('fs');
 var child = require('child_process');
 
+var DEFAULT_MAXBUFFER_SIZE = 20*1024*1024;
+
 // Hack to run child_process.exec() synchronously (sync avoids callback hell)
 // Uses a custom wait loop that checks for a flag file, created when the child process is done.
 // (Can't do a wait loop that checks for internal Node variables/messages as
@@ -18,7 +20,7 @@ function execSync(cmd, opts) {
       scriptFile = path.resolve(tempDir+'/'+common.randomFileName()),
       sleepFile = path.resolve(tempDir+'/'+common.randomFileName());
 
-  var options = common.extend({
+  opts = common.extend({
     silent: common.config.silent
   }, opts);
 
@@ -26,7 +28,7 @@ function execSync(cmd, opts) {
       previousStderrContent = '';
   // Echoes stdout and stderr changes from running process, if not silent
   function updateStream(streamFile) {
-    if (options.silent || !fs.existsSync(streamFile))
+    if (opts.silent || !fs.existsSync(streamFile))
       return;
 
     var previousStreamContent,
@@ -58,19 +60,16 @@ function execSync(cmd, opts) {
   if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
 
   var execCommand = '"'+process.execPath+'" '+scriptFile;
-  var execOptions = {
-    env: process.env,
-    cwd: _pwd(),
-    maxBuffer: 20*1024*1024
-  };
-
+  opts.cwd = opts.cwd || _pwd();
+  opts.env = opts.env || process.env;
+  opts.maxBuffer = opts.maxBuffer || DEFAULT_MAXBUFFER_SIZE;
   var script;
 
   if (typeof child.execSync === 'function') {
     script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: "+opts.maxBuffer+"}, function(err) {",
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});",
       "var stdoutStream = fs.createWriteStream('"+escape(stdoutFile)+"');",
@@ -88,28 +87,28 @@ function execSync(cmd, opts) {
 
     fs.writeFileSync(scriptFile, script);
 
-    if (options.silent) {
-      execOptions.stdio = 'ignore';
+    if (opts.silent) {
+      opts.stdio = 'ignore';
     } else {
-      execOptions.stdio = [0, 1, 2];
+      opts.stdio = [0, 1, 2];
     }
 
     // Welcome to the future
-    child.execSync(execCommand, execOptions);
+    child.execSync(execCommand, opts);
   } else {
     cmd += ' > '+stdoutFile+' 2> '+stderrFile; // works on both win/unix
 
     script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: 20*1024*1024}, function(err) {",
+      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: "+opts.maxBuffer+"}, function(err) {",
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});"
     ].join('\n');
 
     fs.writeFileSync(scriptFile, script);
 
-    child.exec(execCommand, execOptions);
+    child.exec(execCommand, opts);
 
     // The wait loop
     // sleepFile is used as a dummy I/O op to mitigate unnecessary CPU usage
@@ -160,7 +159,11 @@ function execAsync(cmd, opts, callback) {
     silent: common.config.silent
   }, opts);
 
-  var c = child.exec(cmd, {env: process.env, maxBuffer: 20*1024*1024}, function(err) {
+  opts.env = opts.env || process.env;
+  opts.cwd = opts.cwd || _pwd();
+  opts.maxBuffer = opts.maxBuffer || DEFAULT_MAXBUFFER_SIZE;
+
+  var c = child.exec(cmd, opts, function(err) {
     if (callback)
       callback(err ? err.code : 0, stdout, stderr);
   });
@@ -187,6 +190,8 @@ function execAsync(cmd, opts, callback) {
 //@ + `async`: Asynchronous execution. If a callback is provided, it will be set to
 //@   `true`, regardless of the passed value.
 //@ + `silent`: Do not echo program output to console.
+//@ + and any option available to NodeJS's
+//@   [child_process.exec()](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback)
 //@
 //@ Examples:
 //@
@@ -233,9 +238,13 @@ function _exec(command, options, callback) {
     async: false
   }, options);
 
-  if (options.async)
-    return execAsync(command, options, callback);
-  else
-    return execSync(command, options);
+  try {
+    if (options.async)
+      return execAsync(command, options, callback);
+    else
+      return execSync(command, options);
+  } catch (e) {
+    common.error('internal error');
+  }
 }
 module.exports = _exec;
