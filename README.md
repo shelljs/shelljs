@@ -68,6 +68,8 @@ if (exec('git commit -am "Auto-commit"').code !== 0) {
 
 ### CoffeeScript
 
+CoffeeScript is also supported automatically:
+
 ```coffeescript
 require 'shelljs/global'
 
@@ -106,31 +108,38 @@ shell.echo('hello world');
 
 ## Make tool
 
-A convenience script `shelljs/make` is also provided to mimic the behavior of a Unix Makefile. In this case all shell objects are global, and command line arguments will cause the script to execute only the corresponding function in the global `target` object. To avoid redundant calls, target functions are executed only once per script.
+A convenience script `shelljs/make` is also provided to mimic the behavior of a Unix Makefile.
+In this case all shell objects are global, and command line arguments will cause the script to
+execute only the corresponding function in the global `target` object. To avoid redundant calls,
+target functions are executed only once per script.
 
-Example (CoffeeScript):
+Example:
 
-```coffeescript
-require 'shelljs/make'
+```javascript
+require('shelljs/make');
 
-target.all = ->
-  target.bundle()
-  target.docs()
+target.all = function() {
+  target.bundle();
+  target.docs();
+};
 
-target.bundle = ->
-  cd __dirname
-  mkdir 'build'
-  cd 'lib'
-  (cat '*.js').to '../build/output.js'
+target.bundle = function() {
+  cd(__dirname);
+  mkdir('-p', 'build');
+  cd('src');
+  cat('*.js').to('../build/output.js');
+};
 
-target.docs = ->
-  cd __dirname
-  mkdir 'docs'
-  cd 'lib'
-  for file in ls '*.js'
-    text = grep '//@', file     # extract special comments
-    text.replace '//@', ''      # remove comment tags
-    text.to 'docs/my_docs.md'
+target.docs = function() {
+  cd(__dirname);
+  mkdir('-p', 'docs');
+  var files = ls('src/*.js');
+  for(var i = 0; i < files.length; i++) {
+    var text = grep('//@', files[i]);     // extract special comments
+    text = text.replace(/\/\/@/g, '');    // remove comment tags
+    text.toEnd('docs/my_docs.md');
+  }
+};
 ```
 
 To run the target `all`, call the above script without arguments: `$ node make`. To run the target `docs`: `$ node make docs`.
