@@ -1,6 +1,6 @@
 {
   "name": "shelljs",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "author": "Artur Adib <arturadib@gmail.com>",
   "description": "Portable Unix shell commands for Node.js",
   "keywords": [
@@ -10,6 +10,10 @@
     "make",
     "jake",
     "synchronous"
+  ],
+  "contributors": [
+    "Ari Porad <ari@ariporad.com> (http://ariporad.com/)",
+    "Nate Fischer <ntfschr@gmail.com>"
   ],
   "repository": {
     "type": "git",
