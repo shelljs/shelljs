@@ -47,14 +47,14 @@ if (!which('git')) {
 }
 
 // Copy files to release dir
-mkdir('-p', 'out/Release');
-cp('-R', 'stuff/*', 'out/Release');
+rm('-rf', 'out/Release');
+cp('-R', 'stuff/', 'out/Release');
 
 // Replace macros in each .js file
 cd('lib');
 ls('*.js').forEach(function(file) {
   sed('-i', 'BUILD_VERSION', 'v0.1.2', file);
-  sed('-i', /.*REMOVE_THIS_LINE.*\n/, '', file);
+  sed('-i', /^.*REMOVE_THIS_LINE.*$/, '', file);
   sed('-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, cat('macro.js'), file);
 });
 cd('..');
@@ -78,14 +78,14 @@ if not which 'git'
   exit 1
 
 # Copy files to release dir
-mkdir '-p', 'out/Release'
-cp '-R', 'stuff/*', 'out/Release'
+rm '-rf', 'out/Release'
+cp '-R', 'stuff/', 'out/Release'
 
 # Replace macros in each .js file
 cd 'lib'
 for file in ls '*.js'
   sed '-i', 'BUILD_VERSION', 'v0.1.2', file
-  sed '-i', /.*REMOVE_THIS_LINE.*\n/, '', file
+  sed '-i', /^.*REMOVE_THIS_LINE.*$/, '', file
   sed '-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, cat('macro.js'), file
 cd '..'
 
@@ -226,6 +226,7 @@ Examples:
 
 ```javascript
 cp('file1', 'dir1');
+cp('-R', 'path/to/dir/', '~/newCopy/');
 cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
 cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 ```

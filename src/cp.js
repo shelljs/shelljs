@@ -100,6 +100,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@
 //@ ```javascript
 //@ cp('file1', 'dir1');
+//@ cp('-R', 'path/to/dir/', '~/newCopy/');
 //@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
 //@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 //@ ```
