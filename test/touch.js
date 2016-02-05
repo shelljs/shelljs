@@ -1,4 +1,4 @@
-var shell = require('../shell.js');
+var shell = require('..');
 var assert = require('assert');
 var fs = require('fs');
 var crypto = require('crypto');
@@ -39,11 +39,16 @@ assert.ok(shell.error());
 // uses a reference file for mtime
 var testFile = tmpFile(false);
 var testFile2 = tmpFile();
-var testFile2Stat = resetUtimes(testFile2);
-
+shell.touch(testFile2);
+shell.exec('node resources/exec/slow.js 3000');
+shell.touch(testFile);
+assert.ok(!shell.error());
+assert.notEqual(fs.statSync(testFile).mtime.getTime(), fs.statSync(testFile2).mtime.getTime());
+assert.notEqual(fs.statSync(testFile).atime.getTime(), fs.statSync(testFile2).atime.getTime());
 shell.touch({'-r': testFile2}, testFile);
-var testFileStat = resetUtimes(testFile);
-assert.strictEqual(testFileStat.mtime.getTime(), testFile2Stat.mtime.getTime());
+assert.ok(!shell.error());
+assert.equal(fs.statSync(testFile).mtime.getTime(), fs.statSync(testFile2).mtime.getTime());
+assert.equal(fs.statSync(testFile).atime.getTime(), fs.statSync(testFile2).atime.getTime());
 
 // sets mtime
 var testFile = tmpFile();

@@ -76,6 +76,16 @@ assert.ok(result.recursive === false);
 assert.ok(result.no_force === true);
 assert.ok(result.force === undefined); // this key shouldn't exist
 
+// common.parseOptions using an object to hold options
+var result = common.parseOptions({'-v': 'some text here'}, {
+  'v': 'value',
+  'f': 'force',
+  'r': 'reverse'
+});
+assert.ok(result.value === 'some text here');
+assert.ok(result.force === false);
+assert.ok(result.reverse === false);
+
 shell.exit(123);
 
 

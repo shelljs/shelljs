@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// sleep for 5 seconds
 setTimeout(function() {
     console.log('slow');
-}, 100);
+}, parseInt(process.argv[2], 10));

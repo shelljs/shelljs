@@ -99,11 +99,11 @@ if (process.version >= 'v0.11') { // this option doesn't work on v0.10
 }
 
 // set timeout option
-result = shell.exec('node resources/exec/slow.js'); // default timeout is ok
+result = shell.exec('node resources/exec/slow.js 100'); // default timeout is ok
 assert.ok(!shell.error());
 assert.equal(result.code, 0);
 if (process.version >= 'v0.11') { // this option doesn't work on v0.10
-  result = shell.exec('node resources/exec/slow.js', {timeout: 10}); // times out
+  result = shell.exec('node resources/exec/slow.js 100', {timeout: 10}); // times out
   assert.ok(shell.error());
 }
 
