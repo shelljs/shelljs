@@ -29,7 +29,7 @@ process.exit = function (_exitcode) {
 shell.config.fatal = true;
 
 var result = shell.exec('asdfasdf'); // could not find command
-assert.equal(exitcode, 1);
+assert.ok(exitcode > 0);
 
 shell.config.fatal = old_fatal;
 process.exit = old_exit;
@@ -64,7 +64,7 @@ assert.ok(result.stderr === '1234\n' || result.stderr === '1234\nundefined\n'); 
 
 // check exit code
 var result = shell.exec('node -e \"process.exit(12);\"');
-assert.equal(shell.error(), null);
+assert.equal(shell.error(), 'exec: ');
 assert.equal(result.code, 12);
 
 // interaction with cd

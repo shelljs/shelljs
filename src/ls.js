@@ -148,7 +148,7 @@ function _ls(options, paths) {
       return;
     }
 
-    common.error('no such file or directory: ' + p, true);
+    common.error('no such file or directory: ' + p, 2, true);
   });
 
   return list;

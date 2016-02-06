@@ -611,6 +611,10 @@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.ht
 Tests if error occurred in the last command. Returns `null` if no error occurred,
 otherwise returns string explaining the error
 
+### errorCode()
+Returns status code for the last command. Returns 0 upon success, otherwise
+returns a nonzero integer
+
 
 ## Configuration
 

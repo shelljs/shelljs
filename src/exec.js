@@ -136,9 +136,8 @@ function execSync(cmd, opts) {
   try { common.unlinkSync(codeFile); } catch(e) {}
   try { common.unlinkSync(sleepFile); } catch(e) {}
 
-  // some shell return codes are defined as errors, per http://tldp.org/LDP/abs/html/exitcodes.html
-  if (code === 1 || code === 2 || code >= 126)  {
-      common.error('', true); // unix/shell doesn't really give an error message after non-zero exit codes
+  if (code !== 0)  {
+    common.error('', code, true); // unix/shell doesn't really give an error message after non-zero exit codes
   }
   // True if successful, false if not
   var obj = {

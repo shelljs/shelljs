@@ -12,6 +12,7 @@ exports.config = config;
 
 var state = {
   error: null,
+  errorCode: 0,
   currentCmd: 'shell.js',
   previousDir: null,
   tempDir: null
@@ -27,8 +28,19 @@ function log() {
 }
 exports.log = log;
 
+var DEFAULT_ERROR_CODE = 1;
+
 // Shows error message. Throws unless _continue or config.fatal are true
-function error(msg, _continue) {
+function error(msg, _code, _continue) {
+  // Adjust values if `_continue` is passed in but `_code` isn't
+  if (typeof _code === 'boolean') {
+    _continue = _code;
+    _code = DEFAULT_ERROR_CODE;
+  }
+
+  if (typeof _code !== 'number')
+    _code = DEFAULT_ERROR_CODE;
+
   if (state.error === null)
     state.error = '';
   var log_entry = state.currentCmd + ': ' + msg;
@@ -37,11 +49,15 @@ function error(msg, _continue) {
   else
     state.error += '\n' + log_entry;
 
+  // Override previous return code, but prefer a previous non-default code if it exists
+  if (state.errorCode === 0 || _code !== DEFAULT_ERROR_CODE)
+    state.errorCode = _code;
+
   if (msg.length > 0)
     log(log_entry);
 
   if (config.fatal)
-    process.exit(1);
+    process.exit(state.errorCode);
 
   if (!_continue)
     throw '';
@@ -211,6 +227,7 @@ function wrap(cmd, fn, options) {
 
     state.currentCmd = cmd;
     state.error = null;
+    state.errorCode = 0;
 
     try {
       var args = [].slice.call(arguments, 0);
