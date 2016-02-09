@@ -65,11 +65,14 @@ function execSync(cmd, opts) {
   var execCommand = '"'+process.execPath+'" '+scriptFile;
   var script;
 
+  opts.cwd = path.resolve(opts.cwd);
+  var optString = JSON.stringify(opts);
+
   if (typeof child.execSync === 'function') {
     script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: "+opts.maxBuffer+"}, function(err) {",
+      "var childProcess = child.exec('"+escape(cmd)+"', "+optString+", function(err) {",
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});",
       "var stdoutStream = fs.createWriteStream('"+escape(stdoutFile)+"');",
@@ -101,7 +104,7 @@ function execSync(cmd, opts) {
     script = [
       "var child = require('child_process')",
       "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', {env: process.env, maxBuffer: "+opts.maxBuffer+"}, function(err) {",
+      "var childProcess = child.exec('"+escape(cmd)+"', "+optString+", function(err) {",
       "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
       "});"
     ].join('\n');

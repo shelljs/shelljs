@@ -107,6 +107,31 @@ if (process.version >= 'v0.11') { // this option doesn't work on v0.10
   assert.ok(shell.error());
 }
 
+// check process.env works
+assert.ok(!shell.env.FOO);
+shell.env.FOO = 'Hello world';
+result = shell.exec(process.platform !== 'win32' ? 'echo $FOO' : 'echo %FOO%');
+assert.ok(!shell.error());
+assert.equal(result.code, 0);
+assert.equal(result.stdout, 'Hello world' + os.EOL);
+assert.equal(result.stderr, '');
+
+// set shell option (TODO: add tests for Windows)
+if (process.platform !== 'win32') {
+  result = shell.exec('echo $0');
+  assert.ok(!shell.error());
+  assert.equal(result.code, 0);
+  assert.equal(result.stdout, '/bin/sh\n'); // sh by default
+  var bashPath = shell.which('bash').trim();
+  // this option doesn't work on v0.10
+  if (bashPath && process.version >= 'v0.11') {
+    result = shell.exec('echo $0', {shell: '/bin/bash'});
+    assert.ok(!shell.error());
+    assert.equal(result.code, 0);
+    assert.equal(result.stdout, '/bin/bash\n');
+  }
+}
+
 //
 // async
 //
