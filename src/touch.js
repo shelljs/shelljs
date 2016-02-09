@@ -2,7 +2,8 @@ var common = require('./common');
 var fs = require('fs');
 
 //@
-//@ ### touch([options,] file)
+//@ ### touch([options,] file [, file ...])
+//@ ### touch([options,] file_array)
 //@ Available options:
 //@
 //@ + `-a`: Change only the access time
@@ -31,20 +32,16 @@ function _touch(opts, files) {
     'r': 'reference',
   });
 
-  if (!files) {
-    common.error('no paths given');
-  }
-
-  if (Array.isArray(files)) {
-    files.forEach(function(f) {
-      touchFile(opts, f);
-    });
-  } else if (typeof files === 'string') {
-    touchFile(opts, files);
-  } else {
+  if (!files)
+    common.error('no files given');
+  else if (typeof files === 'string')
+    files = [].slice.call(arguments, 1);
+  else
     common.error('file arg should be a string file path or an Array of string file paths');
-  }
 
+  files.forEach(function(f) {
+    touchFile(opts, f);
+  });
 }
 
 function touchFile(opts, file) {
