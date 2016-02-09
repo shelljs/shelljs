@@ -370,6 +370,7 @@ using the given search regex and replacement string or function. Returns the new
 Available options:
 
 + `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
++ `-l`: Print only filenames of matching files
 
 Examples:
 

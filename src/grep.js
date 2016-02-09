@@ -7,6 +7,7 @@ var fs = require('fs');
 //@ Available options:
 //@
 //@ + `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
+//@ + `-l`: Print only filenames of matching files
 //@
 //@ Examples:
 //@
@@ -19,7 +20,8 @@ var fs = require('fs');
 //@ file that match the given `regex_filter`. Wildcard `*` accepted.
 function _grep(options, regex, files) {
   options = common.parseOptions(options, {
-    'v': 'inverse'
+    'v': 'inverse',
+    'l': 'nameOnly'
   });
 
   if (!files)
@@ -31,7 +33,7 @@ function _grep(options, regex, files) {
 
   files = common.expand(files);
 
-  var grep = '';
+  var grep = [];
   files.forEach(function(file) {
     if (!fs.existsSync(file)) {
       common.error('no such file or directory: ' + file, true);
@@ -40,13 +42,18 @@ function _grep(options, regex, files) {
 
     var contents = fs.readFileSync(file, 'utf8'),
         lines = contents.split(/\r*\n/);
-    lines.forEach(function(line) {
-      var matched = line.match(regex);
-      if ((options.inverse && !matched) || (!options.inverse && matched))
-        grep += line + '\n';
-    });
+    if (options.nameOnly) {
+      if (contents.match(regex))
+        grep.push(file);
+    } else {
+      lines.forEach(function(line) {
+        var matched = line.match(regex);
+        if ((options.inverse && !matched) || (!options.inverse && matched))
+          grep.push(line);
+      });
+    }
   });
 
-  return common.ShellString(grep);
+  return common.ShellString(grep.join('\n')+'\n');
 }
 module.exports = _grep;
