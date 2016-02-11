@@ -101,4 +101,14 @@ assert.equal(result, 'hello1\nhello2');
 assert.equal(shell.cat('tmp/file1'), 'hello1');
 assert.equal(shell.cat('tmp/file2'), 'hello2');
 
+// glob file names, with in-place-replacement
+shell.cp('resources/file*.txt', 'tmp/');
+assert.equal(shell.cat('tmp/file1.txt'), 'test1\n');
+assert.equal(shell.cat('tmp/file2.txt'), 'test2\n');
+var result = shell.sed('-i', 'test', 'hello', 'tmp/file*.txt');
+assert.equal(shell.error(), null);
+assert.equal(result, 'hello1\n\nhello2\n'); // TODO: fix sed's behavior
+assert.equal(shell.cat('tmp/file1.txt'), 'hello1\n');
+assert.equal(shell.cat('tmp/file2.txt'), 'hello2\n');
+
 shell.exit(123);

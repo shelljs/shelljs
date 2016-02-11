@@ -15,7 +15,7 @@ var common = require('./src/common');
 
 //@include ./src/cd
 var _cd = require('./src/cd');
-exports.cd = common.wrap('cd', _cd);
+exports.cd = common.wrap('cd', _cd, {idx: 1});
 
 //@include ./src/pwd
 var _pwd = require('./src/pwd');
@@ -23,27 +23,27 @@ exports.pwd = common.wrap('pwd', _pwd);
 
 //@include ./src/ls
 var _ls = require('./src/ls');
-exports.ls = common.wrap('ls', _ls);
+exports.ls = common.wrap('ls', _ls, {idx: 1});
 
 //@include ./src/find
 var _find = require('./src/find');
-exports.find = common.wrap('find', _find);
+exports.find = common.wrap('find', _find, {idx: 1});
 
 //@include ./src/cp
 var _cp = require('./src/cp');
-exports.cp = common.wrap('cp', _cp);
+exports.cp = common.wrap('cp', _cp, {idx: 1});
 
 //@include ./src/rm
 var _rm = require('./src/rm');
-exports.rm = common.wrap('rm', _rm);
+exports.rm = common.wrap('rm', _rm, {idx: 1});
 
 //@include ./src/mv
 var _mv = require('./src/mv');
-exports.mv = common.wrap('mv', _mv);
+exports.mv = common.wrap('mv', _mv, {idx: 1});
 
 //@include ./src/mkdir
 var _mkdir = require('./src/mkdir');
-exports.mkdir = common.wrap('mkdir', _mkdir);
+exports.mkdir = common.wrap('mkdir', _mkdir, {idx: 1});
 
 //@include ./src/test
 var _test = require('./src/test');
@@ -51,23 +51,23 @@ exports.test = common.wrap('test', _test);
 
 //@include ./src/cat
 var _cat = require('./src/cat');
-exports.cat = common.wrap('cat', _cat);
+exports.cat = common.wrap('cat', _cat, {idx: 1});
 
 //@include ./src/to
 var _to = require('./src/to');
-String.prototype.to = common.wrap('to', _to);
+String.prototype.to = common.wrap('to', _to, {idx: 1});
 
 //@include ./src/toEnd
 var _toEnd = require('./src/toEnd');
-String.prototype.toEnd = common.wrap('toEnd', _toEnd);
+String.prototype.toEnd = common.wrap('toEnd', _toEnd, {idx: 1});
 
 //@include ./src/sed
 var _sed = require('./src/sed');
-exports.sed = common.wrap('sed', _sed);
+exports.sed = common.wrap('sed', _sed, {idx: 3});
 
 //@include ./src/grep
 var _grep = require('./src/grep');
-exports.grep = common.wrap('grep', _grep);
+exports.grep = common.wrap('grep', _grep, {idx: 2});
 
 //@include ./src/which
 var _which = require('./src/which');
@@ -79,15 +79,15 @@ exports.echo = _echo; // don't common.wrap() as it could parse '-options'
 
 //@include ./src/dirs
 var _dirs = require('./src/dirs').dirs;
-exports.dirs = common.wrap("dirs", _dirs);
+exports.dirs = common.wrap("dirs", _dirs, {idx: 1});
 var _pushd = require('./src/dirs').pushd;
-exports.pushd = common.wrap('pushd', _pushd);
+exports.pushd = common.wrap('pushd', _pushd, {idx: 1});
 var _popd = require('./src/dirs').popd;
-exports.popd = common.wrap("popd", _popd);
+exports.popd = common.wrap("popd", _popd, {idx: 1});
 
 //@include ./src/ln
 var _ln = require('./src/ln');
-exports.ln = common.wrap('ln', _ln);
+exports.ln = common.wrap('ln', _ln, {idx: 1});
 
 //@
 //@ ### exit(code)
@@ -105,11 +105,11 @@ exports.exec = common.wrap('exec', _exec, {notUnix:true});
 
 //@include ./src/chmod
 var _chmod = require('./src/chmod');
-exports.chmod = common.wrap('chmod', _chmod);
+exports.chmod = common.wrap('chmod', _chmod, {idx: 1});
 
 //@include ./src/touch
 var _touch = require('./src/touch');
-exports.touch = common.wrap('touch', _touch);
+exports.touch = common.wrap('touch', _touch, {idx: 1});
 
 //@include ./src/set
 var _set = require('./src/set');

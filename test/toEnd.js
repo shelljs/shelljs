@@ -33,4 +33,11 @@ result = shell.cat('tmp/toEnd2');
 assert.equal(shell.error(), null);
 assert.equal(result, 'world'); //Check that the result is what we expect
 
+// With a glob
+'good'.to('tmp/toE*1');
+'bye'.toEnd('tmp/toE*1');
+var result = shell.cat('tmp/toEnd1');
+assert.equal(shell.error(), null);
+assert.equal(result, 'goodbye');
+
 shell.exit(123);

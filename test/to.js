@@ -31,4 +31,10 @@ result = shell.cat('tmp/to2');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello world');
 
+// With a glob
+'goodbye'.to('tmp/t*1');
+var result = shell.cat('tmp/to1');
+assert.equal(shell.error(), null);
+assert.equal(result, 'goodbye');
+
 shell.exit(123);

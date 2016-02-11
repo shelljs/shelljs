@@ -81,6 +81,13 @@ assert.equal(result.indexOf('.hidden_dir') > -1, true);
 assert.equal(result.length, 8);
 shell.cd('../..');
 
+// wildcard, very simple
+var result = shell.ls('resources/cat/*');
+assert.equal(shell.error(), null);
+assert.equal(result.indexOf('resources/cat/file1') > -1, true);
+assert.equal(result.indexOf('resources/cat/file2') > -1, true);
+assert.equal(result.length, 2);
+
 // wildcard, simple
 var result = shell.ls('resources/ls/*');
 assert.equal(shell.error(), null);
@@ -89,11 +96,24 @@ assert.equal(result.indexOf('resources/ls/file2') > -1, true);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
 assert.equal(result.indexOf('resources/ls/file2.js') > -1, true);
 assert.equal(result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1, true);
-assert.equal(result.indexOf('resources/ls/a_dir') > -1, true);
+assert.ok(result.indexOf('resources/ls/a_dir') === -1); // this shouldn't be there
+assert.ok(result.indexOf('nada') > -1);
+assert.ok(result.indexOf('b_dir') > -1);
+assert.equal(result.length, 7);
+
+// wildcard, simple, with -d
+var result = shell.ls('-d', 'resources/ls/*');
+assert.equal(shell.error(), null);
+assert.equal(result.indexOf('resources/ls/file1') > -1, true);
+assert.equal(result.indexOf('resources/ls/file2') > -1, true);
+assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
+assert.equal(result.indexOf('resources/ls/file2.js') > -1, true);
+assert.equal(result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1, true);
+assert.ok(result.indexOf('resources/ls/a_dir') > -1);
 assert.equal(result.length, 6);
 
 // wildcard, hidden only
-var result = shell.ls('resources/ls/.*');
+var result = shell.ls('-d', 'resources/ls/.*');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('resources/ls/.hidden_file') > -1, true);
 assert.equal(result.indexOf('resources/ls/.hidden_dir') > -1, true);
@@ -115,6 +135,12 @@ assert.equal(shell.error(), null);
 assert.equal(result.length, 2);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
 assert.equal(result.indexOf('resources/ls/file2.js') > -1, true);
+
+// one file that exists, one that doesn't
+var result = shell.ls('resources/ls/file1.js', 'resources/ls/thisdoesntexist');
+assert.ok(shell.error());
+assert.equal(result.length, 1);
+assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
 
 // wildcard, should not do partial matches
 var result = shell.ls('resources/ls/*.j'); // shouldn't get .js
@@ -144,7 +170,7 @@ assert.equal(shell.error(), null);
 assert.equal(result.length, 4);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
 assert.equal(result.indexOf('resources/ls/file2.js') > -1, true);
-assert.equal(result.indexOf('resources/ls/a_dir/b_dir') > -1, true);
+assert.equal(result.indexOf('z') > -1, true);
 assert.equal(result.indexOf('resources/ls/a_dir/nada') > -1, true);
 
 // wildcard for both paths, array
@@ -153,7 +179,7 @@ assert.equal(shell.error(), null);
 assert.equal(result.length, 4);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
 assert.equal(result.indexOf('resources/ls/file2.js') > -1, true);
-assert.equal(result.indexOf('resources/ls/a_dir/b_dir') > -1, true);
+assert.equal(result.indexOf('z') > -1, true);
 assert.equal(result.indexOf('resources/ls/a_dir/nada') > -1, true);
 
 // recursive, no path
@@ -184,11 +210,11 @@ assert.equal(result.indexOf('a_dir/.hidden_dir/nada') > -1, true);
 assert.equal(result.length, 14);
 
 // recursive, wildcard
-var result = shell.ls('-R', 'resources/ls/*');
+var result = shell.ls('-R', 'resources/ls');
 assert.equal(shell.error(), null);
-assert.equal(result.indexOf('resources/ls/a_dir') > -1, true);
-assert.equal(result.indexOf('resources/ls/a_dir/b_dir') > -1, true);
-assert.equal(result.indexOf('resources/ls/a_dir/b_dir/z') > -1, true);
+assert.equal(result.indexOf('a_dir') > -1, true);
+assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
+assert.equal(result.indexOf('a_dir/b_dir/z') > -1, true);
 assert.equal(result.length, 9);
 
 // directory option, single arg

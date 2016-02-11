@@ -40,8 +40,6 @@ function _sed(options, regex, replacement, files) {
     files = [].slice.call(arguments, 3);
   // if it's array leave it as it is
 
-  files = common.expand(files);
-
   var sed = [];
   files.forEach(function(file) {
     if (!fs.existsSync(file)) {

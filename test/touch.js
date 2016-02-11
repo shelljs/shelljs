@@ -30,6 +30,15 @@ var testFile = tmpFile(true);
 shell.touch('-c', testFile);
 assert.ok(!fs.existsSync(testFile));
 
+// handles globs correctly
+shell.touch('tmp/file.txt');
+shell.touch('tmp/file.js');
+shell.touch('tmp/file*');
+var files = shell.ls('tmp/file*');
+assert.ok(files.indexOf('tmp/file.txt') > -1);
+assert.ok(files.indexOf('tmp/file.js') > -1);
+assert.equal(files.length, 2);
+
 // errors if reference file is not found
 var testFile = tmpFile();
 var refFile = tmpFile(true);

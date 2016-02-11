@@ -114,11 +114,8 @@ function _rm(options, files) {
   if (!files)
     common.error('no paths given');
 
-  if (typeof files === 'string')
-    files = [].slice.call(arguments, 1);
-  // if it's array leave it as it is
-
-  files = common.expand(files);
+  // Convert to array
+  files = [].slice.call(arguments, 1);
 
   files.forEach(function(file) {
     if (!fs.existsSync(file)) {
