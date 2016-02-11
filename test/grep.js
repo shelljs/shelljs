@@ -83,4 +83,12 @@ var result = shell.grep('l*\\.js', 'resources/grep/file');
 assert.equal(shell.error(), null);
 assert.equal(result, 'this line ends in.js\nlllllllllllllllll.js\n');
 
+// -l option
+result = shell.grep('-l', 'test1', 'resources/file1', 'resources/file2', 'resources/file1.txt');
+assert.equal(shell.error(), null);
+assert.ok(result.match(/file1(\n|$)/));
+assert.ok(result.match(/file1.txt/));
+assert.ok(!result.match(/file2.txt/));
+assert.equal(result.split('\n').length - 1, 2);
+
 shell.exit(123);
