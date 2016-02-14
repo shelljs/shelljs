@@ -14,8 +14,7 @@ The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battled-t
 + [Zepto](http://zeptojs.com) - jQuery-compatible JavaScript library for modern browsers
 + [Yeoman](http://yeoman.io/) - Web application stack and development tool
 + [Deployd.com](http://deployd.com) - Open source PaaS for quick API backend generation
-
-and [many more](https://npmjs.org/browse/depended/shelljs).
++ And [many more](https://npmjs.org/browse/depended/shelljs).
 
 If you have feedback, suggestions, or need help, feel free to post in our [issue tracker](https://github.com/shelljs/shelljs/issues).
 
