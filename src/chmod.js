@@ -62,9 +62,7 @@ function _chmod(options, mode, filePattern) {
       // Special case where the specified file permissions started with - to subtract perms, which
       // get picked up by the option parser as command flags.
       // If we are down by one argument and options starts with -, shift everything over.
-      filePattern = mode;
-      mode = options;
-      options = '';
+      [].unshift.call(arguments, '');
     }
     else {
       common.error('You must specify a file.');
@@ -77,15 +75,14 @@ function _chmod(options, mode, filePattern) {
     'v': 'verbose'
   });
 
-  if (typeof filePattern === 'string') {
-    filePattern = [ filePattern ];
-  }
+  filePattern = [].slice.call(arguments, 2);
 
   var files;
 
+  // TODO: replace this with a call to common.expand()
   if (options.recursive) {
     files = [];
-    common.expand(filePattern).forEach(function addFile(expandedFile) {
+    filePattern.forEach(function addFile(expandedFile) {
       var stat = fs.lstatSync(expandedFile);
 
       if (!stat.isSymbolicLink()) {
@@ -100,7 +97,7 @@ function _chmod(options, mode, filePattern) {
     });
   }
   else {
-    files = common.expand(filePattern);
+    files = filePattern;
   }
 
   files.forEach(function innerChmod(file) {

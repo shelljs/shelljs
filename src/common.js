@@ -127,10 +127,17 @@ exports.parseOptions = parseOptions;
 //   expand(['file*.js']) = ['file1.js', 'file2.js', ...]
 //   (if the files 'file1.js', 'file2.js', etc, exist in the current dir)
 function expand(list) {
+  if (!Array.isArray(list)) {
+    throw new TypeError('must be an array');
+  }
   var expanded = [];
   list.forEach(function(listEl) {
+    // Don't expand non-strings
+    if (typeof listEl !== 'string') {
+      expanded.push(listEl);
+    }
     // Wildcard present on directory names ?
-    if(listEl.search(/\*[^\/]*\//) > -1 || listEl.search(/\*\*[^\/]*\//) > -1) {
+    else if(listEl.search(/\*[^\/]*\//) > -1 || listEl.search(/\*\*[^\/]*\//) > -1) {
       var match = listEl.match(/^([^*]+\/|)(.*)/);
       var root = match[1];
       var rest = match[2];
@@ -145,9 +152,14 @@ function expand(list) {
     }
     // Wildcard present on file names ?
     else if (listEl.search(/\*/) > -1) {
-      _ls('', listEl).forEach(function(file) {
-        expanded.push(file);
-      });
+      var matches = _ls('', listEl);
+      if (matches.length === 0) {
+        expanded.push(listEl); // Interpret this as a literal string
+      } else {
+        matches.forEach(function(file) {
+          expanded.push(file);
+        });
+      }
     } else {
       expanded.push(listEl);
     }
@@ -229,6 +241,15 @@ function wrap(cmd, fn, options) {
         } else if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-') {
           args.unshift(''); // only add dummy option if '-option' not already present
         }
+
+        args = args.reduce(function(accum, cur) {
+          if (Array.isArray(cur)) {
+            return accum.concat(cur);
+          } else {
+            accum.push(cur);
+            return accum;
+          }
+        }, []);
         // Expand the '~' if appropriate
         var homeDir = getUserHome();
         args = args.map(function(arg) {
@@ -237,6 +258,8 @@ function wrap(cmd, fn, options) {
           else
             return arg;
         });
+        if (options && typeof options.idx === 'number')
+          args = args.slice(0, options.idx).concat(expand(args.slice(options.idx)));
         retValue = fn.apply(this, args);
       }
     } catch (e) {

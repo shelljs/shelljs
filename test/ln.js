@@ -71,6 +71,20 @@ assert.equal(
   'new content 1'
 );
 
+// With glob
+shell.rm('tmp/linkfile1');
+shell.ln('tmp/fi*1', 'tmp/linkfile1');
+assert(fs.existsSync('tmp/linkfile1'));
+assert.equal(
+  fs.readFileSync('tmp/file1').toString(),
+  fs.readFileSync('tmp/linkfile1').toString()
+);
+fs.writeFileSync('tmp/file1', 'new content 1');
+assert.equal(
+  fs.readFileSync('tmp/linkfile1').toString(),
+  'new content 1'
+);
+
 skipOnWinForEPERM(shell.ln.bind(shell, '-s', 'file2', 'tmp/linkfile2'), function () {
     assert(fs.existsSync('tmp/linkfile2'));
     assert.equal(

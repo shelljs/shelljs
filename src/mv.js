@@ -33,13 +33,9 @@ function _mv(options, sources, dest) {
     dest = arguments[arguments.length - 1];
   } else if (typeof sources === 'string') {
     sources = [sources];
-  } else if ('length' in sources) {
-    sources = sources; // no-op for array
   } else {
     common.error('invalid arguments');
   }
-
-  sources = common.expand(sources);
 
   var exists = fs.existsSync(dest),
       stats = exists && fs.statSync(dest);

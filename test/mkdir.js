@@ -69,4 +69,13 @@ assert.equal(fs.existsSync('tmp/yyya'), true);
 assert.equal(fs.existsSync('tmp/yyyb'), true);
 assert.equal(fs.existsSync('tmp/yyyc'), true);
 
+// globbed dir
+shell.mkdir('-p', 'tmp/mydir');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/mydir'), true);
+shell.mkdir('-p', 'tmp/m*ir');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/mydir'), true);
+assert.equal(fs.existsSync('tmp/m*ir'), false); // doesn't create literal name
+
 shell.exit(123);

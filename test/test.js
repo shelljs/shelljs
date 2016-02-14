@@ -1,5 +1,5 @@
 var shell = require('..');
-var common = require('./common');
+var common = require('../src/common');
 
 var assert = require('assert');
 
