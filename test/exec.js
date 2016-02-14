@@ -64,7 +64,7 @@ assert.ok(result.stderr === '1234\n' || result.stderr === '1234\nundefined\n'); 
 
 // check exit code
 var result = shell.exec('node -e \"process.exit(12);\"');
-assert.equal(shell.error(), null);
+assert.ok(shell.error());
 assert.equal(result.code, 12);
 
 // interaction with cd

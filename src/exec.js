@@ -97,7 +97,16 @@ function execSync(cmd, opts) {
     }
 
     // Welcome to the future
-    child.execSync(execCommand, opts);
+    try {
+      child.execSync(execCommand, opts);
+    } catch (e) {
+      // Clean up immediately if we have an exception
+      try { common.unlinkSync(scriptFile); } catch(e) {}
+      try { common.unlinkSync(stdoutFile); } catch(e) {}
+      try { common.unlinkSync(stderrFile); } catch(e) {}
+      try { common.unlinkSync(codeFile); } catch(e) {}
+      throw e;
+    }
   } else {
     cmd += ' > '+stdoutFile+' 2> '+stderrFile; // works on both win/unix
 
@@ -120,6 +129,7 @@ function execSync(cmd, opts) {
     while (!fs.existsSync(codeFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
     while (!fs.existsSync(stdoutFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
     while (!fs.existsSync(stderrFile)) { updateStream(stderrFile); fs.writeFileSync(sleepFile, 'a'); }
+    try { common.unlinkSync(sleepFile); } catch(e) {}
   }
 
   // At this point codeFile exists, but it's not necessarily flushed yet.
@@ -137,11 +147,9 @@ function execSync(cmd, opts) {
   try { common.unlinkSync(stdoutFile); } catch(e) {}
   try { common.unlinkSync(stderrFile); } catch(e) {}
   try { common.unlinkSync(codeFile); } catch(e) {}
-  try { common.unlinkSync(sleepFile); } catch(e) {}
 
-  // some shell return codes are defined as errors, per http://tldp.org/LDP/abs/html/exitcodes.html
-  if (code === 1 || code === 2 || code >= 126)  {
-      common.error('', true); // unix/shell doesn't really give an error message after non-zero exit codes
+  if (code !== 0)  {
+    common.error('', true);
   }
   // True if successful, false if not
   var obj = {
