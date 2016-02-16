@@ -159,7 +159,7 @@ function _cp(options, sources, dest) {
     }
   }
 
-  sources = common.expand(sources);
+  sources = common.expand(sources, {dot: true});
 
   sources.forEach(function(src) {
     if (!fs.existsSync(src)) {
