@@ -16,6 +16,9 @@ shell.mkdir('tmp');
 assert.strictEqual(oldConfigSilent, false);
 assert.strictEqual(shell.config.verbose, false);
 assert.strictEqual(shell.config.fatal, false);
+assert.strictEqual(shell.config.noglob, false);
+
+shell.cp('-R', 'resources/', 'tmp');
 
 // default behavior
 var result = shell.exec('node -e \"require(\'../global\'); ls(\'file_doesnt_exist\'); echo(1234);\"');
@@ -46,6 +49,14 @@ var result = shell.exec('node -e \"require(\'../global\'); set(\'-e\'); set(\'+e
 assert.equal(result.code, 0);
 assert.equal(result.stdout, '1234\n');
 assert.equal(result.stderr, 'ls: no such file or directory: file_doesnt_exist\n');
+
+// set -f
+shell.set('-f'); // disable globbing
+shell.rm('tmp/*.txt');
+assert.ok(shell.error()); // file '*.txt' doesn't exist, so rm() fails
+shell.set('+f');
+shell.rm('tmp/*.txt');
+assert.ok(!shell.error()); // globbing works, so rm succeeds
 
 shell.exit(123);
 

@@ -581,6 +581,7 @@ Available options:
 
 + `+/-e`: exit upon error (`config.fatal`)
 + `+/-v`: verbose: show all commands (`config.verbose`)
++ `+/-f`: disable filename expansion (globbing)
 
 Examples:
 

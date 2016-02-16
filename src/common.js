@@ -7,6 +7,7 @@ var config = {
   silent: false,
   fatal: false,
   verbose: false,
+  noglob: false
 };
 exports.config = config;
 
@@ -258,7 +259,7 @@ function wrap(cmd, fn, options) {
           else
             return arg;
         });
-        if (options && typeof options.idx === 'number')
+        if (!config.noglob && options && typeof options.idx === 'number')
           args = args.slice(0, options.idx).concat(expand(args.slice(options.idx)));
         retValue = fn.apply(this, args);
       }
