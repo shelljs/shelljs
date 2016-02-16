@@ -6,6 +6,7 @@ var common = require('./common');
 //@
 //@ + `+/-e`: exit upon error (`config.fatal`)
 //@ + `+/-v`: verbose: show all commands (`config.verbose`)
+//@ + `+/-f`: disable filename expansion (globbing)
 //@
 //@ Examples:
 //@
@@ -28,7 +29,8 @@ function _set(options) {
   }
   options = common.parseOptions(options, {
     'e': 'fatal',
-    'v': 'verbose'
+    'v': 'verbose',
+    'f': 'noglob'
   });
 
   var key;
