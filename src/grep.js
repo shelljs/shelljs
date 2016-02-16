@@ -29,9 +29,6 @@ function _grep(options, regex, files) {
 
   if (typeof files === 'string')
     files = [].slice.call(arguments, 2);
-  // if it's array leave it as it is
-
-  files = common.expand(files);
 
   var grep = [];
   files.forEach(function(file) {

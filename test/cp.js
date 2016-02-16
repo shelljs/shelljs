@@ -166,4 +166,10 @@ if (common.platform !== 'win') {
     assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode, fs.statSync('tmp/executable').mode);
 }
 
+// Make sure hidden files are copied recursively
+shell.rm('-rf', 'tmp/');
+shell.cp('-r', 'resources/ls/', 'tmp/');
+assert.ok(!shell.error());
+assert.ok(fs.existsSync('tmp/.hidden_file'));
+
 shell.exit(123);

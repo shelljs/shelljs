@@ -1,6 +1,6 @@
 var os = require('os');
 var fs = require('fs');
-var _ls = require('./ls');
+var glob = require('glob');
 
 // Module globals
 var config = {
@@ -126,7 +126,7 @@ exports.parseOptions = parseOptions;
 // For example:
 //   expand(['file*.js']) = ['file1.js', 'file2.js', ...]
 //   (if the files 'file1.js', 'file2.js', etc, exist in the current dir)
-function expand(list) {
+function expand(list, opts) {
   if (!Array.isArray(list)) {
     throw new TypeError('must be an array');
   }
@@ -135,33 +135,10 @@ function expand(list) {
     // Don't expand non-strings
     if (typeof listEl !== 'string') {
       expanded.push(listEl);
-    }
-    // Wildcard present on directory names ?
-    else if(listEl.search(/\*[^\/]*\//) > -1 || listEl.search(/\*\*[^\/]*\//) > -1) {
-      var match = listEl.match(/^([^*]+\/|)(.*)/);
-      var root = match[1];
-      var rest = match[2];
-      var restRegex = rest.replace(/\*\*/g, ".*").replace(/\*/g, "[^\\/]*");
-      restRegex = new RegExp(restRegex);
-
-      _ls('-R', root).filter(function (e) {
-        return restRegex.test(e);
-      }).forEach(function(file) {
-        expanded.push(file);
-      });
-    }
-    // Wildcard present on file names ?
-    else if (listEl.search(/\*/) > -1) {
-      var matches = _ls('', listEl);
-      if (matches.length === 0) {
-        expanded.push(listEl); // Interpret this as a literal string
-      } else {
-        matches.forEach(function(file) {
-          expanded.push(file);
-        });
-      }
     } else {
-      expanded.push(listEl);
+      var ret = glob.sync(listEl, opts);
+      // if glob fails, interpret the string literally
+      expanded = expanded.concat(ret.length > 0 ? ret : [listEl]);
     }
   });
   return expanded;
