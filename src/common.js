@@ -38,14 +38,11 @@ function error(msg, _continue) {
   else
     state.error += '\n' + log_entry;
 
+  if(!_continue || config.fatal)
+    throw new Error(log_entry);
+
   if (msg.length > 0)
     log(log_entry);
-
-  if (config.fatal)
-    process.exit(1);
-
-  if (!_continue)
-    throw '';
 }
 exports.error = error;
 

@@ -159,12 +159,13 @@ exports.config = common.config;
 //@ ```javascript
 //@ require('shelljs/global');
 //@ config.fatal = true; // or set('-e');
-//@ cp('this_file_does_not_exist', '/dev/null'); // dies here
+//@ cp('this_file_does_not_exist', '/dev/null'); // throws Error here
 //@ /* more commands... */
 //@ ```
 //@
-//@ If `true` the script will die on errors. Default is `false`. This is
-//@ analogous to Bash's `set -e`
+//@ If `true` the script will throw a Javascript error when any shell.js
+//@ command encounters an error. Default is `false`. This is analogous to
+//@ Bash's `set -e`
 
 //@
 //@ ### config.verbose
