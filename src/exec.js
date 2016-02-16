@@ -22,7 +22,7 @@ function execSync(cmd, opts) {
 
   opts = common.extend({
     silent: common.config.silent,
-    cwd: _pwd(),
+    cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE
   }, opts);
@@ -151,13 +151,10 @@ function execSync(cmd, opts) {
   if (code !== 0)  {
     common.error('', true);
   }
-  // True if successful, false if not
-  var obj = {
-    code: code,
-    output: stdout, // deprecated
-    stdout: stdout,
-    stderr: stderr
-  };
+  var obj = common.ShellString(stdout, stderr);
+  // obj.stdout = stdout;
+  // obj.stderr = stderr;
+  obj.code = code;
   return obj;
 } // execSync()
 
@@ -168,7 +165,7 @@ function execAsync(cmd, opts, callback) {
 
   opts = common.extend({
     silent: common.config.silent,
-    cwd: _pwd(),
+    cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE
   }, opts);

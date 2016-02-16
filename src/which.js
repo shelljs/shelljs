@@ -93,6 +93,6 @@ function _which(options, cmd) {
 
   where = where || path.resolve(cmd);
 
-  return common.ShellString(where);
+  return new common.ShellString(where);
 }
 module.exports = _which;

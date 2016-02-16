@@ -126,6 +126,13 @@ if (process.platform !== 'win32') {
   }
 }
 
+// exec returns a ShellString
+result = shell.exec('echo foo');
+assert.ok(typeof result === 'object');
+assert.ok(result instanceof String);
+assert.ok(typeof result.stdout === 'string');
+assert.strictEqual(result.toString(), result.stdout);
+
 //
 // async
 //

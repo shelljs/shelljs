@@ -104,7 +104,7 @@ function _ls(options, paths) {
 
           // Recursive?
           if (options.recursive) {
-            var oldDir = _pwd();
+            var oldDir = _pwd().toString();
             _cd('', p);
             if (fs.statSync(orig_file).isDirectory())
               list = list.concat(_ls('-R'+(options.all?'A':''), orig_file+'/*'));

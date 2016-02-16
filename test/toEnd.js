@@ -12,7 +12,11 @@ shell.mkdir('tmp');
 // Invalids
 //
 
-'hello world'.toEnd();
+// Normal strings don't have '.toEnd()' anymore
+var str = 'hello world';
+assert.ok(typeof str.toEnd === 'undefined');
+
+shell.ShellString('hello world').toEnd();
 assert.ok(shell.error());
 
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
@@ -23,9 +27,9 @@ assert.ok(shell.error());
 
 assert.equal(fs.existsSync('tmp/toEnd1'), false); //Check file toEnd() creates does not already exist
 assert.equal(fs.existsSync('tmp/toEnd2'), false);
-'hello '.toEnd('tmp/toEnd1');
+shell.ShellString('hello ').toEnd('tmp/toEnd1');
 assert.equal(fs.existsSync('tmp/toEnd1'), true); //Check that file was created
-'world'.toEnd('tmp/toEnd1').toEnd('tmp/toEnd2'); //Write some more to the file
+shell.ShellString('world').toEnd('tmp/toEnd1').toEnd('tmp/toEnd2'); //Write some more to the file
 var result = shell.cat('tmp/toEnd1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello world'); //Check that the result is what we expect
@@ -34,8 +38,8 @@ assert.equal(shell.error(), null);
 assert.equal(result, 'world'); //Check that the result is what we expect
 
 // With a glob
-'good'.to('tmp/toE*1');
-'bye'.toEnd('tmp/toE*1');
+shell.ShellString('good').to('tmp/toE*1');
+shell.ShellString('bye').toEnd('tmp/toE*1');
 var result = shell.cat('tmp/toEnd1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'goodbye');

@@ -1,6 +1,12 @@
+// jshint -W053
+// Ignore warning about 'new String()'
+'use strict';
+
 var os = require('os');
 var fs = require('fs');
 var glob = require('glob');
+var _to = require('./to');
+var _toEnd = require('./toEnd');
 
 // Module globals
 var config = {
@@ -46,11 +52,26 @@ function error(msg, _continue) {
 }
 exports.error = error;
 
-// In the future, when Proxies are default, we can add methods like `.to()` to primitive strings.
-// For now, this is a dummy function to bookmark places we need such strings
-function ShellString(str) {
-  return str;
-}
+//@
+//@ ### ShellString(str)
+//@
+//@ Examples:
+//@
+//@ ```
+//@ var foo = ShellString('hello world');
+//@ ```
+//@
+//@ Turns a regular string into a string-like object similar to what each
+//@ command returns. This has special methods, like `.to()` and `.toEnd()`
+var ShellString = function (str, stderr) {
+  var that = new String(str);
+  that.to = wrap('to', _to, {idx: 1});
+  that.toEnd = wrap('toEnd', _toEnd, {idx: 1});
+  that.stdout = str;
+  that.stderr = stderr;
+  return that;
+};
+
 exports.ShellString = ShellString;
 
 // Return the home directory in a platform-agnostic way, with consideration for
@@ -225,6 +246,13 @@ function wrap(cmd, fn, options) {
             return accum;
           }
         }, []);
+        // Convert ShellStrings to regular strings
+        args = args.map(function(arg) {
+          if (arg.constructor.name === 'String') {
+            return arg.toString();
+          } else
+            return arg;
+        });
         // Expand the '~' if appropriate
         var homeDir = getUserHome();
         args = args.map(function(arg) {

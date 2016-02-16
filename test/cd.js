@@ -46,7 +46,7 @@ shell.cd(cur);
 shell.cd('/');
 shell.cd('-');
 assert.equal(shell.error(), null);
-assert.equal(process.cwd(), path.resolve(cur));
+assert.equal(process.cwd(), path.resolve(cur.toString()));
 
 // cd + other commands
 

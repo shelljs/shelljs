@@ -25,7 +25,7 @@ assert.ok(!result);
 
 var node = shell.which('node');
 assert.ok(!shell.error());
-assert.ok(fs.existsSync(node));
+assert.ok(fs.existsSync(node + ''));
 
 if (process.platform === 'win32') {
     // This should be equivalent on Windows
@@ -33,7 +33,7 @@ if (process.platform === 'win32') {
     assert.ok(!shell.error());
     // If the paths are equal, then this file *should* exist, since that's
     // already been checked.
-    assert.equal(node, nodeExe);
+    assert.equal(node + '', nodeExe + '');
 }
 
 shell.exit(123);

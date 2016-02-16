@@ -12,18 +12,22 @@ shell.mkdir('tmp');
 // Invalids
 //
 
-'hello world'.to();
+// Normal strings don't have '.to()' anymore
+var str = 'hello world';
+assert.ok(typeof str.to === 'undefined');
+
+shell.ShellString('hello world').to();
 assert.ok(shell.error());
 
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-'hello world'.to('/asdfasdf/file');
+shell.ShellString('hello world').to('/asdfasdf/file');
 assert.ok(shell.error());
 
 //
 // Valids
 //
 
-'hello world'.to('tmp/to1').to('tmp/to2');
+shell.ShellString('hello world').to('tmp/to1').to('tmp/to2');
 var result = shell.cat('tmp/to1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello world');
@@ -32,7 +36,7 @@ assert.equal(shell.error(), null);
 assert.equal(result, 'hello world');
 
 // With a glob
-'goodbye'.to('tmp/t*1');
+shell.ShellString('goodbye').to('tmp/t*1');
 var result = shell.cat('tmp/to1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'goodbye');

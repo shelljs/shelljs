@@ -61,7 +61,7 @@ assert.equal(fs.existsSync('tmp/a_file'), false);
 shell.cp('resources/file2', 'resources/copyfile2');
 shell.cp('resources/file1', 'resources/file2'); // dest already exists
 assert.ok(!shell.error());
-assert.equal(shell.cat('resources/file1'), shell.cat('resources/file2')); // after cp
+assert.equal(shell.cat('resources/file1') + '', shell.cat('resources/file2') + ''); // after cp
 shell.mv('resources/copyfile2', 'resources/file2'); // restore
 assert.ok(!shell.error());
 
@@ -69,7 +69,7 @@ assert.ok(!shell.error());
 shell.cp('resources/file2', 'resources/copyfile2');
 shell.cp('-f', 'resources/file1', 'resources/file2'); // dest already exists
 assert.ok(!shell.error());
-assert.equal(shell.cat('resources/file1'), shell.cat('resources/file2')); // after cp
+assert.equal(shell.cat('resources/file1') + '', shell.cat('resources/file2') + ''); // after cp
 shell.mv('resources/copyfile2', 'resources/file2'); // restore
 assert.ok(!shell.error());
 
@@ -131,18 +131,18 @@ assert.equal(shell.error(), null); // crash test only
 //recursive, everything exists, with force flag
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
-'changing things around'.to('tmp/cp/dir_a/z');
-assert.notEqual(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); // before cp
+shell.ShellString('changing things around').to('tmp/cp/dir_a/z');
+assert.notEqual(shell.cat('resources/cp/dir_a/z') + '', shell.cat('tmp/cp/dir_a/z') + ''); // before cp
 shell.cp('-Rf', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
-assert.equal(shell.cat('resources/cp/dir_a/z'), shell.cat('tmp/cp/dir_a/z')); // after cp
+assert.equal(shell.cat('resources/cp/dir_a/z') + '', shell.cat('tmp/cp/dir_a/z') + ''); // after cp
 
 //recursive, creates dest dir since it's only one level deep (see Github issue #44)
 shell.rm('-rf', 'tmp/*');
 shell.cp('-r', 'resources/issue44', 'tmp/dir2');
 assert.equal(shell.error(), null);
 assert.equal(shell.ls('-R', 'resources/issue44') + '', shell.ls('-R', 'tmp/dir2') + '');
-assert.equal(shell.cat('resources/issue44/main.js'), shell.cat('tmp/dir2/main.js'));
+assert.equal(shell.cat('resources/issue44/main.js') + '', shell.cat('tmp/dir2/main.js') + '');
 
 //recursive, does *not* create dest dir since it's too deep (see Github issue #44)
 shell.rm('-rf', 'tmp/*');

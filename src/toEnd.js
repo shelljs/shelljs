@@ -11,8 +11,8 @@ var path = require('path');
 //@ cat('input.txt').toEnd('output.txt');
 //@ ```
 //@
-//@ Analogous to the redirect-and-append operator `>>` in Unix, but works with JavaScript strings (such as
-//@ those returned by `cat`, `grep`, etc).
+//@ Analogous to the redirect-and-append operator `>>` in Unix, but works with
+//@ ShellStrings (such as those returned by `cat`, `grep`, etc).
 function _toEnd(options, file) {
   if (!file)
     common.error('wrong arguments');

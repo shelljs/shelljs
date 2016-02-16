@@ -27,7 +27,7 @@ assert.equal(shell.config.fatal, false); // default
 shell.mkdir('-p', 'tmp');
 var file = 'tmp/tempscript'+Math.random()+'.js',
     script = 'require(\'../../global.js\'); config.silent=true; config.fatal=false; cp("this_file_doesnt_exist", "."); echo("got here");';
-script.to(file);
+shell.ShellString(script).to(file);
 child.exec('node '+file, function(err, stdout) {
   assert.ok(stdout.match('got here'));
 
@@ -37,7 +37,7 @@ child.exec('node '+file, function(err, stdout) {
   shell.mkdir('-p', 'tmp');
   var file = 'tmp/tempscript'+Math.random()+'.js',
       script = 'require(\'../../global.js\'); config.silent=true; config.fatal=true; cp("this_file_doesnt_exist", "."); echo("got here");';
-  script.to(file);
+  shell.ShellString(script).to(file);
   child.exec('node '+file, function(err, stdout) {
     assert.ok(!stdout.match('got here'));
 
