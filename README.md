@@ -554,7 +554,8 @@ Notable exceptions:
 + There is no "quiet" option since default behavior is to run silent.
 
 
-### touch([options,] file)
+### touch([options,] file [, file ...])
+### touch([options,] file_array)
 Available options:
 
 + `-a`: Change only the access time

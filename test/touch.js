@@ -79,6 +79,22 @@ var oldStat = resetUtimes(testFile);
 shell.touch('-m', testFile);
 assert.equal(oldStat.atime.getTime(), fs.statSync(testFile).atime.getTime());
 
+// multiple files
+testFile = tmpFile(true);
+testFile2 = tmpFile(true);
+shell.rm('-f', testFile, testFile2);
+shell.touch(testFile, testFile2);
+assert(fs.existsSync(testFile));
+assert(fs.existsSync(testFile2));
+
+// file array
+testFile = tmpFile(true);
+testFile2 = tmpFile(true);
+shell.rm('-f', testFile, testFile2);
+shell.touch([testFile, testFile2]);
+assert(fs.existsSync(testFile));
+assert(fs.existsSync(testFile2));
+
 function resetUtimes(f) {
   var d = new Date();
   d.setYear(2000);
