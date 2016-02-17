@@ -75,15 +75,15 @@ exports.which = common.wrap('which', _which);
 
 //@include ./src/echo
 var _echo = require('./src/echo');
-exports.echo = _echo; // don't common.wrap() as it could parse '-options'
+exports.echo = common.wrap('echo', _echo);
 
 //@include ./src/dirs
 var _dirs = require('./src/dirs').dirs;
-exports.dirs = common.wrap("dirs", _dirs, {idx: 1});
+exports.dirs = common.wrap('dirs', _dirs, {idx: 1});
 var _pushd = require('./src/dirs').pushd;
 exports.pushd = common.wrap('pushd', _pushd, {idx: 1});
 var _popd = require('./src/dirs').popd;
-exports.popd = common.wrap("popd", _popd, {idx: 1});
+exports.popd = common.wrap('popd', _popd, {idx: 1});
 
 //@include ./src/ln
 var _ln = require('./src/ln');

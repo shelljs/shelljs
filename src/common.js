@@ -204,7 +204,7 @@ function wrap(cmd, fn, options) {
 
       if (config.verbose) {
         args.unshift(cmd);
-        console.log.apply(console, args);
+        console.error.apply(console, args);
         args.shift();
       }
 
@@ -240,8 +240,8 @@ function wrap(cmd, fn, options) {
     } catch (e) {
       if (!state.error) {
         // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
-        console.log('shell.js: internal error');
-        console.log(e.stack || e);
+        console.error('shell.js: internal error');
+        console.error(e.stack || e);
         process.exit(1);
       }
       if (config.fatal)

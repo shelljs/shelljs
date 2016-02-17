@@ -37,14 +37,16 @@ assert(result.stderr.indexOf('Error: ls: no such file or directory: file_doesnt_
 // set -v
 var result = shell.exec('node -e \"require(\'../global\'); set(\'-v\'); ls(\'file_doesnt_exist\'); echo(1234);\"');
 assert.equal(result.code, 0);
-assert.equal(result.stdout, 'ls file_doesnt_exist\n1234\n');
-assert.equal(result.stderr, 'ls: no such file or directory: file_doesnt_exist\n');
+assert.equal(result.stdout, '1234\n');
+assert.equal(result.stderr, 'ls file_doesnt_exist\nls: no such file or directory: file_doesnt_exist\necho 1234\n');
 
 // set -ev
 var result = shell.exec('node -e \"require(\'../global\'); set(\'-ev\'); ls(\'file_doesnt_exist\'); echo(1234);\"');
 assert.equal(result.code, uncaughtErrorExitCode);
-assert.equal(result.stdout, 'ls file_doesnt_exist\n');
+assert.equal(result.stdout, '');
 assert(result.stderr.indexOf('Error: ls: no such file or directory: file_doesnt_exist') >= 0);
+assert(result.stderr.indexOf('ls file_doesnt_exist\n') >= 0);
+assert.equal(result.stderr.indexOf('echo 1234\n'), -1);
 
 // set -e, set +e
 var result = shell.exec('node -e \"require(\'../global\'); set(\'-e\'); set(\'+e\'); ls(\'file_doesnt_exist\'); echo(1234);\"');
