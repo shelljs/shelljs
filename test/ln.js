@@ -105,6 +105,24 @@ shell.ln('-s', 'ln', 'tmp/dir1');
 assert(fs.existsSync('tmp/ln/hello'));
 assert(fs.existsSync('tmp/dir1/hello'));
 
+// To current directory
+shell.cd('tmp');
+shell.ln('-s', './', 'dest');
+shell.touch('testfile.txt');
+assert(fs.existsSync('testfile.txt'));
+assert(fs.existsSync('dest/testfile.txt'));
+shell.rm('-f', 'dest');
+shell.mkdir('dir1');
+shell.cd('dir1');
+shell.ln('-s', './', '../dest');
+shell.touch('insideDir.txt');
+shell.cd('..');
+assert(fs.existsSync('testfile.txt'));
+assert(fs.existsSync('dest/testfile.txt'));
+assert(fs.existsSync('dir1/insideDir.txt'));
+assert(!fs.existsSync('dest/insideDir.txt'));
+shell.cd('..');
+
 shell.ln('-f', 'tmp/file1.js', 'tmp/file2.js');
 assert(fs.existsSync('tmp/file2.js'));
 assert.equal(
