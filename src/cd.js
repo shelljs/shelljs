@@ -16,13 +16,19 @@ function _cd(options, dir) {
       dir = common.state.previousDir;
   }
 
-  if (!fs.existsSync(dir))
-    common.error('no such file or directory: ' + dir);
-
-  if (!fs.statSync(dir).isDirectory())
-    common.error('not a directory: ' + dir);
-
-  common.state.previousDir = process.cwd();
-  process.chdir(dir);
+  // This complexity is so that we only stat once.
+  var error = null;
+  try {
+    var stat = fs.statSync(dir);
+    if(stat.isDirectory()) {
+      common.state.previousDir = process.cwd();
+      process.chdir(dir);
+    } else {
+      error = 'not a directory: ' + dir;
+    }
+  } catch (e) {
+    error = 'no such file or directory: ' + dir;
+  }
+  if (error) common.error(error);
 }
 module.exports = _cd;
