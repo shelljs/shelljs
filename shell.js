@@ -53,13 +53,10 @@ exports.test = common.wrap('test', _test);
 var _cat = require('./src/cat');
 exports.cat = common.wrap('cat', _cat, {idx: 1});
 
+// The below commands have been moved to common.ShellString(), and are only here
+// for generating the docs
 //@include ./src/to
-var _to = require('./src/to');
-String.prototype.to = common.wrap('to', _to, {idx: 1});
-
 //@include ./src/toEnd
-var _toEnd = require('./src/toEnd');
-String.prototype.toEnd = common.wrap('toEnd', _toEnd, {idx: 1});
 
 //@include ./src/sed
 var _sed = require('./src/sed');
@@ -124,11 +121,12 @@ exports.set = common.wrap('set', _set);
 var _tempDir = require('./src/tempdir');
 exports.tempdir = common.wrap('tempdir', _tempDir);
 
-
 //@include ./src/error
 var _error = require('./src/error');
 exports.error = _error;
 
+//@include ./src/common
+exports.ShellString = common.ShellString;
 
 
 //@

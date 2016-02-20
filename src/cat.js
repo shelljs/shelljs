@@ -33,6 +33,6 @@ function _cat(options, files) {
     cat += fs.readFileSync(file, 'utf8');
   });
 
-  return common.ShellString(cat);
+  return new common.ShellString(cat, common.state.error);
 }
 module.exports = _cat;

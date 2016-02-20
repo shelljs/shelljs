@@ -57,6 +57,6 @@ function _sed(options, regex, replacement, files) {
       fs.writeFileSync(file, result, 'utf8');
   });
 
-  return common.ShellString(sed.join('\n'));
+  return new common.ShellString(sed.join('\n'), common.state.error);
 }
 module.exports = _sed;

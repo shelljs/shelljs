@@ -320,4 +320,26 @@ assert.ok(result.atime); // check that these keys exist
 assert.ok(result.ctime); // check that these keys exist
 assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
 
+// Test new ShellString-like attributes
+result = shell.ls('resources/ls');
+assert.equal(shell.error(), null);
+assert.equal(result.stdout.indexOf('file1') > -1, true);
+assert.equal(result.stdout.indexOf('file2') > -1, true);
+assert.equal(result.stdout.indexOf('file1.js') > -1, true);
+assert.equal(result.stdout.indexOf('file2.js') > -1, true);
+assert.equal(result.stdout.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1, true);
+assert.equal(result.stdout.indexOf('a_dir') > -1, true);
+assert.strictEqual(typeof result.stdout, 'string');
+assert.ok(result.to);
+assert.ok(result.toEnd);
+result.to('tmp/testingToOutput.txt');
+assert.equal(shell.cat('tmp/testingToOutput.txt'), result.stdout);
+shell.rm('tmp/testingToOutput.txt');
+
+// Check stderr field
+assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
+result = shell.ls('resources/ls/file1', '/asdfasdf');
+assert.ok(shell.error());
+assert.equal(shell.error(), result.stderr);
+
 shell.exit(123);

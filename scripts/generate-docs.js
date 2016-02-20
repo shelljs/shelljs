@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* globals cat, cd, echo, grep, sed */
+/* globals cat, cd, echo, grep, sed, ShellString */
 require('../global');
 
 echo('Appending docs to README.md');
@@ -18,7 +18,7 @@ docs = docs.replace(/\/\/\@include (.+)/g, function(match, path) {
 docs = docs.replace(/\/\/\@ ?/g, '');
 
 // Wipe out the old docs
-cat('README.md').replace(/## Command reference(.|\n)*/, '## Command reference').to('README.md');
+ShellString(cat('README.md').replace(/## Command reference(.|\n)*/, '## Command reference')).to('README.md');
 
 // Append new docs to README
 sed('-i', /## Command reference/, '## Command reference\n\n' + docs, 'README.md');

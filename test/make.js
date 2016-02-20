@@ -11,7 +11,7 @@ var file = 'tmp/tempscript'+Math.random()+'.js',
              '  echo("second");' +
              '}';
 
-script.to(file);
+shell.ShellString(script).to(file);
 child.exec('node '+file, function(err, stdout) {
   assert.ok(stdout.match('first'));
   assert.ok(!stdout.match('second')); // Make should die on errors, so this should never get echoed

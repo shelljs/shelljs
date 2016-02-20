@@ -86,6 +86,14 @@ assert.ok(result.value === 'some text here');
 assert.ok(result.force === false);
 assert.ok(result.reverse === false);
 
+// Some basic tests on the ShellString type
+result = shell.ShellString('foo');
+assert.strictEqual(result.toString(), 'foo');
+assert.equal(result.stdout, 'foo');
+assert.ok(typeof result.stderr === 'undefined');
+assert.ok(result.to);
+assert.ok(result.toEnd);
+
 shell.exit(123);
 
 

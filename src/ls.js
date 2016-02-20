@@ -3,6 +3,8 @@ var fs = require('fs');
 var common = require('./common');
 var _cd = require('./cd');
 var _pwd = require('./pwd');
+var _to = require('./to');
+var _toEnd = require('./toEnd');
 
 //@
 //@ ### ls([options,] [path, ...])
@@ -104,7 +106,7 @@ function _ls(options, paths) {
 
           // Recursive?
           if (options.recursive) {
-            var oldDir = _pwd();
+            var oldDir = _pwd().toString();
             _cd('', p);
             if (fs.statSync(orig_file).isDirectory())
               list = list.concat(_ls('-R'+(options.all?'A':''), orig_file+'/*'));
@@ -151,6 +153,15 @@ function _ls(options, paths) {
     common.error('no such file or directory: ' + p, true);
   });
 
+  // Add methods, to make this more compatible with ShellStrings
+  list.stdout = list.join('\n') + '\n';
+  list.stderr = common.state.error;
+  list.to = function (file) {
+    common.wrap('to', _to, {idx: 1}).call(this.stdout, file);
+  };
+  list.toEnd = function(file) {
+    common.wrap('toEnd', _toEnd, {idx: 1}).call(this.stdout, file);
+  };
   return list;
 }
 module.exports = _ls;

@@ -331,8 +331,9 @@ Examples:
 cat('input.txt').to('output.txt');
 ```
 
-Analogous to the redirection operator `>` in Unix, but works with JavaScript strings (such as
-those returned by `cat`, `grep`, etc). _Like Unix redirections, `to()` will overwrite any existing file!_
+Analogous to the redirection operator `>` in Unix, but works with
+ShellStrings (such as those returned by `cat`, `grep`, etc). _Like Unix
+redirections, `to()` will overwrite any existing file!_
 
 
 ### 'string'.toEnd(file)
@@ -343,8 +344,8 @@ Examples:
 cat('input.txt').toEnd('output.txt');
 ```
 
-Analogous to the redirect-and-append operator `>>` in Unix, but works with JavaScript strings (such as
-those returned by `cat`, `grep`, etc).
+Analogous to the redirect-and-append operator `>>` in Unix, but works with
+ShellStrings (such as those returned by `cat`, `grep`, etc).
 
 
 ### sed([options,] search_regex, replacement, file [, file ...])
@@ -612,6 +613,18 @@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.ht
 ### error()
 Tests if error occurred in the last command. Returns `null` if no error occurred,
 otherwise returns string explaining the error
+
+
+### ShellString(str)
+
+Examples:
+
+```
+var foo = ShellString('hello world');
+```
+
+Turns a regular string into a string-like object similar to what each
+command returns. This has special methods, like `.to()` and `.toEnd()`
 
 
 ## Configuration
