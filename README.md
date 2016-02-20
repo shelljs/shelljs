@@ -4,7 +4,12 @@
 [![Build Status](https://travis-ci.org/shelljs/shelljs.svg?branch=master)](http://travis-ci.org/shelljs/shelljs)
 [![Build status](https://ci.appveyor.com/api/projects/status/42txr0s3ux5wbumv/branch/master?svg=true)](https://ci.appveyor.com/project/shelljs/shelljs)
 
-ShellJS is a portable **(Windows/Linux/OS X)** implementation of Unix shell commands on top of the Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping its familiar and powerful commands. You can also install it globally so you can run it from outside Node projects - say goodbye to those gnarly Bash scripts!
+ShellJS is a portable **(Windows/Linux/OS X)** implementation of Unix shell commands on top of the
+Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping
+its familiar and powerful commands. You can also install it globally so you can run it from outside
+Node projects - say goodbye to those gnarly Bash scripts!
+
+ShellJS supports node `v0.11`, `v0.12`, `v4`, `v5`, and all releases of iojs.
 
 The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battled-tested in projects like:
 

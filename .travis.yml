@@ -2,9 +2,17 @@ language: c++
 sudo: false
 env:
   - NODE_VERSION="0.10"
+  - NODE_VERSION="0.11"
   - NODE_VERSION="0.12"
+  - NODE_VERSION="iojs-v1"
+  - NODE_VERSION="iojs-v2"
+  - NODE_VERSION="iojs-v3"
   - NODE_VERSION="4"
   - NODE_VERSION="5"
+
+matrix:
+  allow_failures:
+    - NODE_VERSION="0.10"
 
 # keep this blank to make sure there are no before_install steps
 before_install:
@@ -21,11 +29,13 @@ os:
   - osx
 script:
   - npm test
+  # make sure when the docs are generated nothing changes (a.k.a. the docs have already been generated)
   - node scripts/generate-docs.js
   - git diff --quiet # make sure no files have changed
 
 # Gitter
 notifications:
+  email: false
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/743dc6b83b6dd05111ee
