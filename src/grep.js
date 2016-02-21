@@ -24,21 +24,26 @@ function _grep(options, regex, files) {
     'l': 'nameOnly'
   });
 
-  if (!files)
+  // Check if this is coming from a pipe
+  var pipe = common.readFromPipe(this);
+
+  if (!files && !pipe)
     common.error('no paths given');
 
-  if (typeof files === 'string')
-    files = [].slice.call(arguments, 2);
+  files = [].slice.call(arguments, 2);
+
+  if (pipe)
+    files.unshift('-');
 
   var grep = [];
   files.forEach(function(file) {
-    if (!fs.existsSync(file)) {
+    if (!fs.existsSync(file) && file !== '-') {
       common.error('no such file or directory: ' + file, true);
       return;
     }
 
-    var contents = fs.readFileSync(file, 'utf8'),
-        lines = contents.split(/\r*\n/);
+    var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
+    var lines = contents.split(/\r*\n/);
     if (options.nameOnly) {
       if (contents.match(regex))
         grep.push(file);

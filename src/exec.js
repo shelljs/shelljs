@@ -12,7 +12,7 @@ var DEFAULT_MAXBUFFER_SIZE = 20*1024*1024;
 // (Can't do a wait loop that checks for internal Node variables/messages as
 // Node is single-threaded; callbacks and other internal state changes are done in the
 // event loop).
-function execSync(cmd, opts) {
+function execSync(cmd, opts, pipe) {
   var tempDir = _tempDir();
   var stdoutFile = path.resolve(tempDir+'/'+common.randomFileName()),
       stderrFile = path.resolve(tempDir+'/'+common.randomFileName()),
@@ -53,10 +53,6 @@ function execSync(cmd, opts) {
     previousStreamContent = streamContent;
   }
 
-  function escape(str) {
-    return (str+'').replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
-  }
-
   if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
   if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
   if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
@@ -74,23 +70,26 @@ function execSync(cmd, opts) {
 
   if (typeof child.execSync === 'function') {
     script = [
-      "var child = require('child_process')",
-      "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', "+optString+", function(err) {",
-      "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
-      "});",
-      "var stdoutStream = fs.createWriteStream('"+escape(stdoutFile)+"');",
-      "var stderrStream = fs.createWriteStream('"+escape(stderrFile)+"');",
-      "childProcess.stdout.pipe(stdoutStream, {end: false});",
-      "childProcess.stderr.pipe(stderrStream, {end: false});",
-      "childProcess.stdout.pipe(process.stdout);",
-      "childProcess.stderr.pipe(process.stderr);",
-      "var stdoutEnded = false, stderrEnded = false;",
-      "function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }",
-      "function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }",
-      "childProcess.stdout.on('end', function(){ stdoutEnded = true; tryClosingStdout(); });",
-      "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });"
-    ].join('\n');
+        "var child = require('child_process')",
+        "  , fs = require('fs');",
+        "var childProcess = child.exec("+JSON.stringify(cmd)+", "+optString+", function(err) {",
+        "  fs.writeFileSync("+JSON.stringify(codeFile)+", err ? err.code.toString() : '0');",
+        "});",
+        "var stdoutStream = fs.createWriteStream("+JSON.stringify(stdoutFile)+");",
+        "var stderrStream = fs.createWriteStream("+JSON.stringify(stderrFile)+");",
+        "childProcess.stdout.pipe(stdoutStream, {end: false});",
+        "childProcess.stderr.pipe(stderrStream, {end: false});",
+        "childProcess.stdout.pipe(process.stdout);",
+        "childProcess.stderr.pipe(process.stderr);"
+      ].join('\n') +
+      (pipe ? "\nchildProcess.stdin.end("+JSON.stringify(pipe)+");\n" : '\n') +
+      [
+        "var stdoutEnded = false, stderrEnded = false;",
+        "function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }",
+        "function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }",
+        "childProcess.stdout.on('end', function(){ stdoutEnded = true; tryClosingStdout(); });",
+        "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });"
+      ].join('\n');
 
     fs.writeFileSync(scriptFile, script);
 
@@ -115,12 +114,13 @@ function execSync(cmd, opts) {
     cmd += ' > '+stdoutFile+' 2> '+stderrFile; // works on both win/unix
 
     script = [
-      "var child = require('child_process')",
-      "  , fs = require('fs');",
-      "var childProcess = child.exec('"+escape(cmd)+"', "+optString+", function(err) {",
-      "  fs.writeFileSync('"+escape(codeFile)+"', err ? err.code.toString() : '0');",
-      "});"
-    ].join('\n');
+        "var child = require('child_process')",
+        "  , fs = require('fs');",
+        "var childProcess = child.exec("+JSON.stringify(cmd)+", "+optString+", function(err) {",
+        "  fs.writeFileSync("+JSON.stringify(codeFile)+", err ? err.code.toString() : '0');",
+        "});"
+      ].join('\n') +
+      (pipe ? "\nchildProcess.stdin.end("+JSON.stringify(pipe)+");\n" : '\n');
 
     fs.writeFileSync(scriptFile, script);
 
@@ -163,7 +163,7 @@ function execSync(cmd, opts) {
 } // execSync()
 
 // Wrapper around exec() to enable echoing output to console in real time
-function execAsync(cmd, opts, callback) {
+function execAsync(cmd, opts, pipe, callback) {
   var stdout = '';
   var stderr = '';
 
@@ -178,6 +178,9 @@ function execAsync(cmd, opts, callback) {
     if (callback)
       callback(err ? err.code : 0, stdout, stderr);
   });
+
+  if (pipe)
+    c.stdin.end(pipe);
 
   c.stdout.on('data', function(data) {
     stdout += data;
@@ -233,6 +236,8 @@ function _exec(command, options, callback) {
   if (!command)
     common.error('must specify command');
 
+  var pipe = common.readFromPipe(this);
+
   // Callback is defined instead of options.
   if (typeof options === 'function') {
     callback = options;
@@ -251,9 +256,9 @@ function _exec(command, options, callback) {
 
   try {
     if (options.async)
-      return execAsync(command, options, callback);
+      return execAsync(command, options, pipe, callback);
     else
-      return execSync(command, options);
+      return execSync(command, options, pipe);
   } catch (e) {
     common.error('internal error');
   }

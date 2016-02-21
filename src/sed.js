@@ -22,6 +22,9 @@ function _sed(options, regex, replacement, files) {
     'i': 'inplace'
   });
 
+  // Check if this is coming from a pipe
+  var pipe = common.readFromPipe(this);
+
   if (typeof replacement === 'string' || typeof replacement === 'function')
     replacement = replacement; // no-op
   else if (typeof replacement === 'number')
@@ -33,21 +36,24 @@ function _sed(options, regex, replacement, files) {
   if (typeof regex === 'string')
     regex = RegExp(regex);
 
-  if (!files)
+  if (!files && !pipe)
     common.error('no files given');
 
-  if (typeof files === 'string')
-    files = [].slice.call(arguments, 3);
-  // if it's array leave it as it is
+  files = [].slice.call(arguments, 3);
+
+  if (pipe)
+    files.unshift('-');
 
   var sed = [];
   files.forEach(function(file) {
-    if (!fs.existsSync(file)) {
+    if (!fs.existsSync(file) && file !== '-') {
       common.error('no such file or directory: ' + file, true);
       return;
     }
 
-    var result = fs.readFileSync(file, 'utf8').split('\n').map(function (line) {
+    var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
+    var lines = contents.split(/\r*\n/);
+    var result = lines.map(function (line) {
       return line.replace(regex, replacement);
     }).join('\n');
 
