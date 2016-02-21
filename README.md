@@ -619,7 +619,7 @@ otherwise returns string explaining the error
 
 Examples:
 
-```
+```javascript
 var foo = ShellString('hello world');
 ```
 
@@ -627,10 +627,25 @@ Turns a regular string into a string-like object similar to what each
 command returns. This has special methods, like `.to()` and `.toEnd()`
 
 
+### Pipes
+
+Examples:
+
+```javascript
+grep('foo', 'file1.txt', 'file2.txt').sed(/o/g, 'a').to('output.txt');
+echo('files with o\'s in the name:\n' + ls().grep('o'));
+cat('test.js').exec('node'); // pipe to exec() call
+```
+
+Commands can send their output to another command in a pipe-like fashion.
+`sed`, `grep`, `cat`, `exec`, `to`, and `toEnd` can appear on the right-hand
+side of a pipe. Pipes can be chained.
+
 ## Configuration
 
 
 ### config.silent
+
 Example:
 
 ```javascript
@@ -645,6 +660,7 @@ Suppresses all command output if `true`, except for `echo()` calls.
 Default is `false`.
 
 ### config.fatal
+
 Example:
 
 ```javascript
@@ -659,6 +675,7 @@ command encounters an error. Default is `false`. This is analogous to
 Bash's `set -e`
 
 ### config.verbose
+
 Example:
 
 ```javascript

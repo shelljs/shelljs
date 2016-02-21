@@ -17,14 +17,12 @@ var fs = require('fs');
 //@ containing the files if more than one file is given (a new line character is
 //@ introduced between each file). Wildcard `*` accepted.
 function _cat(options, files) {
-  var cat = '';
+  var cat = common.readFromPipe(this);
 
-  if (!files)
+  if (!files && !cat)
     common.error('no paths given');
 
-  if (typeof files === 'string')
-    files = [].slice.call(arguments, 1);
-  // if it's array leave it as it is
+  files = [].slice.call(arguments, 1);
 
   files.forEach(function(file) {
     if (!fs.existsSync(file))

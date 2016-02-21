@@ -128,6 +128,20 @@ exports.error = _error;
 //@include ./src/common
 exports.ShellString = common.ShellString;
 
+//@
+//@ ### Pipes
+//@
+//@ Examples:
+//@
+//@ ```javascript
+//@ grep('foo', 'file1.txt', 'file2.txt').sed(/o/g, 'a').to('output.txt');
+//@ echo('files with o\'s in the name:\n' + ls().grep('o'));
+//@ cat('test.js').exec('node'); // pipe to exec() call
+//@ ```
+//@
+//@ Commands can send their output to another command in a pipe-like fashion.
+//@ `sed`, `grep`, `cat`, `exec`, `to`, and `toEnd` can appear on the right-hand
+//@ side of a pipe. Pipes can be chained.
 
 //@
 //@ ## Configuration
@@ -137,6 +151,7 @@ exports.config = common.config;
 
 //@
 //@ ### config.silent
+//@
 //@ Example:
 //@
 //@ ```javascript
@@ -152,6 +167,7 @@ exports.config = common.config;
 
 //@
 //@ ### config.fatal
+//@
 //@ Example:
 //@
 //@ ```javascript
@@ -167,6 +183,7 @@ exports.config = common.config;
 
 //@
 //@ ### config.verbose
+//@
 //@ Example:
 //@
 //@ ```javascript

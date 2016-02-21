@@ -5,6 +5,7 @@
 var os = require('os');
 var fs = require('fs');
 var glob = require('glob');
+var shell = require('..');
 var _to = require('./to');
 var _toEnd = require('./toEnd');
 
@@ -57,18 +58,27 @@ exports.error = error;
 //@
 //@ Examples:
 //@
-//@ ```
+//@ ```javascript
 //@ var foo = ShellString('hello world');
 //@ ```
 //@
 //@ Turns a regular string into a string-like object similar to what each
 //@ command returns. This has special methods, like `.to()` and `.toEnd()`
-var ShellString = function (str, stderr) {
-  var that = new String(str);
-  that.to = wrap('to', _to, {idx: 1});
-  that.toEnd = wrap('toEnd', _toEnd, {idx: 1});
-  that.stdout = str;
+var ShellString = function (stdout, stderr) {
+  var that;
+  if (stdout instanceof Array) {
+    that = stdout;
+    that.stdout = stdout.join('\n')+'\n';
+  } else {
+    that = new String(stdout);
+    that.stdout = stdout;
+  }
   that.stderr = stderr;
+  that.to    = function() {wrap('to', _to, {idx: 1}).apply(that.stdout, arguments); return that;};
+  that.toEnd = function() {wrap('toEnd', _toEnd, {idx: 1}).apply(that.stdout, arguments); return that;};
+  ['cat', 'sed', 'grep', 'exec'].forEach(function (cmd) {
+    that[cmd] = function() {return shell[cmd].apply(that.stdout, arguments);};
+  });
   return that;
 };
 
@@ -281,3 +291,8 @@ function wrap(cmd, fn, options) {
   };
 } // wrap
 exports.wrap = wrap;
+
+function _readFromPipe(that) {
+  return that instanceof String ? that.toString() : '';
+}
+exports.readFromPipe = _readFromPipe;

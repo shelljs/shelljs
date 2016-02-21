@@ -3,8 +3,6 @@ var fs = require('fs');
 var common = require('./common');
 var _cd = require('./cd');
 var _pwd = require('./pwd');
-var _to = require('./to');
-var _toEnd = require('./toEnd');
 
 //@
 //@ ### ls([options,] [path, ...])
@@ -154,15 +152,7 @@ function _ls(options, paths) {
   });
 
   // Add methods, to make this more compatible with ShellStrings
-  list.stdout = list.join('\n') + '\n';
-  list.stderr = common.state.error;
-  list.to = function (file) {
-    common.wrap('to', _to, {idx: 1}).call(this.stdout, file);
-  };
-  list.toEnd = function(file) {
-    common.wrap('toEnd', _toEnd, {idx: 1}).call(this.stdout, file);
-  };
-  return list;
+  return new common.ShellString(list, common.state.error);
 }
 module.exports = _ls;
 
