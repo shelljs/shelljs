@@ -23,7 +23,7 @@ exports.pwd = common.wrap('pwd', _pwd);
 
 //@include ./src/ls
 var _ls = require('./src/ls');
-exports.ls = common.wrap('ls', _ls, {idx: 1});
+exports.ls = common.wrap('ls', _ls, {noGlob: true});
 
 //@include ./src/find
 var _find = require('./src/find');

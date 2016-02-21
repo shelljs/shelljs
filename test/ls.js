@@ -144,7 +144,7 @@ assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
 
 // wildcard, should not do partial matches
 var result = shell.ls('resources/ls/*.j'); // shouldn't get .js
-assert.equal(shell.error(), null);
+assert.ok(shell.error());
 assert.equal(result.length, 0);
 
 // wildcard, all files with extension
@@ -249,7 +249,6 @@ assert.equal(result.length, 6);
 // long option, single file
 var result = shell.ls('-l', 'resources/ls/file1')[0];
 assert.equal(shell.error(), null);
-assert.equal(result.name, 'resources/ls/file1');
 assert.equal(result.nlink, 1);
 assert.equal(result.size, 5);
 assert.ok(result.mode); // check that these keys exist
