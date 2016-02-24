@@ -37,6 +37,7 @@
   },
   "optionalDependencies": {},
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=0.11.0",
+    "iojs": "*"
   }
 }
