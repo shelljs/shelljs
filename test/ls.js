@@ -8,12 +8,15 @@ shell.config.silent = true;
 shell.rm('-rf', 'tmp');
 shell.mkdir('tmp');
 
+var idx;
+var result;
+
 //
 // Invalids
 //
 
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-var result = shell.ls('/asdfasdf'); // no such file or dir
+result = shell.ls('/asdfasdf'); // no such file or dir
 assert.ok(shell.error());
 assert.equal(result.length, 0);
 
@@ -21,15 +24,15 @@ assert.equal(result.length, 0);
 // Valids
 //
 
-var result = shell.ls();
+result = shell.ls();
 assert.equal(shell.error(), null);
 
-var result = shell.ls('/');
+result = shell.ls('/');
 assert.equal(shell.error(), null);
 
 // no args
 shell.cd('resources/ls');
-var result = shell.ls();
+result = shell.ls();
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('file1') > -1, true);
 assert.equal(result.indexOf('file2') > -1, true);
@@ -41,7 +44,7 @@ assert.equal(result.length, 6);
 shell.cd('../..');
 
 // simple arg
-var result = shell.ls('resources/ls');
+result = shell.ls('resources/ls');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('file1') > -1, true);
 assert.equal(result.indexOf('file2') > -1, true);
@@ -53,7 +56,7 @@ assert.equal(result.length, 6);
 
 // no args, 'all' option
 shell.cd('resources/ls');
-var result = shell.ls('-A');
+result = shell.ls('-A');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('file1') > -1, true);
 assert.equal(result.indexOf('file2') > -1, true);
@@ -68,7 +71,7 @@ shell.cd('../..');
 
 // no args, 'all' option
 shell.cd('resources/ls');
-var result = shell.ls('-a'); // (deprecated) backwards compatibility test
+result = shell.ls('-a'); // (deprecated) backwards compatibility test
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('file1') > -1, true);
 assert.equal(result.indexOf('file2') > -1, true);
@@ -82,14 +85,14 @@ assert.equal(result.length, 8);
 shell.cd('../..');
 
 // wildcard, very simple
-var result = shell.ls('resources/cat/*');
+result = shell.ls('resources/cat/*');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('resources/cat/file1') > -1, true);
 assert.equal(result.indexOf('resources/cat/file2') > -1, true);
 assert.equal(result.length, 2);
 
 // wildcard, simple
-var result = shell.ls('resources/ls/*');
+result = shell.ls('resources/ls/*');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('resources/ls/file1') > -1, true);
 assert.equal(result.indexOf('resources/ls/file2') > -1, true);
@@ -102,7 +105,7 @@ assert.ok(result.indexOf('b_dir') > -1);
 assert.equal(result.length, 7);
 
 // wildcard, simple, with -d
-var result = shell.ls('-d', 'resources/ls/*');
+result = shell.ls('-d', 'resources/ls/*');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('resources/ls/file1') > -1, true);
 assert.equal(result.indexOf('resources/ls/file2') > -1, true);
@@ -113,14 +116,14 @@ assert.ok(result.indexOf('resources/ls/a_dir') > -1);
 assert.equal(result.length, 6);
 
 // wildcard, hidden only
-var result = shell.ls('-d', 'resources/ls/.*');
+result = shell.ls('-d', 'resources/ls/.*');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('resources/ls/.hidden_file') > -1, true);
 assert.equal(result.indexOf('resources/ls/.hidden_dir') > -1, true);
 assert.equal(result.length, 2);
 
 // wildcard, mid-file
-var result = shell.ls('resources/ls/f*le*');
+result = shell.ls('resources/ls/f*le*');
 assert.equal(shell.error(), null);
 assert.equal(result.length, 5);
 assert.equal(result.indexOf('resources/ls/file1') > -1, true);
@@ -130,25 +133,25 @@ assert.equal(result.indexOf('resources/ls/file2.js') > -1, true);
 assert.equal(result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1, true);
 
 // wildcard, mid-file with dot (should escape dot for regex)
-var result = shell.ls('resources/ls/f*le*.js');
+result = shell.ls('resources/ls/f*le*.js');
 assert.equal(shell.error(), null);
 assert.equal(result.length, 2);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
 assert.equal(result.indexOf('resources/ls/file2.js') > -1, true);
 
 // one file that exists, one that doesn't
-var result = shell.ls('resources/ls/file1.js', 'resources/ls/thisdoesntexist');
+result = shell.ls('resources/ls/file1.js', 'resources/ls/thisdoesntexist');
 assert.ok(shell.error());
 assert.equal(result.length, 1);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
 
 // wildcard, should not do partial matches
-var result = shell.ls('resources/ls/*.j'); // shouldn't get .js
+result = shell.ls('resources/ls/*.j'); // shouldn't get .js
 assert.ok(shell.error());
 assert.equal(result.length, 0);
 
 // wildcard, all files with extension
-var result = shell.ls('resources/ls/*.*');
+result = shell.ls('resources/ls/*.*');
 assert.equal(shell.error(), null);
 assert.equal(result.length, 3);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -156,7 +159,7 @@ assert.equal(result.indexOf('resources/ls/file2.js') > -1, true);
 assert.equal(result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1, true);
 
 // wildcard, with additional path
-var result = shell.ls('resources/ls/f*le*.js', 'resources/ls/a_dir');
+result = shell.ls('resources/ls/f*le*.js', 'resources/ls/a_dir');
 assert.equal(shell.error(), null);
 assert.equal(result.length, 4);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -165,7 +168,7 @@ assert.equal(result.indexOf('b_dir') > -1, true); // no wildcard == no path pref
 assert.equal(result.indexOf('nada') > -1, true); // no wildcard == no path prefix
 
 // wildcard for both paths
-var result = shell.ls('resources/ls/f*le*.js', 'resources/ls/a_dir/*');
+result = shell.ls('resources/ls/f*le*.js', 'resources/ls/a_dir/*');
 assert.equal(shell.error(), null);
 assert.equal(result.length, 4);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -174,7 +177,7 @@ assert.equal(result.indexOf('z') > -1, true);
 assert.equal(result.indexOf('resources/ls/a_dir/nada') > -1, true);
 
 // wildcard for both paths, array
-var result = shell.ls(['resources/ls/f*le*.js', 'resources/ls/a_dir/*']);
+result = shell.ls(['resources/ls/f*le*.js', 'resources/ls/a_dir/*']);
 assert.equal(shell.error(), null);
 assert.equal(result.length, 4);
 assert.equal(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -184,7 +187,7 @@ assert.equal(result.indexOf('resources/ls/a_dir/nada') > -1, true);
 
 // recursive, no path
 shell.cd('resources/ls');
-var result = shell.ls('-R');
+result = shell.ls('-R');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
@@ -193,7 +196,7 @@ assert.equal(result.length, 9);
 shell.cd('../..');
 
 // recusive, path given
-var result = shell.ls('-R', 'resources/ls');
+result = shell.ls('-R', 'resources/ls');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
@@ -201,7 +204,7 @@ assert.equal(result.indexOf('a_dir/b_dir/z') > -1, true);
 assert.equal(result.length, 9);
 
 // recusive, path given - 'all' flag
-var result = shell.ls('-RA', 'resources/ls');
+result = shell.ls('-RA', 'resources/ls');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
@@ -210,32 +213,37 @@ assert.equal(result.indexOf('a_dir/.hidden_dir/nada') > -1, true);
 assert.equal(result.length, 14);
 
 // recursive, wildcard
-var result = shell.ls('-R', 'resources/ls');
+result = shell.ls('-R', 'resources/ls');
 assert.equal(shell.error(), null);
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir') > -1, true);
 assert.equal(result.indexOf('a_dir/b_dir/z') > -1, true);
 assert.equal(result.length, 9);
 
+// -Rd works like -d
+result = shell.ls('-Rd', 'resources/ls');
+assert.equal(shell.error(), null);
+assert.equal(result.length, 1);
+
 // directory option, single arg
-var result = shell.ls('-d', 'resources/ls');
+result = shell.ls('-d', 'resources/ls');
 assert.equal(shell.error(), null);
 assert.equal(result.length, 1);
 
 // directory option, single arg with trailing '/'
-var result = shell.ls('-d', 'resources/ls/');
+result = shell.ls('-d', 'resources/ls/');
 assert.equal(shell.error(), null);
 assert.equal(result.length, 1);
 
 // directory option, multiple args
-var result = shell.ls('-d', 'resources/ls/a_dir', 'resources/ls/file1');
+result = shell.ls('-d', 'resources/ls/a_dir', 'resources/ls/file1');
 assert.equal(shell.error(), null);
 assert.ok(result.indexOf('resources/ls/a_dir') > -1);
 assert.ok(result.indexOf('resources/ls/file1') > -1);
 assert.equal(result.length, 2);
 
 // directory option, globbed arg
-var result = shell.ls('-d', 'resources/ls/*');
+result = shell.ls('-d', 'resources/ls/*');
 assert.equal(shell.error(), null);
 assert.ok(result.indexOf('resources/ls/a_dir') > -1);
 assert.ok(result.indexOf('resources/ls/file1') > -1);
@@ -247,8 +255,11 @@ assert.ok(result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escap
 assert.equal(result.length, 6);
 
 // long option, single file
-var result = shell.ls('-l', 'resources/ls/file1')[0];
+result = shell.ls('-l', 'resources/ls/file1');
+assert.equal(result.length, 1);
+result = result[0];
 assert.equal(shell.error(), null);
+assert.ok(result.name, 'file1');
 assert.equal(result.nlink, 1);
 assert.equal(result.size, 5);
 assert.ok(result.mode); // check that these keys exist
@@ -260,9 +271,11 @@ assert.ok(result.ctime); // check that these keys exist
 assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
 
 // long option, glob files
-var result = shell.ls('-l', 'resources/ls/f*le1')[0];
+result = shell.ls('-l', 'resources/ls/f*le1');
+assert.equal(result.length, 1);
+result = result[0];
 assert.equal(shell.error(), null);
-assert.equal(result.name, 'resources/ls/file1');
+assert.ok(result.name, 'file1');
 assert.equal(result.nlink, 1);
 assert.equal(result.size, 5);
 assert.ok(result.mode); // check that these keys exist
@@ -274,18 +287,19 @@ assert.ok(result.ctime); // check that these keys exist
 assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
 
 // long option, directory
-var result = shell.ls('-l', 'resources/ls');
+result = shell.ls('-l', 'resources/ls');
 assert.equal(shell.error(), null);
-var idx;
+idx = -1;
 for (var k=0; k < result.length; k++) {
-  if (result[k].name === 'resources/ls/file1') {
+  if (result[k].name === 'file1') {
     idx = k;
     break;
   }
 }
-assert.ok(idx);
+assert.ok(idx >= 0);
+assert.equal(result.length, 6);
 result = result[idx];
-assert.equal(result.name, 'resources/ls/file1');
+assert.equal(result.name, 'file1');
 assert.equal(result.nlink, 1);
 assert.equal(result.size, 5);
 assert.ok(result.mode); // check that these keys exist
@@ -296,21 +310,23 @@ assert.ok(result.atime); // check that these keys exist
 assert.ok(result.ctime); // check that these keys exist
 assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
 
-// long option, directory, recursive
-var result = shell.ls('-lR', 'resources/ls/');
+// long option, directory, recursive (and windows converts slashes)
+result = shell.ls('-lR', 'resources/ls/');
 assert.equal(shell.error(), null);
-var idx;
+idx = -1;
 for (var k=0; k < result.length; k++) {
-  if (result[k].name === 'resources/ls/file1') {
+  if (result[k].name === 'a_dir/b_dir') {
     idx = k;
     break;
   }
 }
-assert.ok(idx);
+assert.equal(result.length, 9);
+assert.ok(idx >= 0);
 result = result[idx];
-assert.equal(result.name, 'resources/ls/file1');
-assert.equal(result.nlink, 1);
-assert.equal(result.size, 5);
+assert.equal(result.name, result.name);
+assert.ok(fs.statSync('resources/ls/a_dir/b_dir').isDirectory());
+assert.ok(typeof result.nlink === 'number'); // This can vary between the local machine and travis
+assert.ok(typeof result.size === 'number'); // This can vary between different file systems
 assert.ok(result.mode); // check that these keys exist
 assert.ok(process.platform === 'win32' || result.uid); // only on unix
 assert.ok(process.platform === 'win32' || result.gid); // only on unix

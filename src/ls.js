@@ -3,8 +3,7 @@ var fs = require('fs');
 var common = require('./common');
 var glob = require('glob');
 
-var globPatternAll = path.sep + '*';
-var globPatternRecrusive = path.sep + '**' + globPatternAll;
+var globPatternRecursive = path.sep + '**' + path.sep + '*';
 
 //@
 //@ ### ls([options,] [path, ...])
@@ -48,20 +47,20 @@ function _ls(options, paths) {
 
   if (!paths)
     paths = ['.'];
-  else if (typeof paths === 'string')
+  else
     paths = [].slice.call(arguments, 1);
-
-  paths = common.expand(paths, { dot: options.all });
 
   var list = [];
 
-  function pushFile(file, rel, stat) {
-    stat = stat || fs.lstatSync(file);
-    if (process.platform === 'win32') file = file.replace(/\\/, '/');
+  function pushFile(abs, relName, stat) {
+    if (process.platform === 'win32')
+      relName = relName.replace(/\\/g, '/');
     if (options.long) {
-      list.push(ls_stat(file, stat));
+      stat = stat || fs.lstatSync(abs);
+      list.push(addLsAttributes(relName, stat));
     } else {
-      list.push(path.relative(rel || '.', file));
+      // list.push(path.relative(rel || '.', file));
+      list.push(relName);
     }
   }
 
@@ -72,19 +71,31 @@ function _ls(options, paths) {
       stat = fs.lstatSync(p);
     } catch (e) {
       common.error('no such file or directory: ' + p, true);
+      return;
     }
 
-    // If the stat failed.
-    if (stat) {
-      if (!options.directory && stat.isDirectory()) {
-        var pathWithGlob = p + (options.recursive ? globPatternRecrusive : globPatternAll);
-
-        glob.sync(pathWithGlob, { dot: options.all }).forEach(function (item) {
-          pushFile(item, p);
+    // If the stat succeeded
+    if (stat.isDirectory() && !options.directory) {
+      if (options.recursive) {
+        // use glob, because it's simple
+        glob.sync(p + globPatternRecursive, { dot: options.all })
+          .forEach(function (item) {
+          pushFile(item, path.relative(p, item));
+        });
+      } else if (options.all) {
+        // use fs.readdirSync, because it's fast
+        fs.readdirSync(p).forEach(function (item) {
+          pushFile(path.join(p, item), item);
         });
       } else {
-        pushFile(p, null, stat);
+        // use fs.readdirSync and then filter out secret files
+        fs.readdirSync(p).forEach(function (item) {
+          if (item[0] !== '.')
+            pushFile(path.join(p, item), item);
+        });
       }
+    } else {
+      pushFile(p, p, stat);
     }
   });
 
@@ -92,7 +103,7 @@ function _ls(options, paths) {
   return new common.ShellString(list, common.state.error);
 }
 
-function ls_stat(path, stats) {
+function addLsAttributes(path, stats) {
   // Note: this object will contain more information than .toString() returns
   stats.name = path;
   stats.toString = function() {
