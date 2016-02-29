@@ -23,6 +23,8 @@ The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battled-t
 
 If you have feedback, suggestions, or need help, feel free to post in our [issue tracker](https://github.com/shelljs/shelljs/issues).
 
+For a non-programmatic implementation of Unix shell commands on top of Node.js, check out [Cash](https://github.com/dthree/cash).
+
 ## Installing
 
 Via npm:
