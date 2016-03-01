@@ -103,14 +103,36 @@ shell.cp('-f', 'resources/file2', 'tmp/file3'); // file exists, but -f specified
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/file3'), true);
 
+// glob
+shell.rm('-rf', 'tmp/*');
+shell.cp('resources/file?', 'tmp');
+assert.equal(shell.error(), null);
+assert.ok(fs.existsSync('tmp/file1'));
+assert.ok(fs.existsSync('tmp/file2'));
+assert.ok(!fs.existsSync('tmp/file1.js'));
+assert.ok(!fs.existsSync('tmp/file2.js'));
+assert.ok(!fs.existsSync('tmp/file1.txt'));
+assert.ok(!fs.existsSync('tmp/file2.txt'));
+
 // wildcard
 shell.rm('tmp/file1', 'tmp/file2');
 shell.cp('resources/file*', 'tmp');
 assert.equal(shell.error(), null);
-assert.equal(fs.existsSync('tmp/file1'), true);
-assert.equal(fs.existsSync('tmp/file2'), true);
+assert.ok(fs.existsSync('tmp/file1'));
+assert.ok(fs.existsSync('tmp/file2'));
+assert.ok(fs.existsSync('tmp/file1.js'));
+assert.ok(fs.existsSync('tmp/file2.js'));
+assert.ok(fs.existsSync('tmp/file1.txt'));
+assert.ok(fs.existsSync('tmp/file2.txt'));
 
-//recursive, nothing exists
+// recursive, with regular files
+shell.rm('-rf', 'tmp/*');
+shell.cp('-R', 'resources/file1', 'resources/file2', 'tmp');
+assert.equal(shell.error(), null);
+assert.ok(fs.existsSync('tmp/file1'));
+assert.ok(fs.existsSync('tmp/file2'));
+
+// recursive, nothing exists
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp', 'tmp');
 assert.equal(shell.error(), null);
@@ -121,6 +143,13 @@ shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp/', 'tmp/');
 assert.equal(shell.error(), null);
 assert.equal(shell.ls('-R', 'resources/cp') + '', shell.ls('-R', 'tmp') + '');
+
+// recursive, globbing regular files with extension (see Github issue #376)
+shell.rm('-rf', 'tmp/*');
+shell.cp('-R', 'resources/file*.txt', 'tmp');
+assert.equal(shell.error(), null);
+assert.ok(fs.existsSync('tmp/file1.txt'));
+assert.ok(fs.existsSync('tmp/file2.txt'));
 
 //recursive, everything exists, no force flag
 shell.rm('-rf', 'tmp/*');
