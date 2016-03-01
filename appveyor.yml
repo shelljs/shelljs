@@ -1,14 +1,21 @@
+environment:
+  matrix:
+    - nodejs_version: '5'
+    - nodejs_version: '4'
+
 version: '{build}'
 
 # Install scripts. (runs after repo cloning)
 install:
-  # Get the latest stable version of io.js
-  - ps: Install-Product node ''
+  - ps: Install-Product node $env:nodejs_version
   - npm -g install npm@latest
   - set PATH=%APPDATA%\npm;%PATH%
   - node --version
   - npm --version
   - npm install
+
+matrix:
+  fast_finish: true
 
 # No need for MSBuild on this project
 build: off
