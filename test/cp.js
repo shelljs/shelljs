@@ -142,7 +142,7 @@ assert.equal(shell.ls('-R', 'resources/cp') + '', shell.ls('-R', 'tmp/cp') + '')
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp/', 'tmp/');
 assert.equal(shell.error(), null);
-assert.equal(shell.ls('-R', 'resources/cp') + '', shell.ls('-R', 'tmp') + '');
+assert.equal(shell.ls('-R', 'resources/cp') + '', shell.ls('-R', 'tmp/cp') + '');
 
 // recursive, globbing regular files with extension (see Github issue #376)
 shell.rm('-rf', 'tmp/*');
@@ -150,6 +150,13 @@ shell.cp('-R', 'resources/file*.txt', 'tmp');
 assert.equal(shell.error(), null);
 assert.ok(fs.existsSync('tmp/file1.txt'));
 assert.ok(fs.existsSync('tmp/file2.txt'));
+
+// recursive, copying one regular file (also related to Github issue #376)
+shell.rm('-rf', 'tmp/*');
+shell.cp('-R', 'resources/file1.txt', 'tmp');
+assert.equal(shell.error(), null);
+assert.ok(fs.existsSync('tmp/file1.txt'));
+assert.ok(!fs.statSync('tmp/file1.txt').isDirectory()); // don't let it be a dir
 
 //recursive, everything exists, no force flag
 shell.rm('-rf', 'tmp/*');
@@ -179,9 +186,15 @@ shell.cp('-r', 'resources/issue44', 'tmp/dir2/dir3');
 assert.ok(shell.error());
 assert.equal(fs.existsSync('tmp/dir2'), false);
 
-//recursive, creates dest dir, implicitly copies contents of source dir
+//recursive, copies entire directory
 shell.rm('-rf', 'tmp/*');
 shell.cp('-r', 'resources/cp/dir_a', 'tmp/dest');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/dest/z'), true);
+
+//recursive, with trailing slash, does the exact same
+shell.rm('-rf', 'tmp/*');
+shell.cp('-r', 'resources/cp/dir_a/', 'tmp/dest');
 assert.equal(shell.error(), null);
 assert.equal(fs.existsSync('tmp/dest/z'), true);
 
@@ -200,5 +213,27 @@ shell.rm('-rf', 'tmp/');
 shell.cp('-r', 'resources/ls/', 'tmp/');
 assert.ok(!shell.error());
 assert.ok(fs.existsSync('tmp/.hidden_file'));
+
+// no-recursive will copy regular files only
+shell.rm('-rf', 'tmp/');
+shell.mkdir('tmp/');
+shell.cp('resources/file1.txt', 'resources/ls/', 'tmp/');
+assert.ok(shell.error());
+assert.ok(!fs.existsSync('tmp/.hidden_file')); // doesn't copy dir contents
+assert.ok(!fs.existsSync('tmp/ls')); // doesn't copy dir itself
+assert.ok(fs.existsSync('tmp/file1.txt'));
+
+// no-recursive will copy regular files only
+shell.rm('-rf', 'tmp/');
+shell.mkdir('tmp/');
+shell.cp('resources/file1.txt', 'resources/file2.txt', 'resources/cp',
+    'resources/ls/', 'tmp/');
+assert.ok(shell.error());
+assert.ok(!fs.existsSync('tmp/.hidden_file')); // doesn't copy dir contents
+assert.ok(!fs.existsSync('tmp/ls')); // doesn't copy dir itself
+assert.ok(!fs.existsSync('tmp/a')); // doesn't copy dir contents
+assert.ok(!fs.existsSync('tmp/cp')); // doesn't copy dir itself
+assert.ok(fs.existsSync('tmp/file1.txt'));
+assert.ok(fs.existsSync('tmp/file2.txt'));
 
 shell.exit(123);

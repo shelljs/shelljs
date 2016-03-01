@@ -6,7 +6,6 @@ var oldConfigSilent = shell.config.silent;
 shell.config.silent = true;
 
 shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
 
 //
 // Valids
