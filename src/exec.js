@@ -206,6 +206,7 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ + `silent`: Do not echo program output to console.
 //@ + and any option available to NodeJS's
 //@   [child_process.exec()](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback)
+//@   (only available on Node v0.11+)
 //@
 //@ Examples:
 //@
