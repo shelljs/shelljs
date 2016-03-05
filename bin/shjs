@@ -36,4 +36,4 @@ var path = require('path');
 var extensions = require('interpret').extensions;
 var rechoir = require('rechoir');
 rechoir.prepare(extensions, scriptName);
-require(require.resolve(path.join(process.cwd(), scriptName)));
+require(require.resolve(path.resolve(process.cwd(), scriptName)));
