@@ -10,16 +10,16 @@ function _cd(options, dir) {
     dir = common.getUserHome();
 
   if (dir === '-') {
-    if (!common.state.previousDir)
+    if (!process.env.OLDPWD)
       common.error('could not find previous directory');
     else
-      dir = common.state.previousDir;
+      dir = process.env.OLDPWD;
   }
 
   try {
     var curDir = process.cwd();
     process.chdir(dir);
-    common.state.previousDir = curDir;
+    process.env.OLDPWD = curDir;
   } catch (e) {
     // something went wrong, let's figure out the error
     var err;
