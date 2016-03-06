@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+var shell = require('..');
+
+var cmd = process.argv[2];
+var args = process.argv.slice(3);
+
+function usage() {
+  console.log('Usage: shx <command> [options]');
+  console.log()
+}
+
+if (!cmd) {
+  usage();
+  console.error('ShellJS: missing command');
+  process.exit(1);
+}
+
+if (typeof shell[cmd] !== 'function') {
+  usage();
+  console.error('ShellJS: command not found (' + cmd + ')');
+  process.exit(1);
+}
+
+var res = shell[cmd].apply(null, args);
+
+if (typeof res === 'string') {
+  process.stdout.write(res);
+} else if (typeof res === 'object' && res !== null) {
+  // don't double print 'echo' output
+  if (res.stdout && cmd !== 'echo')
+    process.stdout.write(res.stdout);
+
+  if (res.stderr)
+    process.stderr.write(res.stdout);
+
+  // pass through exit code
+  if (res.hasOwnProperty('code'))
+    process.exit(res.code);
+}

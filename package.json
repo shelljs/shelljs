@@ -26,7 +26,8 @@
     "test": "node scripts/run-tests"
   },
   "bin": {
-    "shjs": "./bin/shjs"
+    "shjs": "./bin/shjs",
+    "shx": "./bin/shx"
   },
   "dependencies": {
     "glob": "^7.0.0"
