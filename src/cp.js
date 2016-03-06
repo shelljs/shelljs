@@ -53,8 +53,8 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
   if (!opts) opts = {};
 
   /* Create the directory where all our junk is moving to; read the mode of the source directory and mirror it */
-  var checkDir = fs.statSync(sourceDir);
   try {
+    var checkDir = fs.statSync(sourceDir);
     fs.mkdirSync(destDir, checkDir.mode);
   } catch (e) {
     //if the directory already exists, that's okay
@@ -117,95 +117,63 @@ function _cp(options, sources, dest) {
   // Get sources, dest
   if (arguments.length < 3) {
     common.error('missing <source> and/or <dest>');
-  } else if (arguments.length > 3) {
+  } else {
     sources = [].slice.call(arguments, 1, arguments.length - 1);
     dest = arguments[arguments.length - 1];
-  } else if (typeof sources === 'string') {
-    sources = [sources];
-  } else if ('length' in sources) {
-    sources = sources; // no-op for array
-  } else {
-    common.error('invalid arguments');
   }
 
-  var exists = fs.existsSync(dest),
-      stats = exists && fs.statSync(dest);
+  var destExists = fs.existsSync(dest),
+      destStat = destExists && fs.statSync(dest);
 
   // Dest is not existing dir, but multiple sources given
-  if ((!exists || !stats.isDirectory()) && sources.length > 1)
+  if ((!destExists || !destStat.isDirectory()) && sources.length > 1)
     common.error('dest is not a directory (too many sources)');
 
-  // Dest is an existing file, but no -f given
-  if (exists && stats.isFile() && options.no_force)
-    common.error('dest file already exists: ' + dest);
-
-  if (options.recursive) {
-    // Recursive allows the shortcut syntax "sourcedir/" for "sourcedir/*"
-    // (see Github issue #15)
-    sources.forEach(function(src, i) {
-      if (src[src.length - 1] === '/') {
-        sources[i] += '*';
-      // If src is a directory and dest doesn't exist, 'cp -r src dest' should copy src/* into dest
-      } else if (fs.statSync(src).isDirectory() && !exists) {
-        sources[i] += '/*';
-      }
-    });
-
-    // Create dest
-    try {
-      fs.mkdirSync(dest, parseInt('0777', 8));
-    } catch (e) {
-      // like Unix's cp, keep going even if we can't create dest dir
-    }
-  }
-
-  sources = common.expand(sources, {dot: true});
+  // Dest is an existing file, but -n is given
+  if (destExists && destStat.isFile() && options.no_force)
+    common.error('dest file already destExists: ' + dest);
 
   sources.forEach(function(src) {
     if (!fs.existsSync(src)) {
       common.error('no such file or directory: '+src, true);
       return; // skip file
     }
-
-    // If here, src exists
-    if (fs.statSync(src).isDirectory()) {
+    var srcStat = fs.statSync(src);
+    if (srcStat.isDirectory()) {
       if (!options.recursive) {
         // Non-Recursive
-        common.log(src + ' is a directory (not copied)');
+        common.error("omitting directory '" + src + "'", true);
       } else {
         // Recursive
         // 'cp /a/source dest' should create 'source' in 'dest'
-        var newDest = path.join(dest, path.basename(src)),
-            checkDir = fs.statSync(src);
-        try {
-          fs.mkdirSync(newDest, checkDir.mode);
-        } catch (e) {
-          //if the directory already exists, that's okay
-          if (e.code !== 'EEXIST') {
-            common.error('dest file no such file or directory: ' + newDest, true);
-            throw e;
-          }
-        }
+        var newDest = (destStat && destStat.isDirectory()) ?
+            path.join(dest, path.basename(src)) :
+            dest;
 
-        cpdirSyncRecursive(src, newDest, {no_force: options.no_force});
+        try {
+          fs.statSync(path.dirname(dest));
+          cpdirSyncRecursive(src, newDest, {no_force: options.no_force});
+        } catch(e) {
+          common.error("cannot create directory '" + dest + "': No such file or directory");
+        }
       }
       return; // done with dir
+    } else {
+      // If here, src is a file
+
+      // When copying to '/path/dir':
+      //    thisDest = '/path/dir/file1'
+      var thisDest = dest;
+      if (destStat && destStat.isDirectory())
+        thisDest = path.normalize(dest + '/' + path.basename(src));
+
+      if (fs.existsSync(thisDest) && options.no_force) {
+        common.error('dest file already destExists: ' + thisDest, true);
+        return; // skip file
+      }
+
+      copyFileSync(src, thisDest);
     }
-
-    // If here, src is a file
-
-    // When copying to '/path/dir':
-    //    thisDest = '/path/dir/file1'
-    var thisDest = dest;
-    if (fs.existsSync(dest) && fs.statSync(dest).isDirectory())
-      thisDest = path.normalize(dest + '/' + path.basename(src));
-
-    if (fs.existsSync(thisDest) && options.no_force) {
-      common.error('dest file already exists: ' + thisDest, true);
-      return; // skip file
-    }
-
-    copyFileSync(src, thisDest);
   }); // forEach(src)
 }
 module.exports = _cp;
