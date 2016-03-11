@@ -58,11 +58,7 @@ function execSync(cmd, opts, pipe) {
   if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
   if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
 
-  var execCommand = '"' +
-      process.execPath.replace(/"/g, '\\"') +
-      '" "' +
-      scriptFile.replace(/"/g, '\\"') +
-      '"';
+  var execCommand = JSON.stringify(process.execPath) + ' ' + JSON.stringify(scriptFile);
   var script;
 
   opts.cwd = path.resolve(opts.cwd);

@@ -49,7 +49,7 @@ assert.ok(shell.error());
 var testFile = tmpFile(false);
 var testFile2 = tmpFile();
 shell.touch(testFile2);
-shell.exec('node resources/exec/slow.js 3000');
+shell.exec(JSON.stringify(process.execPath)+' resources/exec/slow.js 3000');
 shell.touch(testFile);
 assert.ok(!shell.error());
 assert.notEqual(fs.statSync(testFile).mtime.getTime(), fs.statSync(testFile2).mtime.getTime());

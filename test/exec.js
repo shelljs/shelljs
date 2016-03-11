@@ -37,40 +37,40 @@ shell.config.fatal = old_fatal;
 //
 
 // check if stdout goes to output
-var result = shell.exec('node -e \"console.log(1234);\"');
+var result = shell.exec(JSON.stringify(process.execPath)+' -e \"console.log(1234);\"');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.ok(result.stdout === '1234\n' || result.stdout === '1234\nundefined\n'); // 'undefined' for v0.4
 
 // check if stderr goes to output
-var result = shell.exec('node -e \"console.error(1234);\"');
+var result = shell.exec(JSON.stringify(process.execPath)+' -e \"console.error(1234);\"');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.ok(result.stdout === '' || result.stdout === 'undefined\n'); // 'undefined' for v0.4
 assert.ok(result.stderr === '1234\n' || result.stderr === '1234\nundefined\n'); // 'undefined' for v0.4
 
 // check if stdout + stderr go to output
-var result = shell.exec('node -e \"console.error(1234); console.log(666);\"');
+var result = shell.exec(JSON.stringify(process.execPath)+' -e \"console.error(1234); console.log(666);\"');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.ok(result.stdout === '666\n' || result.stdout === '666\nundefined\n');  // 'undefined' for v0.4
 assert.ok(result.stderr === '1234\n' || result.stderr === '1234\nundefined\n');  // 'undefined' for v0.4
 
 // check exit code
-var result = shell.exec('node -e \"process.exit(12);\"');
+var result = shell.exec(JSON.stringify(process.execPath)+' -e \"process.exit(12);\"');
 assert.ok(shell.error());
 assert.equal(result.code, 12);
 
 // interaction with cd
 shell.cd('resources/external');
-var result = shell.exec('node node_script.js');
+var result = shell.exec(JSON.stringify(process.execPath)+' node_script.js');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result.stdout, 'node_script_1234\n');
 shell.cd('../..');
 
 // check quotes escaping
-var result = shell.exec( util.format('node -e "console.log(%s);"', "\\\"\\'+\\'_\\'+\\'\\\"") );
+var result = shell.exec( util.format(JSON.stringify(process.execPath)+' -e "console.log(%s);"', "\\\"\\'+\\'_\\'+\\'\\\"") );
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result.stdout, "'+'_'+'\n");
@@ -93,11 +93,11 @@ if (process.version >= 'v0.11') { // this option doesn't work on v0.10
 }
 
 // set timeout option
-result = shell.exec('node resources/exec/slow.js 100'); // default timeout is ok
+result = shell.exec(JSON.stringify(process.execPath)+' resources/exec/slow.js 100'); // default timeout is ok
 assert.ok(!shell.error());
 assert.equal(result.code, 0);
 if (process.version >= 'v0.11') { // this option doesn't work on v0.10
-  result = shell.exec('node resources/exec/slow.js 100', {timeout: 10}); // times out
+  result = shell.exec(JSON.stringify(process.execPath)+' resources/exec/slow.js 100', {timeout: 10}); // times out
   assert.ok(shell.error());
 }
 
@@ -138,14 +138,14 @@ assert.strictEqual(result.toString(), result.stdout);
 //
 
 // no callback
-var c = shell.exec('node -e \"console.log(1234)\"', {async:true});
+var c = shell.exec(JSON.stringify(process.execPath)+' -e \"console.log(1234)\"', {async:true});
 assert.equal(shell.error(), null);
 assert.ok('stdout' in c, 'async exec returns child process object');
 
 //
 // callback as 2nd argument
 //
-shell.exec('node -e \"console.log(5678);\"', function(code, stdout, stderr) {
+shell.exec(JSON.stringify(process.execPath)+' -e \"console.log(5678);\"', function(code, stdout, stderr) {
   assert.equal(code, 0);
   assert.ok(stdout === '5678\n' || stdout === '5678\nundefined\n');  // 'undefined' for v0.4
   assert.ok(stderr === '' || stderr === 'undefined\n');  // 'undefined' for v0.4
@@ -153,7 +153,7 @@ shell.exec('node -e \"console.log(5678);\"', function(code, stdout, stderr) {
   //
   // callback as 3rd argument
   //
-  shell.exec('node -e \"console.log(5566);\"', {async:true}, function(code, stdout, stderr) {
+  shell.exec(JSON.stringify(process.execPath)+' -e \"console.log(5566);\"', {async:true}, function(code, stdout, stderr) {
     assert.equal(code, 0);
     assert.ok(stdout === '5566\n' || stdout === '5566\nundefined\n');  // 'undefined' for v0.4
     assert.ok(stderr === '' || stderr === 'undefined\n');  // 'undefined' for v0.4
@@ -161,7 +161,7 @@ shell.exec('node -e \"console.log(5678);\"', function(code, stdout, stderr) {
     //
     // callback as 3rd argument (slient:true)
     //
-    shell.exec('node -e \"console.log(5678);\"', {silent:true}, function(code, stdout, stderr) {
+    shell.exec(JSON.stringify(process.execPath)+' -e \"console.log(5678);\"', {silent:true}, function(code, stdout, stderr) {
       assert.equal(code, 0);
       assert.ok(stdout === '5678\n' || stdout === '5678\nundefined\n');  // 'undefined' for v0.4
       assert.ok(stderr === '' || stderr === 'undefined\n');  // 'undefined' for v0.4
