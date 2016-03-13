@@ -23,7 +23,10 @@ The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battled-t
 
 If you have feedback, suggestions, or need help, feel free to post in our [issue tracker](https://github.com/shelljs/shelljs/issues).
 
-For a non-programmatic implementation of Unix shell commands on top of Node.js, check out [Cash](https://github.com/dthree/cash).
+Think ShellJS is cool? Check out some related projects (like
+[cash](https://github.com/dthree/cash)--a javascript-based POSIX shell--or
+[shx](https://github.com/shelljs/shx)--ShellJS functions exposed straight to
+your commandline) in our [Wiki page](https://github.com/shelljs/shelljs/wiki)!
 
 ## Installing
 
