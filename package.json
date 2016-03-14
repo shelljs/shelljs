@@ -4,6 +4,8 @@
   "author": "Artur Adib <arturadib@gmail.com>",
   "description": "Portable Unix shell commands for Node.js",
   "keywords": [
+    "shelljs",
+    "bash",
     "unix",
     "shell",
     "makefile",
