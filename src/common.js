@@ -231,6 +231,8 @@ function wrap(cmd, fn, options) {
     state.currentCmd = cmd;
     state.error = null;
 
+    var oldConfig = config;
+    config = Object.create(oldConfig);
     try {
       var args = [].slice.call(arguments, 0);
 
@@ -243,6 +245,13 @@ function wrap(cmd, fn, options) {
       if (options && options.notUnix) {
         retValue = fn.apply(this, args);
       } else {
+        var callback = null;
+        if (typeof args[args.length-1] === 'function') {
+          callback = args.pop();
+        }
+        if (args[args.length-1] && typeof args[args.length-1] === 'object' && args[args.length-1].constructor.name === 'Object') {
+          config = extend(config, args.pop());
+        }
         if (typeof args[0] === 'object' && args[0].constructor.name === 'Object') {
           args = args; // object count as options
         } else if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-') {
@@ -274,7 +283,24 @@ function wrap(cmd, fn, options) {
         });
         if (!config.noglob && options && typeof options.idx === 'number')
           args = args.slice(0, options.idx).concat(expand(args.slice(options.idx)));
-        retValue = fn.apply(this, args);
+        if (config.async || callback) {
+          process.nextTick(function() {
+            var r = fn.apply(this, args);
+
+            // Convert return value to an object that makes sense
+            if (typeof r === 'boolean')
+              r = {stdout: '', stderr: '', code: (r ? 0 : 1)};
+            else if (typeof r === 'string')
+              r = {stdout: r, stderr: (state.error || ''), code: (state.error ? 1 : 0)};
+            else if (typeof r === 'undefined')
+              r = {stdout: '', stderr: (state.error || ''), code: (state.error ? 1 : 0)};
+
+            if (callback)
+              callback.call(this, r.code, r.stdout, r.stderr);
+          });
+        } else {
+          retValue = fn.apply(this, args);
+        }
       }
     } catch (e) {
       if (!state.error) {
@@ -287,6 +313,7 @@ function wrap(cmd, fn, options) {
         throw e;
     }
 
+    config = oldConfig;
     state.currentCmd = 'shell.js';
     return retValue;
   };
