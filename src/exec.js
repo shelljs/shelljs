@@ -151,10 +151,7 @@ function execSync(cmd, opts, pipe) {
   if (code !== 0)  {
     common.error('', true);
   }
-  var obj = common.ShellString(stdout, stderr);
-  // obj.stdout = stdout;
-  // obj.stderr = stderr;
-  obj.code = code;
+  var obj = common.ShellString(stdout, stderr, code);
   return obj;
 } // execSync()
 

@@ -56,6 +56,6 @@ function _grep(options, regex, files) {
     }
   });
 
-  return new common.ShellString(grep.join('\n')+'\n', common.state.error);
+  return new common.ShellString(grep.join('\n')+'\n', common.state.error, common.state.errorCode);
 }
 module.exports = _grep;

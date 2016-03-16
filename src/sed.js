@@ -63,6 +63,6 @@ function _sed(options, regex, replacement, files) {
       fs.writeFileSync(file, result, 'utf8');
   });
 
-  return new common.ShellString(sed.join('\n'), common.state.error);
+  return new common.ShellString(sed.join('\n'), common.state.error, common.state.errorCode);
 }
 module.exports = _sed;

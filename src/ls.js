@@ -100,7 +100,7 @@ function _ls(options, paths) {
   });
 
   // Add methods, to make this more compatible with ShellStrings
-  return new common.ShellString(list, common.state.error);
+  return new common.ShellString(list, common.state.error, common.state.errorCode);
 }
 
 function addLsAttributes(path, stats) {
