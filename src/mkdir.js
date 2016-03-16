@@ -64,5 +64,6 @@ function _mkdir(options, dirs) {
     else
       fs.mkdirSync(dir, parseInt('0777', 8));
   });
+  return new common.ShellString('', common.state.error, common.state.errorCode);
 } // mkdir
 module.exports = _mkdir;

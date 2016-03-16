@@ -74,5 +74,6 @@ function _mv(options, sources, dest) {
 
     fs.renameSync(src, thisDest);
   }); // forEach(src)
+  return new common.ShellString('', common.state.error, common.state.errorCode);
 } // mv
 module.exports = _mv;

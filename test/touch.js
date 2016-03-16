@@ -8,32 +8,38 @@ shell.rm('-rf', 'tmp');
 shell.mkdir('tmp');
 
 // should handle args
-shell.touch();
+var result = shell.touch();
 assert.ok(shell.error());
+assert.equal(result.code, 1);
 
-shell.touch(1);
+result = shell.touch(1);
 assert.ok(shell.error());
+assert.equal(result.code, 1);
 
 // exits without error when trying to touch a directory
-shell.touch('tmp/');
+result = shell.touch('tmp/');
 assert.ok(!shell.error());
-shell.touch('tmp');
+assert.equal(result.code, 0);
+result = shell.touch('tmp');
 assert.ok(!shell.error());
+assert.equal(result.code, 0);
 
 // creates new files
 var testFile = tmpFile();
-shell.touch(testFile);
+result = shell.touch(testFile);
 assert(fs.existsSync(testFile));
 
 // does not create a file if told not to
 var testFile = tmpFile(true);
-shell.touch('-c', testFile);
+result = shell.touch('-c', testFile);
+assert.equal(result.code, 0);
 assert.ok(!fs.existsSync(testFile));
 
 // handles globs correctly
-shell.touch('tmp/file.txt');
-shell.touch('tmp/file.js');
-shell.touch('tmp/file*');
+result = shell.touch('tmp/file.txt');
+result = shell.touch('tmp/file.js');
+result = shell.touch('tmp/file*');
+assert.equal(result.code, 0);
 var files = shell.ls('tmp/file*');
 assert.ok(files.indexOf('tmp/file.txt') > -1);
 assert.ok(files.indexOf('tmp/file.js') > -1);
@@ -42,7 +48,8 @@ assert.equal(files.length, 2);
 // errors if reference file is not found
 var testFile = tmpFile();
 var refFile = tmpFile(true);
-shell.touch({'-r': refFile}, testFile);
+result = shell.touch({'-r': refFile}, testFile);
+assert.equal(result.code, 1);
 assert.ok(shell.error());
 
 // uses a reference file for mtime
@@ -50,19 +57,22 @@ var testFile = tmpFile(false);
 var testFile2 = tmpFile();
 shell.touch(testFile2);
 shell.exec(JSON.stringify(process.execPath)+' resources/exec/slow.js 3000');
-shell.touch(testFile);
+result = shell.touch(testFile);
 assert.ok(!shell.error());
+assert.equal(result.code, 0);
 assert.notEqual(fs.statSync(testFile).mtime.getTime(), fs.statSync(testFile2).mtime.getTime());
 assert.notEqual(fs.statSync(testFile).atime.getTime(), fs.statSync(testFile2).atime.getTime());
-shell.touch({'-r': testFile2}, testFile);
+result = shell.touch({'-r': testFile2}, testFile);
 assert.ok(!shell.error());
+assert.equal(result.code, 0);
 assert.equal(fs.statSync(testFile).mtime.getTime(), fs.statSync(testFile2).mtime.getTime());
 assert.equal(fs.statSync(testFile).atime.getTime(), fs.statSync(testFile2).atime.getTime());
 
 // sets mtime
 var testFile = tmpFile();
 var oldStat = resetUtimes(testFile);
-shell.touch(testFile);
+result = shell.touch(testFile);
+assert.equal(result.code, 0);
 assert(oldStat.mtime < fs.statSync(testFile).mtime);
 // sets atime
 assert(oldStat.atime < fs.statSync(testFile).atime);
@@ -70,20 +80,23 @@ assert(oldStat.atime < fs.statSync(testFile).atime);
 // does not sets mtime if told not to
 var testFile = tmpFile();
 var oldStat = resetUtimes(testFile);
-shell.touch('-a', testFile);
+result = shell.touch('-a', testFile);
+assert.equal(result.code, 0);
 assert.equal(oldStat.mtime.getTime(), fs.statSync(testFile).mtime.getTime());
 
 // does not sets atime if told not to
 var testFile = tmpFile();
 var oldStat = resetUtimes(testFile);
-shell.touch('-m', testFile);
+result = shell.touch('-m', testFile);
+assert.equal(result.code, 0);
 assert.equal(oldStat.atime.getTime(), fs.statSync(testFile).atime.getTime());
 
 // multiple files
 testFile = tmpFile(true);
 testFile2 = tmpFile(true);
 shell.rm('-f', testFile, testFile2);
-shell.touch(testFile, testFile2);
+result = shell.touch(testFile, testFile2);
+assert.equal(result.code, 0);
 assert(fs.existsSync(testFile));
 assert(fs.existsSync(testFile2));
 
@@ -91,7 +104,8 @@ assert(fs.existsSync(testFile2));
 testFile = tmpFile(true);
 testFile2 = tmpFile(true);
 shell.rm('-f', testFile, testFile2);
-shell.touch([testFile, testFile2]);
+result = shell.touch([testFile, testFile2]);
+assert.equal(result.code, 0);
 assert(fs.existsSync(testFile));
 assert(fs.existsSync(testFile2));
 

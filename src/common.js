@@ -28,7 +28,7 @@ var state = {
 };
 exports.state = state;
 
-process.env.OLDPWD = null; // initially, there's no previous directory
+delete process.env.OLDPWD; // initially, there's no previous directory
 
 var platform = os.type().match(/^Win/) ? 'win' : 'unix';
 exports.platform = platform;

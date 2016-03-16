@@ -65,5 +65,6 @@ function _ln(options, source, dest) {
       common.error(err.message);
     }
   }
+  return new common.ShellString('', common.state.error, common.state.errorCode);
 }
 module.exports = _ln;

@@ -46,6 +46,6 @@ function _find(options, paths) {
     }
   });
 
-  return list;
+  return new common.ShellString(list, common.state.error, common.state.errorCode);
 }
 module.exports = _find;

@@ -28,7 +28,7 @@ function _grep(options, regex, files) {
   var pipe = common.readFromPipe(this);
 
   if (!files && !pipe)
-    common.error('no paths given');
+    common.error('no paths given', 2);
 
   files = [].slice.call(arguments, 2);
 
@@ -38,7 +38,7 @@ function _grep(options, regex, files) {
   var grep = [];
   files.forEach(function(file) {
     if (!fs.existsSync(file) && file !== '-') {
-      common.error('no such file or directory: ' + file, true);
+      common.error('no such file or directory: ' + file, 2, true);
       return;
     }
 

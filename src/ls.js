@@ -70,7 +70,7 @@ function _ls(options, paths) {
     try {
       stat = fs.lstatSync(p);
     } catch (e) {
-      common.error('no such file or directory: ' + p, true);
+      common.error('no such file or directory: ' + p, 2, true);
       return;
     }
 
