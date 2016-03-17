@@ -42,6 +42,7 @@ function _touch(opts, files) {
   files.forEach(function(f) {
     touchFile(opts, f);
   });
+  return new common.ShellString('', common.state.error, common.state.errorCode);
 }
 
 function touchFile(opts, file) {

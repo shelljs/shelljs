@@ -31,35 +31,43 @@ shell.cp('resources/*', 'tmp');
 // Invalids
 //
 
-shell.ln();
+var result = shell.ln();
 assert.ok(shell.error());
+assert.equal(result.code, 1);
 
-shell.ln('file');
+result = shell.ln('file');
 assert.ok(shell.error());
+assert.equal(result.code, 1);
 
-shell.ln('-f');
+result = shell.ln('-f');
 assert.ok(shell.error());
+assert.equal(result.code, 1);
 
-shell.ln('tmp/file1', 'tmp/file2');
+result = shell.ln('tmp/file1', 'tmp/file2');
 assert.ok(shell.error());
+assert.equal(result.code, 1);
 
-shell.ln('tmp/noexist', 'tmp/linkfile1');
+result = shell.ln('tmp/noexist', 'tmp/linkfile1');
 assert.ok(shell.error());
+assert.equal(result.code, 1);
 
-shell.ln('-sf', 'no/exist', 'tmp/badlink');
+result = shell.ln('-sf', 'no/exist', 'tmp/badlink');
 assert.ok(shell.error());
+assert.equal(result.code, 1);
 
-shell.ln('-sf', 'noexist', 'tmp/badlink');
+result = shell.ln('-sf', 'noexist', 'tmp/badlink');
 assert.ok(shell.error());
+assert.equal(result.code, 1);
 
-shell.ln('-f', 'noexist', 'tmp/badlink');
+result = shell.ln('-f', 'noexist', 'tmp/badlink');
 assert.ok(shell.error());
+assert.equal(result.code, 1);
 
 //
 // Valids
 //
 
-shell.ln('tmp/file1', 'tmp/linkfile1');
+result = shell.ln('tmp/file1', 'tmp/linkfile1');
 assert(fs.existsSync('tmp/linkfile1'));
 assert.equal(
   fs.readFileSync('tmp/file1').toString(),
@@ -70,10 +78,11 @@ assert.equal(
   fs.readFileSync('tmp/linkfile1').toString(),
   'new content 1'
 );
+assert.equal(result.code, 0);
 
 // With glob
 shell.rm('tmp/linkfile1');
-shell.ln('tmp/fi*1', 'tmp/linkfile1');
+result = shell.ln('tmp/fi*1', 'tmp/linkfile1');
 assert(fs.existsSync('tmp/linkfile1'));
 assert.equal(
   fs.readFileSync('tmp/file1').toString(),
@@ -84,6 +93,7 @@ assert.equal(
   fs.readFileSync('tmp/linkfile1').toString(),
   'new content 1'
 );
+assert.equal(result.code, 0);
 
 skipOnWinForEPERM(shell.ln.bind(shell, '-s', 'file2', 'tmp/linkfile2'), function () {
     assert(fs.existsSync('tmp/linkfile2'));
@@ -101,20 +111,23 @@ skipOnWinForEPERM(shell.ln.bind(shell, '-s', 'file2', 'tmp/linkfile2'), function
 // Symbolic link directory test
 shell.mkdir('tmp/ln');
 shell.touch('tmp/ln/hello');
-shell.ln('-s', 'ln', 'tmp/dir1');
+result = shell.ln('-s', 'ln', 'tmp/dir1');
 assert(fs.existsSync('tmp/ln/hello'));
 assert(fs.existsSync('tmp/dir1/hello'));
+assert.equal(result.code, 0);
 
 // To current directory
 shell.cd('tmp');
-shell.ln('-s', './', 'dest');
+result = shell.ln('-s', './', 'dest');
+assert.equal(result.code, 0);
 shell.touch('testfile.txt');
 assert(fs.existsSync('testfile.txt'));
 assert(fs.existsSync('dest/testfile.txt'));
 shell.rm('-f', 'dest');
 shell.mkdir('dir1');
 shell.cd('dir1');
-shell.ln('-s', './', '../dest');
+result = shell.ln('-s', './', '../dest');
+assert.equal(result.code, 0);
 shell.touch('insideDir.txt');
 shell.cd('..');
 assert(fs.existsSync('testfile.txt'));
@@ -123,7 +136,8 @@ assert(fs.existsSync('dir1/insideDir.txt'));
 assert(!fs.existsSync('dest/insideDir.txt'));
 shell.cd('..');
 
-shell.ln('-f', 'tmp/file1.js', 'tmp/file2.js');
+result = shell.ln('-f', 'tmp/file1.js', 'tmp/file2.js');
+assert.equal(result.code, 0);
 assert(fs.existsSync('tmp/file2.js'));
 assert.equal(
   fs.readFileSync('tmp/file1.js').toString(),

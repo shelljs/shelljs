@@ -70,7 +70,7 @@ function _ls(options, paths) {
     try {
       stat = fs.lstatSync(p);
     } catch (e) {
-      common.error('no such file or directory: ' + p, true);
+      common.error('no such file or directory: ' + p, 2, true);
       return;
     }
 
@@ -100,7 +100,7 @@ function _ls(options, paths) {
   });
 
   // Add methods, to make this more compatible with ShellStrings
-  return new common.ShellString(list, common.state.error);
+  return new common.ShellString(list, common.state.error, common.state.errorCode);
 }
 
 function addLsAttributes(path, stats) {

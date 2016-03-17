@@ -9,6 +9,8 @@ var shell = require('..');
 var _to = require('./to');
 var _toEnd = require('./toEnd');
 
+var DEFAULT_ERROR_CODE = 1;
+
 // Module globals
 var config = {
   silent: false,
@@ -20,12 +22,13 @@ exports.config = config;
 
 var state = {
   error: null,
+  errorCode: 0,
   currentCmd: 'shell.js',
   tempDir: null
 };
 exports.state = state;
 
-process.env.OLDPWD = null; // initially, there's no previous directory
+delete process.env.OLDPWD; // initially, there's no previous directory
 
 var platform = os.type().match(/^Win/) ? 'win' : 'unix';
 exports.platform = platform;
@@ -36,8 +39,18 @@ function log() {
 }
 exports.log = log;
 
-// Shows error message. Throws unless _continue or config.fatal are true
-function error(msg, _continue) {
+// Shows error message. Throws if config.fatal is true
+function error(msg, _code, _continue) {
+  if (typeof _code === 'boolean') {
+    _continue = _code;
+    _code = DEFAULT_ERROR_CODE;
+  }
+  if (typeof _code !== 'number')
+    _code = DEFAULT_ERROR_CODE;
+
+  if (state.errorCode === 0)
+    state.errorCode = _code;
+
   if (state.error === null)
     state.error = '';
   var log_entry = state.currentCmd + ': ' + msg;
@@ -46,8 +59,16 @@ function error(msg, _continue) {
   else
     state.error += '\n' + log_entry;
 
-  if(!_continue || config.fatal)
+  if(config.fatal)
     throw new Error(log_entry);
+
+  if(!_continue) {
+    // throw new Error(log_entry);
+    throw {
+      msg: 'earlyExit',
+      retValue: (new ShellString('', state.error, state.errorCode))
+    };
+  }
 
   if (msg.length > 0)
     log(log_entry);
@@ -65,7 +86,7 @@ exports.error = error;
 //@
 //@ Turns a regular string into a string-like object similar to what each
 //@ command returns. This has special methods, like `.to()` and `.toEnd()`
-var ShellString = function (stdout, stderr) {
+var ShellString = function (stdout, stderr, code) {
   var that;
   if (stdout instanceof Array) {
     that = stdout;
@@ -75,6 +96,7 @@ var ShellString = function (stdout, stderr) {
     that.stdout = stdout;
   }
   that.stderr = stderr;
+  that.code = code;
   that.to    = function() {wrap('to', _to, {idx: 1}).apply(that.stdout, arguments); return that;};
   that.toEnd = function() {wrap('toEnd', _toEnd, {idx: 1}).apply(that.stdout, arguments); return that;};
   ['cat', 'sed', 'grep', 'exec'].forEach(function (cmd) {
@@ -230,6 +252,7 @@ function wrap(cmd, fn, options) {
 
     state.currentCmd = cmd;
     state.error = null;
+    state.errorCode = 0;
 
     try {
       var args = [].slice.call(arguments, 0);
@@ -274,7 +297,13 @@ function wrap(cmd, fn, options) {
         });
         if (!config.noglob && options && typeof options.idx === 'number')
           args = args.slice(0, options.idx).concat(expand(args.slice(options.idx)));
-        retValue = fn.apply(this, args);
+        try {
+          retValue = fn.apply(this, args);
+        } catch (e) {
+          if (e.msg === 'earlyExit')
+            retValue = e.retValue;
+          else throw e;
+        }
       }
     } catch (e) {
       if (!state.error) {

@@ -208,5 +208,6 @@ function _chmod(options, mode, filePattern) {
       fs.chmodSync(file, newPerms);
     }
   });
+  return new common.ShellString('', common.state.error, common.state.errorCode);
 }
 module.exports = _chmod;

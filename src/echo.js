@@ -16,6 +16,6 @@ function _echo(opts, messages) {
   // allow strings starting with '-', see issue #20
   messages = [].slice.call(arguments, opts ? 0 : 1);
   console.log.apply(console, messages);
-  return new common.ShellString(messages.join(' '));
+  return new common.ShellString(messages.join(' '), '', 0);
 }
 module.exports = _echo;

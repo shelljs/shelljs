@@ -12,23 +12,28 @@ shell.mkdir('tmp');
 // Invalids
 //
 
-shell.grep();
+var result = shell.grep();
 assert.ok(shell.error());
+assert.equal(result.code, 2);
 
-shell.grep(/asdf/g); // too few args
+result = shell.grep(/asdf/g); // too few args
 assert.ok(shell.error());
+assert.equal(result.code, 2);
 
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-shell.grep(/asdf/g, '/asdfasdf'); // no such file
+result = shell.grep(/asdf/g, '/asdfasdf'); // no such file
 assert.ok(shell.error());
+assert.equal(result.stderr, 'grep: no such file or directory: /asdfasdf');
+assert.equal(result.code, 2);
 
 // if at least one file is missing, this should be an error
 shell.cp('-f', 'resources/file1', 'tmp/file1');
 assert.equal(fs.existsSync('asdfasdf'), false); // sanity check
 assert.equal(fs.existsSync('tmp/file1'), true); // sanity check
-var result = shell.grep(/asdf/g, 'tmp/file1', 'asdfasdf');
+result = shell.grep(/asdf/g, 'tmp/file1', 'asdfasdf');
 assert.ok(shell.error());
 assert.equal(result.stderr, 'grep: no such file or directory: asdfasdf');
+assert.equal(result.code, 2);
 
 //
 // Valids

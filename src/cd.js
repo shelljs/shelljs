@@ -31,5 +31,6 @@ function _cd(options, dir) {
     }
     if (err) common.error(err);
   }
+  return new common.ShellString('', common.state.error, common.state.errorCode);
 }
 module.exports = _cd;

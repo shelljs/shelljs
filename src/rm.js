@@ -156,5 +156,6 @@ function _rm(options, files) {
       rmdirSyncRecursive(file, options.force);
     }
   }); // forEach(file)
+  return new common.ShellString('', common.state.error, common.state.errorCode);
 } // rm
 module.exports = _rm;

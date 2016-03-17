@@ -47,7 +47,7 @@ function _sed(options, regex, replacement, files) {
   var sed = [];
   files.forEach(function(file) {
     if (!fs.existsSync(file) && file !== '-') {
-      common.error('no such file or directory: ' + file, true);
+      common.error('no such file or directory: ' + file, 2, true);
       return;
     }
 
@@ -63,6 +63,6 @@ function _sed(options, regex, replacement, files) {
       fs.writeFileSync(file, result, 'utf8');
   });
 
-  return new common.ShellString(sed.join('\n'), common.state.error);
+  return new common.ShellString(sed.join('\n'), common.state.error, common.state.errorCode);
 }
 module.exports = _sed;

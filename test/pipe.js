@@ -11,13 +11,6 @@ shell.mkdir('tmp');
 // Invalids
 //
 
-// no piped methods for commands that don't return anything
-assert.throws(function() {
-  shell.cp('resources/file1', 'tmp/');
-  assert.ok(!shell.error());
-  shell.cp('resources/file1', 'tmp/').cat();
-});
-
 // commands like `rm` can't be on the right side of pipes
 assert.equal(typeof shell.ls('.').rm, 'undefined');
 assert.equal(typeof shell.cat('resources/file1.txt').rm, 'undefined');
