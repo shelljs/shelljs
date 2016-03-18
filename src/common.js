@@ -17,6 +17,7 @@ var config = {
   fatal: false,
   verbose: false,
   noglob: false,
+  globOptions: {},
   maxdepth: 255
 };
 exports.config = config;
@@ -179,7 +180,7 @@ exports.parseOptions = parseOptions;
 // For example:
 //   expand(['file*.js']) = ['file1.js', 'file2.js', ...]
 //   (if the files 'file1.js', 'file2.js', etc, exist in the current dir)
-function expand(list, opts) {
+function expand(list) {
   if (!Array.isArray(list)) {
     throw new TypeError('must be an array');
   }
@@ -189,7 +190,7 @@ function expand(list, opts) {
     if (typeof listEl !== 'string') {
       expanded.push(listEl);
     } else {
-      var ret = glob.sync(listEl, opts);
+      var ret = glob.sync(listEl, config.globOptions);
       // if glob fails, interpret the string literally
       expanded = expanded.concat(ret.length > 0 ? ret : [listEl]);
     }

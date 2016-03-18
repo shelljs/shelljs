@@ -203,3 +203,14 @@ exports.config = common.config;
 //@ cd dir/
 //@ ls subdir/
 //@ ```
+
+//@
+//@ ### config.globOptions
+//@
+//@ Example:
+//@
+//@ ```javascript
+//@ config.globOptions = {nodir: true};
+//@ ```
+//@
+//@ Use this value for calls to `glob.sync()` instead of the default options.
