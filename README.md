@@ -330,7 +330,7 @@ containing the files if more than one file is given (a new line character is
 introduced between each file). Wildcard `*` accepted.
 
 
-### 'string'.to(file)
+### ShellString.prototype.to(file)
 
 Examples:
 
@@ -343,7 +343,7 @@ ShellStrings (such as those returned by `cat`, `grep`, etc). _Like Unix
 redirections, `to()` will overwrite any existing file!_
 
 
-### 'string'.toEnd(file)
+### ShellString.prototype.toEnd(file)
 
 Examples:
 
