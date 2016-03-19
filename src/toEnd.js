@@ -3,7 +3,7 @@ var fs = require('fs');
 var path = require('path');
 
 //@
-//@ ### 'string'.toEnd(file)
+//@ ### ShellString.prototype.toEnd(file)
 //@
 //@ Examples:
 //@
