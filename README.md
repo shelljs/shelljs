@@ -344,6 +344,24 @@ Reads an input string from `files` and performs a JavaScript `replace()` on the 
 using the given search regex and replacement string or function. Returns the new string after replacement.
 
 
+### sort([options,] file [, file ...])
+### sed([options,] file_array)
+Available options:
+
++ `-r`: Reverse the result of comparisons
++ `-n`: Compare according to numerical value
+
+Examples:
+
+```javascript
+sort('foo.txt', 'bar.txt');
+sort('-r', 'foo.txt');
+```
+
+Return the contents of the files, sorted line-by-line. Sorting multiple
+files mixes their content, just like unix sort does.
+
+
 ### grep([options,] regex_filter, file [, file ...])
 ### grep([options,] regex_filter, file_array)
 Available options:
