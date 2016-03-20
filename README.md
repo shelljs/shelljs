@@ -23,7 +23,23 @@ The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battled-t
 
 If you have feedback, suggestions, or need help, feel free to post in our [issue tracker](https://github.com/shelljs/shelljs/issues).
 
-For a non-programmatic implementation of Unix shell commands on top of Node.js, check out [Cash](https://github.com/dthree/cash).
+Think ShellJS is cool? Check out some related projects (like
+[cash](https://github.com/dthree/cash)--a javascript-based POSIX shell)
+in our [Wiki page](https://github.com/shelljs/shelljs/wiki)!
+
+## Command line use
+
+If you just want cross platform UNIX commands, checkout our new project
+[shelljs/shx](https://github.com/shelljs/shx), a utility to expose `shelljs` to
+the command line.
+
+For example:
+
+```
+$ shx mkdir -p foo
+$ shx touch foo/bar.txt
+$ shx rm -rf foo
+```
 
 ## Installing
 
@@ -112,56 +128,6 @@ var shell = require('shelljs');
 shell.echo('hello world');
 ```
 
-## Make tool
-
-A convenience script `shelljs/make` is also provided to mimic the behavior of a Unix Makefile.
-In this case all shell objects are global, and command line arguments will cause the script to
-execute only the corresponding function in the global `target` object. To avoid redundant calls,
-target functions are executed only once per script.
-
-Example:
-
-```javascript
-require('shelljs/make');
-
-target.all = function() {
-  target.bundle();
-  target.docs();
-};
-
-target.bundle = function() {
-  cd(__dirname);
-  mkdir('-p', 'build');
-  cd('src');
-  cat('*.js').to('../build/output.js');
-};
-
-target.docs = function() {
-  cd(__dirname);
-  mkdir('-p', 'docs');
-  var files = ls('src/*.js');
-  for(var i = 0; i < files.length; i++) {
-    var text = grep('//@', files[i]);     // extract special comments
-    text = text.replace(/\/\/@/g, '');    // remove comment tags
-    text.toEnd('docs/my_docs.md');
-  }
-};
-```
-
-To run the target `all`, call the above script without arguments: `$ node make`. To run the target `docs`: `$ node make docs`.
-
-You can also pass arguments to your targets by using the `--` separator. For example, to pass `arg1` and `arg2` to a target `bundle`, do `$ node make bundle -- arg1 arg2`:
-
-```javascript
-require('shelljs/make');
-
-target.bundle = function(argsArray) {
-  // argsArray = ['arg1', 'arg2']
-  /* ... */
-}
-```
-
-
 <!-- DO NOT MODIFY BEYOND THIS POINT - IT'S AUTOMATICALLY GENERATED -->
 
 
@@ -169,6 +135,9 @@ target.bundle = function(argsArray) {
 
 
 All commands run synchronously, unless otherwise stated.
+
+For less-commonly used commands and features, please check out our [wiki
+page](https://github.com/shelljs/shelljs/wiki).
 
 
 ### cd([dir])
