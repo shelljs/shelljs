@@ -104,7 +104,7 @@ function isWriteable(file) {
 //@ rm(['some_file.txt', 'another_file.txt']); // same as above
 //@ ```
 //@
-//@ Removes files. The wildcard `*` is accepted.
+//@ Removes files.
 function _rm(options, files) {
   options = common.parseOptions(options, {
     'f': 'force',

@@ -135,6 +135,8 @@ shell.echo('hello world');
 
 
 All commands run synchronously, unless otherwise stated.
+All commands accept standard bash globbing characters (`*`, `?`, etc.),
+compatible with the [node glob module](https://github.com/isaacs/node-glob).
 
 For less-commonly used commands and features, please check out our [wiki
 page](https://github.com/shelljs/shelljs/wiki).
@@ -195,7 +197,7 @@ Available options:
 
 + `-f`: force (default behavior)
 + `-n`: no-clobber
-+ `-r, -R`: recursive
++ `-r`, `-R`: recursive
 
 Examples:
 
@@ -206,7 +208,7 @@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
 cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 ```
 
-Copies files. The wildcard `*` is accepted.
+Copies files.
 
 
 ### rm([options,] file [, file ...])
@@ -224,7 +226,7 @@ rm('some_file.txt', 'another_file.txt');
 rm(['some_file.txt', 'another_file.txt']); // same as above
 ```
 
-Removes files. The wildcard `*` is accepted.
+Removes files.
 
 
 ### mv([options ,] source [, source ...], dest')
@@ -242,7 +244,7 @@ mv('file1', 'file2', 'dir/');
 mv(['file1', 'file2'], 'dir/'); // same as above
 ```
 
-Moves files. The wildcard `*` is accepted.
+Moves files.
 
 
 ### mkdir([options,] dir [, dir ...])
@@ -296,7 +298,7 @@ var str = cat(['file1', 'file2']); // same as above
 
 Returns a string containing the given file, or a concatenated string
 containing the files if more than one file is given (a new line character is
-introduced between each file). Wildcard `*` accepted.
+introduced between each file).
 
 
 ### ShellString.prototype.to(file)
@@ -356,7 +358,7 @@ grep('GLOBAL_VARIABLE', '*.js');
 ```
 
 Reads input string from given files and returns a string containing all lines of the
-file that match the given `regex_filter`. Wildcard `*` accepted.
+file that match the given `regex_filter`.
 
 
 ### which(command)

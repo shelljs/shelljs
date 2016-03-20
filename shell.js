@@ -11,6 +11,8 @@ var common = require('./src/common');
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
+//@ All commands accept standard bash globbing characters (`*`, `?`, etc.),
+//@ compatible with the [node glob module](https://github.com/isaacs/node-glob).
 //@
 //@ For less-commonly used commands and features, please check out our [wiki
 //@ page](https://github.com/shelljs/shelljs/wiki).

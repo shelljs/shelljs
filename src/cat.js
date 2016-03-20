@@ -15,7 +15,7 @@ var fs = require('fs');
 //@
 //@ Returns a string containing the given file, or a concatenated string
 //@ containing the files if more than one file is given (a new line character is
-//@ introduced between each file). Wildcard `*` accepted.
+//@ introduced between each file).
 function _cat(options, files) {
   var cat = common.readFromPipe(this);
 
