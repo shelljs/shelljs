@@ -32,7 +32,7 @@ function numericalCmp(a, b) {
 
 //@
 //@ ### sort([options,] file [, file ...])
-//@ ### sed([options,] file_array)
+//@ ### sort([options,] file_array)
 //@ Available options:
 //@
 //@ + `-r`: Reverse the result of comparisons

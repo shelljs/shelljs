@@ -62,6 +62,10 @@ exports.cat = common.wrap('cat', _cat, {idx: 1});
 var _head = require('./src/head');
 exports.head = common.wrap('head', _head, {idx: 1});
 
+//@include ./src/tail
+var _tail = require('./src/tail');
+exports.tail = common.wrap('tail', _tail, {idx: 1});
+
 // The below commands have been moved to common.ShellString(), and are only here
 // for generating the docs
 //@include ./src/to
