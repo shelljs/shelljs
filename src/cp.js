@@ -94,7 +94,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@
 //@ + `-f`: force (default behavior)
 //@ + `-n`: no-clobber
-//@ + `-r, -R`: recursive
+//@ + `-r`, `-R`: recursive
 //@
 //@ Examples:
 //@
@@ -105,7 +105,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 //@ ```
 //@
-//@ Copies files. The wildcard `*` is accepted.
+//@ Copies files.
 function _cp(options, sources, dest) {
   options = common.parseOptions(options, {
     'f': '!no_force',
