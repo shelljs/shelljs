@@ -12,6 +12,9 @@ var common = require('./src/common');
 //@
 //@ All commands run synchronously, unless otherwise stated.
 //@
+//@ For less-commonly used commands and features, please check out our [wiki
+//@ page](https://github.com/shelljs/shelljs/wiki).
+//@
 
 //@include ./src/cd
 var _cd = require('./src/cd');
