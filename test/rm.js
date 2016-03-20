@@ -43,6 +43,26 @@ result = shell.rm('-f', 'asdfasdf');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 
+// directory does not exist, but -fr specified
+result = shell.rm('-fr', 'fake_dir/');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+
+// directory does not exist, but *only -f* specified
+result = shell.rm('-f', 'fake_dir/');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+
+// file (in fake dir) does not exist, but -f specified
+result = shell.rm('-f', 'fake_dir/asdfasdf');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+
+// dir (in fake dir) does not exist, but -fr specified
+result = shell.rm('-fr', 'fake_dir/sub/');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+
 // simple rm
 shell.cp('-f', 'resources/file1', 'tmp/file1');
 assert.equal(fs.existsSync('tmp/file1'), true);
