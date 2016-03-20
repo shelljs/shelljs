@@ -198,6 +198,7 @@ Available options:
 + `-f`: force (default behavior)
 + `-n`: no-clobber
 + `-r`, `-R`: recursive
++ `-L`, `-L`: followsymlink
 
 Examples:
 

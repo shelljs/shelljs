@@ -16,7 +16,8 @@ var config = {
   silent: false,
   fatal: false,
   verbose: false,
-  noglob: false
+  noglob: false,
+  maxdepth: 255
 };
 exports.config = config;
 
