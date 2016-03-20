@@ -297,4 +297,37 @@ assert.ok(!fs.existsSync('tmp/cp')); // doesn't copy dir itself
 assert.ok(fs.existsSync('tmp/file1.txt'));
 assert.ok(fs.existsSync('tmp/file2.txt'));
 
+// Test max depth.
+shell.rm('-rf', 'tmp/');
+shell.mkdir('tmp/');
+shell.config.maxdepth = 32;
+var directory = '';
+for (var i = 1; i < 40; i++) {
+  directory += '/'+i;
+}
+var directory32deep = '';
+for (var i = 1; i < 32; i++) {
+  directory32deep += '/'+i;
+}
+shell.mkdir('-p', 'tmp/0' + directory);
+shell.cp('-r', 'tmp/0', 'tmp/copytestdepth');
+// Check full directory exists.
+assert.ok(shell.test('-d', 'tmp/0/' + directory));
+// Check full copy of directory does not exist.
+assert.ok(!shell.test('-d', 'tmp/copytestdepth'+directory));
+// Check last directory to exist is bellow maxdepth.
+assert.ok(shell.test('-d', 'tmp/copytestdepth'+directory32deep));
+assert.ok(!shell.test('-d', 'tmp/copytestdepth'+directory32deep+'/32'));
+
+// Create sym links to check for cycle.
+shell.cd('tmp/0/1/2/3/4');
+shell.ln('-s', '../../../2', 'link');
+shell.ln('-s', './5/6/7', 'link1');
+shell.cd('../../../../../..');
+assert.ok(shell.test('-d', 'tmp/'));
+
+shell.rm('-fr', 'tmp/copytestdepth');
+shell.cp('-r', 'tmp/0', 'tmp/copytestdepth');
+assert.ok(shell.test('-d', 'tmp/copytestdepth/1/2/3/4/link/3/4/link/3/4'));
+
 shell.exit(123);
