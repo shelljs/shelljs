@@ -52,6 +52,17 @@ function copyFileSync(srcFile, destFile) {
 function cpdirSyncRecursive(sourceDir, destDir, opts) {
   if (!opts) opts = {};
 
+  /* Ensure there is not a run away recursive copy. */
+  if (typeof opts.depth === 'undefined') {
+    opts.depth = 0;
+  }
+  if (opts.depth >= common.config.maxdepth) {
+    // Max depth has been reached, end copy.
+    return;
+  } else {
+    opts.depth++;
+  }
+
   /* Create the directory where all our junk is moving to; read the mode of the source directory and mirror it */
   try {
     var checkDir = fs.statSync(sourceDir);
@@ -68,12 +79,24 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
     var destFile = destDir + "/" + files[i];
     var srcFileStat = fs.lstatSync(srcFile);
 
+    var symlinkFull;
+    if (opts.followsymlink) {
+      if (cpcheckcycle(sourceDir, srcFile)) {
+        // Cycle link found.
+        console.log('Cycle link found.');
+        symlinkFull = fs.readlinkSync(srcFile);
+        fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
+        continue;
+      }
+    }
     if (srcFileStat.isDirectory()) {
       /* recursion this thing right on back. */
       cpdirSyncRecursive(srcFile, destFile, opts);
-    } else if (srcFileStat.isSymbolicLink()) {
-      var symlinkFull = fs.readlinkSync(srcFile);
+    } else if (srcFileStat.isSymbolicLink() && !opts.followsymlink) {
+      symlinkFull = fs.readlinkSync(srcFile);
       fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
+    } else if (srcFileStat.isSymbolicLink() && opts.followsymlink) {
+      cpdirSyncRecursive(srcFile, destFile, opts);
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && opts.no_force) {
@@ -86,6 +109,22 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
   } // for files
 } // cpdirSyncRecursive
 
+function cpcheckcycle(sourceDir, srcFile) {
+  var srcFileStat = fs.lstatSync(srcFile);
+  if (srcFileStat.isSymbolicLink()) {
+    // Do cycle check. For example mkdir -p 1/2/3/4 ; cd  1/2/3/4; ln -s ../../3 link ; cd ../../../.. ; cp -RL 1 copy
+    var cyclecheck = fs.statSync(srcFile);
+    if (cyclecheck.isDirectory()) {
+      var sourcerealpath = fs.realpathSync(sourceDir);
+      var symlinkrealpath = fs.realpathSync(srcFile);
+      var re = new RegExp(symlinkrealpath);
+      if (re.test(sourcerealpath)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 //@
 //@ ### cp([options,] source [, source ...], dest)
@@ -94,7 +133,8 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@
 //@ + `-f`: force (default behavior)
 //@ + `-n`: no-clobber
-//@ + `-r, -R`: recursive
+//@ + `-r`, `-R`: recursive
+//@ + `-L`, `-L`: followsymlink
 //@
 //@ Examples:
 //@
@@ -105,13 +145,14 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
 //@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 //@ ```
 //@
-//@ Copies files. The wildcard `*` is accepted.
+//@ Copies files.
 function _cp(options, sources, dest) {
   options = common.parseOptions(options, {
     'f': '!no_force',
     'n': 'no_force',
     'R': 'recursive',
-    'r': 'recursive'
+    'r': 'recursive',
+    'L': 'followsymlink',
   });
 
   // Get sources, dest
@@ -152,7 +193,7 @@ function _cp(options, sources, dest) {
 
         try {
           fs.statSync(path.dirname(dest));
-          cpdirSyncRecursive(src, newDest, {no_force: options.no_force});
+          cpdirSyncRecursive(src, newDest, {no_force: options.no_force, followsymlink: options.followsymlink});
         } catch(e) {
           common.error("cannot create directory '" + dest + "': No such file or directory");
         }
