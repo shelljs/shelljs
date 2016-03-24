@@ -330,4 +330,73 @@ shell.rm('-fr', 'tmp/copytestdepth');
 shell.cp('-r', 'tmp/0', 'tmp/copytestdepth');
 assert.ok(shell.test('-d', 'tmp/copytestdepth/1/2/3/4/link/3/4/link/3/4'));
 
+// Test copying of symlinked files cp -L.
+shell.rm('-fr', 'tmp');
+shell.mkdir('-p', 'tmp/sub');
+shell.mkdir('-p', 'tmp/new');
+shell.cp('-f', 'resources/file1.txt', 'tmp/sub/file.txt');
+shell.cd('tmp/sub');
+shell.ln('-s', 'file.txt', 'foo.lnk');
+shell.ln('-s', 'file.txt', 'sym.lnk');
+shell.cd('..');
+shell.cp('-L', 'sub/*', 'new/');
+
+// Ensure copies are files.
+shell.cd('new');
+shell.cp('-f', '../../resources/file2.txt', 'file.txt');
+assert.equal(shell.cat('file.txt').toString(), 'test2\n');
+// Ensure other files have not changed.
+assert.equal(shell.cat('foo.lnk').toString(), 'test1\n');
+assert.equal(shell.cat('sym.lnk').toString(), 'test1\n');
+
+// Ensure the links are converted to files.
+assert.equal(shell.test('-L', 'foo.lnk'), false);
+assert.equal(shell.test('-L', 'sym.lnk'), false);
+shell.cd('../..');
+
+// Test with recurisve option.
+
+shell.rm('-fr', 'tmp');
+shell.mkdir('-p', 'tmp/sub/sub1');
+shell.cp('-f', 'resources/file1.txt', 'tmp/sub/file.txt');
+shell.cp('-f', 'resources/file1.txt', 'tmp/sub/sub1/file.txt');
+shell.cd('tmp/sub');
+shell.ln('-s', 'file.txt', 'foo.lnk');
+shell.ln('-s', 'file.txt', 'sym.lnk');
+shell.cd('sub1');
+shell.ln('-s', '../file.txt', 'foo.lnk');
+shell.ln('-s', '../file.txt', 'sym.lnk');
+
+// Ensure file reads from proper source.
+assert.equal(shell.cat('file.txt').toString(), 'test1\n');
+assert.equal(shell.cat('foo.lnk').toString(), 'test1\n');
+assert.equal(shell.cat('sym.lnk').toString(), 'test1\n');
+assert.equal(shell.test('-L', 'foo.lnk'), true);
+assert.equal(shell.test('-L', 'sym.lnk'), true);
+shell.cd('../..');
+shell.cp('-rL', 'sub/', 'new/');
+shell.cd('new');
+
+// Ensure copies of files are symlinks by updating file contents.
+shell.cp('-f', '../../resources/file2.txt', 'file.txt');
+assert.equal(shell.cat('file.txt').toString(), 'test2\n');
+// Ensure other files have not changed.
+assert.equal(shell.cat('foo.lnk').toString(), 'test1\n');
+assert.equal(shell.cat('sym.lnk').toString(), 'test1\n');
+
+// Ensure the links are converted to files.
+assert.equal(shell.test('-L', 'foo.lnk'), false);
+assert.equal(shell.test('-L', 'sym.lnk'), false);
+
+shell.cd('sub1');
+shell.cp('-f', '../../../resources/file2.txt', 'file.txt');
+assert.equal(shell.cat('file.txt').toString(), 'test2\n');
+// Ensure other files have not changed.
+assert.equal(shell.cat('foo.lnk').toString(), 'test1\n');
+assert.equal(shell.cat('sym.lnk').toString(), 'test1\n');
+
+// Ensure the links are converted to files.
+assert.equal(shell.test('-L', 'foo.lnk'), false);
+assert.equal(shell.test('-L', 'sym.lnk'), false);
+
 shell.exit(123);
