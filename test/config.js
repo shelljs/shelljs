@@ -2,6 +2,7 @@ var shell = require('..');
 
 var assert = require('assert'),
     child = require('child_process');
+var common = require('../src/common');
 
 //
 // config.silent
@@ -44,3 +45,24 @@ child.exec(JSON.stringify(process.execPath)+' '+file, function(err, stdout) {
     shell.exit(123);
   });
 });
+
+//
+// config.globOptions
+//
+
+// Expands to directories by default
+var result = common.expand(['resources/*a*']);
+assert.equal(result.length, 4);
+assert.ok(result.indexOf('resources/a.txt') > -1);
+assert.ok(result.indexOf('resources/badlink') > -1);
+assert.ok(result.indexOf('resources/cat') > -1);
+assert.ok(result.indexOf('resources/external') > -1);
+
+// Check to make sure options get passed through (nodir is an example)
+shell.config.globOptions = {nodir: true};
+result = common.expand(['resources/*a*']);
+assert.equal(result.length, 2);
+assert.ok(result.indexOf('resources/a.txt') > -1);
+assert.ok(result.indexOf('resources/badlink') > -1);
+assert.ok(result.indexOf('resources/cat') < 0);
+assert.ok(result.indexOf('resources/external') < 0);
