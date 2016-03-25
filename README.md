@@ -41,6 +41,14 @@ $ shx touch foo/bar.txt
 $ shx rm -rf foo
 ```
 
+## A quick note about the docs
+
+For documentation on all the latest features, check out our
+[README](https://github.com/shelljs/shelljs). To read docs that are consistent
+with the latest release, check out [the npm
+page](https://www.npmjs.com/package/shelljs) or
+[shelljs.org](http://documentup.com/shelljs/shelljs).
+
 ## Installing
 
 Via npm:
