@@ -7,6 +7,22 @@ var assert = require('assert'),
 
 shell.config.silent = true;
 
+var isWindows = common.platform === 'win';
+
+// On Windows, symlinks for files need admin permissions. This helper
+// skips certain tests if we are on Windows and got an EPERM error
+function skipOnWinForEPERM (action, test) {
+    action();
+    var error = shell.error();
+
+    if (isWindows && error && /EPERM:/.test(error)) {
+        console.log("Got EPERM when testing symlinks on Windows. Assuming non-admin environment and skipping test.");
+    } else {
+        test();
+    }
+}
+
+
 shell.rm('-rf', 'tmp');
 shell.mkdir('tmp');
 
@@ -297,6 +313,14 @@ assert.ok(!fs.existsSync('tmp/cp')); // doesn't copy dir itself
 assert.ok(fs.existsSync('tmp/file1.txt'));
 assert.ok(fs.existsSync('tmp/file2.txt'));
 
+// Recursive, copies entire directory with no symlinks and -L option does not cause change in behavior.
+shell.rm('-rf', 'tmp/*');
+result = shell.cp('-rL', 'resources/cp/dir_a', 'tmp/dest');
+assert.equal(shell.error(), null);
+assert.ok(!result.stderr);
+assert.equal(result.code, 0);
+assert.equal(fs.existsSync('tmp/dest/z'), true);
+
 // Test max depth.
 shell.rm('-rf', 'tmp/');
 shell.mkdir('tmp/');
@@ -319,15 +343,91 @@ assert.ok(!shell.test('-d', 'tmp/copytestdepth'+directory));
 assert.ok(shell.test('-d', 'tmp/copytestdepth'+directory32deep));
 assert.ok(!shell.test('-d', 'tmp/copytestdepth'+directory32deep+'/32'));
 
-// Create sym links to check for cycle.
-shell.cd('tmp/0/1/2/3/4');
-shell.ln('-s', '../../../2', 'link');
-shell.ln('-s', './5/6/7', 'link1');
-shell.cd('../../../../../..');
-assert.ok(shell.test('-d', 'tmp/'));
+// Only complete sym link checks if script has permission to do so.
+skipOnWinForEPERM(shell.ln.bind(shell, '-s', 'tmp/0', 'tmp/symlinktest'), function () {
+    if (!shell.test('-L', 'tmp/symlinktest')) {
+        return;
+    }
+    shell.rm('-rf', 'tmp/symlinktest');
+    // Create sym links to check for cycle.
+    shell.cd('tmp/0/1/2/3/4');
+    shell.ln('-s', '../../../2', 'link');
+    shell.ln('-s', './5/6/7', 'link1');
+    shell.cd('../../../../../..');
+    assert.ok(shell.test('-d', 'tmp/'));
 
-shell.rm('-fr', 'tmp/copytestdepth');
-shell.cp('-r', 'tmp/0', 'tmp/copytestdepth');
-assert.ok(shell.test('-d', 'tmp/copytestdepth/1/2/3/4/link/3/4/link/3/4'));
+    shell.rm('-fr', 'tmp/copytestdepth');
+    shell.cp('-r', 'tmp/0', 'tmp/copytestdepth');
+    assert.ok(shell.test('-d', 'tmp/copytestdepth/1/2/3/4/link/3/4/link/3/4'));
+
+    // Test copying of symlinked files cp -L.
+    shell.rm('-fr', 'tmp');
+    shell.mkdir('-p', 'tmp/sub');
+    shell.mkdir('-p', 'tmp/new');
+    shell.cp('-f', 'resources/file1.txt', 'tmp/sub/file.txt');
+    shell.cd('tmp/sub');
+    shell.ln('-s', 'file.txt', 'foo.lnk');
+    shell.ln('-s', 'file.txt', 'sym.lnk');
+    shell.cd('..');
+    shell.cp('-L', 'sub/*', 'new/');
+
+    // Ensure copies are files.
+    shell.cd('new');
+    shell.cp('-f', '../../resources/file2.txt', 'file.txt');
+    assert.equal(shell.cat('file.txt').toString(), 'test2\n');
+    // Ensure other files have not changed.
+    assert.equal(shell.cat('foo.lnk').toString(), 'test1\n');
+    assert.equal(shell.cat('sym.lnk').toString(), 'test1\n');
+
+    // Ensure the links are converted to files.
+    assert.equal(shell.test('-L', 'foo.lnk'), false);
+    assert.equal(shell.test('-L', 'sym.lnk'), false);
+    shell.cd('../..');
+
+    // Test with recurisve option and symlinks.
+
+    shell.rm('-fr', 'tmp');
+    shell.mkdir('-p', 'tmp/sub/sub1');
+    shell.cp('-f', 'resources/file1.txt', 'tmp/sub/file.txt');
+    shell.cp('-f', 'resources/file1.txt', 'tmp/sub/sub1/file.txt');
+    shell.cd('tmp/sub');
+    shell.ln('-s', 'file.txt', 'foo.lnk');
+    shell.ln('-s', 'file.txt', 'sym.lnk');
+    shell.cd('sub1');
+    shell.ln('-s', '../file.txt', 'foo.lnk');
+    shell.ln('-s', '../file.txt', 'sym.lnk');
+
+    // Ensure file reads from proper source.
+    assert.equal(shell.cat('file.txt').toString(), 'test1\n');
+    assert.equal(shell.cat('foo.lnk').toString(), 'test1\n');
+    assert.equal(shell.cat('sym.lnk').toString(), 'test1\n');
+    assert.equal(shell.test('-L', 'foo.lnk'), true);
+    assert.equal(shell.test('-L', 'sym.lnk'), true);
+    shell.cd('../..');
+    shell.cp('-rL', 'sub/', 'new/');
+    shell.cd('new');
+
+    // Ensure copies of files are symlinks by updating file contents.
+    shell.cp('-f', '../../resources/file2.txt', 'file.txt');
+    assert.equal(shell.cat('file.txt').toString(), 'test2\n');
+    // Ensure other files have not changed.
+    assert.equal(shell.cat('foo.lnk').toString(), 'test1\n');
+    assert.equal(shell.cat('sym.lnk').toString(), 'test1\n');
+
+    // Ensure the links are converted to files.
+    assert.equal(shell.test('-L', 'foo.lnk'), false);
+    assert.equal(shell.test('-L', 'sym.lnk'), false);
+
+    shell.cd('sub1');
+    shell.cp('-f', '../../../resources/file2.txt', 'file.txt');
+    assert.equal(shell.cat('file.txt').toString(), 'test2\n');
+    // Ensure other files have not changed.
+    assert.equal(shell.cat('foo.lnk').toString(), 'test1\n');
+    assert.equal(shell.cat('sym.lnk').toString(), 'test1\n');
+
+    // Ensure the links are converted to files.
+    assert.equal(shell.test('-L', 'foo.lnk'), false);
+    assert.equal(shell.test('-L', 'sym.lnk'), false);
+});
 
 shell.exit(123);

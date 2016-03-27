@@ -96,7 +96,12 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       symlinkFull = fs.readlinkSync(srcFile);
       fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
     } else if (srcFileStat.isSymbolicLink() && opts.followsymlink) {
-      cpdirSyncRecursive(srcFile, destFile, opts);
+      srcFileStat = fs.statSync(srcFile);
+      if (srcFileStat.isDirectory()) {
+        cpdirSyncRecursive(srcFile, destFile, opts);
+      } else {
+        copyFileSync(srcFile, destFile);
+      }
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && opts.no_force) {
@@ -134,7 +139,7 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@ + `-f`: force (default behavior)
 //@ + `-n`: no-clobber
 //@ + `-r`, `-R`: recursive
-//@ + `-L`, `-L`: followsymlink
+//@ + `-L`: followsymlink
 //@
 //@ Examples:
 //@
