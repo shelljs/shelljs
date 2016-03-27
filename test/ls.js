@@ -96,7 +96,7 @@ assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result.indexOf('resources/cat/file1') > -1, true);
 assert.equal(result.indexOf('resources/cat/file2') > -1, true);
-assert.equal(result.length, 2);
+assert.equal(result.length, 3);
 
 // wildcard, simple
 result = shell.ls('resources/ls/*');

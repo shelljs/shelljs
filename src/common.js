@@ -96,6 +96,44 @@ var ShellString = function (stdout, stderr, code) {
   } else {
     that = new String(stdout);
     that.stdout = stdout;
+
+    that.forEach = function (callback, opts) {
+      var options = opts || {};
+
+      if (typeof options !== 'object')
+        options = {};
+
+      if (typeof options.split === 'undefined') {
+        // if only regex provided, set split to 'regex'
+        if (options.regex)
+          options.split = 'regex';
+
+        // default to 'line' if no options given
+        else
+          options.split = 'line';
+      }
+
+      switch (options.split) {
+        case 'character':
+          this.stdout.split('').forEach(callback);
+          break;
+        case 'whitespace':
+          this.stdout.split(/\s+/).forEach(callback);
+          break;
+        case 'word':
+          this.stdout.split(/\W+/).forEach(callback);
+          break;
+        case 'regex':
+          this.stdout.split(options.regex || '').forEach(callback);
+          break;
+        case 'line':
+          this.stdout.split(/\n/).forEach(callback);
+          break;
+        default:
+          this.stdout.split(/\n/).forEach(callback);
+          break;
+      }
+    };
   }
   that.stderr = stderr;
   that.code = code;
