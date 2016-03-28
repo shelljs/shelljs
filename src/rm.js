@@ -21,9 +21,7 @@ function rmdirSyncRecursive(dir, force) {
 
     if(currFile.isDirectory()) { // Recursive function back to the beginning
       rmdirSyncRecursive(file, force);
-    }
-
-    else if(currFile.isSymbolicLink()) { // Unlink symlinks
+    } else { // Assume it's a file - perhaps a try/catch belongs here?
       if (force || isWriteable(file)) {
         try {
           common.unlinkSync(file);
@@ -32,15 +30,6 @@ function rmdirSyncRecursive(dir, force) {
         }
       }
     }
-
-    else // Assume it's a file - perhaps a try/catch belongs here?
-      if (force || isWriteable(file)) {
-        try {
-          common.unlinkSync(file);
-        } catch (e) {
-          common.error('could not remove file (code '+e.code+'): ' + file, true);
-        }
-      }
   }
 
   // Now that we know everything in the sub-tree has been deleted, we can delete the main directory.
