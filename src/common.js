@@ -35,6 +35,14 @@ delete process.env.OLDPWD; // initially, there's no previous directory
 var platform = os.type().match(/^Win/) ? 'win' : 'unix';
 exports.platform = platform;
 
+// regex lookup for ShellString.forEach()
+var regexLookup = {
+  'character': '',
+  'whitespace': /\s+/,
+  'word': /\W+/,
+  'line': /\n/
+};
+
 function log() {
   if (!config.silent)
     console.error.apply(console, arguments);
@@ -99,40 +107,22 @@ var ShellString = function (stdout, stderr, code) {
 
     that.forEach = function (callback, opts) {
       var options = opts || {};
+      var regex;
 
       if (typeof options !== 'object')
         options = {};
 
-      if (typeof options.split === 'undefined') {
-        // if only regex provided, set split to 'regex'
-        if (options.regex)
-          options.split = 'regex';
+      if (options.regex)
+        regex = options.regex;
 
-        // default to 'line' if no options given
-        else
-          options.split = 'line';
-      }
+      // default to line if invaild options is passed
+      else if (!(options.split in regexLookup))
+        regex = /\n/;
 
-      switch (options.split) {
-        case 'character':
-          this.stdout.split('').forEach(callback);
-          break;
-        case 'whitespace':
-          this.stdout.split(/\s+/).forEach(callback);
-          break;
-        case 'word':
-          this.stdout.split(/\W+/).forEach(callback);
-          break;
-        case 'regex':
-          this.stdout.split(options.regex || '').forEach(callback);
-          break;
-        case 'line':
-          this.stdout.split(/\n/).forEach(callback);
-          break;
-        default:
-          this.stdout.split(/\n/).forEach(callback);
-          break;
-      }
+      else
+        regex = regexLookup[options.split];
+
+      return this.stdout.split(regex).forEach(callback);
     };
   }
   that.stderr = stderr;
