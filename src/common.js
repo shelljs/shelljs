@@ -64,16 +64,15 @@ function error(msg, _code, _continue) {
   if(config.fatal)
     throw new Error(log_entry);
 
+  if (msg.length > 0)
+    log(log_entry);
+
   if(!_continue) {
-    // throw new Error(log_entry);
     throw {
       msg: 'earlyExit',
       retValue: (new ShellString('', state.error, state.errorCode))
     };
   }
-
-  if (msg.length > 0)
-    log(log_entry);
 }
 exports.error = error;
 
