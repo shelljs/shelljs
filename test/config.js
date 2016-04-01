@@ -52,10 +52,11 @@ child.exec(JSON.stringify(process.execPath)+' '+file, function(err, stdout) {
 
 // Expands to directories by default
 var result = common.expand(['resources/*a*']);
-assert.equal(result.length, 4);
+assert.equal(result.length, 5);
 assert.ok(result.indexOf('resources/a.txt') > -1);
 assert.ok(result.indexOf('resources/badlink') > -1);
 assert.ok(result.indexOf('resources/cat') > -1);
+assert.ok(result.indexOf('resources/head') > -1);
 assert.ok(result.indexOf('resources/external') > -1);
 
 // Check to make sure options get passed through (nodir is an example)

@@ -302,6 +302,36 @@ containing the files if more than one file is given (a new line character is
 introduced between each file).
 
 
+### head([{'-n', \<num\>},] file [, file ...])
+### head([{'-n', \<num\>},] file_array)
+
+Examples:
+
+```javascript
+var str = head({'-n', 1}, 'file*.txt');
+var str = head('file1', 'file2');
+var str = head(['file1', 'file2']); // same as above
+```
+
+Output the first 10 lines of a file (or the first `<num>` if `-n` is
+specified)
+
+
+### tail([{'-n', \<num\>},] file [, file ...])
+### tail([{'-n', \<num\>},] file_array)
+
+Examples:
+
+```javascript
+var str = tail({'-n', 1}, 'file*.txt');
+var str = tail('file1', 'file2');
+var str = tail(['file1', 'file2']); // same as above
+```
+
+Output the last 10 lines of a file (or the last `<num>` if `-n` is
+specified)
+
+
 ### ShellString.prototype.to(file)
 
 Examples:
@@ -342,6 +372,24 @@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 
 Reads an input string from `files` and performs a JavaScript `replace()` on the input
 using the given search regex and replacement string or function. Returns the new string after replacement.
+
+
+### sort([options,] file [, file ...])
+### sort([options,] file_array)
+Available options:
+
++ `-r`: Reverse the result of comparisons
++ `-n`: Compare according to numerical value
+
+Examples:
+
+```javascript
+sort('foo.txt', 'bar.txt');
+sort('-r', 'foo.txt');
+```
+
+Return the contents of the files, sorted line-by-line. Sorting multiple
+files mixes their content, just like unix sort does.
 
 
 ### grep([options,] regex_filter, file [, file ...])
