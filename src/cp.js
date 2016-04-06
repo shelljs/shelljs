@@ -6,39 +6,51 @@ var os = require('os');
 // Buffered file copy, synchronous
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
 //  with large files)
-function copyFileSync(srcFile, destFile) {
+function copyFileSync(srcFile, destFile, options) {
   if (!fs.existsSync(srcFile))
     common.error('copyFileSync: no such file or directory: ' + srcFile);
 
-  var BUF_LENGTH = 64*1024,
-      buf = new Buffer(BUF_LENGTH),
-      bytesRead = BUF_LENGTH,
-      pos = 0,
-      fdr = null,
-      fdw = null;
+  if (fs.lstatSync(srcFile).isSymbolicLink() && !options.followsymlink) {
+    try {
+      fs.lstatSync(destFile);
+      common.unlinkSync(destFile); // re-link it
+    } catch (e) {
+      // it doesn't exist, so no work needs to be done
+    }
 
-  try {
-    fdr = fs.openSync(srcFile, 'r');
-  } catch(e) {
-    common.error('copyFileSync: could not read src file ('+srcFile+')');
+    var symlinkFull = fs.readlinkSync(srcFile);
+    fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
+  } else {
+    var BUF_LENGTH = 64*1024,
+        buf = new Buffer(BUF_LENGTH),
+        bytesRead = BUF_LENGTH,
+        pos = 0,
+        fdr = null,
+        fdw = null;
+
+    try {
+      fdr = fs.openSync(srcFile, 'r');
+    } catch(e) {
+      common.error('copyFileSync: could not read src file ('+srcFile+')');
+    }
+
+    try {
+      fdw = fs.openSync(destFile, 'w');
+    } catch(e) {
+      common.error('copyFileSync: could not write to dest file (code='+e.code+'):'+destFile);
+    }
+
+    while (bytesRead === BUF_LENGTH) {
+      bytesRead = fs.readSync(fdr, buf, 0, BUF_LENGTH, pos);
+      fs.writeSync(fdw, buf, 0, bytesRead);
+      pos += bytesRead;
+    }
+
+    fs.closeSync(fdr);
+    fs.closeSync(fdw);
+
+    fs.chmodSync(destFile, fs.statSync(srcFile).mode);
   }
-
-  try {
-    fdw = fs.openSync(destFile, 'w');
-  } catch(e) {
-    common.error('copyFileSync: could not write to dest file (code='+e.code+'):'+destFile);
-  }
-
-  while (bytesRead === BUF_LENGTH) {
-    bytesRead = fs.readSync(fdr, buf, 0, BUF_LENGTH, pos);
-    fs.writeSync(fdw, buf, 0, bytesRead);
-    pos += bytesRead;
-  }
-
-  fs.closeSync(fdr);
-  fs.closeSync(fdw);
-
-  fs.chmodSync(destFile, fs.statSync(srcFile).mode);
 }
 
 // Recursively copies 'sourceDir' into 'destDir'
@@ -83,7 +95,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
     if (opts.followsymlink) {
       if (cpcheckcycle(sourceDir, srcFile)) {
         // Cycle link found.
-        console.log('Cycle link found.');
+        console.error('Cycle link found.');
         symlinkFull = fs.readlinkSync(srcFile);
         fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
         continue;
@@ -94,20 +106,26 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       cpdirSyncRecursive(srcFile, destFile, opts);
     } else if (srcFileStat.isSymbolicLink() && !opts.followsymlink) {
       symlinkFull = fs.readlinkSync(srcFile);
+      try {
+        fs.lstatSync(destFile);
+        common.unlinkSync(destFile); // re-link it
+      } catch (e) {
+        // it doesn't exist, so no work needs to be done
+      }
       fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
     } else if (srcFileStat.isSymbolicLink() && opts.followsymlink) {
       srcFileStat = fs.statSync(srcFile);
       if (srcFileStat.isDirectory()) {
         cpdirSyncRecursive(srcFile, destFile, opts);
       } else {
-        copyFileSync(srcFile, destFile);
+        copyFileSync(srcFile, destFile, opts);
       }
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && opts.no_force) {
         common.log('skipping existing file: ' + files[i]);
       } else {
-        copyFileSync(srcFile, destFile);
+        copyFileSync(srcFile, destFile, opts);
       }
     }
 
@@ -139,7 +157,8 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@ + `-f`: force (default behavior)
 //@ + `-n`: no-clobber
 //@ + `-r`, `-R`: recursive
-//@ + `-L`: followsymlink
+//@ + `-L`: follow symlinks
+//@ + `-P`: don't follow symlinks
 //@
 //@ Examples:
 //@
@@ -158,7 +177,14 @@ function _cp(options, sources, dest) {
     'R': 'recursive',
     'r': 'recursive',
     'L': 'followsymlink',
+    'P': 'noFollowsymlink',
   });
+
+  // If we're missing -R, it actually implies -L (unless -P is explicit)
+  if (options.followsymlink)
+    options.noFollowsymlink = false;
+  if (!options.recursive && !options.noFollowsymlink)
+    options.followsymlink = true;
 
   // Get sources, dest
   if (arguments.length < 3) {
@@ -185,7 +211,7 @@ function _cp(options, sources, dest) {
       return; // skip file
     }
     var srcStat = fs.statSync(src);
-    if (srcStat.isDirectory()) {
+    if (!options.noFollowsymlink && srcStat.isDirectory()) {
       if (!options.recursive) {
         // Non-Recursive
         common.error("omitting directory '" + src + "'", true);
@@ -218,7 +244,7 @@ function _cp(options, sources, dest) {
         return; // skip file
       }
 
-      copyFileSync(src, thisDest);
+      copyFileSync(src, thisDest, options);
     }
   }); // forEach(src)
   return new common.ShellString('', common.state.error, common.state.errorCode);

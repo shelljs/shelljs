@@ -231,6 +231,39 @@ assert.equal(shell.error(), null); // crash test only
 assert.ok(!result.stderr);
 assert.equal(result.code, 0);
 
+if (process.platform !== 'win32') {
+  // Recursive, everything exists, overwrite a real file with a link (if same name)
+  // Because -R implies to not follow links!
+  shell.rm('-rf', 'tmp/*');
+  shell.cp('-R', 'resources/cp/*', 'tmp');
+  assert.ok(fs.lstatSync('tmp/links/sym.lnk').isSymbolicLink()); // this one is a link
+  assert.ok(!(fs.lstatSync('tmp/fakeLinks/sym.lnk').isSymbolicLink())); // this one isn't
+  assert.notEqual(shell.cat('tmp/links/sym.lnk').toString(), shell.cat('tmp/fakeLinks/sym.lnk').toString());
+  result = shell.cp('-R', 'tmp/links/*', 'tmp/fakeLinks');
+  assert.equal(shell.error(), null);
+  assert.ok(!result.stderr);
+  assert.equal(result.code, 0);
+  assert.ok(fs.lstatSync('tmp/links/sym.lnk').isSymbolicLink()); // this one is a link
+  assert.ok(fs.lstatSync('tmp/fakeLinks/sym.lnk').isSymbolicLink()); // this one is now a link
+  assert.equal(shell.cat('tmp/links/sym.lnk').toString(), shell.cat('tmp/fakeLinks/sym.lnk').toString());
+
+  // Recursive, everything exists, overwrite a real file *by following a link*
+  // Because missing the -R implies -L.
+  shell.rm('-rf', 'tmp/*');
+  shell.cp('-R', 'resources/cp/*', 'tmp');
+  assert.ok(fs.lstatSync('tmp/links/sym.lnk').isSymbolicLink()); // this one is a link
+  assert.ok(!(fs.lstatSync('tmp/fakeLinks/sym.lnk').isSymbolicLink())); // this one isn't
+  assert.notEqual(shell.cat('tmp/links/sym.lnk').toString(), shell.cat('tmp/fakeLinks/sym.lnk').toString());
+  result = shell.cp('tmp/links/*', 'tmp/fakeLinks'); // don't use -R
+  assert.equal(shell.error(), null);
+  assert.ok(!result.stderr);
+  assert.equal(result.code, 0);
+  assert.ok(fs.lstatSync('tmp/links/sym.lnk').isSymbolicLink()); // this one is a link
+  assert.ok(!fs.lstatSync('tmp/fakeLinks/sym.lnk').isSymbolicLink()); // this one is still not a link
+  // But it still follows the link
+  assert.equal(shell.cat('tmp/links/sym.lnk').toString(), shell.cat('tmp/fakeLinks/sym.lnk').toString());
+}
+
 //recursive, everything exists, with force flag
 shell.rm('-rf', 'tmp/*');
 result = shell.cp('-R', 'resources/cp', 'tmp');
@@ -275,12 +308,12 @@ assert.equal(fs.existsSync('tmp/dest/z'), true);
 
 // On Windows, permission bits are quite different so skip those tests for now
 if (common.platform !== 'win') {
-    //preserve mode bits
-    shell.rm('-rf', 'tmp/*');
-    var execBit = parseInt('001', 8);
-    assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
-    shell.cp('resources/cp-mode-bits/executable', 'tmp/executable');
-    assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode, fs.statSync('tmp/executable').mode);
+  //preserve mode bits
+  shell.rm('-rf', 'tmp/*');
+  var execBit = parseInt('001', 8);
+  assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
+  shell.cp('resources/cp-mode-bits/executable', 'tmp/executable');
+  assert.equal(fs.statSync('resources/cp-mode-bits/executable').mode, fs.statSync('tmp/executable').mode);
 }
 
 // Make sure hidden files are copied recursively
@@ -304,7 +337,7 @@ assert.ok(fs.existsSync('tmp/file1.txt'));
 shell.rm('-rf', 'tmp/');
 shell.mkdir('tmp/');
 result = shell.cp('resources/file1.txt', 'resources/file2.txt', 'resources/cp',
-    'resources/ls/', 'tmp/');
+  'resources/ls/', 'tmp/');
 assert.ok(shell.error());
 assert.ok(!fs.existsSync('tmp/.hidden_file')); // doesn't copy dir contents
 assert.ok(!fs.existsSync('tmp/ls')); // doesn't copy dir itself
@@ -313,13 +346,69 @@ assert.ok(!fs.existsSync('tmp/cp')); // doesn't copy dir itself
 assert.ok(fs.existsSync('tmp/file1.txt'));
 assert.ok(fs.existsSync('tmp/file2.txt'));
 
-// Recursive, copies entire directory with no symlinks and -L option does not cause change in behavior.
+if (process.platform !== 'win32') {
+  // -R implies -P
+  shell.rm('-rf', 'tmp/*');
+  shell.cp('-R', 'resources/cp/links/sym.lnk', 'tmp');
+  assert.ok(fs.lstatSync('tmp/sym.lnk').isSymbolicLink());
+
+  // using -P explicitly works
+  shell.rm('-rf', 'tmp/*');
+  shell.cp('-P', 'resources/cp/links/sym.lnk', 'tmp');
+  assert.ok(fs.lstatSync('tmp/sym.lnk').isSymbolicLink());
+
+  // using -PR on a link to a folder does not follow the link
+  shell.rm('-rf', 'tmp/*');
+  shell.cp('-PR', 'resources/cp/symFolder', 'tmp');
+  assert.ok(fs.lstatSync('tmp/symFolder').isSymbolicLink());
+
+  // -L overrides -P for copying directory
+  shell.rm('-rf', 'tmp/*');
+  shell.cp('-LPR', 'resources/cp/symFolder', 'tmp');
+  assert.ok(!fs.lstatSync('tmp/symFolder').isSymbolicLink());
+  assert.ok(!fs.lstatSync('tmp/symFolder/sym.lnk').isSymbolicLink());
+
+  // Recursive, copies entire directory with no symlinks and -L option does not cause change in behavior.
+  shell.rm('-rf', 'tmp/*');
+  result = shell.cp('-rL', 'resources/cp/dir_a', 'tmp/dest');
+  assert.equal(shell.error(), null);
+  assert.ok(!result.stderr);
+  assert.equal(result.code, 0);
+  assert.equal(fs.existsSync('tmp/dest/z'), true);
+}
+
+// using -R on a link to a folder *does* follow the link
 shell.rm('-rf', 'tmp/*');
-result = shell.cp('-rL', 'resources/cp/dir_a', 'tmp/dest');
-assert.equal(shell.error(), null);
-assert.ok(!result.stderr);
-assert.equal(result.code, 0);
-assert.equal(fs.existsSync('tmp/dest/z'), true);
+shell.cp('-R', 'resources/cp/symFolder', 'tmp');
+assert.ok(!fs.lstatSync('tmp/symFolder').isSymbolicLink());
+
+// Without -R, -L is implied
+shell.rm('-rf', 'tmp/*');
+shell.cp('resources/cp/links/sym.lnk', 'tmp');
+assert.ok(!fs.lstatSync('tmp/sym.lnk').isSymbolicLink());
+
+// -L explicitly works
+shell.rm('-rf', 'tmp/*');
+shell.cp('-L', 'resources/cp/links/sym.lnk', 'tmp');
+assert.ok(!fs.lstatSync('tmp/sym.lnk').isSymbolicLink());
+
+// using -LR does not imply -P
+shell.rm('-rf', 'tmp/*');
+shell.cp('-LR', 'resources/cp/links/sym.lnk', 'tmp');
+assert.ok(!fs.lstatSync('tmp/sym.lnk').isSymbolicLink());
+
+// using -LR also works recursively on directories containing links
+shell.rm('-rf', 'tmp/*');
+shell.cp('-LR', 'resources/cp/links', 'tmp');
+assert.ok(!fs.lstatSync('tmp/links/sym.lnk').isSymbolicLink());
+
+// -L always overrides a -P
+shell.rm('-rf', 'tmp/*');
+shell.cp('-LP', 'resources/cp/links/sym.lnk', 'tmp');
+assert.ok(!fs.lstatSync('tmp/sym.lnk').isSymbolicLink());
+shell.rm('-rf', 'tmp/*');
+shell.cp('-LPR', 'resources/cp/links/sym.lnk', 'tmp');
+assert.ok(!fs.lstatSync('tmp/sym.lnk').isSymbolicLink());
 
 // Test max depth.
 shell.rm('-rf', 'tmp/');

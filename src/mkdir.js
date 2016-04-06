@@ -46,10 +46,13 @@ function _mkdir(options, dirs) {
   // if it's array leave it as it is
 
   dirs.forEach(function(dir) {
-    if (fs.existsSync(dir)) {
+    try {
+      fs.lstatSync(dir);
       if (!options.fullpath)
-          common.error('path already exists: ' + dir, true);
+        common.error('path already exists: ' + dir, true);
       return; // skip dir
+    } catch (e) {
+      // do nothing
     }
 
     // Base dir does not exist, and no -p option given

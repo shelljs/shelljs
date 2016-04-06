@@ -107,17 +107,17 @@ function _rm(options, files) {
   files = [].slice.call(arguments, 1);
 
   files.forEach(function(file) {
-    if (!fs.existsSync(file)) {
+    var stats;
+    try {
+      stats = fs.lstatSync(file); // test for existence
+    } catch (e) {
       // Path does not exist, no force flag given
       if (!options.force)
         common.error('no such file or directory: '+file, true);
-
       return; // skip file
     }
 
     // If here, path exists
-
-    var stats = fs.lstatSync(file);
     if (stats.isFile() || stats.isSymbolicLink()) {
 
       // Do not check for file writing permissions

@@ -370,6 +370,13 @@ assert.ok(result.atime); // check that these keys exist
 assert.ok(result.ctime); // check that these keys exist
 assert.ok(result.toString().match(/^(\d+ +){5}.*$/));
 
+// still lists broken links
+result = shell.ls('resources/badlink');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result.indexOf('resources/badlink') > -1, true);
+assert.equal(result.length, 1);
+
 // Test new ShellString-like attributes
 result = shell.ls('resources/ls');
 assert.equal(shell.error(), null);
