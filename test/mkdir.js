@@ -25,6 +25,14 @@ assert.equal(result.code, 1);
 assert.equal(result.stderr, 'mkdir: path already exists: tmp');
 assert.equal(fs.statSync('tmp').mtime.toString(), mtime); // didn't mess with dir
 
+// Can't overwrite a broken link
+mtime = fs.lstatSync('resources/badlink').mtime.toString();
+result = shell.mkdir('resources/badlink');
+assert.ok(shell.error());
+assert.equal(result.code, 1);
+assert.equal(result.stderr, 'mkdir: path already exists: resources/badlink');
+assert.equal(fs.lstatSync('resources/badlink').mtime.toString(), mtime); // didn't mess with file
+
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
 result = shell.mkdir('/asdfasdf/foobar'); // root path does not exist
 assert.ok(shell.error());

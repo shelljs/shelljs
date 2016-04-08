@@ -202,7 +202,8 @@ Available options:
 + `-f`: force (default behavior)
 + `-n`: no-clobber
 + `-r`, `-R`: recursive
-+ `-L`: followsymlink
++ `-L`: follow symlinks
++ `-P`: don't follow symlinks
 
 Examples:
 

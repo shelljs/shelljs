@@ -225,4 +225,17 @@ assert.equal(result.code, 0);
 assert.equal(fs.existsSync('tmp/rm/link_to_a_dir'), false);
 assert.equal(fs.existsSync('tmp/rm/a_dir'), true);
 
+// remove broken symbolic link
+if (process.platform !== 'win32') {
+  result = shell.rm('-rf', 'tmp');
+  shell.mkdir('tmp');
+  shell.cp('-R', 'resources/rm', 'tmp');
+  assert.ok(shell.test('-L', 'tmp/rm/fake.lnk'));
+  result = shell.rm('tmp/rm/fake.lnk');
+  assert.equal(shell.error(), null);
+  assert.equal(result.code, 0);
+  assert.ok(!shell.test('-L', 'tmp/rm/fake.lnk'));
+  assert.equal(fs.existsSync('tmp/rm/fake.lnk'), false);
+}
+
 shell.exit(123);

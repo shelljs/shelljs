@@ -109,6 +109,15 @@ assert.equal(result.code, 0);
 assert(fs.existsSync(testFile));
 assert(fs.existsSync(testFile2));
 
+// touching broken link creates a new file
+if (process.platform !== 'win32') {
+  result = shell.touch('resources/badlink');
+  assert.equal(result.code, 0);
+  assert.ok(!shell.error());
+  assert.ok(fs.existsSync('resources/not_existed_file'));
+  shell.rm('resources/not_existed_file');
+}
+
 function resetUtimes(f) {
   var d = new Date();
   d.setYear(2000);
