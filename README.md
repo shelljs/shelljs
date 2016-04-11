@@ -736,3 +736,9 @@ config.globOptions = {nodir: true};
 ```
 
 Use this value for calls to `glob.sync()` instead of the default options.
+
+## Team
+
+| [![Nate Fischer](https://avatars.githubusercontent.com/u/5801521?s=130)](https://github.com/nfischer) | [![Ari Porad](https://avatars1.githubusercontent.com/u/1817508?v=3&s=130)](http://github.com/ariporad) |
+|:---:|:---:|
+| [Nate Fischer](https://github.com/nfischer) | [Ari Porad](http://github.com/ariporad) |
