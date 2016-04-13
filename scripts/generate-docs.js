@@ -18,7 +18,7 @@ docs = docs.replace(/\/\/\@include (.+)/g, function(match, path) {
 docs = docs.replace(/\/\/\@ ?/g, '');
 
 // Wipe out the old docs
-ShellString(cat('README.md').replace(/## Command reference(.|\n)*/, '## Command reference')).to('README.md');
+ShellString(cat('README.md').replace(/## Command reference(.|\n)*\n## Team/, '## Command reference\n## Team')).to('README.md');
 
 // Append new docs to README
 sed('-i', /## Command reference/, '## Command reference\n\n' + docs, 'README.md');
