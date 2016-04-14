@@ -394,6 +394,15 @@ result.to('tmp/testingToOutput.txt');
 assert.equal(shell.cat('tmp/testingToOutput.txt'), result.stdout);
 shell.rm('tmp/testingToOutput.txt');
 
+// No trailing newline for ls() on empty directories
+shell.mkdir('foo');
+assert.ok(!shell.error());
+result = shell.ls('foo');
+assert.ok(!shell.error());
+assert.equal(result.stdout, '');
+shell.rm('-r', 'foo');
+assert.ok(!shell.error());
+
 // Check stderr field
 assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
 result = shell.ls('resources/ls/file1', '/asdfasdf');
