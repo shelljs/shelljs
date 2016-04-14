@@ -1,5 +1,6 @@
 test/
 tmp/
+.github/
 .documentup.json
 .gitignore
 .jshintrc
@@ -8,3 +9,4 @@ tmp/
 .gitattributes
 appveyor.yml
 RELEASE.md
+CONTRIBUTING.md
