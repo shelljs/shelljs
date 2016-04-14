@@ -91,7 +91,8 @@ var ShellString = function (stdout, stderr, code) {
   var that;
   if (stdout instanceof Array) {
     that = stdout;
-    that.stdout = stdout.join('\n')+'\n';
+    that.stdout = stdout.join('\n');
+    if (stdout.length > 0) that.stdout += '\n';
   } else {
     that = new String(stdout);
     that.stdout = stdout;
