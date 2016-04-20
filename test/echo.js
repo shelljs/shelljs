@@ -22,17 +22,26 @@ var file = 'tmp/tempscript'+Math.random()+'.js',
     script = 'require(\'../../global.js\'); echo("-asdf", "111");'; // test '-' bug (see issue #20)
 shell.ShellString(script).to(file);
 child.exec(JSON.stringify(process.execPath)+' '+file, function(err, stdout) {
-  assert.ok(stdout === '-asdf 111\n' || stdout === '-asdf 111\nundefined\n'); // 'undefined' for v0.4
+  assert.equal(stdout, '-asdf 111\n');
 
-  // simple test with silent(true)
-  shell.mkdir('-p', 'tmp');
-  var file = 'tmp/tempscript'+Math.random()+'.js',
-      script = 'require(\'../../global.js\'); config.silent=true; echo(555);';
+  // using null as an explicit argument doesn't crash the function
+  file = 'tmp/tempscript'+Math.random()+'.js';
+  script = 'require(\'../../global.js\'); echo(null);';
   shell.ShellString(script).to(file);
-  child.exec(JSON.stringify(process.execPath)+' '+file, function(err, stdout) {
-    assert.ok(stdout === '555\n' || stdout === '555\nundefined\n'); // 'undefined' for v0.4
+  child.exec(JSON.stringify(process.execPath)+' '+file, function(err, stdout, stderr) {
+    assert.equal(stdout, 'null\n');
+    assert.equal(stderr, '');
 
-    theEnd();
+    // simple test with silent(true)
+    shell.mkdir('-p', 'tmp');
+    var file = 'tmp/tempscript'+Math.random()+'.js',
+        script = 'require(\'../../global.js\'); config.silent=true; echo(555);';
+    shell.ShellString(script).to(file);
+    child.exec(JSON.stringify(process.execPath)+' '+file, function(err, stdout) {
+      assert.equal(stdout, '555\n');
+
+      theEnd();
+    });
   });
 });
 
