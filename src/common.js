@@ -268,7 +268,7 @@ function wrap(cmd, fn, options) {
       if (options && options.notUnix) {
         retValue = fn.apply(this, args);
       } else {
-        if (typeof args[0] === 'object' && args[0].constructor.name === 'Object') {
+        if (args[0] instanceof Object && args[0].constructor.name === 'Object') {
           args = args; // object count as options
         } else if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-') {
           args.unshift(''); // only add dummy option if '-option' not already present
@@ -284,7 +284,7 @@ function wrap(cmd, fn, options) {
         }, []);
         // Convert ShellStrings to regular strings
         args = args.map(function(arg) {
-          if (arg.constructor.name === 'String') {
+          if (arg instanceof Object && arg.constructor.name === 'String') {
             return arg.toString();
           } else
             return arg;
