@@ -23,6 +23,6 @@ var _pwd = shell.pwd();
 assert.equal(_pwd.code, 0);
 assert.ok(!_pwd.stderr);
 assert.equal(shell.error(), null);
-assert.equal(path.basename(_pwd), 'tmp');
+assert.equal(path.basename(_pwd.toString()), 'tmp');
 
 shell.exit(123);
