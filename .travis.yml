@@ -1,14 +1,18 @@
 language: c++
 sudo: false
 env:
-  - NODE_VERSION="0.10"
-  - NODE_VERSION="0.11"
-  - NODE_VERSION="0.12"
-  - NODE_VERSION="iojs-v1"
-  - NODE_VERSION="iojs-v2"
-  - NODE_VERSION="iojs-v3"
-  - NODE_VERSION="4"
-  - NODE_VERSION="5"
+  global:
+    - secure: B0Kq1xen0S4ot2UwDN1g33TD9JyfwunrEpdihrZurEcPQyBBprl/BC/iNqdnd4oSzP27Q1CxHkSyWMl24DpS3G8gBLbeqI+O5TqpkbhazZ1hLThA5vU/MNXq4XUpmdfKLtotA093teD5D4PKltmcYxcfry62B3AHeHeFUJ5egRY=
+    - secure: X+JLi7O6F9Lzgp5aCo9YKzvulIZGw6fmQDVUQ/7Zklc4ZAi0zoOQgtEYuMFnwAMdSmPwjeIjE86NmNYHQp1E6QUArF2m32YDl8IiFzzxjRR7B1kvdz9le3uteghNRDR8Wy0E43e5hm8yEM4obeP+1st6Dzl83YWeb4o18XMUa70=
+  matrix:
+    - NODE_VERSION="0.10"
+    - NODE_VERSION="0.11"
+    - NODE_VERSION="0.12"
+    - NODE_VERSION="iojs-v1"
+    - NODE_VERSION="iojs-v2"
+    - NODE_VERSION="iojs-v3"
+    - NODE_VERSION="4"
+    - NODE_VERSION="5"
 
 matrix:
   allow_failures:
@@ -32,6 +36,24 @@ script:
   # make sure when the docs are generated nothing changes (a.k.a. the docs have already been generated)
   - node scripts/generate-docs.js
   - git diff --quiet # make sure no files have changed
+
+# Re-run benchmarks
+after_success:
+  - |
+      if [ "$TRAVIS_BRANCH" = "master" ]; then
+        curl -Lo travis_after_all.py https://git.io/travis_after_all
+        python travis_after_all.py
+        export $(cat .to_export_back) &> /dev/null
+        if [ "$BUILD_LEADER" = "YES" ]; then
+          if [ "$BUILD_AGGREGATE_STATUS" = "others_succeeded" ]; then
+            echo "All jobs succeeded! Re-running benchmarks"
+            chmod +x travis_build_children.sh
+            ./travis_build_children.sh
+          else
+            echo "Some jobs failed, so won't run benchmarks"
+          fi
+        fi
+      fi
 
 # Gitter
 notifications:
