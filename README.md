@@ -9,7 +9,7 @@ Node.js API. You can use it to eliminate your shell script's dependency on Unix 
 its familiar and powerful commands. You can also install it globally so you can run it from outside
 Node projects - say goodbye to those gnarly Bash scripts!
 
-ShellJS supports node `v0.11`, `v0.12`, `v4`, `v5`, and all releases of iojs.
+ShellJS supports node `v0.11`, `v0.12`, `v4`, `v5`, `v6`, and all releases of iojs.
 
 The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battled-tested in projects like:
 

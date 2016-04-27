@@ -9,6 +9,7 @@ env:
   - NODE_VERSION="iojs-v3"
   - NODE_VERSION="4"
   - NODE_VERSION="5"
+  - NODE_VERSION="6"
 
 matrix:
   allow_failures:
