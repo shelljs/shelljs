@@ -70,7 +70,10 @@ function execSync(cmd, opts, pipe) {
         "  , fs = require('fs');",
         "var childProcess = child.exec("+JSON.stringify(cmd)+", "+optString+", function(err) {",
         "  fs.writeFileSync("+JSON.stringify(codeFile)+", err ? err.code.toString() : '0');",
-        " if("+JSON.stringify(!opts.silent)+"){  process.stdin.end();}",
+        "  if("+JSON.stringify(!opts.silent)+"){",
+        "    if(process.platform === 'win32') {process.exit();}",
+        "    else{process.stdin.end();}",
+        "  }",
         "});",
         "var stdoutStream = fs.createWriteStream("+JSON.stringify(stdoutFile)+");",
         "var stderrStream = fs.createWriteStream("+JSON.stringify(stderrFile)+");",
@@ -116,9 +119,12 @@ function execSync(cmd, opts, pipe) {
         "  , fs = require('fs');",
         "var childProcess = child.exec("+JSON.stringify(cmd)+", "+optString+", function(err) {",
         "  fs.writeFileSync("+JSON.stringify(codeFile)+", err ? err.code.toString() : '0');",
-        "  process.stdin.end();",
+        "  if("+JSON.stringify(!opts.silent)+"){",
+        "    if(process.platform === 'win32') {process.exit();}",
+        "    else{process.stdin.end();}",
+        "  }",
         "});",
-        "process.stdin.pipe(childProcess.stdin)"
+        "if("+JSON.stringify(!opts.silent)+"){  process.stdin.pipe(childProcess.stdin)}",
       ].join('\n') +
       (pipe ? "\nchildProcess.stdin.end("+JSON.stringify(pipe)+");\n" : '\n');
 
