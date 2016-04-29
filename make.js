@@ -1,5 +1,8 @@
 require('./global');
 
+console.error('WARNING: shelljs/make is deprecated as of ShellJS v0.8.');
+console.error('Please migrate your code to use an alternate task runner.');
+
 global.config.fatal = true;
 global.target = {};
 
