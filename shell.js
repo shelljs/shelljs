@@ -18,6 +18,21 @@ var common = require('./src/common');
 //@ page](https://github.com/shelljs/shelljs/wiki).
 //@
 
+// Boilerplate
+// -----------
+// Copy the code block below here & replace variables with appropiate values
+// ```
+// //@include ./src/fileName
+// var functionName = require('./src/fileName');
+// exports.nameOfCommand = common.wrap(nameOfCommand, functionName, {idx: firstIndexToExpand});
+// ```
+//
+// The //@include includes the docs for that command
+//
+// firstIndexToExpand should usually be 1 (so, put {idx: 1})
+// Increase this value if the command takes arguments that shouldn't be expanded
+// with wildcards, such as with the regexes for sed & grep
+
 //@include ./src/cd
 var _cd = require('./src/cd');
 exports.cd = common.wrap('cd', _cd, {idx: 1});
@@ -72,7 +87,7 @@ exports.tail = common.wrap('tail', _tail, {idx: 1});
 //@include ./src/toEnd
 
 //@include ./src/sed
-var _sed = require('./src/sed');
+var _sed = require('./src/sed'); // don't glob-expand regexes
 exports.sed = common.wrap('sed', _sed, {idx: 3});
 
 //@include ./src/sort
@@ -80,7 +95,7 @@ var _sort = require('./src/sort');
 exports.sort = common.wrap('sort', _sort, {idx: 1});
 
 //@include ./src/grep
-var _grep = require('./src/grep');
+var _grep = require('./src/grep'); // don't glob-expand the regex
 exports.grep = common.wrap('grep', _grep, {idx: 2});
 
 //@include ./src/which

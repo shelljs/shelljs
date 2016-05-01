@@ -7,11 +7,12 @@ echo('Appending docs to README.md');
 cd(__dirname + '/..');
 
 // Extract docs from shell.js
-var docs = grep('//@', 'shell.js');
+var docs = grep('^//@', 'shell.js');
 
+// Now extract docs from the appropriate src/*.js files
 docs = docs.replace(/\/\/\@include (.+)/g, function(match, path) {
   var file = path.match('.js$') ? path : path+'.js';
-  return grep('//@', file);
+  return grep('^//@', file);
 });
 
 // Remove '//@'

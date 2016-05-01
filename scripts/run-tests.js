@@ -21,14 +21,14 @@ var jsfiles = common.expand([pwd() + '/*.js',
                              pwd() + '/src/*.js',
                              pwd() + '/test/*.js'
                             ]).join(' ');
+// Perform linting on all javascript files
 if (exec(JSON.stringify(process.execPath)+' '+pwd()+'/'+JSHINT_BIN+' '+jsfiles).code !== 0) {
   failed = true;
   echo('*** JSHINT FAILED! (return code != 0)');
-  echo();
 } else {
   echo('All JSHint tests passed');
-  echo();
 }
+echo();
 
 //
 // Unit tests
@@ -43,13 +43,13 @@ ls('*.js').forEach(function(file) {
   }
 });
 
+echo();
+
 if (failed) {
-  echo();
   echo('*******************************************************');
   echo('WARNING: Some tests did not pass!');
   echo('*******************************************************');
   exit(1);
 } else {
-  echo();
   echo('All tests passed.');
 }
