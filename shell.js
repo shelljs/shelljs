@@ -87,16 +87,16 @@ exports.tail = common.wrap('tail', _tail, {idx: 1});
 //@include ./src/toEnd
 
 //@include ./src/sed
-var _sed = require('./src/sed'); // don't glob-expand regexes
-exports.sed = common.wrap('sed', _sed, {idx: 3});
+var _sed = require('./src/sed');
+exports.sed = common.wrap('sed', _sed, {idx: 3}); // don't glob-expand regexes
 
 //@include ./src/sort
 var _sort = require('./src/sort');
 exports.sort = common.wrap('sort', _sort, {idx: 1});
 
 //@include ./src/grep
-var _grep = require('./src/grep'); // don't glob-expand the regex
-exports.grep = common.wrap('grep', _grep, {idx: 2});
+var _grep = require('./src/grep');
+exports.grep = common.wrap('grep', _grep, {idx: 2}); // don't glob-expand the regex
 
 //@include ./src/which
 var _which = require('./src/which');

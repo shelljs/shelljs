@@ -270,7 +270,7 @@ function wrap(cmd, fn, options) {
         retValue = fn.apply(this, args);
       } else { // and this branch is for everything else
         if (args[0] instanceof Object && args[0].constructor.name === 'Object') {
-          args = args; // a no-op, allowing the syntax `touch({'-r': file}, ...)`
+          // a no-op, allowing the syntax `touch({'-r': file}, ...)`
         } else if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-') {
           args.unshift(''); // only add dummy option if '-option' not already present
         }
