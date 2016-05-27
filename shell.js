@@ -79,6 +79,10 @@ exports.sed = common.wrap('sed', _sed, {idx: 3});
 var _sort = require('./src/sort');
 exports.sort = common.wrap('sort', _sort, {idx: 1});
 
+//@include ./src/uniq
+var _sort = require('./src/uniq');
+exports.sort = common.wrap('uniq', _uniq, {idx: 1});
+
 //@include ./src/grep
 var _grep = require('./src/grep');
 exports.grep = common.wrap('grep', _grep, {idx: 2});
