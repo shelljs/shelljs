@@ -58,6 +58,18 @@ assert.equal(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1,
 assert.equal(result.indexOf('a_dir') > -1, true);
 assert.equal(result.length, 6);
 
+// simple arg, with a trailing slash
+result = shell.ls('resources/ls/');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result.indexOf('file1') > -1, true);
+assert.equal(result.indexOf('file2') > -1, true);
+assert.equal(result.indexOf('file1.js') > -1, true);
+assert.equal(result.indexOf('file2.js') > -1, true);
+assert.equal(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1, true);
+assert.equal(result.indexOf('a_dir') > -1, true);
+assert.equal(result.length, 6);
+
 // no args, 'all' option
 shell.cd('resources/ls');
 result = shell.ls('-A');
