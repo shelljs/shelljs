@@ -1,6 +1,8 @@
 var common = require('./common');
+var mktemp = require('./mktemp');
 var os = require('os');
 var fs = require('fs');
+var path = require('path');
 
 common.register('tempdir', _tempDir, {
   allowGlobbing: false,
@@ -15,10 +17,8 @@ function writeableDir(dir) {
   if (!fs.statSync(dir).isDirectory())
     return false;
 
-  var testFile = dir+'/'+common.randomFileName();
   try {
-    fs.writeFileSync(testFile, ' ');
-    common.unlinkSync(testFile);
+    mktemp('-u', path.resolve(dir, 'tmp.shelljs.XXXXXXXXXX'));
     return dir;
   } catch (e) {
     return false;

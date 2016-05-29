@@ -229,23 +229,6 @@ function unlinkSync(file) {
 }
 exports.unlinkSync = unlinkSync;
 
-// e.g. 'shelljs_a5f185d0443ca...'
-function randomFileName() {
-  function randomHash(count) {
-    if (count === 1)
-      return parseInt(16*Math.random(), 10).toString(16);
-    else {
-      var hash = '';
-      for (var i=0; i<count; i++)
-        hash += randomHash(1);
-      return hash;
-    }
-  }
-
-  return 'shelljs_'+randomHash(20);
-}
-exports.randomFileName = randomFileName;
-
 // objectAssign(target_obj, source_obj1 [, source_obj2 ...])
 // Ponyfill for Object.assign
 //    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}

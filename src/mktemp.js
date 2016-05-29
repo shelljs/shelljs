@@ -57,7 +57,7 @@ function mktemp(options, templates) {
   templates.shift(); // Get rid of options.
   if (templates.length === 0) {
     // tempdir depends on mktemp, so we lazily load it do allow the cyclicdic dependency to resolve.
-    tempdir = tempdir || require('./tempdir');
+    if (tempdir === undefined) tempdir = require('./tempdir');
     templates.push(path.resolve(tempdir(), DEFAULT_TEMPLATE));
   }
   var ret = [];
