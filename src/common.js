@@ -22,6 +22,7 @@ var config = {
 };
 exports.config = config;
 
+
 var state = {
   error: null,
   errorCode: 0,
@@ -30,7 +31,9 @@ var state = {
 };
 exports.state = state;
 
+// XXX: This needs a new home
 delete process.env.OLDPWD; // initially, there's no previous directory
+
 
 var platform = os.type().match(/^Win/) ? 'win' : 'unix';
 exports.platform = platform;
@@ -86,7 +89,8 @@ exports.error = error;
 //@ ```
 //@
 //@ Turns a regular string into a string-like object similar to what each
-//@ command returns. This has special methods, like `.to()` and `.toEnd()`
+//@ command returns. This has special methods, like `.to()` and `.toEnd()
+// XXX: Is this used by anything other than `wrap()`? Does it need to go on plugin.utils?
 var ShellString = function (stdout, stderr, code) {
   var that;
   if (stdout instanceof Array) {
@@ -112,6 +116,7 @@ exports.ShellString = ShellString;
 
 // Return the home directory in a platform-agnostic way, with consideration for
 // older versions of node
+// XXX: I don't think this should be a part of plugin.utils. Not sure what should happen to it. Maybe just inline it.
 function getUserHome() {
   var result;
   if (os.homedir)
@@ -126,6 +131,7 @@ exports.getUserHome = getUserHome;
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
 // Returns {'reference': 'string-value', 'bob': false} when passed two dictionaries of the form:
 //   parseOptions({'-r': 'string-value'}, {'r':'reference', 'b':'bob'});
+// XXX: Is it sufficient to have this as part of wrap(), or should it be part of plugin.utils? (ie. do plugins need access to it directly?)
 function parseOptions(opt, map) {
   if (!map)
     error('parseOptions() internal error: no map given');
@@ -202,6 +208,7 @@ exports.expand = expand;
 
 // Normalizes _unlinkSync() across platforms to match Unix behavior, i.e.
 // file can be unlinked even if it's read-only, see https://github.com/joyent/node/issues/3006
+// XXX: I'm not really sure why this is here or if it's still needed. I think this probobly isn't going to be a part of plugin.utils.
 function unlinkSync(file) {
   try {
     fs.unlinkSync(file);
@@ -218,6 +225,7 @@ function unlinkSync(file) {
 exports.unlinkSync = unlinkSync;
 
 // e.g. 'shelljs_a5f185d0443ca...'
+// XXX: This isn't going to be a part of plugin.utils, it should be replaced by mktmp
 function randomFileName() {
   function randomHash(count) {
     if (count === 1)
@@ -237,6 +245,7 @@ exports.randomFileName = randomFileName;
 // extend(target_obj, source_obj1 [, source_obj2 ...])
 // Shallow extend, e.g.:
 //    extend({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
+// XXX: This isn't going to be a part of plugin.utils. We should upgrade to Babel, Then we'll use Object.assign (or a ponyfill)
 function extend(target) {
   var sources = [].slice.call(arguments, 1);
   sources.forEach(function(source) {
@@ -248,8 +257,8 @@ function extend(target) {
 }
 exports.extend = extend;
 
-// Common wrapper for all Unix-like commands that performs glob expansion,
-// command-logging, and other nice things
+// Common wrapper for all Unix-like commands
+// XXX: I'm unsure how this is going to integrate with plugins.
 function wrap(cmd, fn, options) {
   return function() {
     var retValue = null;
