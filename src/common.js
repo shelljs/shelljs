@@ -6,9 +6,13 @@ var os = require('os');
 var fs = require('fs');
 var glob = require('glob');
 var shell = require('..');
+var _to = require('./to');
+var _toEnd = require('./toEnd');
 
 var DEFAULT_ERROR_CODE = 1;
 var shellMethods = Object.create(shell);
+
+var shell; // This would otherwise be a cyclicdic depencency, so we lazily load it.
 
 // Module globals
 var config = {
@@ -101,6 +105,13 @@ function ShellString(stdout, stderr, code) {
   }
   that.stderr = stderr;
   that.code = code;
+<<<<<<< e24b6754f2fcc2f3730b4bfe9522a4418204ebf5
+=======
+  that.to    = function() {wrap('to', _to, {globStart: 1}).apply(that.stdout, arguments); return that;};
+  that.toEnd = function() {wrap('toEnd', _toEnd, {globStart: 1}).apply(that.stdout, arguments); return that;};
+  // Lazily load shell
+  shell = shell || require('..');
+>>>>>>> feat(mktemp): add mktemp command
   // A list of all commands that can appear on the right-hand side of a pipe
   // (populated by calls to common.wrap())
   pipeMethods.forEach(function (cmd) {

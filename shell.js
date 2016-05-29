@@ -92,6 +92,11 @@ require('./src/which');
 //@include ./src/echo
 require('./src/echo');
 
+
+//@include ./src/mktemp
+var _mktemp = require('./src/mktemp');
+exports.mktemp = common.wrap('mktemp', _mktemp, {idx: 1});
+
 //@include ./src/dirs
 require('./src/dirs');
 
