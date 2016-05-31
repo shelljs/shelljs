@@ -405,6 +405,22 @@ Return the contents of the files, sorted line-by-line. Sorting multiple
 files mixes their content, just like unix sort does.
 
 
+### uniq([options,] [input, [output]])
+Available options:
+
++ `-i`: Ignore differences in case when comparing
+
+Examples:
+
+```javascript
+uniq('foo.txt');
+uniq('-i', 'foo.txt');
+uniq('-i', 'foo.txt', 'bar.txt');
+```
+
+Filter adjacent matching lines from input
+
+
 ### grep([options,] regex_filter, file [, file ...])
 ### grep([options,] regex_filter, file_array)
 Available options:
