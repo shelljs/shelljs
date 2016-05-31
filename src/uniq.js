@@ -35,15 +35,15 @@ function _uniq(options, input) {
               trimRight().
               split(/\r*\n/);
 
-  var uniqed = [];
-  lines.forEach(function(line){
+  var uniqed = lines.slice(0,1);
+  lines.slice(1).forEach(function(line){
       var cmp = options.ignoreCase ? 
-                  line.toLocaleLowerCase().localeCompare(uniqed[-1].toLocaleLowerCase()) :
-                  line.localeCompare(uniqed[-1]);
+                  line.toLocaleLowerCase().localeCompare(uniqed[uniqed.length-1].toLocaleLowerCase()) :
+                  line.localeCompare(uniqed[uniqed.length-1]);
       if(cmp !== 0)uniqed.push(line)
   });
 
-  return new common.ShellString(uniqed.join('\n'), common.state.error, common.state.errorCode);
+  return new common.ShellString(uniqed.join('\n') + '\n', common.state.error, common.state.errorCode);
 }
 
 module.exports = _uniq;

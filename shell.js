@@ -80,8 +80,8 @@ var _sort = require('./src/sort');
 exports.sort = common.wrap('sort', _sort, {idx: 1});
 
 //@include ./src/uniq
-var _sort = require('./src/uniq');
-exports.sort = common.wrap('uniq', _uniq, {idx: 1});
+var _uniq = require('./src/uniq');
+exports.uniq = common.wrap('uniq', _uniq, {idx: 1});
 
 //@include ./src/grep
 var _grep = require('./src/grep');
