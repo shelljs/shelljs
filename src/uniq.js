@@ -2,7 +2,7 @@ var common = require('./common');
 var fs = require('fs');
 
 //@
-//@ ### uniq([options,] file)
+//@ ### uniq([options,] [input, [output]])
 //@ Available options:
 //@
 //@ + `-i`: Ignore differences in case when comparing
@@ -12,10 +12,11 @@ var fs = require('fs');
 //@ ```javascript
 //@ uniq('foo.txt');
 //@ uniq('-i', 'foo.txt');
+//@ uniq('-i', 'foo.txt', 'bar.txt');
 //@ ```
 //@
 //@ Filter adjacent matching lines from input
-function _uniq(options, input) {
+function _uniq(options, input, output) {
   options = common.parseOptions(options, {
     'i': 'ignoreCase'
   });
@@ -25,13 +26,8 @@ function _uniq(options, input) {
 
   if (!input && !pipe)
     common.error('no input given');
-  if(input && pipe)
-      common.error('too many inputs')
 
-  if (pipe)
-    files.unshift('-');
-
-  var lines = (pipe ? pipe : fs.readFileSync(input, 'utf8')).
+  var lines = (input ? fs.readFileSync(input, 'utf8') : pipe).
               trimRight().
               split(/\r*\n/);
 
@@ -42,8 +38,12 @@ function _uniq(options, input) {
                   line.localeCompare(uniqed[uniqed.length-1]);
       if(cmp !== 0)uniqed.push(line)
   });
-
-  return new common.ShellString(uniqed.join('\n') + '\n', common.state.error, common.state.errorCode);
+  var res = new common.ShellString(uniqed.join('\n') + '\n', common.state.error, common.state.errorCode);
+  if(output){
+      res.to(output);
+  }else{
+      return res;
+  }
 }
 
 module.exports = _uniq;
