@@ -7,6 +7,21 @@ var child = require('child_process');
 
 var DEFAULT_MAXBUFFER_SIZE = 20*1024*1024;
 
+// extend(target_obj, source_obj1 [, source_obj2 ...])
+// Shallow extend, e.g.:
+//    extend({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
+// TODO: replace this with Object.assign
+function extend(target) {
+  var sources = [].slice.call(arguments, 1);
+  sources.forEach(function(source) {
+    for (var key in source)
+      target[key] = source[key];
+  });
+
+  return target;
+}
+
+
 // Hack to run child_process.exec() synchronously (sync avoids callback hell)
 // Uses a custom wait loop that checks for a flag file, created when the child process is done.
 // (Can't do a wait loop that checks for internal Node variables/messages as
@@ -20,7 +35,7 @@ function execSync(cmd, opts, pipe) {
       scriptFile = path.resolve(tempDir+'/'+common.randomFileName()),
       sleepFile = path.resolve(tempDir+'/'+common.randomFileName());
 
-  opts = common.extend({
+  opts = extend({
     silent: common.config.silent,
     cwd: _pwd().toString(),
     env: process.env,
@@ -160,7 +175,7 @@ function execAsync(cmd, opts, pipe, callback) {
   var stdout = '';
   var stderr = '';
 
-  opts = common.extend({
+  opts = extend({
     silent: common.config.silent,
     cwd: _pwd().toString(),
     env: process.env,
@@ -246,7 +261,7 @@ function _exec(command, options, callback) {
     options.async = true;
   }
 
-  options = common.extend({
+  options = extend({
     silent: common.config.silent,
     async: false
   }, options);

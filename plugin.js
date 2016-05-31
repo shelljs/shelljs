@@ -18,8 +18,10 @@ module.exports = function setupShellPlugins($) {
     id: 0,
     name: '',
     fullname: '',
-    func: $,
-    target: null
+    val: $,
+    wrapped: null,
+    target: null,
+    callable: false,
   }];
   setPluginID($, 0);
 
@@ -42,17 +44,29 @@ module.exports = function setupShellPlugins($) {
       return process.env[utils.isWindows ? 'USERPROFILE' : 'HOME'];
     },
 
-    plugin(target, fullname, func) {
+    plugin(target, fullname, val = null, optsMap = {}, opts = {}) {
       if (typeof getPluginID(target) !== 'number') throw new Error('util.plugin target wasn\'t `$` or `$.something`');
-      if (getPluginID(func)) console.log('[shelljs/plugin] Warning: utils.plugin was called twice with the same func.');
-      const id = setPluginID(func, plugins.length);
+      if (val === null) val = {}; // Non-callable commands.
+      if (getPluginID(val)) console.log('[shelljs/plugin] Warning: utils.plugin was called twice with the same func.');
+      const id = setPluginID(val, plugins.length);
       target = plugins[getPluginID(target)];
       const name = fullname.split('.').pop();
+
+      let wrapped = null;
+      if (typeof val === 'function') {
+        // For non-unix commands, you can omit the optsMap
+        if (optsMap.unix === false && arguments.length === 4) {
+          opts = optsMap;
+          optsMap = false;
+        }
+        wrapped = wrap(state, utils, fullname, val, optsMap, opts);
+      }
+
       const plugin = {
-        id, name, fullname, func, target
+        id, name, fullname, val, target, wrapped, callable: typeof val === 'function',
       };
-      Object.defineProperty(target.func, name, {
-        value: func,
+      Object.defineProperty(target.val, name, {
+        value: typeof val === 'function' ? wrapped: val,
         enumerable: true
       });
       plugins[id] = plugin;
@@ -96,7 +110,7 @@ module.exports = function setupShellPlugins($) {
       if (msg.length) utils.log(log_entry);
       if (!continue_) throw {
         msg: 'earlyExit',
-        retValue: (new ShellString('', state.error, state.errorCode))
+          retValue: (new ShellString('', state.error, state.errorCode))
       };
     },
       // Returns {'alice': true, 'bob': false} when passed a string and dictionary as follows:
@@ -122,7 +136,7 @@ module.exports = function setupShellPlugins($) {
           // e.g. chars = ['R', 'f', 'u']
           var chars = opt.slice(1).split('');
 
-          chars.forEach(function (c) {
+          chars.forEach(function(c) {
             if (c in map) {
               optionName = map[c];
               if (optionName[0] === '!') {
@@ -142,7 +156,7 @@ module.exports = function setupShellPlugins($) {
               optionName = map[c];
               options[optionName] = opt[key];
             } else {
-             utils.error('Option not recognized: ' + c);
+              utils.error('Option not recognized: ' + c);
             }
           }
         } else {
