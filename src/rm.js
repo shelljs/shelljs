@@ -24,7 +24,7 @@ function rmdirSyncRecursive(dir, force) {
     } else { // Assume it's a file - perhaps a try/catch belongs here?
       if (force || isWriteable(file)) {
         try {
-          common.unlinkSync(file);
+          unlinkSync(file);
         } catch (e) {
           common.error('could not remove file (code '+e.code+'): ' + file, true);
         }
@@ -62,6 +62,22 @@ function rmdirSyncRecursive(dir, force) {
 
   return result;
 } // rmdirSyncRecursive
+
+// Normalizes _unlinkSync() across platforms to match Unix behavior, i.e.
+// file can be unlinked even if it's read-only, see https://github.com/joyent/node/issues/3006
+function unlinkSync(file) {
+  try {
+    fs.unlinkSync(file);
+  } catch(e) {
+    // Try to override file permission
+    if (e.code === 'EPERM') {
+      fs.chmodSync(file, '0666');
+      fs.unlinkSync(file);
+    } else {
+      throw e;
+    }
+  }
+}
 
 // Hack to determine if file has write permissions for current user
 // Avoids having to check user, group, etc, but it's probably slow
@@ -122,12 +138,12 @@ function _rm(options, files) {
 
       // Do not check for file writing permissions
       if (options.force) {
-        common.unlinkSync(file);
+        unlinkSync(file);
         return;
       }
 
       if (isWriteable(file))
-        common.unlinkSync(file);
+        unlinkSync(file);
       else
         common.error('permission denied: '+file, true);
 

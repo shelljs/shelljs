@@ -53,10 +53,10 @@ function execSync(cmd, opts, pipe) {
     previousStreamContent = streamContent;
   }
 
-  if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
-  if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
-  if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
-  if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
+  if (fs.existsSync(scriptFile)) rm('-rf', scriptFile);
+  if (fs.existsSync(stdoutFile)) rm('-rf', stdoutFile);
+  if (fs.existsSync(stderrFile)) rm('-rf', stderrFile);
+  if (fs.existsSync(codeFile)) rm('-rf', codeFile);
 
   var execCommand = JSON.stringify(process.execPath) + ' ' + JSON.stringify(scriptFile);
   var script;
@@ -100,10 +100,10 @@ function execSync(cmd, opts, pipe) {
       child.execSync(execCommand, opts);
     } catch (e) {
       // Clean up immediately if we have an exception
-      try { common.unlinkSync(scriptFile); } catch(e) {}
-      try { common.unlinkSync(stdoutFile); } catch(e) {}
-      try { common.unlinkSync(stderrFile); } catch(e) {}
-      try { common.unlinkSync(codeFile); } catch(e) {}
+      try { rm('-rf', scriptFile); } catch(e) {}
+      try { rm('-rf', stdoutFile); } catch(e) {}
+      try { rm('-rf', stderrFile); } catch(e) {}
+      try { rm('-rf', codeFile); } catch(e) {}
       throw e;
     }
   } else {
@@ -129,7 +129,7 @@ function execSync(cmd, opts, pipe) {
     while (!fs.existsSync(codeFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
     while (!fs.existsSync(stdoutFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
     while (!fs.existsSync(stderrFile)) { updateStream(stderrFile); fs.writeFileSync(sleepFile, 'a'); }
-    try { common.unlinkSync(sleepFile); } catch(e) {}
+    try { rm('-rf', sleepFile); } catch(e) {}
   }
 
   // At this point codeFile exists, but it's not necessarily flushed yet.
@@ -143,10 +143,10 @@ function execSync(cmd, opts, pipe) {
   var stderr = fs.readFileSync(stderrFile, 'utf8');
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
-  try { common.unlinkSync(scriptFile); } catch(e) {}
-  try { common.unlinkSync(stdoutFile); } catch(e) {}
-  try { common.unlinkSync(stderrFile); } catch(e) {}
-  try { common.unlinkSync(codeFile); } catch(e) {}
+  try { rm('-rf', scriptFile); } catch(e) {}
+  try { rm('-rf', stdoutFile); } catch(e) {}
+  try { rm('-rf', stderrFile); } catch(e) {}
+  try { rm('-rf', codeFile); } catch(e) {}
 
   if (code !== 0)  {
     common.error('', code, true);

@@ -13,7 +13,7 @@ function writeableDir(dir) {
   var testFile = dir+'/'+common.randomFileName();
   try {
     fs.writeFileSync(testFile, ' ');
-    common.unlinkSync(testFile);
+    rm('-rf', testFile);
     return dir;
   } catch (e) {
     return false;
