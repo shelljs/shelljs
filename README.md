@@ -579,6 +579,10 @@ mode, this returns a ShellString (compatible with ShellJS v0.6.x, which returns 
 of the form `{ code:..., stdout:... , stderr:... }`). Otherwise, this returns the child process
 object, and the `callback` gets the arguments `(code, stdout, stderr)`.
 
+Not seeing the behavior you want? `exec()` runs everything through `sh`
+by default (or `cmd.exe` on Windows), which differs from `bash`. If you
+need bash-specific behavior, try out the `{shell: 'path/to/bash'}` option.
+
 **Note:** For long-lived processes, it's best to run `exec()` asynchronously as
 the current synchronous implementation uses a lot of CPU. This should be getting
 fixed soon.

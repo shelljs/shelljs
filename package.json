@@ -24,7 +24,8 @@
   "homepage": "http://github.com/shelljs/shelljs",
   "main": "./shell.js",
   "scripts": {
-    "test": "node scripts/run-tests"
+    "test": "node scripts/run-tests",
+    "changelog": "bash scripts/changelog.sh"
   },
   "bin": {
     "shjs": "./bin/shjs"
