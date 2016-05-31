@@ -1,4 +1,5 @@
 var shell = require('..');
+var plugin = require('./plugin');
 
 //@
 //@ ### ShellString(str)
@@ -21,12 +22,18 @@ var ShellString = function (stdout, stderr, code) {
     that = new String(stdout);
     that.stdout = stdout;
   }
+  if (!stderr) {
+    stderr = plugin.state.stderr;
+    plugin.state.stderr = '';
+  }
+  if (!code) {
+    code = plugin.state.code;
+    plugin.state.code = 0;
+  }
   that.stderr = stderr;
   that.code = code;
   that.to    = function() {wrap('to', _to, {idx: 1}).apply(that.stdout, arguments); return that;};
   that.toEnd = function() {wrap('toEnd', _toEnd, {idx: 1}).apply(that.stdout, arguments); return that;};
-  ['cat', 'head', 'sed', 'sort', 'tail', 'grep', 'exec'].forEach(function (cmd) {
-    that[cmd] = function() {return shell[cmd].apply(that.stdout, arguments);};
-  });
+  plugin.pipeCommands.forEach(({ name, func }) => that[name] = (...args) => func.apply(that.stdout, args));
   return that;
 };
