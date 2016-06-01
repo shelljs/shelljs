@@ -27,8 +27,10 @@ assert.ok(shell.error());
 // Valids
 //
 
+var result;
+
 shell.ShellString('hello world').to('tmp/to1').to('tmp/to2');
-var result = shell.cat('tmp/to1');
+result = shell.cat('tmp/to1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'hello world');
 result = shell.cat('tmp/to2');
@@ -37,7 +39,7 @@ assert.equal(result, 'hello world');
 
 // With a glob
 shell.ShellString('goodbye').to('tmp/t*1');
-var result = shell.cat('tmp/to1');
+result = shell.cat('tmp/to1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'goodbye');
 
