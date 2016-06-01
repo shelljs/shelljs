@@ -36,7 +36,9 @@ function _uniq(options, input, output) {
       var cmp = options.ignoreCase ? 
                   line.toLocaleLowerCase().localeCompare(uniqed[uniqed.length-1].toLocaleLowerCase()) :
                   line.localeCompare(uniqed[uniqed.length-1]);
-      if(cmp !== 0)uniqed.push(line)
+      if(cmp !== 0){
+          uniqed.push(line);
+      }
   });
   var res = new common.ShellString(uniqed.join('\n') + '\n', common.state.error, common.state.errorCode);
   if(output){
