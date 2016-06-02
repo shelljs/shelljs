@@ -13,7 +13,7 @@ function wrap(state, utils, fullname, func, optsMap, {
         try {
           if (config.verbose) console.error(cmd, ...args);
           if (unix) {
-            if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-') args.unshift(''); // add dummy option if needed
+            if (parseOptions && args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-') args.unshift(''); // add dummy option if needed
 
             // This is a simple version of flatten
             args = args.reduce((accum, cur) => Array.isArray(cur) ? accum.concat(cur) : [...accum, cur], []);
