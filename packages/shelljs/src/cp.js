@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var common = require('./common');
 var os = require('os');
+var rm = require('./rm');
 
 // Buffered file copy, synchronous
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
@@ -13,7 +14,7 @@ function copyFileSync(srcFile, destFile, options) {
   if (fs.lstatSync(srcFile).isSymbolicLink() && !options.followsymlink) {
     try {
       fs.lstatSync(destFile);
-      common.unlinkSync(destFile); // re-link it
+      rm('-rf', destFile);
     } catch (e) {
       // it doesn't exist, so no work needs to be done
     }
@@ -108,7 +109,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       symlinkFull = fs.readlinkSync(srcFile);
       try {
         fs.lstatSync(destFile);
-        common.unlinkSync(destFile); // re-link it
+        rm('-rf', destFile);
       } catch (e) {
         // it doesn't exist, so no work needs to be done
       }

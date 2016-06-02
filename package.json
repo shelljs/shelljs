@@ -1,47 +1,12 @@
 {
-  "name": "shelljs",
-  "version": "0.7.0",
-  "description": "Portable Unix shell commands for Node.js",
-  "keywords": [
-    "shelljs",
-    "bash",
-    "unix",
-    "shell",
-    "makefile",
-    "make",
-    "jake",
-    "synchronous"
-  ],
-  "contributors": [
-    "Ari Porad <ari@ariporad.com> (http://ariporad.com/)",
-    "Nate Fischer <ntfschr@gmail.com> (https://github.com/nfischer)"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/shelljs/shelljs.git"
-  },
-  "license": "BSD-3-Clause",
-  "homepage": "http://github.com/shelljs/shelljs",
-  "main": "./shell.js",
-  "scripts": {
-    "test": "node scripts/run-tests",
-    "changelog": "bash scripts/changelog.sh"
-  },
-  "bin": {
-    "shjs": "./bin/shjs"
-  },
-  "dependencies": {
-    "glob": "^7.0.0",
-    "interpret": "^1.0.0",
-    "rechoir": "^0.6.2"
-  },
   "devDependencies": {
-    "coffee-script": "^1.10.0",
-    "jshint": "~2.1.11"
+    "cz-lerna-changelog": "^0.2.0",
+    "lerna": "^2.0.0-beta.15"
   },
-  "optionalDependencies": {},
-  "engines": {
-    "node": ">=0.11.0",
-    "iojs": "*"
+  "private": true,
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-lerna-changelog"
+    }
   }
 }

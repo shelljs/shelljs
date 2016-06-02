@@ -7,6 +7,21 @@ var child = require('child_process');
 
 var DEFAULT_MAXBUFFER_SIZE = 20*1024*1024;
 
+// extend(target_obj, source_obj1 [, source_obj2 ...])
+// Shallow extend, e.g.:
+//    extend({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
+// TODO: replace this with Object.assign
+function extend(target) {
+  var sources = [].slice.call(arguments, 1);
+  sources.forEach(function(source) {
+    for (var key in source)
+      target[key] = source[key];
+  });
+
+  return target;
+}
+
+
 // Hack to run child_process.exec() synchronously (sync avoids callback hell)
 // Uses a custom wait loop that checks for a flag file, created when the child process is done.
 // (Can't do a wait loop that checks for internal Node variables/messages as
@@ -20,7 +35,7 @@ function execSync(cmd, opts, pipe) {
       scriptFile = path.resolve(tempDir+'/'+common.randomFileName()),
       sleepFile = path.resolve(tempDir+'/'+common.randomFileName());
 
-  opts = common.extend({
+  opts = extend({
     silent: common.config.silent,
     cwd: _pwd().toString(),
     env: process.env,
@@ -53,10 +68,10 @@ function execSync(cmd, opts, pipe) {
     previousStreamContent = streamContent;
   }
 
-  if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
-  if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
-  if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
-  if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
+  if (fs.existsSync(scriptFile)) rm('-rf', scriptFile);
+  if (fs.existsSync(stdoutFile)) rm('-rf', stdoutFile);
+  if (fs.existsSync(stderrFile)) rm('-rf', stderrFile);
+  if (fs.existsSync(codeFile)) rm('-rf', codeFile);
 
   var execCommand = JSON.stringify(process.execPath) + ' ' + JSON.stringify(scriptFile);
   var script;
@@ -100,10 +115,10 @@ function execSync(cmd, opts, pipe) {
       child.execSync(execCommand, opts);
     } catch (e) {
       // Clean up immediately if we have an exception
-      try { common.unlinkSync(scriptFile); } catch(e) {}
-      try { common.unlinkSync(stdoutFile); } catch(e) {}
-      try { common.unlinkSync(stderrFile); } catch(e) {}
-      try { common.unlinkSync(codeFile); } catch(e) {}
+      try { rm('-rf', scriptFile); } catch(e) {}
+      try { rm('-rf', stdoutFile); } catch(e) {}
+      try { rm('-rf', stderrFile); } catch(e) {}
+      try { rm('-rf', codeFile); } catch(e) {}
       throw e;
     }
   } else {
@@ -129,7 +144,7 @@ function execSync(cmd, opts, pipe) {
     while (!fs.existsSync(codeFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
     while (!fs.existsSync(stdoutFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
     while (!fs.existsSync(stderrFile)) { updateStream(stderrFile); fs.writeFileSync(sleepFile, 'a'); }
-    try { common.unlinkSync(sleepFile); } catch(e) {}
+    try { rm('-rf', sleepFile); } catch(e) {}
   }
 
   // At this point codeFile exists, but it's not necessarily flushed yet.
@@ -143,10 +158,10 @@ function execSync(cmd, opts, pipe) {
   var stderr = fs.readFileSync(stderrFile, 'utf8');
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
-  try { common.unlinkSync(scriptFile); } catch(e) {}
-  try { common.unlinkSync(stdoutFile); } catch(e) {}
-  try { common.unlinkSync(stderrFile); } catch(e) {}
-  try { common.unlinkSync(codeFile); } catch(e) {}
+  try { rm('-rf', scriptFile); } catch(e) {}
+  try { rm('-rf', stdoutFile); } catch(e) {}
+  try { rm('-rf', stderrFile); } catch(e) {}
+  try { rm('-rf', codeFile); } catch(e) {}
 
   if (code !== 0)  {
     common.error('', code, true);
@@ -160,7 +175,7 @@ function execAsync(cmd, opts, pipe, callback) {
   var stdout = '';
   var stderr = '';
 
-  opts = common.extend({
+  opts = extend({
     silent: common.config.silent,
     cwd: _pwd().toString(),
     env: process.env,
@@ -246,7 +261,7 @@ function _exec(command, options, callback) {
     options.async = true;
   }
 
-  options = common.extend({
+  options = extend({
     silent: common.config.silent,
     async: false
   }, options);

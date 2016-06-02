@@ -1,0 +1,63 @@
+{
+  "name": "shelljs",
+  "version": "1.0.0-000dev",
+  "description": "Portable Unix shell commands for Node.js",
+  "keywords": [
+    "shelljs",
+    "bash",
+    "unix",
+    "shell",
+    "makefile",
+    "make",
+    "jake",
+    "synchronous"
+  ],
+  "contributors": [
+    "Ari Porad <ari@ariporad.com> (http://ariporad.com/)",
+    "Nate Fischer <ntfschr@gmail.com> (https://github.com/nfischer)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/shelljs/shelljs.git"
+  },
+  "license": "BSD-3-Clause",
+  "homepage": "http://github.com/shelljs/shelljs",
+  "main": "./shell.js",
+  "scripts": {
+    "prebuild": "rimraf lib",
+    "build": "babel src -d lib",
+    "build:watch": "npm run build -- -w",
+    "dev": "concurrently -rk 'npm run build:watch' 'npm run lint:watch'",
+    "lint": "eslint .",
+    "lint:fix": "npm run lint --silent -- --fix",
+    "lint:watch": "watch 'npm run lint --silent' src test",
+    "prepublish": "npm run build",
+    "posttest": "npm run lint --silent",
+    "test": "nyc --reporter=text --reporter=lcov mocha",
+    "test:watch": "concurrently -rk 'npm run test --silent -- -w' 'npm run lint:watch'",
+    "changelog": "bash scripts/changelog.sh"
+  },
+  "bin": {
+    "shjs": "./bin/shjs"
+  },
+  "dependencies": {
+    "glob": "^7.0.0",
+    "interpret": "^1.0.0",
+    "rechoir": "^0.6.2"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.10.0",
+    "jshint": "~2.1.11"
+  },
+  "optionalDependencies": {},
+  "engines": {
+    "node": ">=0.11.0",
+    "iojs": "*"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-lerna-changelog"
+    }
+  }
+}
+

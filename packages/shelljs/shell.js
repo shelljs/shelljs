@@ -8,6 +8,18 @@
 
 var common = require('./src/common');
 
+// Initalize some stuff
+delete process.env.OLDPWD; // initially, there's no previous directory
+
+exports.config = {
+  silent: false,
+  fatal: false,
+  verbose: false,
+  noglob: false,
+  globOptions: false,
+  maxdepth: false,
+};
+
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
@@ -157,8 +169,9 @@ exports.tempdir = common.wrap('tempdir', _tempDir);
 var _error = require('./src/error');
 exports.error = _error;
 
-//@include ./src/common
-exports.ShellString = common.ShellString;
+//@include ./src/ShellString
+var _ShellString = require('./src/ShellString');
+exports.ShellString = _ShellString;
 
 //@
 //@ ### Pipes
