@@ -50,16 +50,10 @@
     "shelljs": "1",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
-    "watch": "^0.18.0",
-    "cz-lerna-changelog": "^0.2.0"
+    "watch": "^0.18.0"
   },
   "peerDependencies": {
     "shelljs": "1"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-lerna-changelog"
-    }
   }
 }
 
