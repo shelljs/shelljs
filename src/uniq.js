@@ -1,24 +1,37 @@
 var common = require('./common');
 var fs = require('fs');
 
+//add c spaces to the left of str
+function lpad(c, str){
+    var res = "" + str;
+    if(res.length < c){
+        res = Array((c-res.length)+1).join(" ") + res;
+    }
+    return res;
+}
+
 //@
 //@ ### uniq([options,] [input, [output]])
 //@ Available options:
 //@
 //@ + `-i`: Ignore differences in case when comparing
+//@ + `-c`: Prefix lines by the number of occurrences
+//@ + `-d`: Only print duplicate lines, one for each group
 //@
 //@ Examples:
 //@
 //@ ```javascript
 //@ uniq('foo.txt');
 //@ uniq('-i', 'foo.txt');
-//@ uniq('-i', 'foo.txt', 'bar.txt');
+//@ uniq('-cd', 'foo.txt', 'bar.txt');
 //@ ```
 //@
 //@ Filter adjacent matching lines from input
 function _uniq(options, input, output) {
   options = common.parseOptions(options, {
-    'i': 'ignoreCase'
+    'i': 'ignoreCase',
+    'c': 'count',
+    'd': 'duplicates'
   });
 
   // Check if this is coming from a pipe
@@ -31,16 +44,26 @@ function _uniq(options, input, output) {
               trimRight().
               split(/\r*\n/);
 
-  var uniqed = lines.slice(0,1);
+  //Perform a run-length encoding of the lines
+  var uniqed = [{count: 1, ln: lines[0]}];
   lines.slice(1).forEach(function(line){
       var cmp = options.ignoreCase ? 
-                  line.toLocaleLowerCase().localeCompare(uniqed[uniqed.length-1].toLocaleLowerCase()) :
-                  line.localeCompare(uniqed[uniqed.length-1]);
+                  line.toLocaleLowerCase().localeCompare(uniqed[uniqed.length-1].ln.toLocaleLowerCase()) :
+                  line.localeCompare(uniqed[uniqed.length-1].ln);
       if(cmp !== 0){
-          uniqed.push(line);
+          uniqed.push({count: 1, ln: line});
+      }else{
+          uniqed[uniqed.length - 1].count++;
       }
   });
-  var res = new common.ShellString(uniqed.join('\n') + '\n', common.state.error, common.state.errorCode);
+  uniqed = uniqed.
+             //Do we want only duplicated objects?
+             filter(function(obj){return options.duplicates ? obj.count > 1 : true;}).
+             //Are we tracking the counts of each line?
+             map(function(obj){return (options.count ? (lpad(7,obj.count) + " ") : "") + obj.ln;}).
+             join('\n') + '\n';
+
+  var res = new common.ShellString(uniqed, common.state.error, common.state.errorCode);
   if(output){
       res.to(output);
   }else{

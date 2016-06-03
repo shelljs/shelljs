@@ -44,4 +44,16 @@ assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result + '', shell.cat('resources/uniq/file1u').trimRight() + '\n');
 
+//uniq -c file1
+result = shell.uniq('-c', 'resources/uniq/file1');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result + '', shell.cat('resources/uniq/file1c').trimRight() + '\n');
+
+//uniq -d file1
+result = shell.uniq('-d', 'resources/uniq/file1');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result + '', shell.cat('resources/uniq/file1d').trimRight() + '\n');
+
 shell.exit(123);
