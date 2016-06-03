@@ -409,13 +409,15 @@ files mixes their content, just like unix sort does.
 Available options:
 
 + `-i`: Ignore differences in case when comparing
++ `-c`: Prefix lines by the number of occurrences
++ `-d`: Only print duplicate lines, one for each group
 
 Examples:
 
 ```javascript
 uniq('foo.txt');
 uniq('-i', 'foo.txt');
-uniq('-i', 'foo.txt', 'bar.txt');
+uniq('-cd', 'foo.txt', 'bar.txt');
 ```
 
 Filter adjacent matching lines from input
