@@ -25,6 +25,7 @@
   "main": "./shell.js",
   "scripts": {
     "test": "node scripts/run-tests",
+    "gendocs": "node scripts/generate-docs",
     "changelog": "bash scripts/changelog.sh"
   },
   "bin": {
