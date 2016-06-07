@@ -3,5 +3,10 @@
   "sub": true,
   "undef": true,
   "unused": true,
+  "futurehostile": true,
+  "latedef": "nofunc",
+  "nocomma": true,
+  "nonbsp": true,
+  "notypeof": true,
   "node": true
 }

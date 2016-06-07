@@ -7,6 +7,9 @@ shell.config.silent = true;
 shell.rm('-rf', 'tmp');
 shell.mkdir('tmp');
 
+var oldStat;
+var testFile;
+
 // should handle args
 var result = shell.touch();
 assert.ok(shell.error());
@@ -69,8 +72,8 @@ assert.equal(fs.statSync(testFile).mtime.getTime(), fs.statSync(testFile2).mtime
 assert.equal(fs.statSync(testFile).atime.getTime(), fs.statSync(testFile2).atime.getTime());
 
 // sets mtime
-var testFile = tmpFile();
-var oldStat = resetUtimes(testFile);
+testFile = tmpFile();
+oldStat = resetUtimes(testFile);
 result = shell.touch(testFile);
 assert.equal(result.code, 0);
 assert(oldStat.mtime < fs.statSync(testFile).mtime);
@@ -78,15 +81,15 @@ assert(oldStat.mtime < fs.statSync(testFile).mtime);
 assert(oldStat.atime < fs.statSync(testFile).atime);
 
 // does not sets mtime if told not to
-var testFile = tmpFile();
-var oldStat = resetUtimes(testFile);
+testFile = tmpFile();
+oldStat = resetUtimes(testFile);
 result = shell.touch('-a', testFile);
 assert.equal(result.code, 0);
 assert.equal(oldStat.mtime.getTime(), fs.statSync(testFile).mtime.getTime());
 
 // does not sets atime if told not to
-var testFile = tmpFile();
-var oldStat = resetUtimes(testFile);
+testFile = tmpFile();
+oldStat = resetUtimes(testFile);
 result = shell.touch('-m', testFile);
 assert.equal(result.code, 0);
 assert.equal(oldStat.atime.getTime(), fs.statSync(testFile).atime.getTime());

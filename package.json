@@ -24,8 +24,10 @@
   "homepage": "http://github.com/shelljs/shelljs",
   "main": "./shell.js",
   "scripts": {
+    "posttest": "npm run lint",
     "test": "node scripts/run-tests",
     "gendocs": "node scripts/generate-docs",
+    "lint": "jshint .",
     "changelog": "bash scripts/changelog.sh"
   },
   "bin": {
@@ -38,7 +40,7 @@
   },
   "devDependencies": {
     "coffee-script": "^1.10.0",
-    "jshint": "~2.1.11"
+    "jshint": "^2.9.2"
   },
   "optionalDependencies": {},
   "engines": {

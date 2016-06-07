@@ -1,34 +1,8 @@
 #!/usr/bin/env node
-/* globals cd, echo, exec, exit, ls, pwd, test */
+/* globals cd, echo, exec, exit, ls */
 require('../global');
-var common = require('../src/common');
 
 var failed = false;
-
-//
-// Lint
-//
-var JSHINT_BIN = 'node_modules/jshint/bin/jshint';
-cd(__dirname + '/..');
-
-if (!test('-f', JSHINT_BIN)) {
-  echo('JSHint not found. Run `npm install` in the root dir first.');
-  exit(1);
-}
-
-var jsfiles = common.expand([pwd() + '/*.js',
-                             pwd() + '/scripts/*.js',
-                             pwd() + '/src/*.js',
-                             pwd() + '/test/*.js'
-                            ]).join(' ');
-// Perform linting on all javascript files
-if (exec(JSON.stringify(process.execPath)+' '+pwd()+'/'+JSHINT_BIN+' '+jsfiles).code !== 0) {
-  failed = true;
-  echo('*** JSHINT FAILED! (return code != 0)');
-} else {
-  echo('All JSHint tests passed');
-}
-echo();
 
 //
 // Unit tests

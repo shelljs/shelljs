@@ -4,6 +4,7 @@ tmp/
 .documentup.json
 .gitignore
 .jshintrc
+.jshintignore
 .lgtm
 .travis.yml
 .gitattributes

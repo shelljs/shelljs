@@ -26,33 +26,35 @@ assert.throws(function () {
 // Valids
 //
 
+var result;
+
 // single file, array syntax
-var result = common.expand(['resources/file1.txt']);
+result = common.expand(['resources/file1.txt']);
 assert.equal(shell.error(), null);
 assert.deepEqual(result, ['resources/file1.txt']);
 
 // multiple file, glob syntax, * for file name
-var result = common.expand(['resources/file*.txt']);
+result = common.expand(['resources/file*.txt']);
 assert.equal(shell.error(), null);
 assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 
 // multiple file, glob syntax, * for directory name
-var result = common.expand(['*/file*.txt']);
+result = common.expand(['*/file*.txt']);
 assert.equal(shell.error(), null);
 assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 
 // multiple file, glob syntax, ** for directory name
-var result = common.expand(['**/file*.js']);
+result = common.expand(['**/file*.js']);
 assert.equal(shell.error(), null);
 assert.deepEqual(result.sort(), ["resources/file1.js","resources/file2.js","resources/ls/file1.js","resources/ls/file2.js"].sort());
 
 // broken links still expand
-var result = common.expand(['resources/b*dlink']);
+result = common.expand(['resources/b*dlink']);
 assert.equal(shell.error(), null);
 assert.deepEqual(result, ['resources/badlink']);
 
 // common.parseOptions (normal case)
-var result = common.parseOptions('-Rf', {
+result = common.parseOptions('-Rf', {
   'R': 'recursive',
   'f': 'force',
   'r': 'reverse'
@@ -62,7 +64,7 @@ assert.ok(result.force === true);
 assert.ok(result.reverse === false);
 
 // common.parseOptions (with mutually-negating options)
-var result = common.parseOptions('-f', {
+result = common.parseOptions('-f', {
   'n': 'no_force',
   'f': '!no_force',
   'R': 'recursive'
@@ -72,7 +74,7 @@ assert.ok(result.no_force === false);
 assert.ok(result.force === undefined); // this key shouldn't exist
 
 // common.parseOptions (the last of the conflicting options should hold)
-var result = common.parseOptions('-fn', {
+result = common.parseOptions('-fn', {
   'n': 'no_force',
   'f': '!no_force',
   'R': 'recursive'
@@ -82,7 +84,7 @@ assert.ok(result.no_force === true);
 assert.ok(result.force === undefined); // this key shouldn't exist
 
 // common.parseOptions using an object to hold options
-var result = common.parseOptions({'-v': 'some text here'}, {
+result = common.parseOptions({'-v': 'some text here'}, {
   'v': 'value',
   'f': 'force',
   'r': 'reverse'

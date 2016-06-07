@@ -19,7 +19,7 @@ assert.ok(!_pwd.stderr);
 assert.equal(_pwd, path.resolve('.'));
 
 shell.cd('tmp');
-var _pwd = shell.pwd();
+_pwd = shell.pwd();
 assert.equal(_pwd.code, 0);
 assert.ok(!_pwd.stderr);
 assert.equal(shell.error(), null);
