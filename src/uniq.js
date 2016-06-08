@@ -47,14 +47,14 @@ function _uniq(options, input, output) {
   //Perform a run-length encoding of the lines
   var uniqed = [{count: 1, ln: lines[0]}];
   lines.slice(1).forEach(function(line){
-      var cmp = options.ignoreCase ? 
-                  line.toLocaleLowerCase().localeCompare(uniqed[uniqed.length-1].ln.toLocaleLowerCase()) :
-                  line.localeCompare(uniqed[uniqed.length-1].ln);
-      if(cmp !== 0){
-          uniqed.push({count: 1, ln: line});
-      }else{
-          uniqed[uniqed.length - 1].count++;
-      }
+    var cmp = options.ignoreCase ? 
+                line.toLocaleLowerCase().localeCompare(uniqed[uniqed.length-1].ln.toLocaleLowerCase()) :
+                line.localeCompare(uniqed[uniqed.length-1].ln);
+    if(cmp !== 0){
+      uniqed.push({count: 1, ln: line});
+    }else{
+      uniqed[uniqed.length - 1].count++;
+    }
   });
   uniqed = uniqed.
              //Do we want only duplicated objects?
@@ -65,9 +65,11 @@ function _uniq(options, input, output) {
 
   var res = new common.ShellString(uniqed, common.state.error, common.state.errorCode);
   if(output){
-      res.to(output);
+    res.to(output);
+    //if uniq writes to output, nothing is passed to the next command in the pipeline (if any)
+    return new common.ShellString('', common.state.error, common.state.errorCode);
   }else{
-      return res;
+    return res;
   }
 }
 
