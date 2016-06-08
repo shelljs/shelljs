@@ -87,7 +87,7 @@ exports.error = error;
 //@
 //@ Turns a regular string into a string-like object similar to what each
 //@ command returns. This has special methods, like `.to()` and `.toEnd()`
-var ShellString = function (stdout, stderr, code) {
+function ShellString(stdout, stderr, code) {
   var that;
   if (stdout instanceof Array) {
     that = stdout;
@@ -106,7 +106,7 @@ var ShellString = function (stdout, stderr, code) {
     that[cmd] = function() {return shell[cmd].apply(that.stdout, arguments);};
   });
   return that;
-};
+}
 
 exports.ShellString = ShellString;
 

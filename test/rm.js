@@ -13,7 +13,10 @@ shell.mkdir('tmp');
 // Invalids
 //
 
-var result = shell.rm();
+var contents;
+var result;
+
+result = shell.rm();
 assert.ok(shell.error());
 assert.equal(result.code, 1);
 assert.equal(result.stderr, 'rm: no paths given');
@@ -123,7 +126,7 @@ assert.equal(fs.existsSync('tmp/.hidden'), true);
 result = shell.rm('-rf', 'tmp/*');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-var contents = fs.readdirSync('tmp');
+contents = fs.readdirSync('tmp');
 assert.equal(contents.length, 1);
 assert.equal(contents[0], '.hidden'); // shouldn't remove hiddden if no .* given
 
@@ -139,7 +142,7 @@ assert.equal(fs.existsSync('tmp/.hidden'), true);
 result = shell.rm('-rf', 'tmp/*', 'tmp/.*');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-var contents = fs.readdirSync('tmp');
+contents = fs.readdirSync('tmp');
 assert.equal(contents.length, 0);
 
 // recursive dir removal - array-syntax
@@ -154,7 +157,7 @@ assert.equal(fs.existsSync('tmp/.hidden'), true);
 result = shell.rm('-rf', ['tmp/*', 'tmp/.*']);
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-var contents = fs.readdirSync('tmp');
+contents = fs.readdirSync('tmp');
 assert.equal(contents.length, 0);
 
 // removal of a read-only file (unforced)
