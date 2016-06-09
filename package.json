@@ -28,6 +28,7 @@
     "test": "node scripts/run-tests",
     "gendocs": "node scripts/generate-docs",
     "lint": "jshint .",
+    "after-travis": "travis-check-changes",
     "changelog": "bash scripts/changelog.sh"
   },
   "bin": {
@@ -40,7 +41,8 @@
   },
   "devDependencies": {
     "coffee-script": "^1.10.0",
-    "jshint": "^2.9.2"
+    "jshint": "^2.9.2",
+    "travis-check-changes": "^0.2.0"
   },
   "optionalDependencies": {},
   "engines": {
