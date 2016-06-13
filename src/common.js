@@ -35,6 +35,14 @@ delete process.env.OLDPWD; // initially, there's no previous directory
 var platform = os.type().match(/^Win/) ? 'win' : 'unix';
 exports.platform = platform;
 
+// regex lookup for ShellString.forEach()
+var regexLookup = {
+  'character': '',
+  'whitespace': /\s+/,
+  'word': /\W+/,
+  'line': /\n/
+};
+
 function log() {
   if (!config.silent)
     console.error.apply(console, arguments);
@@ -96,6 +104,26 @@ function ShellString(stdout, stderr, code) {
   } else {
     that = new String(stdout);
     that.stdout = stdout;
+
+    that.forEach = function (callback, opts) {
+      var options = opts || {};
+      var regex;
+
+      if (typeof options !== 'object')
+        options = {};
+
+      if (options.regex)
+        regex = options.regex;
+
+      // default to line if invaild options is passed
+      else if (!(options.split in regexLookup))
+        regex = /\n/;
+
+      else
+        regex = regexLookup[options.split];
+
+      return this.stdout.split(regex).forEach(callback);
+    };
   }
   that.stderr = stderr;
   that.code = code;

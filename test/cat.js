@@ -51,4 +51,19 @@ assert.equal(result.code, 0);
 assert.ok(result.search('test1') > -1); // file order might be random
 assert.ok(result.search('test2') > -1);
 
+// forEach
+var file3 = 'test1\ntest2\ntest3,test4 test5\ntest6xtest7\n';
+var line = file3.split('\n');
+var character = file3.split('');
+var word = file3.split(/\W+/);
+var whitespace = file3.split(/\s+/);
+var regex = file3.split(/x/);
+result = shell.cat('resources/cat/file3');
+result.forEach(function (a, i) { assert.equal(a, line[i]); });
+result.forEach(function (a, i) { assert.equal(a, line[i]); }, { split: 'line' });
+result.forEach(function (a, i) { assert.equal(a, character[i]); }, { split: 'character' });
+result.forEach(function (a, i) { assert.equal(a, word[i]); }, { split: 'word' });
+result.forEach(function (a, i) { assert.equal(a, whitespace[i]); }, { split: 'whitespace' });
+result.forEach(function (a, i) { assert.equal(a, regex[i]); }, { split: 'regex', regex: /x/ });
+result.forEach(function (a, i) { assert.equal(a, regex[i]); }, { regex: /x/ });
 shell.exit(123);
