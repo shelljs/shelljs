@@ -29,7 +29,7 @@
     "gendocs": "node scripts/generate-docs",
     "lint": "jshint .",
     "after-travis": "travis-check-changes",
-    "changelog": "changelog"
+    "changelog": "shelljs-changelog"
   },
   "bin": {
     "shjs": "./bin/shjs"
@@ -42,7 +42,7 @@
   "devDependencies": {
     "coffee-script": "^1.10.0",
     "jshint": "^2.9.2",
-    "shelljs-changelog": "^0.1.1",
+    "shelljs-changelog": "^0.2.0",
     "travis-check-changes": "^0.2.0"
   },
   "optionalDependencies": {},
