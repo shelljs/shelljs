@@ -36,7 +36,7 @@ var platform = os.type().match(/^Win/) ? 'win' : 'unix';
 exports.platform = platform;
 
 // This is populated by calls to commonl.wrap()
-var pipeRhsCmds = [];
+var pipeMethods = [];
 
 function log() {
   if (!config.silent)
@@ -106,7 +106,7 @@ function ShellString(stdout, stderr, code) {
   that.toEnd = function() {wrap('toEnd', _toEnd, {idx: 1}).apply(that.stdout, arguments); return that;};
   // A list of all commands that can appear on the right-hand side of a pipe
   // (populated by calls to common.wrap())
-  pipeRhsCmds.forEach(function (cmd) {
+  pipeMethods.forEach(function (cmd) {
     that[cmd] = function() {return shell[cmd].apply(that.stdout, arguments);};
   });
   return that;
@@ -256,8 +256,8 @@ exports.extend = extend;
 // command-logging, and other nice things
 function wrap(cmd, fn, options) {
   options = options || {};
-  if (options.receivesPipe) {
-    pipeRhsCmds.push(cmd);
+  if (options.canReceivePipe) {
+    pipeMethods.push(cmd);
   }
   return function() {
     var retValue = null;
