@@ -35,6 +35,9 @@ delete process.env.OLDPWD; // initially, there's no previous directory
 var platform = os.type().match(/^Win/) ? 'win' : 'unix';
 exports.platform = platform;
 
+// This is populated by calls to commonl.wrap()
+var pipeMethods = [];
+
 function log() {
   if (!config.silent)
     console.error.apply(console, arguments);
@@ -102,7 +105,8 @@ function ShellString(stdout, stderr, code) {
   that.to    = function() {wrap('to', _to, {idx: 1}).apply(that.stdout, arguments); return that;};
   that.toEnd = function() {wrap('toEnd', _toEnd, {idx: 1}).apply(that.stdout, arguments); return that;};
   // A list of all commands that can appear on the right-hand side of a pipe
-  ['cat', 'head', 'sed', 'sort', 'tail', 'grep', 'exec'].forEach(function (cmd) {
+  // (populated by calls to common.wrap())
+  pipeMethods.forEach(function (cmd) {
     that[cmd] = function() {return shell[cmd].apply(that.stdout, arguments);};
   });
   return that;
@@ -251,6 +255,10 @@ exports.extend = extend;
 // Common wrapper for all Unix-like commands that performs glob expansion,
 // command-logging, and other nice things
 function wrap(cmd, fn, options) {
+  options = options || {};
+  if (options.canReceivePipe) {
+    pipeMethods.push(cmd);
+  }
   return function() {
     var retValue = null;
 
@@ -266,7 +274,7 @@ function wrap(cmd, fn, options) {
         console.error.apply(console, [cmd].concat(args));
       }
 
-      if (options && options.notUnix) { // this branch is for exec()
+      if (options.notUnix) { // this branch is for exec()
         retValue = fn.apply(this, args);
       } else { // and this branch is for everything else
         if (args[0] instanceof Object && args[0].constructor.name === 'Object') {
@@ -307,7 +315,7 @@ function wrap(cmd, fn, options) {
 
         // Perform glob-expansion on all arguments after idx, but preserve the
         // arguments before it (like regexes for sed and grep)
-        if (!config.noglob && options && typeof options.idx === 'number')
+        if (!config.noglob && typeof options.idx === 'number')
           args = args.slice(0, options.idx).concat(expand(args.slice(options.idx)));
         try {
           retValue = fn.apply(this, args);
