@@ -71,15 +71,15 @@ exports.test = common.wrap('test', _test);
 
 //@include ./src/cat
 var _cat = require('./src/cat');
-exports.cat = common.wrap('cat', _cat, {idx: 1});
+exports.cat = common.wrap('cat', _cat, {idx: 1, receivesPipe: true});
 
 //@include ./src/head
 var _head = require('./src/head');
-exports.head = common.wrap('head', _head, {idx: 1});
+exports.head = common.wrap('head', _head, {idx: 1, receivesPipe: true});
 
 //@include ./src/tail
 var _tail = require('./src/tail');
-exports.tail = common.wrap('tail', _tail, {idx: 1});
+exports.tail = common.wrap('tail', _tail, {idx: 1, receivesPipe: true});
 
 // The below commands have been moved to common.ShellString(), and are only here
 // for generating the docs
@@ -88,15 +88,15 @@ exports.tail = common.wrap('tail', _tail, {idx: 1});
 
 //@include ./src/sed
 var _sed = require('./src/sed');
-exports.sed = common.wrap('sed', _sed, {idx: 3}); // don't glob-expand regexes
+exports.sed = common.wrap('sed', _sed, {idx: 3, receivesPipe: true}); // don't glob-expand regexes
 
 //@include ./src/sort
 var _sort = require('./src/sort');
-exports.sort = common.wrap('sort', _sort, {idx: 1});
+exports.sort = common.wrap('sort', _sort, {idx: 1, receivesPipe: true});
 
 //@include ./src/grep
 var _grep = require('./src/grep');
-exports.grep = common.wrap('grep', _grep, {idx: 2}); // don't glob-expand the regex
+exports.grep = common.wrap('grep', _grep, {idx: 2, receivesPipe: true}); // don't glob-expand the regex
 
 //@include ./src/which
 var _which = require('./src/which');
@@ -130,7 +130,7 @@ exports.env = process.env;
 
 //@include ./src/exec
 var _exec = require('./src/exec');
-exports.exec = common.wrap('exec', _exec, {notUnix:true});
+exports.exec = common.wrap('exec', _exec, {notUnix:true, receivesPipe: true});
 
 //@include ./src/chmod
 var _chmod = require('./src/chmod');
