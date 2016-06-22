@@ -78,11 +78,6 @@ assert.ok(shell.error());
 assert.equal(result.code, 1);
 assert.equal(result.stderr, 'cp: dest is not a directory (too many sources)');
 
-result = shell.cp('-n', 'resources/file1', 'resources/file2'); // dest already exists
-assert.ok(shell.error());
-assert.equal(result.code, 1);
-assert.equal(result.stderr, 'cp: dest file already exists: resources/file2');
-
 result = shell.cp('resources/file1', 'resources/file2', 'tmp/a_file'); // too many sources
 assert.ok(shell.error());
 assert.equal(result.code, 1);
@@ -92,6 +87,13 @@ assert.equal(result.stderr, 'cp: dest is not a directory (too many sources)');
 //
 // Valids
 //
+
+var oldContents = shell.cat('resources/file2').toString();
+result = shell.cp('-n', 'resources/file1', 'resources/file2'); // dest already exists
+assert.ok(!shell.error());
+assert.equal(result.code, 0);
+assert.equal(result.stderr, '');
+assert.equal(shell.cat('resources/file2').toString(), oldContents);
 
 // -f by default
 result = shell.cp('resources/file2', 'resources/copyfile2');
