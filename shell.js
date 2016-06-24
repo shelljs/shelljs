@@ -96,7 +96,7 @@ exports.sort = common.wrap('sort', _sort, {idx: 1, canReceivePipe: true});
 
 //@include ./src/uniq
 var _uniq = require('./src/uniq');
-exports.uniq = common.wrap('uniq', _uniq, {idx: 1});
+exports.uniq = common.wrap('uniq', _uniq, {idx: 1, canReceivePipe: true});
 
 //@include ./src/grep
 var _grep = require('./src/grep');
