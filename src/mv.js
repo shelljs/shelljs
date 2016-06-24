@@ -1,6 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
+var cp = require('./cp');
+var rm = require('./rm');
 
 //@
 //@ ### mv([options ,] source [, source ...], dest')
@@ -72,7 +74,16 @@ function _mv(options, sources, dest) {
       return; // skip file
     }
 
-    fs.renameSync(src, thisDest);
+    try {
+      fs.renameSync(src, thisDest);
+    } catch (e) {
+      if (e.code === 'EXDEV') { // external partition
+        // if either of these fails, the appropriate error message will bubble
+        // up to the top level automatically
+        cp('-r', src, thisDest);
+        rm('-rf', src);
+      }
+    }
   }); // forEach(src)
   return new common.ShellString('', common.state.error, common.state.errorCode);
 } // mv
