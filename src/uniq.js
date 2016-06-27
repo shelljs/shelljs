@@ -3,20 +3,20 @@ var fs = require('fs');
 
 //add c spaces to the left of str
 function lpad(c, str){
-    var res = "" + str;
-    if(res.length < c){
-        res = Array((c-res.length)+1).join(" ") + res;
-    }
-    return res;
+  var res = '' + str;
+  if(res.length < c){
+    res = Array((c-res.length)+1).join(' ') + res;
+  }
+  return res;
 }
 
 //@
 //@ ### uniq([options,] [input, [output]])
 //@ Available options:
 //@
-//@ + `-i`: Ignore differences in case when comparing
+//@ + `-i`: Ignore case while comparing
 //@ + `-c`: Prefix lines by the number of occurrences
-//@ + `-d`: Only print duplicate lines, one for each group
+//@ + `-d`: Only print duplicate lines, one for each group of identical lines
 //@
 //@ Examples:
 //@
@@ -44,7 +44,7 @@ function _uniq(options, input, output) {
               trimRight().
               split(/\r*\n/);
 
-  //Perform a run-length encoding of the lines
+  //Perform uniq -c on the input
   var uniqed = [{count: 1, ln: lines[0]}];
   lines.slice(1).forEach(function(line){
     var cmp = options.ignoreCase ? 
@@ -57,11 +57,13 @@ function _uniq(options, input, output) {
     }
   });
   uniqed = uniqed.
-             //Do we want only duplicated objects?
-             filter(function(obj){return options.duplicates ? obj.count > 1 : true;}).
-             //Are we tracking the counts of each line?
-             map(function(obj){return (options.count ? (lpad(7,obj.count) + " ") : "") + obj.ln;}).
-             join('\n') + '\n';
+             filter(function(obj){
+               //Do we want only duplicated objects?
+               return options.duplicates ? obj.count > 1 : true;
+             }).map(function(obj){
+               //Are we tracking the counts of each line?
+               return (options.count ? (lpad(7,obj.count) + ' ') : '') + obj.ln;
+             }).join('\n') + '\n';
 
   var res = new common.ShellString(uniqed, common.state.error, common.state.errorCode);
   if(output){

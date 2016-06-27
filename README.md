@@ -408,9 +408,9 @@ files mixes their content, just like unix sort does.
 ### uniq([options,] [input, [output]])
 Available options:
 
-+ `-i`: Ignore differences in case when comparing
++ `-i`: Ignore case while comparing
 + `-c`: Prefix lines by the number of occurrences
-+ `-d`: Only print duplicate lines, one for each group
++ `-d`: Only print duplicate lines, one for each group of identical lines
 
 Examples:
 
