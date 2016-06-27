@@ -44,6 +44,11 @@ var result = shell.cat('resources/grep/file').sed(/l*\.js/, '');
 assert.ok(!shell.error());
 assert.equal(result.toString(), 'alphaaaaaaabeta\nhowareyou\nalphbeta\nthis line ends in\n\n');
 
+//Sort a file by frequency of each line
+result = shell.sort('resources/uniq/pipe').uniq('-c').sort('-n');
+assert.equal(shell.error(), null);
+assert.equal(result.toString(), shell.cat('resources/uniq/pipeSorted').toString());
+
 // Synchronous exec
 // TODO: add windows tests
 if (process.platform !== 'win32') {
@@ -76,8 +81,3 @@ if (process.platform !== 'win32') {
   console.error('Warning: Cannot verify piped exec');
   shell.exit(123);
 }
-
-//Sort a file by frequency of each line
-result = shell.sort('resources/uniq/pipe').uniq('-c').sort('-n');
-assert.equal(shell.error(), null);
-assert.equal(result.toString(), cat('resources/uniq/pipeSorted').toString());
