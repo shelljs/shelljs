@@ -48,13 +48,13 @@ function _uniq(options, input, output) {
     return options.ignoreCase ? 
              a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()) :
              a.localeCompare(b);
-  }
+  };
   var uniqed = lines.reduceRight(function(res, e){
                  //Perform uniq -c on the input
                  return res.length === 0 ? [{count: 1, ln: e}] :
                         (compare(res[0].ln,e) === 0 ? 
                           [{count: res[0].count + 1, ln: e}].concat(res.slice(1)) :
-                          [{count: 1, ln: e}].concat(res))
+                          [{count: 1, ln: e}].concat(res));
                }, []).filter(function(obj){
                  //Do we want only duplicated objects?
                  return options.duplicates ? obj.count > 1 : true;
