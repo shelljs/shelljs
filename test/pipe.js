@@ -76,3 +76,8 @@ if (process.platform !== 'win32') {
   console.error('Warning: Cannot verify piped exec');
   shell.exit(123);
 }
+
+//Sort a file by frequency of each line
+result = shell.sort('resources/uniq/pipe').uniq('-c').sort('-n');
+assert.equal(shell.error(), null);
+assert.equal(result.toString(), cat('resources/uniq/pipeSorted').toString());
