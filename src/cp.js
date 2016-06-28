@@ -203,7 +203,7 @@ function _cp(options, sources, dest) {
 
   // Dest is an existing file, but -n is given
   if (destExists && destStat.isFile() && options.no_force)
-    common.error('dest file already exists: ' + dest);
+    return new common.ShellString('', '', 0);
 
   sources.forEach(function(src) {
     if (!fs.existsSync(src)) {
@@ -240,7 +240,6 @@ function _cp(options, sources, dest) {
         thisDest = path.normalize(dest + '/' + path.basename(src));
 
       if (fs.existsSync(thisDest) && options.no_force) {
-        common.error('dest file already exists: ' + thisDest, true);
         return; // skip file
       }
 
