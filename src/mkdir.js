@@ -6,6 +6,12 @@ var path = require('path');
 function mkdirSyncRecursive(dir) {
   var baseDir = path.dirname(dir);
 
+  // Prevents some potential problems arising from malformed UNCs or 
+  // insufficient permissions.
+  if(baseDir == dir) {
+    throw "dirname() failed: [" + dir + "]";
+  }
+
   // Base dir exists, no recursion necessary
   if (fs.existsSync(baseDir)) {
     fs.mkdirSync(dir, parseInt('0777', 8));
