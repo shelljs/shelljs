@@ -1,8 +1,9 @@
 # ShellJS - Unix shell commands for Node.js
 
-[![Join the chat at https://gitter.im/shelljs/shelljs](https://badges.gitter.im/shelljs/shelljs.svg)](https://gitter.im/shelljs/shelljs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://travis-ci.org/shelljs/shelljs.svg?branch=master)](http://travis-ci.org/shelljs/shelljs)
-[![Build status](https://ci.appveyor.com/api/projects/status/42txr0s3ux5wbumv/branch/master?svg=true)](https://ci.appveyor.com/project/shelljs/shelljs)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/shelljs/shelljs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Travis](https://img.shields.io/travis/shelljs/shelljs/master.svg?style=flat-square&label=unix)](https://travis-ci.org/shelljs/shelljs)
+[![AppVeyor](https://img.shields.io/appveyor/ci/shelljs/shelljs/master.svg?style=flat-square&label=windows)](https://ci.appveyor.com/project/ariporad/shelljs/branch/master)
+[![npm (scoped)](https://img.shields.io/npm/v/shelljs.svg?style=flat-square)](https://www.npmjs.com/package/shelljs)
 
 ShellJS is a portable **(Windows/Linux/OS X)** implementation of Unix shell commands on top of the
 Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping
