@@ -64,11 +64,15 @@ function execSync(cmd, opts, pipe) {
   opts.cwd = path.resolve(opts.cwd);
   var optString = JSON.stringify(opts);
 
+  var multilineCmdToScript = function(cmd) {
+    var lines = cmd.split("\n");
+    return JSON.stringify(lines) + '.join("\\n")';
+  };
   if (typeof child.execSync === 'function') {
     script = [
         "var child = require('child_process')",
         "  , fs = require('fs');",
-        "var childProcess = child.exec("+JSON.stringify(cmd)+", "+optString+", function(err) {",
+        "var childProcess = child.exec("+multilineCmdToScript(cmd)+", "+optString+", function(err) {",
         "  fs.writeFileSync("+JSON.stringify(codeFile)+", err ? err.code.toString() : '0');",
         "});",
         "var stdoutStream = fs.createWriteStream("+JSON.stringify(stdoutFile)+");",
@@ -112,7 +116,7 @@ function execSync(cmd, opts, pipe) {
     script = [
         "var child = require('child_process')",
         "  , fs = require('fs');",
-        "var childProcess = child.exec("+JSON.stringify(cmd)+", "+optString+", function(err) {",
+        "var childProcess = child.exec("+multilineCmdToScript(cmd)+", "+optString+", function(err) {",
         "  fs.writeFileSync("+JSON.stringify(codeFile)+", err ? err.code.toString() : '0');",
         "});"
       ].join('\n') +
