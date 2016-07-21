@@ -1,6 +1,8 @@
 var fs = require('fs');
 var common = require('./common');
 
+common.register('cd', _cd, {globStart: 1});
+
 //@
 //@ ### cd([dir])
 //@ Changes to directory `dir` for the duration of the script. Changes to home

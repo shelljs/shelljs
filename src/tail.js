@@ -1,6 +1,8 @@
 var common = require('./common');
 var fs = require('fs');
 
+common.register('tail', _tail, {globStart: 1, canReceivePipe: true});
+
 //@
 //@ ### tail([{'-n', \<num\>},] file [, file ...])
 //@ ### tail([{'-n', \<num\>},] file_array)

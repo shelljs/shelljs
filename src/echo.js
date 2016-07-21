@@ -1,5 +1,7 @@
 var common = require('./common');
 
+common.register('echo', _echo);
+
 //@
 //@ ### echo(string [, string ...])
 //@

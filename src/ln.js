@@ -2,6 +2,8 @@ var fs = require('fs');
 var path = require('path');
 var common = require('./common');
 
+common.register('ln', _ln, {globStart: 1});
+
 //@
 //@ ### ln([options,] source, dest)
 //@ Available options:

@@ -8,7 +8,6 @@
 
 var common = require('./src/common');
 
-
 //@
 //@ All commands run synchronously, unless otherwise stated.
 //@ All commands accept standard bash globbing characters (`*`, `?`, etc.),
@@ -24,62 +23,50 @@ var common = require('./src/common');
 // ```
 // //@include ./src/fileName
 // var functionName = require('./src/fileName');
-// exports.nameOfCommand = common.wrap(nameOfCommand, functionName, {idx: firstIndexToExpand});
+// exports.nameOfCommand = common.wrap(nameOfCommand, functionName, {globStart: firstIndexToExpand});
 // ```
 //
 // The //@include includes the docs for that command
 //
-// firstIndexToExpand should usually be 1 (so, put {idx: 1})
+// firstIndexToExpand should usually be 1 (so, put {globStart: 1})
 // Increase this value if the command takes arguments that shouldn't be expanded
 // with wildcards, such as with the regexes for sed & grep
 
 //@include ./src/cd
-var _cd = require('./src/cd');
-exports.cd = common.wrap('cd', _cd, {idx: 1});
+require('./src/cd');
 
 //@include ./src/pwd
-var _pwd = require('./src/pwd');
-exports.pwd = common.wrap('pwd', _pwd);
+require('./src/pwd');
 
 //@include ./src/ls
-var _ls = require('./src/ls');
-exports.ls = common.wrap('ls', _ls, {idx: 1});
+require('./src/ls');
 
 //@include ./src/find
-var _find = require('./src/find');
-exports.find = common.wrap('find', _find, {idx: 1});
+require('./src/find');
 
 //@include ./src/cp
-var _cp = require('./src/cp');
-exports.cp = common.wrap('cp', _cp, {idx: 1});
+require('./src/cp');
 
 //@include ./src/rm
-var _rm = require('./src/rm');
-exports.rm = common.wrap('rm', _rm, {idx: 1});
+require('./src/rm');
 
 //@include ./src/mv
-var _mv = require('./src/mv');
-exports.mv = common.wrap('mv', _mv, {idx: 1});
+require('./src/mv');
 
 //@include ./src/mkdir
-var _mkdir = require('./src/mkdir');
-exports.mkdir = common.wrap('mkdir', _mkdir, {idx: 1});
+require('./src/mkdir');
 
 //@include ./src/test
-var _test = require('./src/test');
-exports.test = common.wrap('test', _test);
+require('./src/test');
 
 //@include ./src/cat
-var _cat = require('./src/cat');
-exports.cat = common.wrap('cat', _cat, {idx: 1, canReceivePipe: true});
+require('./src/cat');
 
 //@include ./src/head
-var _head = require('./src/head');
-exports.head = common.wrap('head', _head, {idx: 1, canReceivePipe: true});
+require('./src/head');
 
 //@include ./src/tail
-var _tail = require('./src/tail');
-exports.tail = common.wrap('tail', _tail, {idx: 1, canReceivePipe: true});
+require('./src/tail');
 
 // The below commands have been moved to common.ShellString(), and are only here
 // for generating the docs
@@ -87,36 +74,25 @@ exports.tail = common.wrap('tail', _tail, {idx: 1, canReceivePipe: true});
 //@include ./src/toEnd
 
 //@include ./src/sed
-var _sed = require('./src/sed');
-exports.sed = common.wrap('sed', _sed, {idx: 3, canReceivePipe: true}); // don't glob-expand regexes
+require('./src/sed');
 
 //@include ./src/sort
-var _sort = require('./src/sort');
-exports.sort = common.wrap('sort', _sort, {idx: 1, canReceivePipe: true});
+require('./src/sort');
 
 //@include ./src/grep
-var _grep = require('./src/grep');
-exports.grep = common.wrap('grep', _grep, {idx: 2, canReceivePipe: true}); // don't glob-expand the regex
+require('./src/grep');
 
 //@include ./src/which
-var _which = require('./src/which');
-exports.which = common.wrap('which', _which);
+require('./src/which');
 
 //@include ./src/echo
-var _echo = require('./src/echo');
-exports.echo = common.wrap('echo', _echo);
+require('./src/echo');
 
 //@include ./src/dirs
-var _dirs = require('./src/dirs').dirs;
-exports.dirs = common.wrap('dirs', _dirs, {idx: 1});
-var _pushd = require('./src/dirs').pushd;
-exports.pushd = common.wrap('pushd', _pushd, {idx: 1});
-var _popd = require('./src/dirs').popd;
-exports.popd = common.wrap('popd', _popd, {idx: 1});
+require('./src/dirs');
 
 //@include ./src/ln
-var _ln = require('./src/ln');
-exports.ln = common.wrap('ln', _ln, {idx: 1});
+require('./src/ln');
 
 //@
 //@ ### exit(code)
@@ -129,20 +105,16 @@ exports.exit = process.exit;
 exports.env = process.env;
 
 //@include ./src/exec
-var _exec = require('./src/exec');
-exports.exec = common.wrap('exec', _exec, {notUnix:true, canReceivePipe: true});
+require('./src/exec');
 
 //@include ./src/chmod
-var _chmod = require('./src/chmod');
-exports.chmod = common.wrap('chmod', _chmod, {idx: 1});
+require('./src/chmod');
 
 //@include ./src/touch
-var _touch = require('./src/touch');
-exports.touch = common.wrap('touch', _touch, {idx: 1});
+require('./src/touch');
 
 //@include ./src/set
-var _set = require('./src/set');
-exports.set = common.wrap('set', _set);
+require('./src/set');
 
 
 //@
@@ -150,12 +122,11 @@ exports.set = common.wrap('set', _set);
 //@
 
 //@include ./src/tempdir
-var _tempDir = require('./src/tempdir');
-exports.tempdir = common.wrap('tempdir', _tempDir);
+require('./src/tempdir');
 
 //@include ./src/error
-var _error = require('./src/error');
-exports.error = _error;
+
+exports.error = require('./src/error');
 
 //@include ./src/common
 exports.ShellString = common.ShellString;

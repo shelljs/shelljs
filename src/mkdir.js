@@ -2,6 +2,8 @@ var common = require('./common');
 var fs = require('fs');
 var path = require('path');
 
+common.register('mkdir', _mkdir, {globStart: 1});
+
 // Recursively creates 'dir'
 function mkdirSyncRecursive(dir) {
   var baseDir = path.dirname(dir);

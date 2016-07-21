@@ -1,6 +1,8 @@
 var common = require('./common');
 var fs = require('fs');
 
+common.register('grep', _grep, {globStart: 2, canReceivePipe: true}); // don't glob-expand the regex
+
 //@
 //@ ### grep([options,] regex_filter, file [, file ...])
 //@ ### grep([options,] regex_filter, file_array)

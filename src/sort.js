@@ -1,6 +1,8 @@
 var common = require('./common');
 var fs = require('fs');
 
+common.register('sort', _sort, {globStart: 1, canReceivePipe: true});
+
 // parse out the number prefix of a line
 function parseNumber (str) {
   var match = str.match(/^\s*(\d*)\s*(.*)$/);

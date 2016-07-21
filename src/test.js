@@ -1,6 +1,8 @@
 var common = require('./common');
 var fs = require('fs');
 
+common.register('test', _test);
+
 //@
 //@ ### test(expression)
 //@ Available expression primaries:
