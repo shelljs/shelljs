@@ -8,6 +8,12 @@ common.register('mkdir', _mkdir, {globStart: 1});
 function mkdirSyncRecursive(dir) {
   var baseDir = path.dirname(dir);
 
+  // Prevents some potential problems arising from malformed UNCs or 
+  // insufficient permissions.
+  if(baseDir == dir) {
+    common.error("dirname() failed: [" + dir + "]");
+  }
+
   // Base dir exists, no recursion necessary
   if (fs.existsSync(baseDir)) {
     fs.mkdirSync(dir, parseInt('0777', 8));
