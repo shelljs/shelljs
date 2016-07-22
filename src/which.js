@@ -2,6 +2,8 @@ var common = require('./common');
 var fs = require('fs');
 var path = require('path');
 
+common.register('which', _which);
+
 // XP's system default value for PATHEXT system variable, just in case it's not
 // set on Windows.
 var XP_DEFAULT_PATHEXT = '.com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh';

@@ -3,6 +3,8 @@ var path = require('path');
 var common = require('./common');
 var _ls = require('./ls');
 
+common.register('find', _find, {globStart: 1});
+
 //@
 //@ ### find(path [, path ...])
 //@ ### find(path_array)

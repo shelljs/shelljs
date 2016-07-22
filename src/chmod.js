@@ -30,6 +30,8 @@ var PERMS = (function (base) {
   READ  : 4
 });
 
+common.register('chmod', _chmod, {globStart: 1});
+
 //@
 //@ ### chmod(octal_mode || octal_string, file)
 //@ ### chmod(symbolic_mode, file)

@@ -1,6 +1,8 @@
 var path = require('path');
 var common = require('./common');
 
+common.register('pwd', _pwd);
+
 //@
 //@ ### pwd()
 //@ Returns the current directory.

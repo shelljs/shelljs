@@ -2,6 +2,8 @@ var common = require('./common');
 var os = require('os');
 var fs = require('fs');
 
+common.register('tempdir', _tempDir);
+
 // Returns false if 'dir' is not a writeable directory, 'dir' otherwise
 function writeableDir(dir) {
   if (!dir || !fs.existsSync(dir))

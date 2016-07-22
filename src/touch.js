@@ -1,6 +1,8 @@
 var common = require('./common');
 var fs = require('fs');
 
+common.register('touch', _touch, {globStart: 1});
+
 //@
 //@ ### touch([options,] file [, file ...])
 //@ ### touch([options,] file_array)

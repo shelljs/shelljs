@@ -1,6 +1,8 @@
 var common = require('./common');
 var fs = require('fs');
 
+common.register('head', _head, {globStart: 1, canReceivePipe: true});
+
 // This reads n or more lines, or the entire file, whichever is less.
 function readSomeLines(file, numLines) {
   var BUF_LENGTH = 64*1024,

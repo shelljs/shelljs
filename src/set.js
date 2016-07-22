@@ -1,5 +1,7 @@
 var common = require('./common');
 
+common.register('set', _set);
+
 //@
 //@ ### set(options)
 //@ Available options:

@@ -102,8 +102,8 @@ function ShellString(stdout, stderr, code) {
   }
   that.stderr = stderr;
   that.code = code;
-  that.to    = function() {wrap('to', _to, {idx: 1}).apply(that.stdout, arguments); return that;};
-  that.toEnd = function() {wrap('toEnd', _toEnd, {idx: 1}).apply(that.stdout, arguments); return that;};
+  that.to    = function() {wrap('to', _to, {globStart: 1}).apply(that.stdout, arguments); return that;};
+  that.toEnd = function() {wrap('toEnd', _toEnd, {globStart: 1}).apply(that.stdout, arguments); return that;};
   // A list of all commands that can appear on the right-hand side of a pipe
   // (populated by calls to common.wrap())
   pipeMethods.forEach(function (cmd) {
@@ -313,10 +313,10 @@ function wrap(cmd, fn, options) {
             return arg;
         });
 
-        // Perform glob-expansion on all arguments after idx, but preserve the
-        // arguments before it (like regexes for sed and grep)
-        if (!config.noglob && typeof options.idx === 'number')
-          args = args.slice(0, options.idx).concat(expand(args.slice(options.idx)));
+        // Perform glob-expansion on all arguments after globStart, but preserve
+        // the arguments before it (like regexes for sed and grep)
+        if (!config.noglob && typeof options.globStart === 'number')
+          args = args.slice(0, options.globStart).concat(expand(args.slice(options.globStart)));
         try {
           retValue = fn.apply(this, args);
         } catch (e) {
@@ -348,3 +348,9 @@ function _readFromPipe(that) {
   return that instanceof String ? that.toString() : '';
 }
 exports.readFromPipe = _readFromPipe;
+
+// Register a new ShellJS command
+function _register(name, implementation, wrapOptions) {
+  shell[name] = wrap(name, implementation, wrapOptions);
+}
+exports.register = _register;

@@ -1,6 +1,8 @@
 var common = require('./common');
 var fs = require('fs');
 
+common.register('sed', _sed, {globStart: 3, canReceivePipe: true}); // don't glob-expand regexes
+
 //@
 //@ ### sed([options,] search_regex, replacement, file [, file ...])
 //@ ### sed([options,] search_regex, replacement, file_array)

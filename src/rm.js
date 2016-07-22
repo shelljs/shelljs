@@ -1,6 +1,8 @@
 var common = require('./common');
 var fs = require('fs');
 
+common.register('rm', _rm, {globStart: 1});
+
 // Recursively removes 'dir'
 // Adapted from https://github.com/ryanmcgrath/wrench-js
 //

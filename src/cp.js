@@ -3,6 +3,8 @@ var path = require('path');
 var common = require('./common');
 var os = require('os');
 
+common.register('cp', _cp, {globStart: 1});
+
 // Buffered file copy, synchronous
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
 //  with large files)

@@ -4,6 +4,8 @@ var common = require('./common');
 var cp = require('./cp');
 var rm = require('./rm');
 
+common.register('mv', _mv, {globStart: 1});
+
 //@
 //@ ### mv([options ,] source [, source ...], dest')
 //@ ### mv([options ,] source_array, dest')

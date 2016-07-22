@@ -5,6 +5,8 @@ var glob = require('glob');
 
 var globPatternRecursive = path.sep + '**' + path.sep + '*';
 
+common.register('ls', _ls, {globStart: 1});
+
 //@
 //@ ### ls([options,] [path, ...])
 //@ ### ls([options,] path_array)
