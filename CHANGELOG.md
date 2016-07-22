@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/shelljs/shelljs/tree/HEAD)
-
-[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.0...HEAD)
+## [v0.7.1](https://github.com/shelljs/shelljs/tree/v0.7.1) (2016-07-22)
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.0...v0.7.1)
 
 **Closed issues:**
 
