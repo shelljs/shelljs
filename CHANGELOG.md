@@ -6,12 +6,31 @@
 
 **Closed issues:**
 
+- cp -n doesn't work correctly [\#465](https://github.com/shelljs/shelljs/issues/465)
+- how can i run sudo apt-get install xtodotool by your plugin? [\#448](https://github.com/shelljs/shelljs/issues/448)
+- shell.js grep: internal error,  Invalid regular expression [\#447](https://github.com/shelljs/shelljs/issues/447)
 - Stdout is empty on Git log command [\#439](https://github.com/shelljs/shelljs/issues/439)
 - Cannot read toString of null when using execSync [\#415](https://github.com/shelljs/shelljs/issues/415)
+- cp -R dir/ target fails to copy hidden files in dir [\#140](https://github.com/shelljs/shelljs/issues/140)
 - Adding callback to basic commands [\#102](https://github.com/shelljs/shelljs/issues/102)
+- \#mv Won't Work Across Disks [\#1](https://github.com/shelljs/shelljs/issues/1)
 
 **Merged pull requests:**
 
+- refactor: commands now register themselves [\#475](https://github.com/shelljs/shelljs/pull/475) ([nfischer](https://github.com/nfischer))
+- chore: switch to shields.io, and add npm badge [\#470](https://github.com/shelljs/shelljs/pull/470) ([nfischer](https://github.com/nfischer))
+- fix\(cp\): -n option no longer raises error [\#466](https://github.com/shelljs/shelljs/pull/466) ([nfischer](https://github.com/nfischer))
+- refactor: expose pipe-ability to command configuration [\#464](https://github.com/shelljs/shelljs/pull/464) ([nfischer](https://github.com/nfischer))
+- fix\(mv\): works across partitions [\#461](https://github.com/shelljs/shelljs/pull/461) ([nfischer](https://github.com/nfischer))
+- chore: switch to shelljs-changelog [\#460](https://github.com/shelljs/shelljs/pull/460) ([nfischer](https://github.com/nfischer))
+- chore: update release process [\#459](https://github.com/shelljs/shelljs/pull/459) ([nfischer](https://github.com/nfischer))
+- chore: revert depreciate shelljs/make \(\#431\) [\#458](https://github.com/shelljs/shelljs/pull/458) ([zephraph](https://github.com/zephraph))
+- chore: clarify message for when docs are not generated [\#457](https://github.com/shelljs/shelljs/pull/457) ([nfischer](https://github.com/nfischer))
+- chore\(gendocs\): add `npm run gendocs` command [\#455](https://github.com/shelljs/shelljs/pull/455) ([nfischer](https://github.com/nfischer))
+- chore: update jshint and move it to an npm script [\#454](https://github.com/shelljs/shelljs/pull/454) ([nfischer](https://github.com/nfischer))
+- test\(ls\): add case for trailing slash on dir name [\#450](https://github.com/shelljs/shelljs/pull/450) ([nfischer](https://github.com/nfischer))
+- docs\(exec\): explicitly mention the `shell` option [\#449](https://github.com/shelljs/shelljs/pull/449) ([nfischer](https://github.com/nfischer))
+- chore: setup changelog [\#443](https://github.com/shelljs/shelljs/pull/443) ([levithomason](https://github.com/levithomason))
 - docs: comment code better to help contributors [\#437](https://github.com/shelljs/shelljs/pull/437) ([nfischer](https://github.com/nfischer))
 - chore\(CI\): update appveyor [\#436](https://github.com/shelljs/shelljs/pull/436) ([nfischer](https://github.com/nfischer))
 - chore: test against node v6 [\#433](https://github.com/shelljs/shelljs/pull/433) ([nfischer](https://github.com/nfischer))
