@@ -70,6 +70,8 @@ function _mkdir(options, dirs) {
     } catch (e) {
       if (e.code === 'EACCES')
         common.error('cannot create directory ' + dir + ': Permission denied');
+      else
+        throw e;
     }
   });
   return new common.ShellString('', common.state.error, common.state.errorCode);
