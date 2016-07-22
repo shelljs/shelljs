@@ -6,9 +6,10 @@ var path = require('path');
 function mkdirSyncRecursive(dir) {
   var baseDir = path.dirname(dir);
 
-  // Prevents some potential problems arising from malformed UNCs or 
+  // Prevents some potential problems arising from malformed UNCs or
   // insufficient permissions.
-  if(baseDir == dir) {
+  /* istanbul ignore next */
+  if(baseDir === dir) {
     common.error("dirname() failed: [" + dir + "]");
   }
 
