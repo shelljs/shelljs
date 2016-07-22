@@ -79,6 +79,10 @@ require('./src/sed');
 //@include ./src/sort
 require('./src/sort');
 
+//@include ./src/uniq
+var _uniq = require('./src/uniq');
+exports.uniq = common.wrap('uniq', _uniq, {idx: 1, canReceivePipe: true});
+
 //@include ./src/grep
 require('./src/grep');
 
