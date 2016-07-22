@@ -9,7 +9,7 @@ function mkdirSyncRecursive(dir) {
   // Prevents some potential problems arising from malformed UNCs or 
   // insufficient permissions.
   if(baseDir == dir) {
-    throw "dirname() failed: [" + dir + "]";
+    common.error("dirname() failed: [" + dir + "]");
   }
 
   // Base dir exists, no recursion necessary
