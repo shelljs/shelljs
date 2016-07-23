@@ -318,6 +318,9 @@ introduced between each file).
 
 ### head([{'-n', \<num\>},] file [, file ...])
 ### head([{'-n', \<num\>},] file_array)
+Available options:
+
++ `-n <num>`: Show the first `<num>` lines of the files
 
 Examples:
 
@@ -327,12 +330,14 @@ var str = head('file1', 'file2');
 var str = head(['file1', 'file2']); // same as above
 ```
 
-Output the first 10 lines of a file (or the first `<num>` if `-n` is
-specified)
+Read the start of a file.
 
 
 ### tail([{'-n', \<num\>},] file [, file ...])
 ### tail([{'-n', \<num\>},] file_array)
+Available options:
+
++ `-n <num>`: Show the last `<num>` lines of the files
 
 Examples:
 
@@ -342,8 +347,7 @@ var str = tail('file1', 'file2');
 var str = tail(['file1', 'file2']); // same as above
 ```
 
-Output the last 10 lines of a file (or the last `<num>` if `-n` is
-specified)
+Read the end of a file.
 
 
 ### ShellString.prototype.to(file)
