@@ -5,7 +5,17 @@ var glob = require('glob');
 
 var globPatternRecursive = path.sep + '**' + path.sep + '*';
 
-common.register('ls', _ls, {globStart: 1});
+common.register('ls', _ls, {
+  globStart: 1,
+  cmdOptions: {
+    'R': 'recursive',
+    'A': 'all',
+    'a': 'all_deprecated',
+    'd': 'directory',
+    'l': 'long',
+  },
+});
+
 
 //@
 //@ ### ls([options,] [path, ...])
@@ -31,14 +41,6 @@ common.register('ls', _ls, {globStart: 1});
 //@
 //@ Returns array of files in the given path, or in current directory if no path provided.
 function _ls(options, paths) {
-  options = common.parseOptions(options, {
-    'R': 'recursive',
-    'A': 'all',
-    'a': 'all_deprecated',
-    'd': 'directory',
-    'l': 'long'
-  });
-
   if (options.all_deprecated) {
     // We won't support the -a option as it's hard to image why it's useful
     // (it includes '.' and '..' in addition to '.*' files)

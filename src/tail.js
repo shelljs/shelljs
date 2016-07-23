@@ -1,11 +1,20 @@
 var common = require('./common');
 var fs = require('fs');
 
-common.register('tail', _tail, {globStart: 1, canReceivePipe: true});
+common.register('tail', _tail, {
+  globStart: 1,
+  canReceivePipe: true,
+  cmdOptions: {
+    'n': 'numLines',
+  },
+});
 
 //@
 //@ ### tail([{'-n', \<num\>},] file [, file ...])
 //@ ### tail([{'-n', \<num\>},] file_array)
+//@ Available options:
+//@
+//@ + `-n <num>`: Show the last `<num>` lines of the files
 //@
 //@ Examples:
 //@
@@ -15,12 +24,8 @@ common.register('tail', _tail, {globStart: 1, canReceivePipe: true});
 //@ var str = tail(['file1', 'file2']); // same as above
 //@ ```
 //@
-//@ Output the last 10 lines of a file (or the last `<num>` if `-n` is
-//@ specified)
+//@ Read the end of a file.
 function _tail(options, files) {
-  options = common.parseOptions(options, {
-    'n': 'numLines'
-  });
   var tail = [];
   var pipe = common.readFromPipe(this);
 

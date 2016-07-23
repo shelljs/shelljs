@@ -1,7 +1,20 @@
 var common = require('./common');
 var fs = require('fs');
 
-common.register('test', _test);
+common.register('test', _test, {
+  cmdOptions: {
+    'b': 'block',
+    'c': 'character',
+    'd': 'directory',
+    'e': 'exists',
+    'f': 'file',
+    'L': 'link',
+    'p': 'pipe',
+    'S': 'socket',
+  },
+});
+
+
 
 //@
 //@ ### test(expression)
@@ -27,18 +40,6 @@ common.register('test', _test);
 function _test(options, path) {
   if (!path)
     common.error('no path given');
-
-  // hack - only works with unary primaries
-  options = common.parseOptions(options, {
-    'b': 'block',
-    'c': 'character',
-    'd': 'directory',
-    'e': 'exists',
-    'f': 'file',
-    'L': 'link',
-    'p': 'pipe',
-    'S': 'socket'
-  });
 
   var canInterpret = false;
   for (var key in options)

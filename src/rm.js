@@ -1,7 +1,14 @@
 var common = require('./common');
 var fs = require('fs');
 
-common.register('rm', _rm, {globStart: 1});
+common.register('rm', _rm, {
+  globStart: 1,
+  cmdOptions: {
+    'f': 'force',
+    'r': 'recursive',
+    'R': 'recursive',
+  },
+});
 
 // Recursively removes 'dir'
 // Adapted from https://github.com/ryanmcgrath/wrench-js
@@ -97,11 +104,6 @@ function isWriteable(file) {
 //@
 //@ Removes files.
 function _rm(options, files) {
-  options = common.parseOptions(options, {
-    'f': 'force',
-    'r': 'recursive',
-    'R': 'recursive'
-  });
   if (!files)
     common.error('no paths given');
 

@@ -1,7 +1,16 @@
 var common = require('./common');
 var fs = require('fs');
 
-common.register('touch', _touch, {globStart: 1});
+common.register('touch', _touch, {
+  globStart: 1,
+  cmdOptions: {
+    'a': 'atime_only',
+    'c': 'no_create',
+    'd': 'date',
+    'm': 'mtime_only',
+    'r': 'reference',
+  },
+});
 
 //@
 //@ ### touch([options,] file [, file ...])
@@ -26,14 +35,6 @@ common.register('touch', _touch, {globStart: 1});
 //@ A FILE argument that does not exist is created empty, unless -c is supplied.
 //@ This is a partial implementation of *[touch(1)](http://linux.die.net/man/1/touch)*.
 function _touch(opts, files) {
-  opts = common.parseOptions(opts, {
-    'a': 'atime_only',
-    'c': 'no_create',
-    'd': 'date',
-    'm': 'mtime_only',
-    'r': 'reference',
-  });
-
   if (!files)
     common.error('no files given');
   else if (typeof files === 'string')

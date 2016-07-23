@@ -1,7 +1,13 @@
 var common = require('./common');
 var fs = require('fs');
 
-common.register('head', _head, {globStart: 1, canReceivePipe: true});
+common.register('head', _head, {
+  globStart: 1,
+  canReceivePipe: true,
+  cmdOptions: {
+    'n': 'numLines',
+  },
+});
 
 // This reads n or more lines, or the entire file, whichever is less.
 function readSomeLines(file, numLines) {
@@ -33,6 +39,9 @@ function readSomeLines(file, numLines) {
 //@
 //@ ### head([{'-n', \<num\>},] file [, file ...])
 //@ ### head([{'-n', \<num\>},] file_array)
+//@ Available options:
+//@
+//@ + `-n <num>`: Show the first `<num>` lines of the files
 //@
 //@ Examples:
 //@
@@ -42,12 +51,8 @@ function readSomeLines(file, numLines) {
 //@ var str = head(['file1', 'file2']); // same as above
 //@ ```
 //@
-//@ Output the first 10 lines of a file (or the first `<num>` if `-n` is
-//@ specified)
+//@ Read the start of a file.
 function _head(options, files) {
-  options = common.parseOptions(options, {
-    'n': 'numLines'
-  });
   var head = [];
   var pipe = common.readFromPipe(this);
 

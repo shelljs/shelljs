@@ -42,7 +42,7 @@ function _find(options, paths) {
     pushFile(file);
 
     if (fs.statSync(file).isDirectory()) {
-      _ls('-RA', file).forEach(function(subfile) {
+      _ls({recursive: true, all: true}, file).forEach(function(subfile) {
         pushFile(path.join(file, subfile));
       });
     }
