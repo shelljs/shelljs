@@ -10,6 +10,8 @@ function lpad(c, str){
   return res;
 }
 
+common.register('uniq', _uniq, {globStart: 1, canReceivePipe: true});
+
 //@
 //@ ### uniq([options,] [input, [output]])
 //@ Available options:

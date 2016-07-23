@@ -39,6 +39,12 @@ assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result + '', shell.cat('resources/uniq/file2u').toString());
 
+// with glob character
+result = shell.uniq('-i', 'resources/uniq/fi?e2');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result + '', shell.cat('resources/uniq/file2u').toString());
+
 //uniq file1 file2
 shell.uniq('resources/uniq/file1', 'resources/uniq/file1t');
 assert.equal(shell.error(), null);
