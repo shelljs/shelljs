@@ -18,6 +18,7 @@ common.register('uniq', _uniq, {
     'c': 'count',
     'd': 'duplicates',
   },
+  wrapOutput: true,
 });
 
 //@
@@ -67,13 +68,12 @@ function _uniq(options, input, output) {
                  return (options.count ? (lpad(7,obj.count) + ' ') : '') + obj.ln;
                }).join('\n') + '\n';
 
-  var res = new common.ShellString(uniqed, common.state.error, common.state.errorCode);
   if(output){
-    res.to(output);
+    (new common.ShellString(uniqed)).to(output);
     //if uniq writes to output, nothing is passed to the next command in the pipeline (if any)
-    return new common.ShellString('', common.state.error, common.state.errorCode);
+    return '';
   }else{
-    return res;
+    return uniqed;
   }
 }
 

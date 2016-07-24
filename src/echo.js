@@ -1,6 +1,6 @@
 var common = require('./common');
 
-common.register('echo', _echo);
+common.register('echo', _echo, {wrapOutput: true});
 
 //@
 //@ ### echo(string [, string ...])
@@ -18,6 +18,6 @@ function _echo(opts, messages) {
   // allow strings starting with '-', see issue #20
   messages = [].slice.call(arguments, opts ? 0 : 1);
   console.log.apply(console, messages);
-  return new common.ShellString(messages.join(' '), '', 0);
+  return messages.join(' ');
 }
 module.exports = _echo;

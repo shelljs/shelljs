@@ -1,7 +1,10 @@
 var fs = require('fs');
 var common = require('./common');
 
-common.register('cd', _cd, {globStart: 1});
+common.register('cd', _cd, {
+  globStart: 1,
+  wrapOutput: true,
+});
 
 //@
 //@ ### cd([dir])
@@ -33,6 +36,6 @@ function _cd(options, dir) {
     }
     if (err) common.error(err);
   }
-  return new common.ShellString('', common.state.error, common.state.errorCode);
+  return '';
 }
 module.exports = _cd;

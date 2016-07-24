@@ -7,6 +7,7 @@ common.register('sed', _sed, {
   cmdOptions: {
     'i': 'inplace',
   },
+  wrapOutput: true,
 });
 
 //@
@@ -67,6 +68,6 @@ function _sed(options, regex, replacement, files) {
       fs.writeFileSync(file, result, 'utf8');
   });
 
-  return new common.ShellString(sed.join('\n'), common.state.error, common.state.errorCode);
+  return sed.join('\n');
 }
 module.exports = _sed;

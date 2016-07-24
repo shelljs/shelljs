@@ -8,6 +8,7 @@ common.register('grep', _grep, {
     'v': 'inverse',
     'l': 'nameOnly',
   },
+  wrapOutput: true,
 });
 
 //@
@@ -60,6 +61,6 @@ function _grep(options, regex, files) {
     }
   });
 
-  return new common.ShellString(grep.join('\n')+'\n', common.state.error, common.state.errorCode);
+  return grep.join('\n')+'\n';
 }
 module.exports = _grep;

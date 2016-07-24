@@ -7,9 +7,9 @@ common.register('sort', _sort, {
   cmdOptions: {
     'r': 'reverse',
     'n': 'numerical',
-  }
+  },
+  wrapOutput: true,
 });
-
 
 // parse out the number prefix of a line
 function parseNumber (str) {
@@ -86,7 +86,7 @@ function _sort(options, files) {
   if (options.reverse)
     sorted = sorted.reverse();
 
-  return new common.ShellString(sorted.join('\n')+'\n', common.state.error, common.state.errorCode);
+  return sorted.join('\n')+'\n';
 }
 
 module.exports = _sort;

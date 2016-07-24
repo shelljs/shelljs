@@ -8,6 +8,7 @@ common.register('ln', _ln, {
     's': 'symlink',
     'f': 'force',
   },
+  wrapOutput: true,
 });
 
 //@
@@ -68,6 +69,6 @@ function _ln(options, source, dest) {
       common.error(err.message);
     }
   }
-  return new common.ShellString('', common.state.error, common.state.errorCode);
+  return '';
 }
 module.exports = _ln;

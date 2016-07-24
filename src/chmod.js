@@ -30,7 +30,10 @@ var PERMS = (function (base) {
   READ  : 4
 });
 
-common.register('chmod', _chmod, {globStart: 1});
+common.register('chmod', _chmod, {
+  globStart: 1,
+  wrapOutput: true,
+});
 
 //@
 //@ ### chmod(octal_mode || octal_string, file)
@@ -210,6 +213,6 @@ function _chmod(options, mode, filePattern) {
       fs.chmodSync(file, newPerms);
     }
   });
-  return new common.ShellString('', common.state.error, common.state.errorCode);
+  return '';
 }
 module.exports = _chmod;
