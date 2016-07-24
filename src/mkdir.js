@@ -71,10 +71,17 @@ function _mkdir(options, dirs) {
       return; // skip dir
     }
 
-    if (options.fullpath)
-      mkdirSyncRecursive(dir);
-    else
-      fs.mkdirSync(dir, parseInt('0777', 8));
+    try {
+      if (options.fullpath)
+        mkdirSyncRecursive(dir);
+      else
+        fs.mkdirSync(dir, parseInt('0777', 8));
+    } catch (e) {
+      if (e.code === 'EACCES')
+        common.error('cannot create directory ' + dir + ': Permission denied');
+      else
+        throw e;
+    }
   });
   return new common.ShellString('', common.state.error, common.state.errorCode);
 } // mkdir

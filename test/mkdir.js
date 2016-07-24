@@ -41,6 +41,21 @@ assert.equal(result.stderr, 'mkdir: no such file or directory: /asdfasdf');
 assert.equal(fs.existsSync('/asdfasdf'), false);
 assert.equal(fs.existsSync('/asdfasdf/foobar'), false);
 
+// Check for invalid permissions
+if (process.platform !== 'win32') {
+  // This test case only works on unix, but should work on Windows as well
+  var dirName = 'nowritedir';
+  shell.mkdir(dirName);
+  assert.ok(!shell.error());
+  shell.chmod('-w', dirName);
+  result = shell.mkdir(dirName + '/foo');
+  assert.equal(result.code, 1);
+  assert.equal(result.stderr, 'mkdir: cannot create directory nowritedir/foo: Permission denied');
+  assert.ok(shell.error());
+  assert.equal(fs.existsSync(dirName + '/foo'), false);
+  shell.rm('-rf', dirName); // clean up
+}
+
 //
 // Valids
 //
