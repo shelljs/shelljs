@@ -1,7 +1,14 @@
 var common = require('./common');
 var fs = require('fs');
 
-common.register('grep', _grep, {globStart: 2, canReceivePipe: true}); // don't glob-expand the regex
+common.register('grep', _grep, {
+  globStart: 2, // don't glob-expand the regex
+  canReceivePipe: true,
+  cmdOptions: {
+    'v': 'inverse',
+    'l': 'nameOnly',
+  },
+});
 
 //@
 //@ ### grep([options,] regex_filter, file [, file ...])
@@ -21,11 +28,6 @@ common.register('grep', _grep, {globStart: 2, canReceivePipe: true}); // don't g
 //@ Reads input string from given files and returns a string containing all lines of the
 //@ file that match the given `regex_filter`.
 function _grep(options, regex, files) {
-  options = common.parseOptions(options, {
-    'v': 'inverse',
-    'l': 'nameOnly'
-  });
-
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe(this);
 

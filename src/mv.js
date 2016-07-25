@@ -4,7 +4,13 @@ var common = require('./common');
 var cp = require('./cp');
 var rm = require('./rm');
 
-common.register('mv', _mv, {globStart: 1});
+common.register('mv', _mv, {
+  globStart: 1,
+  cmdOptions: {
+    'f': '!no_force',
+    'n': 'no_force',
+  },
+});
 
 //@
 //@ ### mv([options ,] source [, source ...], dest')
@@ -24,11 +30,6 @@ common.register('mv', _mv, {globStart: 1});
 //@
 //@ Moves files.
 function _mv(options, sources, dest) {
-  options = common.parseOptions(options, {
-    'f': '!no_force',
-    'n': 'no_force'
-  });
-
   // Get sources, dest
   if (arguments.length < 3) {
     common.error('missing <source> and/or <dest>');

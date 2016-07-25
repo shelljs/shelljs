@@ -2,7 +2,12 @@ var common = require('./common');
 var fs = require('fs');
 var path = require('path');
 
-common.register('mkdir', _mkdir, {globStart: 1});
+common.register('mkdir', _mkdir, {
+  globStart: 1,
+  cmdOptions: {
+    'p': 'fullpath',
+  },
+});
 
 // Recursively creates 'dir'
 function mkdirSyncRecursive(dir) {
@@ -44,9 +49,6 @@ function mkdirSyncRecursive(dir) {
 //@
 //@ Creates directories.
 function _mkdir(options, dirs) {
-  options = common.parseOptions(options, {
-    'p': 'fullpath'
-  });
   if (!dirs)
     common.error('no paths given');
 

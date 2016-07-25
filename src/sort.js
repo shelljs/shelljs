@@ -1,7 +1,15 @@
 var common = require('./common');
 var fs = require('fs');
 
-common.register('sort', _sort, {globStart: 1, canReceivePipe: true});
+common.register('sort', _sort, {
+  globStart: 1,
+  canReceivePipe: true,
+  cmdOptions: {
+    'r': 'reverse',
+    'n': 'numerical',
+  }
+});
+
 
 // parse out the number prefix of a line
 function parseNumber (str) {
@@ -50,11 +58,6 @@ function numericalCmp(a, b) {
 //@ Return the contents of the files, sorted line-by-line. Sorting multiple
 //@ files mixes their content, just like unix sort does.
 function _sort(options, files) {
-  options = common.parseOptions(options, {
-    'r': 'reverse',
-    'n': 'numerical'
-  });
-
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe(this);
 

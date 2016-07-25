@@ -3,7 +3,15 @@ var path = require('path');
 var common = require('./common');
 var os = require('os');
 
-common.register('cp', _cp, {globStart: 1});
+common.register('cp', _cp, {globStart: 1, cmdOptions: {
+    'f': '!no_force',
+    'n': 'no_force',
+    'R': 'recursive',
+    'r': 'recursive',
+    'L': 'followsymlink',
+    'P': 'noFollowsymlink',
+  }
+});
 
 // Buffered file copy, synchronous
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
@@ -173,15 +181,6 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@
 //@ Copies files.
 function _cp(options, sources, dest) {
-  options = common.parseOptions(options, {
-    'f': '!no_force',
-    'n': 'no_force',
-    'R': 'recursive',
-    'r': 'recursive',
-    'L': 'followsymlink',
-    'P': 'noFollowsymlink',
-  });
-
   // If we're missing -R, it actually implies -L (unless -P is explicit)
   if (options.followsymlink)
     options.noFollowsymlink = false;

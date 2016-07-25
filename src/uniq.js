@@ -10,7 +10,15 @@ function lpad(c, str){
   return res;
 }
 
-common.register('uniq', _uniq, {globStart: 1, canReceivePipe: true});
+common.register('uniq', _uniq, {
+  globStart: 1,
+  canReceivePipe: true,
+  cmdOptions: {
+    'i': 'ignoreCase',
+    'c': 'count',
+    'd': 'duplicates',
+  },
+});
 
 //@
 //@ ### uniq([options,] [input, [output]])
@@ -30,12 +38,6 @@ common.register('uniq', _uniq, {globStart: 1, canReceivePipe: true});
 //@
 //@ Filter adjacent matching lines from input
 function _uniq(options, input, output) {
-  options = common.parseOptions(options, {
-    'i': 'ignoreCase',
-    'c': 'count',
-    'd': 'duplicates'
-  });
-
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe(this);
 

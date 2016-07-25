@@ -1,7 +1,13 @@
 var common = require('./common');
 var fs = require('fs');
 
-common.register('sed', _sed, {globStart: 3, canReceivePipe: true}); // don't glob-expand regexes
+common.register('sed', _sed, {
+  globStart: 3, // don't glob-expand regexes
+  canReceivePipe: true,
+  cmdOptions: {
+    'i': 'inplace',
+  },
+});
 
 //@
 //@ ### sed([options,] search_regex, replacement, file [, file ...])
@@ -20,10 +26,6 @@ common.register('sed', _sed, {globStart: 3, canReceivePipe: true}); // don't glo
 //@ Reads an input string from `files` and performs a JavaScript `replace()` on the input
 //@ using the given search regex and replacement string or function. Returns the new string after replacement.
 function _sed(options, regex, replacement, files) {
-  options = common.parseOptions(options, {
-    'i': 'inplace'
-  });
-
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe(this);
 

@@ -315,9 +315,16 @@ function wrap(cmd, fn, options) {
 
         // Perform glob-expansion on all arguments after globStart, but preserve
         // the arguments before it (like regexes for sed and grep)
-        if (!config.noglob && typeof options.globStart === 'number')
+        if (!config.noglob && typeof options.globStart === 'number') {
           args = args.slice(0, options.globStart).concat(expand(args.slice(options.globStart)));
+        }
+
         try {
+          // parse options if options are provided
+          if (typeof options.cmdOptions === 'object') {
+            args[0] = parseOptions(args[0], options.cmdOptions);
+          }
+
           retValue = fn.apply(this, args);
         } catch (e) {
           if (e.msg === 'earlyExit')

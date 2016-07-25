@@ -2,7 +2,13 @@ var fs = require('fs');
 var path = require('path');
 var common = require('./common');
 
-common.register('ln', _ln, {globStart: 1});
+common.register('ln', _ln, {
+  globStart: 1,
+  cmdOptions: {
+    's': 'symlink',
+    'f': 'force',
+  },
+});
 
 //@
 //@ ### ln([options,] source, dest)
@@ -20,11 +26,6 @@ common.register('ln', _ln, {globStart: 1});
 //@
 //@ Links source to dest. Use -f to force the link, should dest already exist.
 function _ln(options, source, dest) {
-  options = common.parseOptions(options, {
-    's': 'symlink',
-    'f': 'force'
-  });
-
   if (!source || !dest) {
     common.error('Missing <source> and/or <dest>');
   }
