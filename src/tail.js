@@ -7,6 +7,7 @@ common.register('tail', _tail, {
   cmdOptions: {
     'n': 'numLines',
   },
+  wrapOutput: true,
 });
 
 //@
@@ -67,6 +68,6 @@ function _tail(options, files) {
 
   if (shouldAppendNewline)
     tail.push(''); // to add a trailing newline once we join
-  return new common.ShellString(tail.join('\n'), common.state.error, common.state.errorCode);
+  return tail.join('\n');
 }
 module.exports = _tail;

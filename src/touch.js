@@ -10,6 +10,7 @@ common.register('touch', _touch, {
     'm': 'mtime_only',
     'r': 'reference',
   },
+  wrapOutput: true,
 });
 
 //@
@@ -45,7 +46,7 @@ function _touch(opts, files) {
   files.forEach(function(f) {
     touchFile(opts, f);
   });
-  return new common.ShellString('', common.state.error, common.state.errorCode);
+  return '';
 }
 
 function touchFile(opts, file) {

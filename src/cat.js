@@ -1,7 +1,11 @@
 var common = require('./common');
 var fs = require('fs');
 
-common.register('cat', _cat, {globStart: 1, canReceivePipe: true});
+common.register('cat', _cat, {
+  globStart: 1,
+  canReceivePipe: true,
+  wrapOutput: true,
+});
 
 //@
 //@ ### cat(file [, file ...])
@@ -33,6 +37,6 @@ function _cat(options, files) {
     cat += fs.readFileSync(file, 'utf8');
   });
 
-  return new common.ShellString(cat, common.state.error, common.state.errorCode);
+  return cat;
 }
 module.exports = _cat;

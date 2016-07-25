@@ -343,6 +343,11 @@ function wrap(cmd, fn, options) {
         throw e;
     }
 
+    if (options.wrapOutput &&
+        (typeof retValue === 'string' || Array.isArray(retValue))) {
+      retValue = new ShellString(retValue, state.error, state.errorCode);
+    }
+
     state.currentCmd = 'shell.js';
     return retValue;
   };

@@ -7,6 +7,7 @@ common.register('head', _head, {
   cmdOptions: {
     'n': 'numLines',
   },
+  wrapOutput: true,
 });
 
 // This reads n or more lines, or the entire file, whichever is less.
@@ -98,6 +99,6 @@ function _head(options, files) {
 
   if (shouldAppendNewline)
     head.push(''); // to add a trailing newline once we join
-  return new common.ShellString(head.join('\n'), common.state.error, common.state.errorCode);
+  return head.join('\n');
 }
 module.exports = _head;

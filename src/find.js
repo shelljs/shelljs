@@ -3,7 +3,10 @@ var path = require('path');
 var common = require('./common');
 var _ls = require('./ls');
 
-common.register('find', _find, {globStart: 1});
+common.register('find', _find, {
+  globStart: 1,
+  wrapOutput: true,
+});
 
 //@
 //@ ### find(path [, path ...])
@@ -48,6 +51,6 @@ function _find(options, paths) {
     }
   });
 
-  return new common.ShellString(list, common.state.error, common.state.errorCode);
+  return list;
 }
 module.exports = _find;

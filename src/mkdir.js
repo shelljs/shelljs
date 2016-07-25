@@ -7,6 +7,7 @@ common.register('mkdir', _mkdir, {
   cmdOptions: {
     'p': 'fullpath',
   },
+  wrapOutput: true,
 });
 
 // Recursively creates 'dir'
@@ -85,6 +86,6 @@ function _mkdir(options, dirs) {
         throw e;
     }
   });
-  return new common.ShellString('', common.state.error, common.state.errorCode);
+  return '';
 } // mkdir
 module.exports = _mkdir;

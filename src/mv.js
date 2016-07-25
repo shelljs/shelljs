@@ -10,6 +10,7 @@ common.register('mv', _mv, {
     'f': '!no_force',
     'n': 'no_force',
   },
+  wrapOutput: true,
 });
 
 //@
@@ -88,6 +89,6 @@ function _mv(options, sources, dest) {
       }
     }
   }); // forEach(src)
-  return new common.ShellString('', common.state.error, common.state.errorCode);
+  return '';
 } // mv
 module.exports = _mv;

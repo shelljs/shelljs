@@ -2,7 +2,7 @@ var common = require('./common');
 var fs = require('fs');
 var path = require('path');
 
-common.register('which', _which);
+common.register('which', _which, {wrapOutput: true});
 
 // XP's system default value for PATHEXT system variable, just in case it's not
 // set on Windows.
@@ -95,6 +95,6 @@ function _which(options, cmd) {
 
   where = where || path.resolve(cmd);
 
-  return new common.ShellString(where, '', common.state.errorCode);
+  return where;
 }
 module.exports = _which;

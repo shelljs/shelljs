@@ -14,8 +14,8 @@ common.register('ls', _ls, {
     'd': 'directory',
     'l': 'long',
   },
+  wrapOutput: true,
 });
-
 
 //@
 //@ ### ls([options,] [path, ...])
@@ -104,7 +104,7 @@ function _ls(options, paths) {
   });
 
   // Add methods, to make this more compatible with ShellStrings
-  return new common.ShellString(list, common.state.error, common.state.errorCode);
+  return list;
 }
 
 function addLsAttributes(path, stats) {
