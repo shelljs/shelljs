@@ -6,7 +6,13 @@
 // http://github.com/arturadib/shelljs
 //
 
-var common = require('./src/common');
+var commonPath = './src/common';
+var common = require(commonPath);
+if (!common.register) {
+  // If this isn't defined yet, we haven't fully finished loading ./src/common
+  delete require.cache[require.resolve(commonPath)];
+  common = require(commonPath);
+}
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
