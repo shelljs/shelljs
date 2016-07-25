@@ -1,5 +1,34 @@
 # Change Log
 
+## [Unreleased](https://github.com/shelljs/shelljs/tree/HEAD)
+
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.2...HEAD)
+
+**Closed issues:**
+
+- cp -r breaks when the directory contains a softlink [\#193](https://github.com/shelljs/shelljs/issues/193)
+- Redirect output to file fails [\#60](https://github.com/shelljs/shelljs/issues/60)
+- We need sed -n ? [\#38](https://github.com/shelljs/shelljs/issues/38)
+
+## [v0.7.2](https://github.com/shelljs/shelljs/tree/v0.7.2) (2016-07-25)
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.1...v0.7.2)
+
+**Closed issues:**
+
+- shelljs should not kill process if node call throws exception [\#473](https://github.com/shelljs/shelljs/issues/473)
+- `cp` work incorrectly when folder name contains '@' [\#463](https://github.com/shelljs/shelljs/issues/463)
+- Something went wrong [\#158](https://github.com/shelljs/shelljs/issues/158)
+
+**Merged pull requests:**
+
+- fix: resolve a cylcic-dependency problem [\#482](https://github.com/shelljs/shelljs/pull/482) ([nfischer](https://github.com/nfischer))
+- refactor: add wrapOutput option to auto-ShellString-ify command output [\#481](https://github.com/shelljs/shelljs/pull/481) ([nfischer](https://github.com/nfischer))
+- refactor: move option parsing into common.wrap\(\) [\#479](https://github.com/shelljs/shelljs/pull/479) ([nfischer](https://github.com/nfischer))
+- refactor: hook new uniq\(\) command using new format [\#478](https://github.com/shelljs/shelljs/pull/478) ([nfischer](https://github.com/nfischer))
+- Fix mkdir malformed path [\#477](https://github.com/shelljs/shelljs/pull/477) ([nfischer](https://github.com/nfischer))
+- fix: mkdir for invalid perms does not kill process [\#474](https://github.com/shelljs/shelljs/pull/474) ([nfischer](https://github.com/nfischer))
+- feat\(command\): new command: uniq\(\) [\#453](https://github.com/shelljs/shelljs/pull/453) ([joshi-sh](https://github.com/joshi-sh))
+
 ## [v0.7.1](https://github.com/shelljs/shelljs/tree/v0.7.1) (2016-07-22)
 [Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.0...v0.7.1)
 
