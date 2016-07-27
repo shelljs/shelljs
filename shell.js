@@ -94,8 +94,7 @@ require('./src/echo');
 
 
 //@include ./src/mktemp
-var _mktemp = require('./src/mktemp');
-exports.mktemp = common.wrap('mktemp', _mktemp, {idx: 1});
+require('./src/mktemp');
 
 //@include ./src/dirs
 require('./src/dirs');

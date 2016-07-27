@@ -1,5 +1,4 @@
 var common = require('./common');
-var mktemp = require('./mktemp');
 var os = require('os');
 var fs = require('fs');
 var path = require('path');
@@ -8,6 +7,14 @@ common.register('tempdir', _tempDir, {
   allowGlobbing: false,
   wrapOutput: false,
 });
+var mktemp;
+
+function getMktemp() {
+  if (!mktemp) mktemp = require('./mktemp');
+  return mktemp;
+}
+
+common.register('tempdir', _tempDir);
 
 // Returns false if 'dir' is not a writeable directory, 'dir' otherwise
 function writeableDir(dir) {
@@ -18,7 +25,7 @@ function writeableDir(dir) {
     return false;
 
   try {
-    mktemp('-u', path.resolve(dir, 'tmp.shelljs.XXXXXXXXXX'));
+    getMktemp()('-u', path.resolve(dir, 'tmp.shelljs.XXXXXXXXXX'));
     return dir;
   } catch (e) {
     return false;
