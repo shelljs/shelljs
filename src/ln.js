@@ -3,12 +3,10 @@ var path = require('path');
 var common = require('./common');
 
 common.register('ln', _ln, {
-  globStart: 1,
   cmdOptions: {
     's': 'symlink',
     'f': 'force',
   },
-  wrapOutput: true,
 });
 
 //@

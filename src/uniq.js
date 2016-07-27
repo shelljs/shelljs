@@ -11,14 +11,12 @@ function lpad(c, str){
 }
 
 common.register('uniq', _uniq, {
-  globStart: 1,
   canReceivePipe: true,
   cmdOptions: {
     'i': 'ignoreCase',
     'c': 'count',
     'd': 'duplicates',
   },
-  wrapOutput: true,
 });
 
 //@

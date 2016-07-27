@@ -37,7 +37,6 @@ assert.ok(!shell.foo);
 
 // Register the plugin
 plugin.register('foo', fooImplementation, {
-  globStart: 1,
   cmdOptions: {
     'f': 'flag',
   },
@@ -69,7 +68,7 @@ shell.foo('-f', 'filename');
 assert.equal(data, 12);
 assert.equal(fname, 'filename');
 
-// The command supports globbing
+// The command supports globbing by default
 shell.foo('-f', 're*u?ces');
 assert.equal(data, 12);
 assert.equal(fname, 'resources');

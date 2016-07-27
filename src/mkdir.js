@@ -3,11 +3,9 @@ var fs = require('fs');
 var path = require('path');
 
 common.register('mkdir', _mkdir, {
-  globStart: 1,
   cmdOptions: {
     'p': 'fullpath',
   },
-  wrapOutput: true,
 });
 
 // Recursively creates 'dir'

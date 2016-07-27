@@ -2,9 +2,15 @@ var common = require('./common');
 var _cd = require('./cd');
 var path = require('path');
 
-common.register('dirs', _dirs, {globStart: 1});
-common.register('pushd', _pushd, {globStart: 1});
-common.register('popd', _popd, {globStart: 1});
+common.register('dirs', _dirs, {
+  wrapOutput: false,
+});
+common.register('pushd', _pushd, {
+  wrapOutput: false,
+});
+common.register('popd', _popd, {
+  wrapOutput: false,
+});
 
 // Pushd/popd/dirs internals
 var _dirStack = [];

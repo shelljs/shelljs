@@ -2,7 +2,9 @@ var common = require('./common');
 var fs = require('fs');
 var path = require('path');
 
-common.register('which', _which, {wrapOutput: true});
+common.register('which', _which, {
+  allowGlobbing: false,
+});
 
 // XP's system default value for PATHEXT system variable, just in case it's not
 // set on Windows.

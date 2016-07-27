@@ -1,7 +1,9 @@
 var path = require('path');
 var common = require('./common');
 
-common.register('pwd', _pwd, {wrapOutput: true});
+common.register('pwd', _pwd, {
+  allowGlobbing: false,
+});
 
 //@
 //@ ### pwd()

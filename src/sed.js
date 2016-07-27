@@ -7,7 +7,6 @@ common.register('sed', _sed, {
   cmdOptions: {
     'i': 'inplace',
   },
-  wrapOutput: true,
 });
 
 //@

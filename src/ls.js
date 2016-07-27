@@ -6,7 +6,6 @@ var glob = require('glob');
 var globPatternRecursive = path.sep + '**' + path.sep + '*';
 
 common.register('ls', _ls, {
-  globStart: 1,
   cmdOptions: {
     'R': 'recursive',
     'A': 'all',
@@ -14,7 +13,6 @@ common.register('ls', _ls, {
     'd': 'directory',
     'l': 'long',
   },
-  wrapOutput: true,
 });
 
 //@

@@ -2,12 +2,10 @@ var common = require('./common');
 var fs = require('fs');
 
 common.register('head', _head, {
-  globStart: 1,
   canReceivePipe: true,
   cmdOptions: {
     'n': 'numLines',
   },
-  wrapOutput: true,
 });
 
 // This reads n or more lines, or the entire file, whichever is less.

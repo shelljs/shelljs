@@ -2,7 +2,10 @@ var common = require('./common');
 var os = require('os');
 var fs = require('fs');
 
-common.register('tempdir', _tempDir);
+common.register('tempdir', _tempDir, {
+  allowGlobbing: false,
+  wrapOutput: false,
+});
 
 // Returns false if 'dir' is not a writeable directory, 'dir' otherwise
 function writeableDir(dir) {

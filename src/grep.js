@@ -8,7 +8,6 @@ common.register('grep', _grep, {
     'v': 'inverse',
     'l': 'nameOnly',
   },
-  wrapOutput: true,
 });
 
 //@
