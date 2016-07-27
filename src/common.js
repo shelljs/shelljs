@@ -236,10 +236,10 @@ function randomFileName() {
 }
 exports.randomFileName = randomFileName;
 
-// extend(target_obj, source_obj1 [, source_obj2 ...])
-// Shallow extend, e.g.:
-//    extend({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
-function extend(target) {
+// objectAssign(target_obj, source_obj1 [, source_obj2 ...])
+// Ponyfill for Object.assign
+//    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
+function objectAssign(target) {
   var sources = [].slice.call(arguments, 1);
   sources.forEach(function(source) {
     for (var key in source)
@@ -248,7 +248,7 @@ function extend(target) {
 
   return target;
 }
-exports.extend = extend;
+exports.extend = Object.assign || objectAssign;
 
 // Common wrapper for all Unix-like commands that performs glob expansion,
 // command-logging, and other nice things
