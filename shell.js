@@ -68,10 +68,11 @@ require('./src/head');
 //@include ./src/tail
 require('./src/tail');
 
-// The below commands have been moved to common.ShellString(), and are only here
-// for generating the docs
 //@include ./src/to
+require('./src/to');
+
 //@include ./src/toEnd
+require('./src/toEnd');
 
 //@include ./src/sed
 require('./src/sed');

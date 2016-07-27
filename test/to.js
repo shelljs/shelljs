@@ -39,6 +39,7 @@ assert.equal(result, 'hello world');
 
 // With a glob
 shell.ShellString('goodbye').to('tmp/t*1');
+assert.equal(fs.existsSync('tmp/t*1'), false, 'globs are not interpreted literally');
 result = shell.cat('tmp/to1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'goodbye');
