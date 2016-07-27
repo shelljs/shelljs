@@ -272,7 +272,7 @@ function wrap(cmd, fn, options) {
         console.error.apply(console, [cmd].concat(args));
       }
 
-      if (options.notUnix) { // this branch is for exec()
+      if (options.unix === false) { // this branch is for exec()
         retValue = fn.apply(this, args);
       } else { // and this branch is for everything else
         if (args[0] instanceof Object && args[0].constructor.name === 'Object') {
