@@ -1,10 +1,7 @@
 var fs = require('fs');
 var common = require('./common');
 
-common.register('cd', _cd, {
-  globStart: 1,
-  wrapOutput: true,
-});
+common.register('cd', _cd, {});
 
 //@
 //@ ### cd([dir])

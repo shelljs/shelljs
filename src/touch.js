@@ -2,7 +2,6 @@ var common = require('./common');
 var fs = require('fs');
 
 common.register('touch', _touch, {
-  globStart: 1,
   cmdOptions: {
     'a': 'atime_only',
     'c': 'no_create',
@@ -10,7 +9,6 @@ common.register('touch', _touch, {
     'm': 'mtime_only',
     'r': 'reference',
   },
-  wrapOutput: true,
 });
 
 //@

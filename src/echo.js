@@ -1,6 +1,8 @@
 var common = require('./common');
 
-common.register('echo', _echo, {wrapOutput: true});
+common.register('echo', _echo, {
+  allowGlobbing: false,
+});
 
 //@
 //@ ### echo(string [, string ...])

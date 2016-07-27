@@ -10,6 +10,7 @@ var DEFAULT_MAXBUFFER_SIZE = 20*1024*1024;
 common.register('exec', _exec, {
   unix: false,
   canReceivePipe: true,
+  wrapOutput: false,
 });
 
 // Hack to run child_process.exec() synchronously (sync avoids callback hell)

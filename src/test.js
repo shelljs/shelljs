@@ -12,6 +12,7 @@ common.register('test', _test, {
     'p': 'pipe',
     'S': 'socket',
   },
+  wrapOutput: false,
 });
 
 

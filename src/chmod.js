@@ -31,8 +31,6 @@ var PERMS = (function (base) {
 });
 
 common.register('chmod', _chmod, {
-  globStart: 1,
-  wrapOutput: true,
 });
 
 //@

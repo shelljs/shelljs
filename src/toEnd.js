@@ -3,8 +3,8 @@ var fs = require('fs');
 var path = require('path');
 
 common.register('toEnd', _toEnd, {
-  globStart: 1,
   pipeOnly: true,
+  wrapOutput: false,
 });
 
 //@

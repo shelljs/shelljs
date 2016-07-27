@@ -2,9 +2,7 @@ var common = require('./common');
 var fs = require('fs');
 
 common.register('cat', _cat, {
-  globStart: 1,
   canReceivePipe: true,
-  wrapOutput: true,
 });
 
 //@

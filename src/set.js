@@ -1,6 +1,9 @@
 var common = require('./common');
 
-common.register('set', _set);
+common.register('set', _set, {
+  allowGlobbing: false,
+  wrapOutput: false,
+});
 
 //@
 //@ ### set(options)

@@ -101,7 +101,6 @@ function ShellString(stdout, stderr, code) {
   }
   that.stderr = stderr;
   that.code = code;
-
   // A list of all commands that can appear on the right-hand side of a pipe
   // (populated by calls to common.wrap())
   pipeMethods.forEach(function (cmd) {
@@ -313,7 +312,7 @@ function wrap(cmd, fn, options) {
 
         // Perform glob-expansion on all arguments after globStart, but preserve
         // the arguments before it (like regexes for sed and grep)
-        if (!config.noglob && typeof options.globStart === 'number') {
+        if (!config.noglob && options.allowGlobbing === true) {
           args = args.slice(0, options.globStart).concat(expand(args.slice(options.globStart)));
         }
 
@@ -359,11 +358,21 @@ function _readFromPipe(that) {
 }
 exports.readFromPipe = _readFromPipe;
 
+var DEFAULT_WRAP_OPTIONS = {
+  allowGlobbing: true,
+  canReceivePipe: false,
+  cmdOptions: false,
+  globStart: 1,
+  pipeOnly: false,
+  unix: true,
+  wrapOutput: true,
+};
+
 // Register a new ShellJS command
 function _register(name, implementation, wrapOptions) {
   wrapOptions = wrapOptions || {};
-  if (wrapOptions.pipeOnly && wrapOptions.canReceivePipe === false)
-    throw new Error('pipeOnly (true) conflicts with canReceivePipe (false)');
+  // If an option isn't specified, use the default
+  wrapOptions = objectAssign({}, DEFAULT_WRAP_OPTIONS, wrapOptions);
   if (wrapOptions.pipeOnly) {
     wrapOptions.canReceivePipe = true;
     shellMethods[name] = wrap(name, implementation, wrapOptions);

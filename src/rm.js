@@ -2,13 +2,11 @@ var common = require('./common');
 var fs = require('fs');
 
 common.register('rm', _rm, {
-  globStart: 1,
   cmdOptions: {
     'f': 'force',
     'r': 'recursive',
     'R': 'recursive',
   },
-  wrapOutput: true,
 });
 
 // Recursively removes 'dir'

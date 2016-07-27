@@ -3,14 +3,16 @@ var path = require('path');
 var common = require('./common');
 var os = require('os');
 
-common.register('cp', _cp, {globStart: 1, cmdOptions: {
+common.register('cp', _cp, {
+  cmdOptions: {
     'f': '!no_force',
     'n': 'no_force',
     'R': 'recursive',
     'r': 'recursive',
     'L': 'followsymlink',
     'P': 'noFollowsymlink',
-  }
+  },
+  wrapOutput: false,
 });
 
 // Buffered file copy, synchronous

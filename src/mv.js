@@ -5,12 +5,10 @@ var cp = require('./cp');
 var rm = require('./rm');
 
 common.register('mv', _mv, {
-  globStart: 1,
   cmdOptions: {
     'f': '!no_force',
     'n': 'no_force',
   },
-  wrapOutput: true,
 });
 
 //@

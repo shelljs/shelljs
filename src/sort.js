@@ -2,13 +2,11 @@ var common = require('./common');
 var fs = require('fs');
 
 common.register('sort', _sort, {
-  globStart: 1,
   canReceivePipe: true,
   cmdOptions: {
     'r': 'reverse',
     'n': 'numerical',
   },
-  wrapOutput: true,
 });
 
 // parse out the number prefix of a line
