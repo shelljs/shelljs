@@ -74,13 +74,18 @@ assert.ok(result.no_force === false);
 assert.ok(result.force === undefined); // this key shouldn't exist
 
 // common.parseOptions (the last of the conflicting options should hold)
-result = common.parseOptions('-fn', {
+var options = {
   'n': 'no_force',
   'f': '!no_force',
   'R': 'recursive'
-});
+};
+result = common.parseOptions('-fn', options);
 assert.ok(result.recursive === false);
 assert.ok(result.no_force === true);
+assert.ok(result.force === undefined); // this key shouldn't exist
+result = common.parseOptions('-nf', options);
+assert.ok(result.recursive === false);
+assert.ok(result.no_force === false);
 assert.ok(result.force === undefined); // this key shouldn't exist
 
 // common.parseOptions using an object to hold options
