@@ -7,7 +7,10 @@ var child = require('child_process');
 
 var DEFAULT_MAXBUFFER_SIZE = 20*1024*1024;
 
-common.register('exec', _exec, {notUnix:true, canReceivePipe: true});
+common.register('exec', _exec, {
+  unix: false,
+  canReceivePipe: true,
+});
 
 // Hack to run child_process.exec() synchronously (sync avoids callback hell)
 // Uses a custom wait loop that checks for a flag file, created when the child process is done.
