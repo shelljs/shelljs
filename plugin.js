@@ -1,6 +1,6 @@
 // Various utilties exposed to plugins
 
-require('.'); // Create the ShellJS instance (mandatory)
+require('./shell'); // Create the ShellJS instance (mandatory)
 
 var common = require('./src/common');
 
