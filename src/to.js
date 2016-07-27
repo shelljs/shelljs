@@ -2,6 +2,11 @@ var common = require('./common');
 var fs = require('fs');
 var path = require('path');
 
+common.register('to', _to, {
+  globStart: 1,
+  pipeOnly: true,
+});
+
 //@
 //@ ### ShellString.prototype.to(file)
 //@
@@ -22,7 +27,7 @@ function _to(options, file) {
       common.error('no such file or directory: ' + path.dirname(file));
 
   try {
-    fs.writeFileSync(file, this.toString(), 'utf8');
+    fs.writeFileSync(file, this.stdout || this.toString(), 'utf8');
     return this;
   } catch(e) {
     common.error('could not write to file (code '+e.code+'): '+file, true);

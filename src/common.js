@@ -6,10 +6,9 @@ var os = require('os');
 var fs = require('fs');
 var glob = require('glob');
 var shell = require('..');
-var _to = require('./to');
-var _toEnd = require('./toEnd');
 
 var DEFAULT_ERROR_CODE = 1;
+var shellMethods = Object.create(shell);
 
 // Module globals
 var config = {
@@ -102,12 +101,11 @@ function ShellString(stdout, stderr, code) {
   }
   that.stderr = stderr;
   that.code = code;
-  that.to    = function() {wrap('to', _to, {globStart: 1}).apply(that.stdout, arguments); return that;};
-  that.toEnd = function() {wrap('toEnd', _toEnd, {globStart: 1}).apply(that.stdout, arguments); return that;};
+
   // A list of all commands that can appear on the right-hand side of a pipe
   // (populated by calls to common.wrap())
   pipeMethods.forEach(function (cmd) {
-    that[cmd] = function() {return shell[cmd].apply(that.stdout, arguments);};
+    that[cmd] = shellMethods[cmd].bind(that);
   });
   return that;
 }
@@ -357,12 +355,20 @@ exports.wrap = wrap;
 // This returns all the input that is piped into the current command (or the
 // empty string, if this isn't on the right-hand side of a pipe
 function _readFromPipe(that) {
-  return that instanceof String ? that.toString() : '';
+  return typeof that.stdout === 'string' ? that.stdout : '';
 }
 exports.readFromPipe = _readFromPipe;
 
 // Register a new ShellJS command
 function _register(name, implementation, wrapOptions) {
-  shell[name] = wrap(name, implementation, wrapOptions);
+  wrapOptions = wrapOptions || {};
+  if (wrapOptions.pipeOnly && wrapOptions.canReceivePipe === false)
+    throw new Error('pipeOnly (true) conflicts with canReceivePipe (false)');
+  if (wrapOptions.pipeOnly) {
+    wrapOptions.canReceivePipe = true;
+    shellMethods[name] = wrap(name, implementation, wrapOptions);
+  } else {
+    shell[name] = wrap(name, implementation, wrapOptions);
+  }
 }
 exports.register = _register;
