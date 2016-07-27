@@ -154,7 +154,7 @@ function parseOptions(opt, map) {
       if (c in map) {
         optionName = map[c];
         if (optionName[0] === '!')
-          options[optionName.slice(1, optionName.length-1)] = false;
+          options[optionName.slice(1)] = false;
         else
           options[optionName] = true;
       } else {
