@@ -1,14 +1,24 @@
 # Change Log
 
-## [Unreleased](https://github.com/shelljs/shelljs/tree/HEAD)
-
-[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.2...HEAD)
+## [v0.7.3](https://github.com/shelljs/shelljs/tree/v0.7.3) (2016-07-27)
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.2...v0.7.3)
 
 **Closed issues:**
 
+- expose execSync [\#494](https://github.com/shelljs/shelljs/issues/494)
+- Add a way to create commands that can receive from a pipe without being standalone commands [\#487](https://github.com/shelljs/shelljs/issues/487)
 - cp -r breaks when the directory contains a softlink [\#193](https://github.com/shelljs/shelljs/issues/193)
 - Redirect output to file fails [\#60](https://github.com/shelljs/shelljs/issues/60)
 - We need sed -n ? [\#38](https://github.com/shelljs/shelljs/issues/38)
+
+**Merged pull requests:**
+
+- refactor: allow pipeOnly commands \(methods on ShellStrings\) [\#493](https://github.com/shelljs/shelljs/pull/493) ([nfischer](https://github.com/nfischer))
+- refactor: glob by default for commands [\#492](https://github.com/shelljs/shelljs/pull/492) ([nfischer](https://github.com/nfischer))
+- refactor: switch from notUnix to unix in wrap\(\) [\#491](https://github.com/shelljs/shelljs/pull/491) ([nfischer](https://github.com/nfischer))
+- refactor: switch common.extend\(\) to Object.assign ponyfill [\#490](https://github.com/shelljs/shelljs/pull/490) ([nfischer](https://github.com/nfischer))
+- fix: conflicting options now properly override each other [\#489](https://github.com/shelljs/shelljs/pull/489) ([nfischer](https://github.com/nfischer))
+- refactor: expose plugin utils & add initial tests [\#484](https://github.com/shelljs/shelljs/pull/484) ([nfischer](https://github.com/nfischer))
 
 ## [v0.7.2](https://github.com/shelljs/shelljs/tree/v0.7.2) (2016-07-25)
 [Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.1...v0.7.2)
