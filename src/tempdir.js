@@ -25,7 +25,7 @@ function writeableDir(dir) {
     return false;
 
   try {
-    getMktemp()('-u', path.resolve(dir, 'tmp.shelljs.XXXXXXXXXX'));
+    getMktemp()({ dryRun: true }, path.resolve(dir, 'tmp.shelljs.XXXXXXXXXX'));
     return dir;
   } catch (e) {
     return false;

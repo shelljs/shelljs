@@ -7,14 +7,21 @@ var touch = require('./touch');
 var rm = require('./rm');
 var chmod = require('./chmod');
 
-var DEFAULT_TEMPLATE = path.resolve(tempdir(), 'tmp.shelljs.XXXXXXXXXXXXXXXXXXXX');
 var LETTERS = 'abcdefghijklmnopqrstuvwkyz1234567890'.toUpperCase().split('');
 var MAX_PATTERN_TRIES = 1000;
+
+var _defaultTemplate;
+function getDefaultTemplate() {
+  if (!_defaultTemplate) {
+    _defaultTemplate = path.resolve(tempdir(), 'tmp.shelljs.XXXXXXXXXXXXXXXXXXXX');
+  }
+  return _defaultTemplate;
+}
 
 common.register('mktemp', mktemp, {
   parseOptions: {
     d: 'directory',
-    u: 'unsafe',
+    u: 'dryRun',
   },
   wrapOutput: true,
 });
@@ -25,7 +32,7 @@ common.register('mktemp', mktemp, {
 //@ Available Options:
 //@
 //@ + `-d`: Create a directory instead of a file.
-//@ + `-u`: Unsafe mode. (Delete the file before retuning). Only use if you know what you're doing.
+//@ + `-u`: Dry run: Don't actually create the file, just generate the name.
 //@
 //@ Examples:
 //@
@@ -44,7 +51,7 @@ common.register('mktemp', mktemp, {
 function mktemp(options, templates) {
   templates = Array.prototype.slice.call(arguments, 1);
   if (templates.length === 0) {
-    templates.push(DEFAULT_TEMPLATE);
+    templates.push(getDefaultTemplate());
   }
   var ret = [];
   var tries = 0;
@@ -58,13 +65,14 @@ function mktemp(options, templates) {
       continue;
     }
     tries = 0;
-    if (options.directory) {
-      mkdir('', file);
-    } else {
-      touch('', file);
+    if (!options.dryRun) {
+      if (options.directory) {
+        mkdir('', file);
+      } else {
+        touch('', file);
+      }
+      chmod('', '0600', file);
     }
-    chmod('', '0600', file);
-    if (options.unsafe) rm('-rf', file);
     ret.push(file);
   }
   return ret;
