@@ -1,25 +1,60 @@
 var path = require('path');
 var fs = require('fs');
+var os = require('os');
 var common = require('./common');
 var mkdir = require('./mkdir');
-var tempdir = require('./tempdir');
 var touch = require('./touch');
 var rm = require('./rm');
 var chmod = require('./chmod');
 
 var LETTERS = 'abcdefghijklmnopqrstuvwkyz1234567890'.toUpperCase().split('');
 var MAX_PATTERN_TRIES = 1000;
+var DEFAULT_TEMPLATE = path.resolve(_tempDir(), 'tmp.shelljs.XXXXXXXXXXXXXXXXXXXX');
 
-var _defaultTemplate;
-function getDefaultTemplate() {
-  if (!_defaultTemplate) {
-    _defaultTemplate = path.resolve(tempdir(), 'tmp.shelljs.XXXXXXXXXXXXXXXXXXXX');
+function writeableDir(dir) {
+  if (!dir || !fs.existsSync(dir))
+    return false;
+
+  if (!fs.statSync(dir).isDirectory())
+    return false;
+
+  try {
+    mktemp({ dryRun: true }, path.resolve(dir, 'tmp.shelljs.XXXXXXXXXX'));
+    return dir;
+  } catch (e) {
+    return false;
   }
-  return _defaultTemplate;
 }
 
+
+// Searches and returns string containing a writeable, platform-dependent temporary directory.
+// Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
+function _tempDir() {
+  var state = common.state;
+  if (state.tempDir)
+    return state.tempDir; // from cache
+
+  state.tempDir = writeableDir(os.tmpdir && os.tmpdir()) || // node 0.10+
+                  writeableDir(os.tmpDir && os.tmpDir()) || // node 0.8+
+                  writeableDir(process.env['TMPDIR']) ||
+                  writeableDir(process.env['TEMP']) ||
+                  writeableDir(process.env['TMP']) ||
+                  writeableDir(process.env['Wimp$ScrapDir']) || // RiscOS
+                  writeableDir('C:\\TEMP') || // Windows
+                  writeableDir('C:\\TMP') || // Windows
+                  writeableDir('\\TEMP') || // Windows
+                  writeableDir('\\TMP') || // Windows
+                  writeableDir('/tmp') ||
+                  writeableDir('/var/tmp') ||
+                  writeableDir('/usr/tmp') ||
+                  writeableDir('.'); // last resort
+
+  return state.tempDir;
+}
+
+
 common.register('mktemp', mktemp, {
-  parseOptions: {
+  cmdOptions: {
     d: 'directory',
     u: 'dryRun',
   },
@@ -51,7 +86,7 @@ common.register('mktemp', mktemp, {
 function mktemp(options, templates) {
   templates = Array.prototype.slice.call(arguments, 1);
   if (templates.length === 0) {
-    templates.push(getDefaultTemplate());
+    templates.push(DEFAULT_TEMPLATE);
   }
   var ret = [];
   var tries = 0;
@@ -67,9 +102,9 @@ function mktemp(options, templates) {
     tries = 0;
     if (!options.dryRun) {
       if (options.directory) {
-        mkdir('', file);
+        mkdir({}, file);
       } else {
-        touch('', file);
+        touch({}, file);
       }
       chmod('', '0600', file);
     }
@@ -91,6 +126,4 @@ function _fillTemplate(template) {
   }
   return file;
 }
-
-module.exports = mktemp;
 

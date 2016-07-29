@@ -93,9 +93,6 @@ require('./src/which');
 require('./src/echo');
 
 
-//@include ./src/mktemp
-require('./src/mktemp');
-
 //@include ./src/dirs
 require('./src/dirs');
 

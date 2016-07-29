@@ -45,30 +45,12 @@ assert.ok(fs.existsSync(result[0]));
 assert.ok(fs.statSync(result[0]).isDirectory());
 if (isNotWindows) assert.equal(fs.statSync(result[0]).mode & parseInt('777', 8), parseInt('0600', 8));
 
-// Reasonable Default Template
-result = shell.mktemp();
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result.length, 1);
-assert.equal(path.dirname(result[0]), shell.tempdir());
-assert.ok(fs.existsSync(result[0]));
-assert.ok(fs.statSync(result[0]).isFile());
-
-// Reasonable Default Template (Directory)
-result = shell.mktemp('-d');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result.length, 1);
-assert.equal(path.dirname(result[0]), shell.tempdir());
-assert.ok(fs.existsSync(result[0]));
-assert.ok(fs.statSync(result[0]).isDirectory());
-
 // Custom Template
 result = shell.mktemp('tmp/tmp.XXX');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result.length, 1);
-assert.equal(result[0].slice(0, -3), path.resolve('.', 'tmp/tmp.'));
+assert.equal(result[0].slice(0, -3), 'tmp/tmp.');
 assert.ok(fs.existsSync(result[0]));
 assert.ok(fs.statSync(result[0]).isFile());
 if (isNotWindows) assert.equal(fs.statSync(result[0]).mode & parseInt('777', 8), parseInt('0600', 8));
