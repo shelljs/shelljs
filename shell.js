@@ -8,6 +8,12 @@
 
 var common = require('./src/common');
 
+// Magically fix cyclicdic dependencies.
+if (typeof common.register !== 'function') {
+  delete require.cache[require.resolve('./src/common')];
+  common = require('./src/common');
+}
+
 //@
 //@ All commands run synchronously, unless otherwise stated.
 //@ All commands accept standard bash globbing characters (`*`, `?`, etc.),
