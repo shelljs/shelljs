@@ -316,8 +316,8 @@ containing the files if more than one file is given (a new line character is
 introduced between each file).
 
 
-### head([{'-n', \<num\>},] file [, file ...])
-### head([{'-n', \<num\>},] file_array)
+### head([{'-n': \<num\>},] file [, file ...])
+### head([{'-n': \<num\>},] file_array)
 Available options:
 
 + `-n <num>`: Show the first `<num>` lines of the files
@@ -325,7 +325,7 @@ Available options:
 Examples:
 
 ```javascript
-var str = head({'-n', 1}, 'file*.txt');
+var str = head({'-n': 1}, 'file*.txt');
 var str = head('file1', 'file2');
 var str = head(['file1', 'file2']); // same as above
 ```
@@ -333,8 +333,8 @@ var str = head(['file1', 'file2']); // same as above
 Read the start of a file.
 
 
-### tail([{'-n', \<num\>},] file [, file ...])
-### tail([{'-n', \<num\>},] file_array)
+### tail([{'-n': \<num\>},] file [, file ...])
+### tail([{'-n': \<num\>},] file_array)
 Available options:
 
 + `-n <num>`: Show the last `<num>` lines of the files
@@ -342,7 +342,7 @@ Available options:
 Examples:
 
 ```javascript
-var str = tail({'-n', 1}, 'file*.txt');
+var str = tail({'-n': 1}, 'file*.txt');
 var str = tail('file1', 'file2');
 var str = tail(['file1', 'file2']); // same as above
 ```

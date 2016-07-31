@@ -36,8 +36,8 @@ function readSomeLines(file, numLines) {
   return ret;
 }
 //@
-//@ ### head([{'-n', \<num\>},] file [, file ...])
-//@ ### head([{'-n', \<num\>},] file_array)
+//@ ### head([{'-n': \<num\>},] file [, file ...])
+//@ ### head([{'-n': \<num\>},] file_array)
 //@ Available options:
 //@
 //@ + `-n <num>`: Show the first `<num>` lines of the files
@@ -45,7 +45,7 @@ function readSomeLines(file, numLines) {
 //@ Examples:
 //@
 //@ ```javascript
-//@ var str = head({'-n', 1}, 'file*.txt');
+//@ var str = head({'-n': 1}, 'file*.txt');
 //@ var str = head('file1', 'file2');
 //@ var str = head(['file1', 'file2']); // same as above
 //@ ```
