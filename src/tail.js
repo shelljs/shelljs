@@ -9,8 +9,8 @@ common.register('tail', _tail, {
 });
 
 //@
-//@ ### tail([{'-n', \<num\>},] file [, file ...])
-//@ ### tail([{'-n', \<num\>},] file_array)
+//@ ### tail([{'-n': \<num\>},] file [, file ...])
+//@ ### tail([{'-n': \<num\>},] file_array)
 //@ Available options:
 //@
 //@ + `-n <num>`: Show the last `<num>` lines of the files
@@ -18,7 +18,7 @@ common.register('tail', _tail, {
 //@ Examples:
 //@
 //@ ```javascript
-//@ var str = tail({'-n', 1}, 'file*.txt');
+//@ var str = tail({'-n': 1}, 'file*.txt');
 //@ var str = tail('file1', 'file2');
 //@ var str = tail(['file1', 'file2']); // same as above
 //@ ```
