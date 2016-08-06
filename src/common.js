@@ -1,4 +1,3 @@
-// jshint -W053
 // Ignore warning about 'new String()'
 /* eslint no-new-wrappers: 0 */
 'use strict';

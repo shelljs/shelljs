@@ -16,8 +16,7 @@ var PERMS = (function (base) {
     OWNER_WRITE: base.WRITE << 6,
     OWNER_READ: base.READ << 6,
 
-    // Literal octal numbers are apparently not allowed in "strict" javascript.  Using parseInt is
-    // the preferred way, else a jshint warning is thrown.
+    // Literal octal numbers are apparently not allowed in "strict" javascript.
     STICKY: parseInt('01000', 8),
     SETGID: parseInt('02000', 8),
     SETUID: parseInt('04000', 8),
@@ -122,7 +121,6 @@ function _chmod(options, mode, filePattern) {
     if (isNaN(parseInt(mode, 8))) {
       // parse options
       mode.split(',').forEach(function (symbolicMode) {
-        /* jshint regexdash:true */
         var pattern = /([ugoa]*)([=\+-])([rwxXst]*)/i;
         var matches = pattern.exec(symbolicMode);
 

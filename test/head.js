@@ -46,17 +46,21 @@ assert.equal(result, topOfFile1.slice(0, 10).join('\n') + '\n');
 result = shell.head('resources/head/file2.txt', 'resources/head/file1.txt');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(result, topOfFile2.slice(0, 10).concat(
-                         topOfFile1.slice(0, 10)
-                     ).join('\n') + '\n');
+assert.equal(result, topOfFile2
+                       .slice(0, 10)
+                       .concat(topOfFile1.slice(0, 10))
+                       .join('\n') + '\n'
+);
 
 // multiple files, array syntax
 result = shell.head(['resources/head/file2.txt', 'resources/head/file1.txt']);
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(result, topOfFile2.slice(0, 10).concat(
-                         topOfFile1.slice(0, 10)
-                     ).join('\n') + '\n');
+assert.equal(result, topOfFile2
+                       .slice(0, 10)
+                       .concat(topOfFile1.slice(0, 10))
+                       .join('\n') + '\n'
+);
 
 // reading more lines than are in the file (no trailing newline)
 result = shell.head('resources/file2', 'resources/file1');
@@ -74,25 +78,31 @@ assert.equal(result, 'short2\nshort1\n'); // these files only have one line (wit
 result = shell.head('resources/head/file?.txt');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(result, topOfFile1.slice(0, 10).concat(
-                         topOfFile2.slice(0, 10)
-                     ).join('\n') + '\n');
+assert.equal(result, topOfFile1
+                       .slice(0, 10)
+                       .concat(topOfFile2.slice(0, 10))
+                       .join('\n') + '\n'
+);
 
 // With `'-n' <num>` option
 result = shell.head('-n', 4, 'resources/head/file2.txt', 'resources/head/file1.txt');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(result, topOfFile2.slice(0, 4).concat(
-                         topOfFile1.slice(0, 4)
-                     ).join('\n') + '\n');
+assert.equal(result, topOfFile2
+                       .slice(0, 4)
+                       .concat(topOfFile1.slice(0, 4))
+                       .join('\n') + '\n'
+);
 
 // With `{'-n': <num>}` option
 result = shell.head({ '-n': 4 }, 'resources/head/file2.txt', 'resources/head/file1.txt');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(result, topOfFile2.slice(0, 4).concat(
-                         topOfFile1.slice(0, 4)
-                     ).join('\n') + '\n');
+assert.equal(result, topOfFile2
+                       .slice(0, 4)
+                       .concat(topOfFile1.slice(0, 4))
+                       .join('\n') + '\n'
+);
 
 // negative values (-num) are the same as (numLines - num)
 result = shell.head('-n', -46, 'resources/head/file1.txt');

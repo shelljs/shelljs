@@ -48,11 +48,11 @@ function _uniq(options, input, output) {
 
   var compare = function (a, b) {
     return options.ignoreCase ?
-             a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()) :
-             a.localeCompare(b);
+           a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()) :
+           a.localeCompare(b);
   };
   var uniqed = lines.reduceRight(function (res, e) {
-                 // Perform uniq -c on the input
+    // Perform uniq -c on the input
     if (res.length === 0) {
       return [{ count: 1, ln: e }];
     } else if (compare(res[0].ln, e) === 0) {
