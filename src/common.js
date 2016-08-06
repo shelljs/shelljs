@@ -375,8 +375,9 @@ function _register(name, implementation, wrapOptions) {
   // If an option isn't specified, use the default
   wrapOptions = objectAssign({}, DEFAULT_WRAP_OPTIONS, wrapOptions);
 
-  if (shell[name] && !wrapOptions.overWrite)
-    return;
+  if (shell[name] && !wrapOptions.overWrite) {
+    throw new Error('unable to overwrite `' + name + '` command');
+  }
 
   if (wrapOptions.pipeOnly) {
     wrapOptions.canReceivePipe = true;
