@@ -47,16 +47,18 @@ function _ls(options, paths) {
     options.all = true;
   }
 
-  if (!paths)
+  if (!paths) {
     paths = ['.'];
-  else
+  } else {
     paths = [].slice.call(arguments, 1);
+  }
 
   var list = [];
 
   function pushFile(abs, relName, stat) {
-    if (process.platform === 'win32')
+    if (process.platform === 'win32') {
       relName = relName.replace(/\\/g, '/');
+    }
     if (options.long) {
       stat = stat || fs.lstatSync(abs);
       list.push(addLsAttributes(relName, stat));
@@ -92,8 +94,9 @@ function _ls(options, paths) {
       } else {
         // use fs.readdirSync and then filter out secret files
         fs.readdirSync(p).forEach(function (item) {
-          if (item[0] !== '.')
+          if (item[0] !== '.') {
             pushFile(path.join(p, item), item);
+          }
         });
       }
     } else {

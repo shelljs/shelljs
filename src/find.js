@@ -21,10 +21,11 @@ common.register('find', _find, {});
 //@ The main difference from `ls('-R', path)` is that the resulting file names
 //@ include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
 function _find(options, paths) {
-  if (!paths)
+  if (!paths) {
     common.error('no path specified');
-  else if (typeof paths === 'string')
+  } else if (typeof paths === 'string') {
     paths = [].slice.call(arguments, 1);
+  }
 
   var list = [];
 

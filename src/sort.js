@@ -59,13 +59,13 @@ function _sort(options, files) {
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe(this);
 
-  if (!files && !pipe)
-    common.error('no files given');
+  if (!files && !pipe) common.error('no files given');
 
   files = [].slice.call(arguments, 1);
 
-  if (pipe)
+  if (pipe) {
     files.unshift('-');
+  }
 
   var lines = [];
   files.forEach(function (file) {
@@ -81,8 +81,9 @@ function _sort(options, files) {
   var sorted;
   sorted = lines.sort(options.numerical ? numericalCmp : unixCmp);
 
-  if (options.reverse)
+  if (options.reverse) {
     sorted = sorted.reverse();
+  }
 
   return sorted.join('\n') + '\n';
 }

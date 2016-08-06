@@ -40,8 +40,7 @@ function _uniq(options, input, output) {
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe(this);
 
-  if (!input && !pipe)
-    common.error('no input given');
+  if (!input && !pipe) common.error('no input given');
 
   var lines = (input ? fs.readFileSync(input, 'utf8') : pipe).
               trimRight().
@@ -54,12 +53,13 @@ function _uniq(options, input, output) {
   };
   var uniqed = lines.reduceRight(function (res, e) {
                  // Perform uniq -c on the input
-    if (res.length === 0)
+    if (res.length === 0) {
       return [{ count: 1, ln: e }];
-    else if (compare(res[0].ln, e) === 0)
+    } else if (compare(res[0].ln, e) === 0) {
       return [{ count: res[0].count + 1, ln: e }].concat(res.slice(1));
-    else
+    } else {
       return [{ count: 1, ln: e }].concat(res);
+    }
   }, []).filter(function (obj) {
                  // Do we want only duplicated objects?
     return options.duplicates ? obj.count > 1 : true;

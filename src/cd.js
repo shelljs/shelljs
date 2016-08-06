@@ -8,14 +8,14 @@ common.register('cd', _cd, {});
 //@ Changes to directory `dir` for the duration of the script. Changes to home
 //@ directory if no argument is supplied.
 function _cd(options, dir) {
-  if (!dir)
-    dir = common.getUserHome();
+  if (!dir) dir = common.getUserHome();
 
   if (dir === '-') {
-    if (!process.env.OLDPWD)
+    if (!process.env.OLDPWD) {
       common.error('could not find previous directory');
-    else
+    } else {
       dir = process.env.OLDPWD;
+    }
   }
 
   try {

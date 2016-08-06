@@ -11,18 +11,21 @@ var fname;
 
 function fooImplementation(options, arg) {
   // Some sort of side effect, so we know when this is called
-  if (arg)
+  if (arg) {
     fname = arg;
-  else
+  } else {
     fname = plugin.readFromPipe(this);
+  }
 
-  if (arg === 'exitWithCode5')
+  if (arg === 'exitWithCode5') {
     plugin.error('Exited with code 5', 5);
+  }
 
-  if (options.flag)
+  if (options.flag) {
     data = 12;
-  else
+  } else {
     data++;
+  }
   return 'hello world';
 }
 

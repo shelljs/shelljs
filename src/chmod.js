@@ -142,8 +142,9 @@ function _chmod(options, mode, filePattern) {
           var changeSticky = change.indexOf('t') !== -1;
           var changeSetuid = change.indexOf('s') !== -1;
 
-          if (changeExecDir && isDir)
+          if (changeExecDir && isDir) {
             changeExec = true;
+          }
 
           var mask = 0;
           if (changeOwner) {

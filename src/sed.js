@@ -30,23 +30,27 @@ function _sed(options, regex, replacement, files) {
   var pipe = common.readFromPipe(this);
 
   if (typeof replacement !== 'string' && typeof replacement !== 'function') {
-    if (typeof replacement === 'number')
+    if (typeof replacement === 'number') {
       replacement = replacement.toString(); // fallback
-    else
+    } else {
       common.error('invalid replacement string');
+    }
   }
 
   // Convert all search strings to RegExp
-  if (typeof regex === 'string')
+  if (typeof regex === 'string') {
     regex = RegExp(regex);
+  }
 
-  if (!files && !pipe)
+  if (!files && !pipe) {
     common.error('no files given');
+  }
 
   files = [].slice.call(arguments, 3);
 
-  if (pipe)
+  if (pipe) {
     files.unshift('-');
+  }
 
   var sed = [];
   files.forEach(function (file) {
@@ -63,8 +67,9 @@ function _sed(options, regex, replacement, files) {
 
     sed.push(result);
 
-    if (options.inplace)
+    if (options.inplace) {
       fs.writeFileSync(file, result, 'utf8');
+    }
   });
 
   return sed.join('\n');

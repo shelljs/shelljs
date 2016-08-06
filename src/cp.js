@@ -19,8 +19,9 @@ common.register('cp', _cp, {
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
 //  with large files)
 function copyFileSync(srcFile, destFile, options) {
-  if (!fs.existsSync(srcFile))
+  if (!fs.existsSync(srcFile)) {
     common.error('copyFileSync: no such file or directory: ' + srcFile);
+  }
 
   if (fs.lstatSync(srcFile).isSymbolicLink() && !options.followsymlink) {
     try {
@@ -80,9 +81,10 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
   if (typeof opts.depth === 'undefined') {
     opts.depth = 0;
   }
-  if (opts.depth >= common.config.maxdepth)
+  if (opts.depth >= common.config.maxdepth) {
     // Max depth has been reached, end copy.
     return;
+  }
   opts.depth++;
 
   // Create the directory where all our junk is moving to; read the mode of the
@@ -187,10 +189,12 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@ Copies files.
 function _cp(options, sources, dest) {
   // If we're missing -R, it actually implies -L (unless -P is explicit)
-  if (options.followsymlink)
+  if (options.followsymlink) {
     options.noFollowsymlink = false;
-  if (!options.recursive && !options.noFollowsymlink)
+  }
+  if (!options.recursive && !options.noFollowsymlink) {
     options.followsymlink = true;
+  }
 
   // Get sources, dest
   if (arguments.length < 3) {
@@ -204,12 +208,14 @@ function _cp(options, sources, dest) {
   var destStat = destExists && fs.statSync(dest);
 
   // Dest is not existing dir, but multiple sources given
-  if ((!destExists || !destStat.isDirectory()) && sources.length > 1)
+  if ((!destExists || !destStat.isDirectory()) && sources.length > 1) {
     common.error('dest is not a directory (too many sources)');
+  }
 
   // Dest is an existing file, but -n is given
-  if (destExists && destStat.isFile() && options.no_force)
+  if (destExists && destStat.isFile() && options.no_force) {
     return new common.ShellString('', '', 0);
+  }
 
   sources.forEach(function (src) {
     if (!fs.existsSync(src)) {
@@ -241,8 +247,9 @@ function _cp(options, sources, dest) {
       // When copying to '/path/dir':
       //    thisDest = '/path/dir/file1'
       var thisDest = dest;
-      if (destStat && destStat.isDirectory())
+      if (destStat && destStat.isDirectory()) {
         thisDest = path.normalize(dest + '/' + path.basename(src));
+      }
 
       if (fs.existsSync(thisDest) && options.no_force) {
         return; // skip file

@@ -48,18 +48,19 @@ function mkdirSyncRecursive(dir) {
 //@
 //@ Creates directories.
 function _mkdir(options, dirs) {
-  if (!dirs)
-    common.error('no paths given');
+  if (!dirs) common.error('no paths given');
 
-  if (typeof dirs === 'string')
+  if (typeof dirs === 'string') {
     dirs = [].slice.call(arguments, 1);
+  }
   // if it's array leave it as it is
 
   dirs.forEach(function (dir) {
     try {
       fs.lstatSync(dir);
-      if (!options.fullpath)
+      if (!options.fullpath) {
         common.error('path already exists: ' + dir, true);
+      }
       return; // skip dir
     } catch (e) {
       // do nothing
@@ -73,15 +74,17 @@ function _mkdir(options, dirs) {
     }
 
     try {
-      if (options.fullpath)
+      if (options.fullpath) {
         mkdirSyncRecursive(dir);
-      else
+      } else {
         fs.mkdirSync(dir, parseInt('0777', 8));
+      }
     } catch (e) {
-      if (e.code === 'EACCES')
+      if (e.code === 'EACCES') {
         common.error('cannot create directory ' + dir + ': Permission denied');
-      else
+      } else {
         throw e;
+      }
     }
   });
   return '';

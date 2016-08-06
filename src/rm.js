@@ -103,8 +103,7 @@ function isWriteable(file) {
 //@
 //@ Removes files.
 function _rm(options, files) {
-  if (!files)
-    common.error('no paths given');
+  if (!files) common.error('no paths given');
 
   // Convert to array
   files = [].slice.call(arguments, 1);
@@ -115,8 +114,9 @@ function _rm(options, files) {
       stats = fs.lstatSync(file); // test for existence
     } catch (e) {
       // Path does not exist, no force flag given
-      if (!options.force)
+      if (!options.force) {
         common.error('no such file or directory: ' + file, true);
+      }
       return; // skip file
     }
 
@@ -128,10 +128,11 @@ function _rm(options, files) {
         return;
       }
 
-      if (isWriteable(file))
+      if (isWriteable(file)) {
         common.unlinkSync(file);
-      else
+      } else {
         common.error('permission denied: ' + file, true);
+      }
 
       return;
     } // simple file

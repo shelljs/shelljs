@@ -12,13 +12,13 @@ var XP_DEFAULT_PATHEXT = '.com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh';
 
 // Cross-platform method for splitting environment PATH variables
 function splitPath(p) {
-  if (!p)
-    return [];
+  if (!p) return [];
 
-  if (common.platform === 'win')
+  if (common.platform === 'win') {
     return p.split(';');
-  else
+  } else {
     return p.split(':');
+  }
 }
 
 function checkPath(pathName) {
@@ -38,8 +38,7 @@ function checkPath(pathName) {
 //@ `PATHEXT` variable to append the extension if it's not already executable.
 //@ Returns string containing the absolute path to the command.
 function _which(options, cmd) {
-  if (!cmd)
-    common.error('must specify command');
+  if (!cmd) common.error('must specify command');
 
   var pathEnv = process.env.path || process.env.Path || process.env.PATH;
   var pathArray = splitPath(pathEnv);
@@ -49,8 +48,7 @@ function _which(options, cmd) {
   if (cmd.search(/\//) === -1) {
     // Search for command in PATH
     pathArray.forEach(function (dir) {
-      if (where)
-        return; // already found it
+      if (where) return; // already found it
 
       var attempt = path.resolve(dir, cmd);
 
@@ -92,8 +90,7 @@ function _which(options, cmd) {
   }
 
   // Command not found anywhere?
-  if (!checkPath(cmd) && !where)
-    return null;
+  if (!checkPath(cmd) && !where) return null;
 
   where = where || path.resolve(cmd);
 

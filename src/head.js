@@ -55,8 +55,7 @@ function _head(options, files) {
   var head = [];
   var pipe = common.readFromPipe(this);
 
-  if (!files && !pipe)
-    common.error('no paths given');
+  if (!files && !pipe) common.error('no paths given');
 
   var idx = 1;
   if (options.numLines === true) {
@@ -67,8 +66,9 @@ function _head(options, files) {
   }
   files = [].slice.call(arguments, idx);
 
-  if (pipe)
+  if (pipe) {
     files.unshift('-');
+  }
 
   var shouldAppendNewline = false;
   files.forEach(function (file) {
@@ -78,9 +78,9 @@ function _head(options, files) {
     }
 
     var contents;
-    if (file === '-')
+    if (file === '-') {
       contents = pipe;
-    else if (options.numLines < 0) {
+    } else if (options.numLines < 0) {
       contents = fs.readFileSync(file, 'utf8');
     } else {
       contents = readSomeLines(file, options.numLines);
@@ -88,15 +88,17 @@ function _head(options, files) {
 
     var lines = contents.split('\n');
     var hasTrailingNewline = (lines[lines.length - 1] === '');
-    if (hasTrailingNewline)
+    if (hasTrailingNewline) {
       lines.pop();
+    }
     shouldAppendNewline = (hasTrailingNewline || options.numLines < lines.length);
 
     head = head.concat(lines.slice(0, options.numLines));
   });
 
-  if (shouldAppendNewline)
+  if (shouldAppendNewline) {
     head.push(''); // to add a trailing newline once we join
+  }
   return head.join('\n');
 }
 module.exports = _head;

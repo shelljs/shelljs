@@ -21,8 +21,9 @@ function _isStackIndex(index) {
 
 function _parseStackIndex(index) {
   if (_isStackIndex(index)) {
-    if (Math.abs(index) < _dirStack.length + 1) // +1 for pwd
+    if (Math.abs(index) < _dirStack.length + 1) { // +1 for pwd
       return (/^-/).test(index) ? Number(index) - 1 : Number(index);
+    }
     common.error(index + ': directory stack index out of range');
   } else {
     common.error(index + ': invalid number');

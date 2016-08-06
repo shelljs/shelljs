@@ -37,8 +37,9 @@ function execSync(cmd, opts, pipe) {
   var previousStderrContent = '';
   // Echoes stdout and stderr changes from running process, if not silent
   function updateStream(streamFile) {
-    if (opts.silent || !fs.existsSync(streamFile))
+    if (opts.silent || !fs.existsSync(streamFile)) {
       return;
+    }
 
     var previousStreamContent;
     var procStream;
@@ -52,8 +53,9 @@ function execSync(cmd, opts, pipe) {
 
     var streamContent = fs.readFileSync(streamFile, 'utf8');
     // No changes since last time?
-    if (streamContent.length <= previousStreamContent.length)
+    if (streamContent.length <= previousStreamContent.length) {
       return;
+    }
 
     procStream.write(streamContent.substr(previousStreamContent.length));
     previousStreamContent = streamContent;
@@ -174,23 +176,21 @@ function execAsync(cmd, opts, pipe, callback) {
   }, opts);
 
   var c = child.exec(cmd, opts, function (err) {
-    if (callback)
+    if (callback) {
       callback(err ? err.code : 0, stdout, stderr);
+    }
   });
 
-  if (pipe)
-    c.stdin.end(pipe);
+  if (pipe) c.stdin.end(pipe);
 
   c.stdout.on('data', function (data) {
     stdout += data;
-    if (!opts.silent)
-      process.stdout.write(data);
+    if (!opts.silent) process.stdout.write(data);
   });
 
   c.stderr.on('data', function (data) {
     stderr += data;
-    if (!opts.silent)
-      process.stderr.write(data);
+    if (!opts.silent) process.stderr.write(data);
   });
 
   return c;
@@ -237,8 +237,7 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ fixed soon.
 function _exec(command, options, callback) {
   options = options || {};
-  if (!command)
-    common.error('must specify command');
+  if (!command) common.error('must specify command');
 
   var pipe = common.readFromPipe(this);
 
@@ -259,10 +258,11 @@ function _exec(command, options, callback) {
   }, options);
 
   try {
-    if (options.async)
+    if (options.async) {
       return execAsync(command, options, pipe, callback);
-    else
+    } else {
       return execSync(command, options, pipe);
+    }
   } catch (e) {
     common.error('internal error');
   }
