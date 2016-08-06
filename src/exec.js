@@ -236,6 +236,7 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ the current synchronous implementation uses a lot of CPU. This should be getting
 //@ fixed soon.
 function _exec(command, options, callback) {
+  options = options || {};
   if (!command)
     common.error('must specify command');
 
