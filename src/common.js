@@ -1,5 +1,6 @@
 // jshint -W053
 // Ignore warning about 'new String()'
+/* eslint no-new-wrappers: 0 */
 'use strict';
 
 var os = require('os');
@@ -57,19 +58,19 @@ function error(msg, _code, _continue) {
 
   if (state.error === null)
     state.error = '';
-  var log_entry = state.currentCmd + ': ' + msg;
+  var logEntry = state.currentCmd + ': ' + msg;
   if (state.error === '')
-    state.error = log_entry;
+    state.error = logEntry;
   else
-    state.error += '\n' + log_entry;
+    state.error += '\n' + logEntry;
 
-  if(config.fatal)
-    throw new Error(log_entry);
+  if (config.fatal)
+    throw new Error(logEntry);
 
   if (msg.length > 0)
-    log(log_entry);
+    log(logEntry);
 
-  if(!_continue) {
+  if (!_continue) {
     throw {
       msg: 'earlyExit',
       retValue: (new ShellString('', state.error, state.errorCode))
@@ -133,10 +134,10 @@ function parseOptions(opt, map) {
 
   // All options are false by default
   var options = {};
-  for (var letter in map) {
+  Object.keys(map).forEach(function (letter) {
     if (map[letter][0] !== '!')
       options[map[letter]] = false;
-  }
+  });
 
   if (!opt)
     return options; // defaults
@@ -149,7 +150,7 @@ function parseOptions(opt, map) {
     // e.g. chars = ['R', 'f']
     var chars = opt.slice(1).split('');
 
-    chars.forEach(function(c) {
+    chars.forEach(function (c) {
       if (c in map) {
         optionName = map[c];
         if (optionName[0] === '!')
@@ -157,20 +158,20 @@ function parseOptions(opt, map) {
         else
           options[optionName] = true;
       } else {
-        error('option not recognized: '+c);
+        error('option not recognized: ' + c);
       }
     });
   } else if (typeof opt === 'object') {
-    for (var key in opt) {
+    Object.keys(opt).forEach(function (key) {
       // key is a string of the form '-r', '-d', etc.
       var c = key[1];
       if (c in map) {
         optionName = map[c];
         options[optionName] = opt[key]; // assign the given value
       } else {
-        error('option not recognized: '+c);
+        error('option not recognized: ' + c);
       }
-    }
+    });
   } else {
     error('options must be strings or key-value pairs');
   }
@@ -187,7 +188,7 @@ function expand(list) {
     throw new TypeError('must be an array');
   }
   var expanded = [];
-  list.forEach(function(listEl) {
+  list.forEach(function (listEl) {
     // Don't expand non-strings
     if (typeof listEl !== 'string') {
       expanded.push(listEl);
@@ -206,7 +207,7 @@ exports.expand = expand;
 function unlinkSync(file) {
   try {
     fs.unlinkSync(file);
-  } catch(e) {
+  } catch (e) {
     // Try to override file permission
     if (e.code === 'EPERM') {
       fs.chmodSync(file, '0666');
@@ -222,16 +223,14 @@ exports.unlinkSync = unlinkSync;
 function randomFileName() {
   function randomHash(count) {
     if (count === 1)
-      return parseInt(16*Math.random(), 10).toString(16);
-    else {
-      var hash = '';
-      for (var i=0; i<count; i++)
-        hash += randomHash(1);
-      return hash;
-    }
+      return parseInt(16 * Math.random(), 10).toString(16);
+    var hash = '';
+    for (var i = 0; i < count; i++)
+      hash += randomHash(1);
+    return hash;
   }
 
-  return 'shelljs_'+randomHash(20);
+  return 'shelljs_' + randomHash(20);
 }
 exports.randomFileName = randomFileName;
 
@@ -240,9 +239,10 @@ exports.randomFileName = randomFileName;
 //    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
 function objectAssign(target) {
   var sources = [].slice.call(arguments, 1);
-  sources.forEach(function(source) {
-    for (var key in source)
+  sources.forEach(function (source) {
+    Object.keys(source).forEach(function (key) {
       target[key] = source[key];
+    });
   });
 
   return target;
@@ -256,7 +256,7 @@ function wrap(cmd, fn, options) {
   if (options.canReceivePipe) {
     pipeMethods.push(cmd);
   }
-  return function() {
+  return function () {
     var retValue = null;
 
     state.currentCmd = cmd;
@@ -284,30 +284,26 @@ function wrap(cmd, fn, options) {
         //    `cp([file1, file2, file3], dest);`
         // equivalent to:
         //    `cp(file1, file2, file3, dest);`
-        args = args.reduce(function(accum, cur) {
-          if (Array.isArray(cur)) {
+        args = args.reduce(function (accum, cur) {
+          if (Array.isArray(cur))
             return accum.concat(cur);
-          } else {
-            accum.push(cur);
-            return accum;
-          }
+          accum.push(cur);
+          return accum;
         }, []);
 
         // Convert ShellStrings (basically just String objects) to regular strings
-        args = args.map(function(arg) {
-          if (arg instanceof Object && arg.constructor.name === 'String') {
+        args = args.map(function (arg) {
+          if (arg instanceof Object && arg.constructor.name === 'String')
             return arg.toString();
-          } else
-            return arg;
+          return arg;
         });
 
         // Expand the '~' if appropriate
         var homeDir = getUserHome();
-        args = args.map(function(arg) {
+        args = args.map(function (arg) {
           if (typeof arg === 'string' && arg.slice(0, 2) === '~/' || arg === '~')
             return arg.replace(/^~/, homeDir);
-          else
-            return arg;
+          return arg;
         });
 
         // Perform glob-expansion on all arguments after globStart, but preserve

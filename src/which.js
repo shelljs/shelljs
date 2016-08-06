@@ -21,8 +21,8 @@ function splitPath(p) {
     return p.split(':');
 }
 
-function checkPath(path) {
-  return fs.existsSync(path) && !fs.statSync(path).isDirectory();
+function checkPath(pathName) {
+  return fs.existsSync(pathName) && !fs.statSync(pathName).isDirectory();
 }
 
 //@
@@ -41,14 +41,14 @@ function _which(options, cmd) {
   if (!cmd)
     common.error('must specify command');
 
-  var pathEnv = process.env.path || process.env.Path || process.env.PATH,
-      pathArray = splitPath(pathEnv),
-      where = null;
+  var pathEnv = process.env.path || process.env.Path || process.env.PATH;
+  var pathArray = splitPath(pathEnv);
+  var where = null;
 
   // No relative/absolute paths provided?
   if (cmd.search(/\//) === -1) {
     // Search for command in PATH
-    pathArray.forEach(function(dir) {
+    pathArray.forEach(function (dir) {
       if (where)
         return; // already found it
 

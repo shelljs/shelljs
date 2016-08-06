@@ -38,19 +38,19 @@ function _set(options) {
     'f': 'noglob'
   });
 
-  var key;
   if (negate) {
-    for (key in options)
+    Object.keys(options).forEach(function (key) {
       options[key] = !options[key];
+    });
   }
 
-  for (key in options) {
+  Object.keys(options).forEach(function (key) {
     // Only change the global config if `negate` is false and the option is true
     // or if `negate` is true and the option is false (aka negate !== option)
     if (negate !== options[key]) {
       common.config[key] = options[key];
     }
-  }
+  });
   return;
 }
 module.exports = _set;

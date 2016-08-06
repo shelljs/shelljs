@@ -28,7 +28,7 @@ function _cd(options, dir) {
     try {
       fs.statSync(dir); // if this succeeds, it must be some sort of file
       err = 'not a directory: ' + dir;
-    } catch (e) {
+    } catch (e2) {
       err = 'no such file or directory: ' + dir;
     }
     if (err) common.error(err);

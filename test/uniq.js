@@ -1,7 +1,7 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    fs = require('fs');
+var assert = require('assert');
+var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -24,16 +24,16 @@ assert.ok(shell.error());
 assert.ok(result.code);
 
 //
-//Valids
+// Valids
 //
 
-//uniq file1
+// uniq file1
 result = shell.uniq('resources/uniq/file1');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result + '', shell.cat('resources/uniq/file1u').toString());
 
-//uniq -i file2
+// uniq -i file2
 result = shell.uniq('-i', 'resources/uniq/file2');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
@@ -45,26 +45,26 @@ assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result + '', shell.cat('resources/uniq/file2u').toString());
 
-//uniq file1 file2
+// uniq file1 file2
 shell.uniq('resources/uniq/file1', 'resources/uniq/file1t');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(shell.cat('resources/uniq/file1u').toString(), 
+assert.equal(shell.cat('resources/uniq/file1u').toString(),
              shell.cat('resources/uniq/file1t').toString());
-             
-//cat file1 |uniq
+
+// cat file1 |uniq
 result = shell.cat('resources/uniq/file1').uniq();
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result + '', shell.cat('resources/uniq/file1u').toString());
 
-//uniq -c file1
+// uniq -c file1
 result = shell.uniq('-c', 'resources/uniq/file1');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result + '', shell.cat('resources/uniq/file1c').toString());
 
-//uniq -d file1
+// uniq -d file1
 result = shell.uniq('-d', 'resources/uniq/file1');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);

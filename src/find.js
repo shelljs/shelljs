@@ -38,11 +38,11 @@ function _find(options, paths) {
   // why not simply do ls('-R', paths)? because the output wouldn't give the base dirs
   // to get the base dir in the output, we need instead ls('-R', 'dir/*') for every directory
 
-  paths.forEach(function(file) {
+  paths.forEach(function (file) {
     pushFile(file);
 
     if (fs.statSync(file).isDirectory()) {
-      _ls({recursive: true, all: true}, file).forEach(function(subfile) {
+      _ls({ recursive: true, all: true }, file).forEach(function (subfile) {
         pushFile(path.join(file, subfile));
       });
     }

@@ -1,7 +1,7 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    fs = require('fs');
+var assert = require('assert');
+var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -66,12 +66,12 @@ assert.equal(result, 'test1\ntest2\n');
 // multiple files, glob syntax, * for file name
 result = shell.grep(/test/, 'resources/file*.txt');
 assert.equal(shell.error(), null);
-assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
+assert.ok(result.toString() === 'test1\ntest2\n' || result.toString() === 'test2\ntest1\n');
 
 // multiple files, glob syntax, * for directory name
 result = shell.grep(/test/, '*/file*.txt');
 assert.equal(shell.error(), null);
-assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
+assert.ok(result.toString() === 'test1\ntest2\n' || result.toString() === 'test2\ntest1\n');
 
 // multiple files, glob syntax, ** for directory name
 result = shell.grep(/test/, '**/file*.js');

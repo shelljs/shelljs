@@ -40,7 +40,7 @@ function _grep(options, regex, files) {
     files.unshift('-');
 
   var grep = [];
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     if (!fs.existsSync(file) && file !== '-') {
       common.error('no such file or directory: ' + file, 2, true);
       return;
@@ -52,7 +52,7 @@ function _grep(options, regex, files) {
       if (contents.match(regex))
         grep.push(file);
     } else {
-      lines.forEach(function(line) {
+      lines.forEach(function (line) {
         var matched = line.match(regex);
         if ((options.inverse && !matched) || (!options.inverse && matched))
           grep.push(line);
@@ -60,6 +60,6 @@ function _grep(options, regex, files) {
     }
   });
 
-  return grep.join('\n')+'\n';
+  return grep.join('\n') + '\n';
 }
 module.exports = _grep;

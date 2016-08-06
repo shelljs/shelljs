@@ -66,7 +66,7 @@ function _ls(options, paths) {
     }
   }
 
-  paths.forEach(function(p) {
+  paths.forEach(function (p) {
     var stat;
 
     try {
@@ -82,8 +82,8 @@ function _ls(options, paths) {
         // use glob, because it's simple
         glob.sync(p + globPatternRecursive, { dot: options.all })
           .forEach(function (item) {
-          pushFile(item, path.relative(p, item));
-        });
+            pushFile(item, path.relative(p, item));
+          });
       } else if (options.all) {
         // use fs.readdirSync, because it's fast
         fs.readdirSync(p).forEach(function (item) {
@@ -105,10 +105,10 @@ function _ls(options, paths) {
   return list;
 }
 
-function addLsAttributes(path, stats) {
+function addLsAttributes(pathName, stats) {
   // Note: this object will contain more information than .toString() returns
-  stats.name = path;
-  stats.toString = function() {
+  stats.name = pathName;
+  stats.toString = function () {
     // Return a string resembling unix's `ls -l` format
     return [this.mode, this.nlink, this.uid, this.gid, this.size, this.mtime, this.name].join(' ');
   };

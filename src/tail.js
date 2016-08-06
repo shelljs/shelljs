@@ -45,7 +45,7 @@ function _tail(options, files) {
     files.unshift('-');
 
   var shouldAppendNewline = false;
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     if (!fs.existsSync(file) && file !== '-') {
       common.error('no such file or directory: ' + file, true);
       return;
@@ -54,7 +54,7 @@ function _tail(options, files) {
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
 
     var lines = contents.split('\n');
-    if (lines[lines.length-1] === '') {
+    if (lines[lines.length - 1] === '') {
       lines.pop();
       shouldAppendNewline = true;
     } else {

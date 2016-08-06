@@ -1,15 +1,16 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    path = require('path');
+var assert = require('assert');
+var path = require('path');
 
 shell.config.silent = true;
 
-var root = path.resolve(), trail;
+var root = path.resolve();
+var trail;
 
 function reset() {
-    shell.dirs('-c');
-    shell.cd(root);
+  shell.dirs('-c');
+  shell.cd(root);
 }
 
 // Valid
@@ -17,7 +18,7 @@ shell.pushd('resources/pushd');
 trail = shell.popd();
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
-assert.deepEqual(trail, [ root ]);
+assert.deepEqual(trail, [root]);
 
 shell.pushd('resources/pushd');
 shell.pushd('a');
@@ -25,8 +26,8 @@ trail = shell.popd();
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd'),
+  root
 ]);
 
 shell.pushd('b');
@@ -34,8 +35,8 @@ trail = shell.popd();
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd'),
+  root
 ]);
 
 shell.pushd('b');
@@ -44,56 +45,56 @@ trail = shell.popd();
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd/b'),
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd/b'),
+  path.resolve(root, 'resources/pushd'),
+  root
 ]);
 
 trail = shell.popd();
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
 assert.deepEqual(trail, [
-    path.resolve(root, 'resources/pushd'),
-    root
+  path.resolve(root, 'resources/pushd'),
+  root
 ]);
 
 trail = shell.popd();
 assert.equal(shell.error(), null);
 assert.equal(trail.length, 1);
 assert.equal(process.cwd(), trail[0]);
-assert.deepEqual(trail, [ root ]);
+assert.deepEqual(trail, [root]);
 
 // Valid by index
 shell.pushd('resources/pushd');
 trail = shell.popd('+0');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
-assert.deepEqual(trail, [ root ]);
+assert.deepEqual(trail, [root]);
 
 shell.pushd('resources/pushd');
 trail = shell.popd('+1');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
-assert.deepEqual(trail, [ path.resolve(root, 'resources/pushd') ]);
+assert.deepEqual(trail, [path.resolve(root, 'resources/pushd')]);
 
 reset(); shell.pushd('resources/pushd');
 trail = shell.popd('-0');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
-assert.deepEqual(trail, [ path.resolve(root, 'resources/pushd') ]);
+assert.deepEqual(trail, [path.resolve(root, 'resources/pushd')]);
 
 reset(); shell.pushd('resources/pushd');
 trail = shell.popd('-1');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
-assert.deepEqual(trail, [ root ]);
+assert.deepEqual(trail, [root]);
 
 
 reset(); shell.pushd('resources/pushd');
 trail = shell.popd('-n');
 assert.equal(shell.error(), null);
 assert.equal(process.cwd(), trail[0]);
-assert.deepEqual(trail, [ path.resolve(root, 'resources/pushd') ]);
+assert.deepEqual(trail, [path.resolve(root, 'resources/pushd')]);
 
 // Invalid
 trail = shell.popd();

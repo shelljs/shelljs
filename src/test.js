@@ -16,7 +16,6 @@ common.register('test', _test, {
 });
 
 
-
 //@
 //@ ### test(expression)
 //@ Available expression primaries:
@@ -43,11 +42,11 @@ function _test(options, path) {
     common.error('no path given');
 
   var canInterpret = false;
-  for (var key in options)
+  Object.keys(options).forEach(function (key) {
     if (options[key] === true) {
       canInterpret = true;
-      break;
     }
+  });
 
   if (!canInterpret)
     common.error('could not interpret expression');
@@ -55,7 +54,7 @@ function _test(options, path) {
   if (options.link) {
     try {
       return fs.lstatSync(path).isSymbolicLink();
-    } catch(e) {
+    } catch (e) {
       return false;
     }
   }
@@ -85,5 +84,7 @@ function _test(options, path) {
 
   if (options.socket)
     return stats.isSocket();
+
+  return false; // fallback
 } // test
 module.exports = _test;

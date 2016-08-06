@@ -49,11 +49,11 @@ function _ln(options, source, dest) {
     if (!fs.existsSync(resolvedSourcePath)) {
       common.error('Source file does not exist', true);
     } else if (isWindows && fs.statSync(resolvedSourcePath).isDirectory()) {
-      linkType =  'junction';
+      linkType = 'junction';
     }
 
     try {
-      fs.symlinkSync(linkType === 'junction' ? resolvedSourcePath: source, dest, linkType);
+      fs.symlinkSync(linkType === 'junction' ? resolvedSourcePath : source, dest, linkType);
     } catch (err) {
       common.error(err.message);
     }

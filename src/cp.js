@@ -31,25 +31,25 @@ function copyFileSync(srcFile, destFile, options) {
     }
 
     var symlinkFull = fs.readlinkSync(srcFile);
-    fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
+    fs.symlinkSync(symlinkFull, destFile, os.platform() === 'win32' ? 'junction' : null);
   } else {
-    var BUF_LENGTH = 64*1024,
-        buf = new Buffer(BUF_LENGTH),
-        bytesRead = BUF_LENGTH,
-        pos = 0,
-        fdr = null,
-        fdw = null;
+    var BUF_LENGTH = 64 * 1024;
+    var buf = new Buffer(BUF_LENGTH);
+    var bytesRead = BUF_LENGTH;
+    var pos = 0;
+    var fdr = null;
+    var fdw = null;
 
     try {
       fdr = fs.openSync(srcFile, 'r');
-    } catch(e) {
-      common.error('copyFileSync: could not read src file ('+srcFile+')');
+    } catch (e) {
+      common.error('copyFileSync: could not read src file (' + srcFile + ')');
     }
 
     try {
       fdw = fs.openSync(destFile, 'w');
-    } catch(e) {
-      common.error('copyFileSync: could not write to dest file (code='+e.code+'):'+destFile);
+    } catch (e) {
+      common.error('copyFileSync: could not write to dest file (code=' + e.code + '):' + destFile);
     }
 
     while (bytesRead === BUF_LENGTH) {
@@ -80,27 +80,26 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
   if (typeof opts.depth === 'undefined') {
     opts.depth = 0;
   }
-  if (opts.depth >= common.config.maxdepth) {
+  if (opts.depth >= common.config.maxdepth)
     // Max depth has been reached, end copy.
     return;
-  } else {
-    opts.depth++;
-  }
+  opts.depth++;
 
-  /* Create the directory where all our junk is moving to; read the mode of the source directory and mirror it */
+  // Create the directory where all our junk is moving to; read the mode of the
+  // source directory and mirror it
   try {
     var checkDir = fs.statSync(sourceDir);
     fs.mkdirSync(destDir, checkDir.mode);
   } catch (e) {
-    //if the directory already exists, that's okay
+    // if the directory already exists, that's okay
     if (e.code !== 'EEXIST') throw e;
   }
 
   var files = fs.readdirSync(sourceDir);
 
   for (var i = 0; i < files.length; i++) {
-    var srcFile = sourceDir + "/" + files[i];
-    var destFile = destDir + "/" + files[i];
+    var srcFile = sourceDir + '/' + files[i];
+    var destFile = destDir + '/' + files[i];
     var srcFileStat = fs.lstatSync(srcFile);
 
     var symlinkFull;
@@ -109,7 +108,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
         // Cycle link found.
         console.error('Cycle link found.');
         symlinkFull = fs.readlinkSync(srcFile);
-        fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
+        fs.symlinkSync(symlinkFull, destFile, os.platform() === 'win32' ? 'junction' : null);
         continue;
       }
     }
@@ -124,7 +123,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       } catch (e) {
         // it doesn't exist, so no work needs to be done
       }
-      fs.symlinkSync(symlinkFull, destFile, os.platform() === "win32" ? "junction" : null);
+      fs.symlinkSync(symlinkFull, destFile, os.platform() === 'win32' ? 'junction' : null);
     } else if (srcFileStat.isSymbolicLink() && opts.followsymlink) {
       srcFileStat = fs.statSync(srcFile);
       if (srcFileStat.isDirectory()) {
@@ -140,14 +139,18 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
         copyFileSync(srcFile, destFile, opts);
       }
     }
-
   } // for files
 } // cpdirSyncRecursive
 
 function cpcheckcycle(sourceDir, srcFile) {
   var srcFileStat = fs.lstatSync(srcFile);
   if (srcFileStat.isSymbolicLink()) {
-    // Do cycle check. For example mkdir -p 1/2/3/4 ; cd  1/2/3/4; ln -s ../../3 link ; cd ../../../.. ; cp -RL 1 copy
+    // Do cycle check. For example:
+    //   $ mkdir -p 1/2/3/4
+    //   $ cd  1/2/3/4
+    //   $ ln -s ../../3 link
+    //   $ cd ../../../..
+    //   $ cp -RL 1 copy
     var cyclecheck = fs.statSync(srcFile);
     if (cyclecheck.isDirectory()) {
       var sourcerealpath = fs.realpathSync(sourceDir);
@@ -197,8 +200,8 @@ function _cp(options, sources, dest) {
     dest = arguments[arguments.length - 1];
   }
 
-  var destExists = fs.existsSync(dest),
-      destStat = destExists && fs.statSync(dest);
+  var destExists = fs.existsSync(dest);
+  var destStat = destExists && fs.statSync(dest);
 
   // Dest is not existing dir, but multiple sources given
   if ((!destExists || !destStat.isDirectory()) && sources.length > 1)
@@ -208,9 +211,9 @@ function _cp(options, sources, dest) {
   if (destExists && destStat.isFile() && options.no_force)
     return new common.ShellString('', '', 0);
 
-  sources.forEach(function(src) {
+  sources.forEach(function (src) {
     if (!fs.existsSync(src)) {
-      common.error('no such file or directory: '+src, true);
+      common.error('no such file or directory: ' + src, true);
       return; // skip file
     }
     var srcStat = fs.statSync(src);
@@ -227,12 +230,11 @@ function _cp(options, sources, dest) {
 
         try {
           fs.statSync(path.dirname(dest));
-          cpdirSyncRecursive(src, newDest, {no_force: options.no_force, followsymlink: options.followsymlink});
-        } catch(e) {
+          cpdirSyncRecursive(src, newDest, { no_force: options.no_force, followsymlink: options.followsymlink });
+        } catch (e) {
           common.error("cannot create directory '" + dest + "': No such file or directory");
         }
       }
-      return; // done with dir
     } else {
       // If here, src is a file
 

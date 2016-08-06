@@ -40,7 +40,7 @@ var bottomOfFile2 = ['file2 50', 'file2 49', 'file2 48', 'file2 47', 'file2 46',
 result = shell.tail('resources/head/file1.txt');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(result, bottomOfFile1.slice(0, 10).reverse().join('\n')+'\n');
+assert.equal(result, bottomOfFile1.slice(0, 10).reverse().join('\n') + '\n');
 
 // multiple files
 result = shell.tail('resources/head/file2.txt', 'resources/head/file1.txt');
@@ -48,7 +48,7 @@ assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result, bottomOfFile2.slice(0, 10).reverse().concat(
                          bottomOfFile1.slice(0, 10).reverse()
-                     ).join('\n')+'\n');
+                     ).join('\n') + '\n');
 
 // multiple files, array syntax
 result = shell.tail(['resources/head/file2.txt', 'resources/head/file1.txt']);
@@ -56,7 +56,7 @@ assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result, bottomOfFile2.slice(0, 10).reverse().concat(
                          bottomOfFile1.slice(0, 10).reverse()
-                     ).join('\n')+'\n');
+                     ).join('\n') + '\n');
 
 // reading more lines than are in the file (no trailing newline)
 result = shell.tail('resources/file2', 'resources/file1');
@@ -76,7 +76,7 @@ assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result, bottomOfFile1.slice(0, 10).reverse().concat(
                          bottomOfFile2.slice(0, 10).reverse()
-                     ).join('\n')+'\n');
+                     ).join('\n') + '\n');
 
 // With `'-n' <num>` option
 result = shell.tail('-n', 4, 'resources/head/file2.txt', 'resources/head/file1.txt');
@@ -84,15 +84,15 @@ assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result, bottomOfFile2.slice(0, 4).reverse().concat(
                          bottomOfFile1.slice(0, 4).reverse()
-                     ).join('\n')+'\n');
+                     ).join('\n') + '\n');
 
 // With `{'-n': <num>}` option
-result = shell.tail({'-n': 4}, 'resources/head/file2.txt', 'resources/head/file1.txt');
+result = shell.tail({ '-n': 4 }, 'resources/head/file2.txt', 'resources/head/file1.txt');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result, bottomOfFile2.slice(0, 4).reverse().concat(
                          bottomOfFile1.slice(0, 4).reverse()
-                     ).join('\n')+'\n');
+                     ).join('\n') + '\n');
 
 // negative values are the same as positive values
 result = shell.tail('-n', -4, 'resources/head/file2.txt', 'resources/head/file1.txt');
@@ -100,6 +100,6 @@ assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 assert.equal(result, bottomOfFile2.slice(0, 4).reverse().concat(
                          bottomOfFile1.slice(0, 4).reverse()
-                     ).join('\n')+'\n');
+                     ).join('\n') + '\n');
 
 shell.exit(123);

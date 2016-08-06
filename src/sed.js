@@ -29,12 +29,12 @@ function _sed(options, regex, replacement, files) {
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe(this);
 
-  if (typeof replacement === 'string' || typeof replacement === 'function')
-    replacement = replacement; // no-op
-  else if (typeof replacement === 'number')
-    replacement = replacement.toString(); // fallback
-  else
-    common.error('invalid replacement string');
+  if (typeof replacement !== 'string' && typeof replacement !== 'function') {
+    if (typeof replacement === 'number')
+      replacement = replacement.toString(); // fallback
+    else
+      common.error('invalid replacement string');
+  }
 
   // Convert all search strings to RegExp
   if (typeof regex === 'string')
@@ -49,7 +49,7 @@ function _sed(options, regex, replacement, files) {
     files.unshift('-');
 
   var sed = [];
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     if (!fs.existsSync(file) && file !== '-') {
       common.error('no such file or directory: ' + file, 2, true);
       return;

@@ -15,8 +15,8 @@ function mkdirSyncRecursive(dir) {
   // Prevents some potential problems arising from malformed UNCs or
   // insufficient permissions.
   /* istanbul ignore next */
-  if(baseDir === dir) {
-    common.error("dirname() failed: [" + dir + "]");
+  if (baseDir === dir) {
+    common.error('dirname() failed: [' + dir + ']');
   }
 
   // Base dir exists, no recursion necessary
@@ -55,7 +55,7 @@ function _mkdir(options, dirs) {
     dirs = [].slice.call(arguments, 1);
   // if it's array leave it as it is
 
-  dirs.forEach(function(dir) {
+  dirs.forEach(function (dir) {
     try {
       fs.lstatSync(dir);
       if (!options.fullpath)

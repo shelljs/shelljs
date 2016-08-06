@@ -15,7 +15,7 @@ function writeableDir(dir) {
   if (!fs.statSync(dir).isDirectory())
     return false;
 
-  var testFile = dir+'/'+common.randomFileName();
+  var testFile = dir + '/' + common.randomFileName();
   try {
     fs.writeFileSync(testFile, ' ');
     common.unlinkSync(testFile);
@@ -44,10 +44,10 @@ function _tempDir() {
 
   state.tempDir = writeableDir(os.tmpdir && os.tmpdir()) || // node 0.10+
                   writeableDir(os.tmpDir && os.tmpDir()) || // node 0.8+
-                  writeableDir(process.env['TMPDIR']) ||
-                  writeableDir(process.env['TEMP']) ||
-                  writeableDir(process.env['TMP']) ||
-                  writeableDir(process.env['Wimp$ScrapDir']) || // RiscOS
+                  writeableDir(process.env.TMPDIR) ||
+                  writeableDir(process.env.TEMP) ||
+                  writeableDir(process.env.TMP) ||
+                  writeableDir(process.env.Wimp$ScrapDir) || // RiscOS
                   writeableDir('C:\\TEMP') || // Windows
                   writeableDir('C:\\TMP') || // Windows
                   writeableDir('\\TEMP') || // Windows

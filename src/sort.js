@@ -10,9 +10,9 @@ common.register('sort', _sort, {
 });
 
 // parse out the number prefix of a line
-function parseNumber (str) {
+function parseNumber(str) {
   var match = str.match(/^\s*(\d*)\s*(.*)$/);
-  return {num: Number(match[1]), value: match[2]};
+  return { num: Number(match[1]), value: match[2] };
 }
 
 // compare two strings case-insensitively, but examine case for strings that are
@@ -68,7 +68,7 @@ function _sort(options, files) {
     files.unshift('-');
 
   var lines = [];
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     if (!fs.existsSync(file) && file !== '-') {
       // exit upon any sort of error
       common.error('no such file or directory: ' + file);
@@ -84,7 +84,7 @@ function _sort(options, files) {
   if (options.reverse)
     sorted = sorted.reverse();
 
-  return sorted.join('\n')+'\n';
+  return sorted.join('\n') + '\n';
 }
 
 module.exports = _sort;

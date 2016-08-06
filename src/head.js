@@ -10,15 +10,15 @@ common.register('head', _head, {
 
 // This reads n or more lines, or the entire file, whichever is less.
 function readSomeLines(file, numLines) {
-  var BUF_LENGTH = 64*1024,
-      buf = new Buffer(BUF_LENGTH),
-      bytesRead = BUF_LENGTH,
-      pos = 0,
-      fdr = null;
+  var BUF_LENGTH = 64 * 1024;
+  var buf = new Buffer(BUF_LENGTH);
+  var bytesRead = BUF_LENGTH;
+  var pos = 0;
+  var fdr = null;
 
   try {
     fdr = fs.openSync(file, 'r');
-  } catch(e) {
+  } catch (e) {
     common.error('cannot read file: ' + file);
   }
 
@@ -71,7 +71,7 @@ function _head(options, files) {
     files.unshift('-');
 
   var shouldAppendNewline = false;
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     if (!fs.existsSync(file) && file !== '-') {
       common.error('no such file or directory: ' + file, true);
       return;
@@ -87,7 +87,7 @@ function _head(options, files) {
     }
 
     var lines = contents.split('\n');
-    var hasTrailingNewline = (lines[lines.length-1] === '');
+    var hasTrailingNewline = (lines[lines.length - 1] === '');
     if (hasTrailingNewline)
       lines.pop();
     shouldAppendNewline = (hasTrailingNewline || options.numLines < lines.length);

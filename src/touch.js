@@ -41,7 +41,7 @@ function _touch(opts, files) {
   else
     common.error('file arg should be a string file path or an Array of string file paths');
 
-  files.forEach(function(f) {
+  files.forEach(function (f) {
     touchFile(opts, f);
   });
   return '';

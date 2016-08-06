@@ -1,7 +1,7 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    fs = require('fs');
+var assert = require('assert');
+var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -9,6 +9,7 @@ shell.rm('-rf', 'tmp');
 shell.mkdir('tmp');
 
 var idx;
+var k;
 
 //
 // Invalids
@@ -336,7 +337,7 @@ result = shell.ls('-l', 'resources/ls');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 idx = -1;
-for (var k=0; k < result.length; k++) {
+for (k = 0; k < result.length; k++) {
   if (result[k].name === 'file1') {
     idx = k;
     break;
@@ -361,7 +362,7 @@ result = shell.ls('-lR', 'resources/ls/');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
 idx = -1;
-for (var k=0; k < result.length; k++) {
+for (k = 0; k < result.length; k++) {
   if (result[k].name === 'a_dir/b_dir') {
     idx = k;
     break;

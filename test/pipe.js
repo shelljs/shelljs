@@ -40,11 +40,11 @@ assert.equal(shell.error(), null);
 assert.equal(result.toString(), 'alphaaaaaaabeta\nalphbeta\n');
 
 // Equivalent to a simple sed() test case
-var result = shell.cat('resources/grep/file').sed(/l*\.js/, '');
+result = shell.cat('resources/grep/file').sed(/l*\.js/, '');
 assert.ok(!shell.error());
 assert.equal(result.toString(), 'alphaaaaaaabeta\nhowareyou\nalphbeta\nthis line ends in\n\n');
 
-//Sort a file by frequency of each line
+// Sort a file by frequency of each line
 result = shell.sort('resources/uniq/pipe').uniq('-c').sort('-n');
 assert.equal(shell.error(), null);
 assert.equal(result.toString(), shell.cat('resources/uniq/pipeSorted').toString());
@@ -69,7 +69,7 @@ if (process.platform !== 'win32') {
 if (process.platform !== 'win32') {
   // unix-specific
   if (shell.which('grep').stdout) {
-    shell.cat('resources/grep/file').exec("grep 'alpha*beta'", function(code, stdout) {
+    shell.cat('resources/grep/file').exec("grep 'alpha*beta'", function (code, stdout) {
       assert.equal(code, 0);
       assert.equal(stdout, 'alphaaaaaaabeta\nalphbeta\n');
       shell.exit(123);
