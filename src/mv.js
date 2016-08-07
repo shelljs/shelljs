@@ -41,20 +41,22 @@ function _mv(options, sources, dest) {
     common.error('invalid arguments');
   }
 
-  var exists = fs.existsSync(dest),
-      stats = exists && fs.statSync(dest);
+  var exists = fs.existsSync(dest);
+  var stats = exists && fs.statSync(dest);
 
   // Dest is not existing dir, but multiple sources given
-  if ((!exists || !stats.isDirectory()) && sources.length > 1)
+  if ((!exists || !stats.isDirectory()) && sources.length > 1) {
     common.error('dest is not a directory (too many sources)');
+  }
 
   // Dest is an existing file, but no -f given
-  if (exists && stats.isFile() && options.no_force)
+  if (exists && stats.isFile() && options.no_force) {
     common.error('dest file already exists: ' + dest);
+  }
 
-  sources.forEach(function(src) {
+  sources.forEach(function (src) {
     if (!fs.existsSync(src)) {
-      common.error('no such file or directory: '+src, true);
+      common.error('no such file or directory: ' + src, true);
       return; // skip file
     }
 
@@ -63,8 +65,9 @@ function _mv(options, sources, dest) {
     // When copying to '/path/dir':
     //    thisDest = '/path/dir/file1'
     var thisDest = dest;
-    if (fs.existsSync(dest) && fs.statSync(dest).isDirectory())
+    if (fs.existsSync(dest) && fs.statSync(dest).isDirectory()) {
       thisDest = path.normalize(dest + '/' + path.basename(src));
+    }
 
     if (fs.existsSync(thisDest) && options.no_force) {
       common.error('dest file already exists: ' + thisDest, true);
@@ -72,7 +75,7 @@ function _mv(options, sources, dest) {
     }
 
     if (path.resolve(src) === path.dirname(path.resolve(thisDest))) {
-      common.error('cannot move to self: '+src, true);
+      common.error('cannot move to self: ' + src, true);
       return; // skip file
     }
 

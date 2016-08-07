@@ -11,9 +11,9 @@ shell.mkdir('tmp');
 // Valids
 //
 
-assert.equal(shell.env['PATH'], process.env['PATH']);
+assert.equal(shell.env.PATH, process.env.PATH);
 
-shell.env['SHELLJS_TEST'] = 'hello world';
-assert.equal(shell.env['SHELLJS_TEST'], process.env['SHELLJS_TEST']);
+shell.env.SHELLJS_TEST = 'hello world';
+assert.equal(shell.env.SHELLJS_TEST, process.env.SHELLJS_TEST);
 
 shell.exit(123);

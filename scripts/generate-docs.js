@@ -10,13 +10,13 @@ cd(__dirname + '/..');
 var docs = grep('^//@', 'shell.js');
 
 // Now extract docs from the appropriate src/*.js files
-docs = docs.replace(/\/\/\@include (.+)/g, function(match, path) {
-  var file = path.match('.js$') ? path : path+'.js';
+docs = docs.replace(/\/\/@include (.+)/g, function (match, path) {
+  var file = path.match('.js$') ? path : path + '.js';
   return grep('^//@', file);
 });
 
 // Remove '//@'
-docs = docs.replace(/\/\/\@ ?/g, '');
+docs = docs.replace(/\/\/@ ?/g, '');
 
 // Wipe out the old docs
 ShellString(cat('README.md').replace(/## Command reference(.|\n)*\n## Team/, '## Command reference\n## Team')).to('README.md');

@@ -38,4 +38,3 @@ assert.equal('foobar', cat('tmp/testfile.txt'));
 
 exit(123);
 
-

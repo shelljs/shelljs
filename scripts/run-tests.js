@@ -8,9 +8,9 @@ var failed = false;
 // Unit tests
 //
 cd(__dirname + '/../test');
-ls('*.js').forEach(function(file) {
+ls('*.js').forEach(function (file) {
   echo('Running test:', file);
-  if (exec(JSON.stringify(process.execPath)+' '+file).code !== 123) { // 123 avoids false positives (e.g. premature exit)
+  if (exec(JSON.stringify(process.execPath) + ' ' + file).code !== 123) { // 123 avoids false positives (e.g. premature exit)
     failed = true;
     echo('*** TEST FAILED! (missing exit code "123")');
     echo();

@@ -3,8 +3,8 @@ tmp/
 .github/
 .documentup.json
 .gitignore
-.jshintrc
-.jshintignore
+.eslintrc
+.eslintignore
 .lgtm
 .travis.yml
 .gitattributes

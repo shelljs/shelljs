@@ -47,16 +47,18 @@ function _ls(options, paths) {
     options.all = true;
   }
 
-  if (!paths)
+  if (!paths) {
     paths = ['.'];
-  else
+  } else {
     paths = [].slice.call(arguments, 1);
+  }
 
   var list = [];
 
   function pushFile(abs, relName, stat) {
-    if (process.platform === 'win32')
+    if (process.platform === 'win32') {
       relName = relName.replace(/\\/g, '/');
+    }
     if (options.long) {
       stat = stat || fs.lstatSync(abs);
       list.push(addLsAttributes(relName, stat));
@@ -66,7 +68,7 @@ function _ls(options, paths) {
     }
   }
 
-  paths.forEach(function(p) {
+  paths.forEach(function (p) {
     var stat;
 
     try {
@@ -82,8 +84,8 @@ function _ls(options, paths) {
         // use glob, because it's simple
         glob.sync(p + globPatternRecursive, { dot: options.all })
           .forEach(function (item) {
-          pushFile(item, path.relative(p, item));
-        });
+            pushFile(item, path.relative(p, item));
+          });
       } else if (options.all) {
         // use fs.readdirSync, because it's fast
         fs.readdirSync(p).forEach(function (item) {
@@ -92,8 +94,9 @@ function _ls(options, paths) {
       } else {
         // use fs.readdirSync and then filter out secret files
         fs.readdirSync(p).forEach(function (item) {
-          if (item[0] !== '.')
+          if (item[0] !== '.') {
             pushFile(path.join(p, item), item);
+          }
         });
       }
     } else {
@@ -105,10 +108,10 @@ function _ls(options, paths) {
   return list;
 }
 
-function addLsAttributes(path, stats) {
+function addLsAttributes(pathName, stats) {
   // Note: this object will contain more information than .toString() returns
-  stats.name = path;
-  stats.toString = function() {
+  stats.name = pathName;
+  stats.toString = function () {
     // Return a string resembling unix's `ls -l` format
     return [this.mode, this.nlink, this.uid, this.gid, this.size, this.mtime, this.name].join(' ');
   };

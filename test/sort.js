@@ -1,7 +1,7 @@
 var shell = require('..');
 
-var assert = require('assert'),
-    fs = require('fs');
+var assert = require('assert');
+var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -13,7 +13,7 @@ var result;
 var doubleSorted = shell.cat('resources/sort/sorted')
                         .trimRight()
                         .split('\n')
-                        .reduce(function(prev, cur) {
+                        .reduce(function (prev, cur) {
                           return prev.concat([cur, cur]);
                         }, [])
                         .join('\n') + '\n';

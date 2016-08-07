@@ -28,12 +28,12 @@ assert.ok(!shell.error());
 assert.equal(result.code, 0);
 
 // creates new files
-var testFile = tmpFile();
+testFile = tmpFile();
 result = shell.touch(testFile);
 assert(fs.existsSync(testFile));
 
 // does not create a file if told not to
-var testFile = tmpFile(true);
+testFile = tmpFile(true);
 result = shell.touch('-c', testFile);
 assert.equal(result.code, 0);
 assert.ok(!fs.existsSync(testFile));
@@ -49,23 +49,23 @@ assert.ok(files.indexOf('tmp/file.js') > -1);
 assert.equal(files.length, 2);
 
 // errors if reference file is not found
-var testFile = tmpFile();
+testFile = tmpFile();
 var refFile = tmpFile(true);
-result = shell.touch({'-r': refFile}, testFile);
+result = shell.touch({ '-r': refFile }, testFile);
 assert.equal(result.code, 1);
 assert.ok(shell.error());
 
 // uses a reference file for mtime
-var testFile = tmpFile(false);
+testFile = tmpFile(false);
 var testFile2 = tmpFile();
 shell.touch(testFile2);
-shell.exec(JSON.stringify(process.execPath)+' resources/exec/slow.js 3000');
+shell.exec(JSON.stringify(process.execPath) + ' resources/exec/slow.js 3000');
 result = shell.touch(testFile);
 assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.notEqual(fs.statSync(testFile).mtime.getTime(), fs.statSync(testFile2).mtime.getTime());
 assert.notEqual(fs.statSync(testFile).atime.getTime(), fs.statSync(testFile2).atime.getTime());
-result = shell.touch({'-r': testFile2}, testFile);
+result = shell.touch({ '-r': testFile2 }, testFile);
 assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.equal(fs.statSync(testFile).mtime.getTime(), fs.statSync(testFile2).mtime.getTime());

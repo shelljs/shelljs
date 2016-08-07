@@ -10,15 +10,15 @@ common.register('head', _head, {
 
 // This reads n or more lines, or the entire file, whichever is less.
 function readSomeLines(file, numLines) {
-  var BUF_LENGTH = 64*1024,
-      buf = new Buffer(BUF_LENGTH),
-      bytesRead = BUF_LENGTH,
-      pos = 0,
-      fdr = null;
+  var BUF_LENGTH = 64 * 1024;
+  var buf = new Buffer(BUF_LENGTH);
+  var bytesRead = BUF_LENGTH;
+  var pos = 0;
+  var fdr = null;
 
   try {
     fdr = fs.openSync(file, 'r');
-  } catch(e) {
+  } catch (e) {
     common.error('cannot read file: ' + file);
   }
 
@@ -55,8 +55,7 @@ function _head(options, files) {
   var head = [];
   var pipe = common.readFromPipe(this);
 
-  if (!files && !pipe)
-    common.error('no paths given');
+  if (!files && !pipe) common.error('no paths given');
 
   var idx = 1;
   if (options.numLines === true) {
@@ -67,36 +66,39 @@ function _head(options, files) {
   }
   files = [].slice.call(arguments, idx);
 
-  if (pipe)
+  if (pipe) {
     files.unshift('-');
+  }
 
   var shouldAppendNewline = false;
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     if (!fs.existsSync(file) && file !== '-') {
       common.error('no such file or directory: ' + file, true);
       return;
     }
 
     var contents;
-    if (file === '-')
+    if (file === '-') {
       contents = pipe;
-    else if (options.numLines < 0) {
+    } else if (options.numLines < 0) {
       contents = fs.readFileSync(file, 'utf8');
     } else {
       contents = readSomeLines(file, options.numLines);
     }
 
     var lines = contents.split('\n');
-    var hasTrailingNewline = (lines[lines.length-1] === '');
-    if (hasTrailingNewline)
+    var hasTrailingNewline = (lines[lines.length - 1] === '');
+    if (hasTrailingNewline) {
       lines.pop();
+    }
     shouldAppendNewline = (hasTrailingNewline || options.numLines < lines.length);
 
     head = head.concat(lines.slice(0, options.numLines));
   });
 
-  if (shouldAppendNewline)
+  if (shouldAppendNewline) {
     head.push(''); // to add a trailing newline once we join
+  }
   return head.join('\n');
 }
 module.exports = _head;

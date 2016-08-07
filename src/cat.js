@@ -23,14 +23,14 @@ common.register('cat', _cat, {
 function _cat(options, files) {
   var cat = common.readFromPipe(this);
 
-  if (!files && !cat)
-    common.error('no paths given');
+  if (!files && !cat) common.error('no paths given');
 
   files = [].slice.call(arguments, 1);
 
-  files.forEach(function(file) {
-    if (!fs.existsSync(file))
+  files.forEach(function (file) {
+    if (!fs.existsSync(file)) {
       common.error('no such file or directory: ' + file);
+    }
 
     cat += fs.readFileSync(file, 'utf8');
   });

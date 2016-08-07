@@ -23,18 +23,18 @@ function rmdirSyncRecursive(dir, force) {
   files = fs.readdirSync(dir);
 
   // Loop through and delete everything in the sub-tree after checking it
-  for(var i = 0; i < files.length; i++) {
-    var file = dir + "/" + files[i],
-        currFile = fs.lstatSync(file);
+  for (var i = 0; i < files.length; i++) {
+    var file = dir + '/' + files[i];
+    var currFile = fs.lstatSync(file);
 
-    if(currFile.isDirectory()) { // Recursive function back to the beginning
+    if (currFile.isDirectory()) { // Recursive function back to the beginning
       rmdirSyncRecursive(file, force);
     } else { // Assume it's a file - perhaps a try/catch belongs here?
       if (force || isWriteable(file)) {
         try {
           common.unlinkSync(file);
         } catch (e) {
-          common.error('could not remove file (code '+e.code+'): ' + file, true);
+          common.error('could not remove file (code ' + e.code + '): ' + file, true);
         }
       }
     }
@@ -50,13 +50,13 @@ function rmdirSyncRecursive(dir, force) {
     while (true) {
       try {
         result = fs.rmdirSync(dir);
-        if (fs.existsSync(dir)) throw { code: "EAGAIN" };
+        if (fs.existsSync(dir)) throw { code: 'EAGAIN' };
         break;
-      } catch(er) {
+      } catch (er) {
         // In addition to error codes, also check if the directory still exists and loop again if true
-        if (process.platform === "win32" && (er.code === "ENOTEMPTY" || er.code === "EBUSY" || er.code === "EPERM" || er.code === "EAGAIN")) {
+        if (process.platform === 'win32' && (er.code === 'ENOTEMPTY' || er.code === 'EBUSY' || er.code === 'EPERM' || er.code === 'EAGAIN')) {
           if (Date.now() - start > 1000) throw er;
-        } else if (er.code === "ENOENT") {
+        } else if (er.code === 'ENOENT') {
           // Directory did not exist, deletion was successful
           break;
         } else {
@@ -64,8 +64,8 @@ function rmdirSyncRecursive(dir, force) {
         }
       }
     }
-  } catch(e) {
-    common.error('could not remove directory (code '+e.code+'): ' + dir, true);
+  } catch (e) {
+    common.error('could not remove directory (code ' + e.code + '): ' + dir, true);
   }
 
   return result;
@@ -78,7 +78,7 @@ function isWriteable(file) {
   try {
     var __fd = fs.openSync(file, 'a');
     fs.closeSync(__fd);
-  } catch(e) {
+  } catch (e) {
     writePermission = false;
   }
 
@@ -103,36 +103,36 @@ function isWriteable(file) {
 //@
 //@ Removes files.
 function _rm(options, files) {
-  if (!files)
-    common.error('no paths given');
+  if (!files) common.error('no paths given');
 
   // Convert to array
   files = [].slice.call(arguments, 1);
 
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     var stats;
     try {
       stats = fs.lstatSync(file); // test for existence
     } catch (e) {
       // Path does not exist, no force flag given
-      if (!options.force)
-        common.error('no such file or directory: '+file, true);
+      if (!options.force) {
+        common.error('no such file or directory: ' + file, true);
+      }
       return; // skip file
     }
 
     // If here, path exists
     if (stats.isFile() || stats.isSymbolicLink()) {
-
       // Do not check for file writing permissions
       if (options.force) {
         common.unlinkSync(file);
         return;
       }
 
-      if (isWriteable(file))
+      if (isWriteable(file)) {
         common.unlinkSync(file);
-      else
-        common.error('permission denied: '+file, true);
+      } else {
+        common.error('permission denied: ' + file, true);
+      }
 
       return;
     } // simple file

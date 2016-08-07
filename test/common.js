@@ -19,7 +19,7 @@ assert.throws(function () {
 
 // should be a list
 assert.throws(function () {
-  common.expand("resources");
+  common.expand('resources');
 }, TypeError);
 
 //
@@ -46,7 +46,7 @@ assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].s
 // multiple file, glob syntax, ** for directory name
 result = common.expand(['**/file*.js']);
 assert.equal(shell.error(), null);
-assert.deepEqual(result.sort(), ["resources/file1.js","resources/file2.js","resources/ls/file1.js","resources/ls/file2.js"].sort());
+assert.deepEqual(result.sort(), ['resources/file1.js', 'resources/file2.js', 'resources/ls/file1.js', 'resources/ls/file2.js'].sort());
 
 // broken links still expand
 result = common.expand(['resources/b*dlink']);
@@ -89,7 +89,7 @@ assert.ok(result.no_force === false);
 assert.ok(result.force === undefined); // this key shouldn't exist
 
 // common.parseOptions using an object to hold options
-result = common.parseOptions({'-v': 'some text here'}, {
+result = common.parseOptions({ '-v': 'some text here' }, {
   'v': 'value',
   'f': 'force',
   'r': 'reverse'
@@ -112,5 +112,4 @@ assert.equal(result.stdout, '');
 assert.equal(result.stderr, 'ls: no such file or directory: noexist\ncd: no such file or directory: noexist\n');
 
 shell.exit(123);
-
 
