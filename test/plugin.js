@@ -96,4 +96,11 @@ assert.equal(ret.stdout, '');
 assert.equal(ret.stderr, 'foo: Exited with code 5');
 assert.equal(shell.error(), 'foo: Exited with code 5');
 
+// Cannot overwrite an existing command by default
+var oldCat = shell.cat;
+assert.throws(function () {
+  plugin.register('cat', fooImplementation);
+}, 'Error: unable to overwrite `cat` command');
+assert.equal(shell.cat, oldCat);
+
 shell.exit(123);
