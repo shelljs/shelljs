@@ -29,7 +29,7 @@ common.register('grep', _grep, {
 //@ file that match the given `regex_filter`.
 function _grep(options, regex, files) {
   // Check if this is coming from a pipe
-  var pipe = common.readFromPipe(this);
+  var pipe = common.readFromPipe();
 
   if (!files && !pipe) common.error('no paths given', 2);
 

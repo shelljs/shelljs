@@ -57,7 +57,7 @@ function numericalCmp(a, b) {
 //@ files mixes their content, just like unix sort does.
 function _sort(options, files) {
   // Check if this is coming from a pipe
-  var pipe = common.readFromPipe(this);
+  var pipe = common.readFromPipe();
 
   if (!files && !pipe) common.error('no files given');
 

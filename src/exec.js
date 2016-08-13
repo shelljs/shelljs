@@ -239,7 +239,7 @@ function _exec(command, options, callback) {
   options = options || {};
   if (!command) common.error('must specify command');
 
-  var pipe = common.readFromPipe(this);
+  var pipe = common.readFromPipe();
 
   // Callback is defined instead of options.
   if (typeof options === 'function') {

@@ -27,7 +27,7 @@ common.register('sed', _sed, {
 //@ using the given search regex and replacement string or function. Returns the new string after replacement.
 function _sed(options, regex, replacement, files) {
   // Check if this is coming from a pipe
-  var pipe = common.readFromPipe(this);
+  var pipe = common.readFromPipe();
 
   if (typeof replacement !== 'string' && typeof replacement !== 'function') {
     if (typeof replacement === 'number') {
