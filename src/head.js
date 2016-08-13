@@ -53,7 +53,7 @@ function readSomeLines(file, numLines) {
 //@ Read the start of a file.
 function _head(options, files) {
   var head = [];
-  var pipe = common.readFromPipe(this);
+  var pipe = common.readFromPipe();
 
   if (!files && !pipe) common.error('no paths given');
 

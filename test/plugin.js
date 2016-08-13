@@ -14,7 +14,7 @@ function fooImplementation(options, arg) {
   if (arg) {
     fname = arg;
   } else {
-    fname = plugin.readFromPipe(this);
+    fname = plugin.readFromPipe();
   }
 
   if (arg === 'exitWithCode5') {

@@ -277,6 +277,10 @@ function wrap(cmd, fn, options) {
         console.error.apply(console, [cmd].concat(args));
       }
 
+      // If this is coming from a pipe, let's set the pipedValue (otherwise, set
+      // it to the empty string)
+      state.pipedValue = (this && typeof this.stdout === 'string') ? this.stdout : '';
+
       if (options.unix === false) { // this branch is for exec()
         retValue = fn.apply(this, args);
       } else { // and this branch is for everything else
@@ -359,8 +363,8 @@ exports.wrap = wrap;
 
 // This returns all the input that is piped into the current command (or the
 // empty string, if this isn't on the right-hand side of a pipe
-function _readFromPipe(that) {
-  return typeof that.stdout === 'string' ? that.stdout : '';
+function _readFromPipe() {
+  return state.pipedValue;
 }
 exports.readFromPipe = _readFromPipe;
 

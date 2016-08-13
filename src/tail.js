@@ -26,7 +26,7 @@ common.register('tail', _tail, {
 //@ Read the end of a file.
 function _tail(options, files) {
   var tail = [];
-  var pipe = common.readFromPipe(this);
+  var pipe = common.readFromPipe();
 
   if (!files && !pipe) common.error('no paths given');
 

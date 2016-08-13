@@ -38,7 +38,7 @@ common.register('uniq', _uniq, {
 //@ Filter adjacent matching lines from input
 function _uniq(options, input, output) {
   // Check if this is coming from a pipe
-  var pipe = common.readFromPipe(this);
+  var pipe = common.readFromPipe();
 
   if (!input && !pipe) common.error('no input given');
 
