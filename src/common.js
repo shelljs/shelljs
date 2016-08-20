@@ -81,6 +81,16 @@ function error(msg, _code, _continue) {
 }
 exports.error = error;
 
+function existsSync(file) {
+  try {
+    fs.accessSync(file);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+exports.existsSync = existsSync;
+
 //@
 //@ ### ShellString(str)
 //@

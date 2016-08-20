@@ -54,7 +54,7 @@ function _sed(options, regex, replacement, files) {
 
   var sed = [];
   files.forEach(function (file) {
-    if (!fs.existsSync(file) && file !== '-') {
+    if (!common.existsSync(file) && file !== '-') {
       common.error('no such file or directory: ' + file, 2, true);
       return;
     }

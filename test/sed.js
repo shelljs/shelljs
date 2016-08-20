@@ -1,7 +1,7 @@
 var shell = require('..');
+var common = require('../src/common');
 
 var assert = require('assert');
-var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -27,7 +27,7 @@ result = shell.sed(/asdf/g, 'nada'); // too few args
 assert.ok(shell.error());
 assert.equal(result.code, 1);
 
-assert.equal(fs.existsSync('asdfasdf'), false); // sanity check
+assert.equal(common.existsSync('asdfasdf'), false); // sanity check
 result = shell.sed(/asdf/g, 'nada', 'asdfasdf'); // no such file
 assert.ok(shell.error());
 assert.equal(result.code, 2);
@@ -35,8 +35,8 @@ assert.equal(result.stderr, 'sed: no such file or directory: asdfasdf');
 
 // if at least one file is missing, this should be an error
 shell.cp('-f', 'resources/file1', 'tmp/file1');
-assert.equal(fs.existsSync('asdfasdf'), false); // sanity check
-assert.equal(fs.existsSync('tmp/file1'), true); // sanity check
+assert.equal(common.existsSync('asdfasdf'), false); // sanity check
+assert.equal(common.existsSync('tmp/file1'), true); // sanity check
 result = shell.sed(/asdf/g, 'nada', 'tmp/file1', 'asdfasdf');
 assert.ok(shell.error());
 assert.equal(result.code, 2);

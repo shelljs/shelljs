@@ -102,7 +102,7 @@ function _chmod(options, mode, filePattern) {
 
   files.forEach(function innerChmod(file) {
     file = path.resolve(file);
-    if (!fs.existsSync(file)) {
+    if (!common.existsSync(file)) {
       common.error('File not found: ' + file);
     }
 

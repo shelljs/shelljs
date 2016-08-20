@@ -1,7 +1,7 @@
 var shell = require('..');
+var common = require('../src/common');
 
 var assert = require('assert');
-var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -26,7 +26,7 @@ result = shell.sort();
 assert.ok(shell.error());
 assert.ok(result.code);
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
+assert.equal(common.existsSync('/asdfasdf'), false); // sanity check
 result = shell.sort('/adsfasdf'); // file does not exist
 assert.ok(shell.error());
 assert.ok(result.code);

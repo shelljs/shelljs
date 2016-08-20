@@ -1,7 +1,7 @@
 var shell = require('..');
+var common = require('../src/common');
 
 var assert = require('assert');
-var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -27,7 +27,7 @@ var node = shell.which('node');
 assert.equal(node.code, 0);
 assert.ok(!node.stderr);
 assert.ok(!shell.error());
-assert.ok(fs.existsSync(node + ''));
+assert.ok(common.existsSync(node + ''));
 
 if (process.platform === 'win32') {
   // This should be equivalent on Windows

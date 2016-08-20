@@ -21,7 +21,7 @@ common.register('toEnd', _toEnd, {
 function _toEnd(options, file) {
   if (!file) common.error('wrong arguments');
 
-  if (!fs.existsSync(path.dirname(file))) {
+  if (!common.existsSync(path.dirname(file))) {
     common.error('no such file or directory: ' + path.dirname(file));
   }
 

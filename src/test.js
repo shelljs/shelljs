@@ -57,7 +57,7 @@ function _test(options, path) {
     }
   }
 
-  if (!fs.existsSync(path)) return false;
+  if (!common.existsSync(path)) return false;
 
   if (options.exists) return true;
 
