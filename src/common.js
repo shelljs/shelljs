@@ -83,7 +83,7 @@ exports.error = error;
 
 function existsSync(file) {
   try {
-    fs.accessSync(file);
+    fs.statSync(file);
     return true;
   } catch (e) {
     return false;
