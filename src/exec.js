@@ -37,7 +37,7 @@ function execSync(cmd, opts, pipe) {
   var previousStderrContent = '';
   // Echoes stdout and stderr changes from running process, if not silent
   function updateStream(streamFile) {
-    if (opts.silent || !fs.existsSync(streamFile)) {
+    if (opts.silent || !common.existsSync(streamFile)) {
       return;
     }
 
@@ -61,10 +61,10 @@ function execSync(cmd, opts, pipe) {
     previousStreamContent = streamContent;
   }
 
-  if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
-  if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
-  if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
-  if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
+  if (common.existsSync(scriptFile)) common.unlinkSync(scriptFile);
+  if (common.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
+  if (common.existsSync(stderrFile)) common.unlinkSync(stderrFile);
+  if (common.existsSync(codeFile)) common.unlinkSync(codeFile);
 
   var execCommand = JSON.stringify(process.execPath) + ' ' + JSON.stringify(scriptFile);
   var script;
@@ -134,9 +134,9 @@ function execSync(cmd, opts, pipe) {
     // sleepFile is used as a dummy I/O op to mitigate unnecessary CPU usage
     // (tried many I/O sync ops, writeFileSync() seems to be only one that is effective in reducing
     // CPU usage, though apparently not so much on Windows)
-    while (!fs.existsSync(codeFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
-    while (!fs.existsSync(stdoutFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
-    while (!fs.existsSync(stderrFile)) { updateStream(stderrFile); fs.writeFileSync(sleepFile, 'a'); }
+    while (!common.existsSync(codeFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
+    while (!common.existsSync(stdoutFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
+    while (!common.existsSync(stderrFile)) { updateStream(stderrFile); fs.writeFileSync(sleepFile, 'a'); }
     try { common.unlinkSync(sleepFile); } catch (e) {}
   }
 

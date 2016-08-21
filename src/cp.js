@@ -19,7 +19,7 @@ common.register('cp', _cp, {
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
 //  with large files)
 function copyFileSync(srcFile, destFile, options) {
-  if (!fs.existsSync(srcFile)) {
+  if (!common.existsSync(srcFile)) {
     common.error('copyFileSync: no such file or directory: ' + srcFile);
   }
 
@@ -135,7 +135,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       }
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
-      if (fs.existsSync(destFile) && opts.no_force) {
+      if (common.existsSync(destFile) && opts.no_force) {
         common.log('skipping existing file: ' + files[i]);
       } else {
         copyFileSync(srcFile, destFile, opts);
@@ -204,7 +204,7 @@ function _cp(options, sources, dest) {
     dest = arguments[arguments.length - 1];
   }
 
-  var destExists = fs.existsSync(dest);
+  var destExists = common.existsSync(dest);
   var destStat = destExists && fs.statSync(dest);
 
   // Dest is not existing dir, but multiple sources given
@@ -218,7 +218,7 @@ function _cp(options, sources, dest) {
   }
 
   sources.forEach(function (src) {
-    if (!fs.existsSync(src)) {
+    if (!common.existsSync(src)) {
       common.error('no such file or directory: ' + src, true);
       return; // skip file
     }
@@ -251,7 +251,7 @@ function _cp(options, sources, dest) {
         thisDest = path.normalize(dest + '/' + path.basename(src));
       }
 
-      if (fs.existsSync(thisDest) && options.no_force) {
+      if (common.existsSync(thisDest) && options.no_force) {
         return; // skip file
       }
 

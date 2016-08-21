@@ -20,7 +20,7 @@ function mkdirSyncRecursive(dir) {
   }
 
   // Base dir exists, no recursion necessary
-  if (fs.existsSync(baseDir)) {
+  if (common.existsSync(baseDir)) {
     fs.mkdirSync(dir, parseInt('0777', 8));
     return;
   }
@@ -68,7 +68,7 @@ function _mkdir(options, dirs) {
 
     // Base dir does not exist, and no -p option given
     var baseDir = path.dirname(dir);
-    if (!fs.existsSync(baseDir) && !options.fullpath) {
+    if (!common.existsSync(baseDir) && !options.fullpath) {
       common.error('no such file or directory: ' + baseDir, true);
       return; // skip dir
     }

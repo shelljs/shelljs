@@ -1,7 +1,7 @@
 var shell = require('..');
+var common = require('../src/common');
 
 var assert = require('assert');
-var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -14,6 +14,6 @@ shell.mkdir('tmp');
 
 var tmp = shell.tempdir();
 assert.equal(shell.error(), null);
-assert.equal(fs.existsSync(tmp), true);
+assert.equal(common.existsSync(tmp), true);
 
 shell.exit(123);

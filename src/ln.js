@@ -34,7 +34,7 @@ function _ln(options, source, dest) {
   var isAbsolute = (path.resolve(source) === sourcePath);
   dest = path.resolve(process.cwd(), String(dest));
 
-  if (fs.existsSync(dest)) {
+  if (common.existsSync(dest)) {
     if (!options.force) {
       common.error('Destination file exists', true);
     }
@@ -46,7 +46,7 @@ function _ln(options, source, dest) {
     var isWindows = common.platform === 'win';
     var linkType = isWindows ? 'file' : null;
     var resolvedSourcePath = isAbsolute ? sourcePath : path.resolve(process.cwd(), path.dirname(dest), source);
-    if (!fs.existsSync(resolvedSourcePath)) {
+    if (!common.existsSync(resolvedSourcePath)) {
       common.error('Source file does not exist', true);
     } else if (isWindows && fs.statSync(resolvedSourcePath).isDirectory()) {
       linkType = 'junction';
@@ -58,7 +58,7 @@ function _ln(options, source, dest) {
       common.error(err.message);
     }
   } else {
-    if (!fs.existsSync(source)) {
+    if (!common.existsSync(source)) {
       common.error('Source file does not exist', true);
     }
     try {

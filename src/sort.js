@@ -69,7 +69,7 @@ function _sort(options, files) {
 
   var lines = [];
   files.forEach(function (file) {
-    if (!fs.existsSync(file) && file !== '-') {
+    if (!common.existsSync(file) && file !== '-') {
       // exit upon any sort of error
       common.error('no such file or directory: ' + file);
     }

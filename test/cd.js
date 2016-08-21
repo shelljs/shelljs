@@ -2,7 +2,6 @@ var shell = require('..');
 
 var assert = require('assert');
 var path = require('path');
-var fs = require('fs');
 var common = require('../src/common');
 
 shell.config.silent = true;
@@ -17,13 +16,13 @@ shell.mkdir('tmp');
 // Invalids
 //
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
+assert.equal(common.existsSync('/asdfasdf'), false); // sanity check
 var result = shell.cd('/asdfasdf'); // dir does not exist
 assert.ok(shell.error());
 assert.equal(result.code, 1);
 assert.equal(result.stderr, 'cd: no such file or directory: /asdfasdf');
 
-assert.equal(fs.existsSync('resources/file1'), true); // sanity check
+assert.equal(common.existsSync('resources/file1'), true); // sanity check
 result = shell.cd('resources/file1'); // file, not dir
 assert.ok(shell.error());
 assert.equal(result.code, 1);
@@ -61,7 +60,7 @@ assert.equal(process.cwd(), path.resolve(cur.toString()));
 
 result = shell.cd(cur);
 result = shell.rm('-f', 'tmp/*');
-assert.equal(fs.existsSync('tmp/file1'), false);
+assert.equal(common.existsSync('tmp/file1'), false);
 result = shell.cd('resources');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
@@ -71,7 +70,7 @@ assert.equal(result.code, 0);
 result = shell.cd('../tmp');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(fs.existsSync('file1'), true);
+assert.equal(common.existsSync('file1'), true);
 
 // Test tilde expansion
 
