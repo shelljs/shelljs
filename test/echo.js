@@ -33,15 +33,21 @@ child.exec(JSON.stringify(process.execPath) + ' ' + file, function (err, stdout)
     assert.equal(stderr2, '');
 
     // simple test with silent(true)
-    shell.mkdir('-p', 'tmp');
-    file = 'tmp/tempscript' + Math.random() + '.js';
     script = 'require(\'../../global.js\'); config.silent=true; echo(555);';
     shell.ShellString(script).to(file);
     child.exec(JSON.stringify(process.execPath) + ' ' + file, function (err3, stdout3) {
       assert.equal(stdout3, '555\n');
 
-      theEnd();
+      script = "require('../../global.js'); echo('-e', '\\tmessage');";
+      shell.ShellString(script).to(file);
+      child.exec(JSON.stringify(process.execPath) + ' ' + file, function (err4, stdout4) {
+        assert.equal(stdout4, '\tmessage\n');
+
+        theEnd();
+      });
     });
+
+    // simple test with silent(true)
   });
 });
 
