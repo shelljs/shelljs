@@ -5,7 +5,10 @@ common.register('echo', _echo, {
 });
 
 //@
-//@ ### echo(string [, string ...])
+//@ ### echo([options,] string [, string ...])
+//@ Available options:
+//@
+//@ + `-e`: interpret backslash escapes (default)
 //@
 //@ Examples:
 //@
@@ -19,6 +22,12 @@ common.register('echo', _echo, {
 function _echo(opts, messages) {
   // allow strings starting with '-', see issue #20
   messages = [].slice.call(arguments, opts ? 0 : 1);
+
+  if (messages[0] === '-e') {
+    // ignore -e
+    messages.shift();
+  }
+
   console.log.apply(console, messages);
   return messages.join(' ');
 }

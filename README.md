@@ -459,7 +459,10 @@ Searches for `command` in the system's PATH. On Windows, this uses the
 Returns string containing the absolute path to the command.
 
 
-### echo(string [, string ...])
+### echo([options,] string [, string ...])
+Available options:
+
++ `-e`: interpret backslash escapes (default)
 
 Examples:
 
