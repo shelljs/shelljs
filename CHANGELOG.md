@@ -1,5 +1,25 @@
 # Change Log
 
+## [v0.7.4](https://github.com/shelljs/shelljs/tree/v0.7.4) (2016-08-26)
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.3...v0.7.4)
+
+**Closed issues:**
+
+- fix: echo -e should not print "-e" [\#510](https://github.com/shelljs/shelljs/issues/510)
+- Wrong method signature in doc [\#498](https://github.com/shelljs/shelljs/issues/498)
+- readFromPipe should be a function with no arguments [\#485](https://github.com/shelljs/shelljs/issues/485)
+- TypeError: Cannot read property 'toString' of undefined [\#471](https://github.com/shelljs/shelljs/issues/471)
+
+**Merged pull requests:**
+
+- fix: echo supports -e option properly [\#511](https://github.com/shelljs/shelljs/pull/511) ([nfischer](https://github.com/nfischer))
+- refactor: replace fs.existsSync [\#509](https://github.com/shelljs/shelljs/pull/509) ([nfischer](https://github.com/nfischer))
+- refactor: readFromPipe\(\) requires no arguments [\#506](https://github.com/shelljs/shelljs/pull/506) ([nfischer](https://github.com/nfischer))
+- chore: switch to eslint [\#504](https://github.com/shelljs/shelljs/pull/504) ([nfischer](https://github.com/nfischer))
+- feat: add overWrite option for commands [\#503](https://github.com/shelljs/shelljs/pull/503) ([nfischer](https://github.com/nfischer))
+- chore: update issue template [\#502](https://github.com/shelljs/shelljs/pull/502) ([nfischer](https://github.com/nfischer))
+- fixed head/tail readme [\#499](https://github.com/shelljs/shelljs/pull/499) ([charlesread](https://github.com/charlesread))
+
 ## [v0.7.3](https://github.com/shelljs/shelljs/tree/v0.7.3) (2016-07-27)
 [Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.2...v0.7.3)
 
