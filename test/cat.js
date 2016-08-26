@@ -1,54 +1,66 @@
-var shell = require('..');
+import test from 'ava';
+import shell from '..';
+import fs from 'fs';
 
-var assert = require('assert');
-var fs = require('fs');
+let TMP;
 
-shell.config.silent = true;
+test.beforeEach(() => {
+  TMP = require('./utils/utils').getTempDir();
+  shell.config.silent = true;
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+  shell.rm('-rf', TMP);
+  shell.mkdir(TMP);
+});
+
 
 //
 // Invalids
 //
 
-var result = shell.cat();
-assert.ok(shell.error());
-assert.equal(result.code, 1);
-assert.equal(result.stderr, 'cat: no paths given');
+test('no paths given', t => {
+  const result = shell.cat();
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'cat: no paths given');
+});
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-result = shell.cat('/asdfasdf'); // file does not exist
-assert.ok(shell.error());
-assert.equal(result.code, 1);
-assert.equal(result.stderr, 'cat: no such file or directory: /asdfasdf');
+test('nonexistent file', t => {
+  t.is(fs.existsSync('/asdfasdf'), false); // sanity check
+  const result = shell.cat('/asdfasdf'); // file does not exist
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'cat: no such file or directory: /asdfasdf');
+});
 
 //
 // Valids
 //
 
-// simple
-result = shell.cat('resources/cat/file1');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, 'test1\n');
+test('simple', t => {
+  const result = shell.cat('resources/cat/file1');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), 'test1\n');
+});
 
-// multiple files
-result = shell.cat('resources/cat/file2', 'resources/cat/file1');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, 'test2\ntest1\n');
+test('multiple files', t => {
+  const result = shell.cat('resources/cat/file2', 'resources/cat/file1');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), 'test2\ntest1\n');
+});
 
-// multiple files, array syntax
-result = shell.cat(['resources/cat/file2', 'resources/cat/file1']);
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, 'test2\ntest1\n');
+test('multiple files, array syntax', t => {
+  const result = shell.cat(['resources/cat/file2', 'resources/cat/file1']);
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), 'test2\ntest1\n');
+});
 
-result = shell.cat('resources/file*.txt');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.ok(result.search('test1') > -1); // file order might be random
-assert.ok(result.search('test2') > -1);
-
-shell.exit(123);
+test('glob', t => {
+  const result = shell.cat('resources/file*.txt');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.truthy(result.search('test1') > -1); // file order might be random
+  t.truthy(result.search('test2') > -1);
+});

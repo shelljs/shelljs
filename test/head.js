@@ -1,113 +1,121 @@
-var shell = require('..');
+import test from 'ava';
+import shell from '..';
+import fs from 'fs';
 
-var assert = require('assert');
-var fs = require('fs');
+let TMP;
 
-shell.config.silent = true;
+test.beforeEach(() => {
+  shell.config.silent = true;
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+  shell.rm('-rf', TMP);
+  shell.mkdir(TMP);
+});
 
-var result;
 
 //
 // Invalids
 //
 
-result = shell.head();
-assert.ok(shell.error());
-assert.equal(result.code, 1);
+test('no args', t => {
+  const result = shell.head();
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+});
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-result = shell.head('/adsfasdf'); // file does not exist
-assert.ok(shell.error());
-assert.equal(result.code, 1);
+test('file does not exist', t => {
+  t.is(fs.existsSync('/asdfasdf'), false); // sanity check
+  const result = shell.head('/adsfasdf'); // file does not exist
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+});
 
 //
 // Valids
 //
 
-var topOfFile1 = ['file1 1', 'file1 2', 'file1 3', 'file1 4', 'file1 5',
+const topOfFile1 = ['file1 1', 'file1 2', 'file1 3', 'file1 4', 'file1 5',
                   'file1 6', 'file1 7', 'file1 8', 'file1 9', 'file1 10',
                   'file1 11', 'file1 12', 'file1 13', 'file1 14', 'file1 15',
                   'file1 16', 'file1 17', 'file1 18', 'file1 19', 'file1 20'];
-var topOfFile2 = ['file2 1', 'file2 2', 'file2 3', 'file2 4', 'file2 5',
+const topOfFile2 = ['file2 1', 'file2 2', 'file2 3', 'file2 4', 'file2 5',
                   'file2 6', 'file2 7', 'file2 8', 'file2 9', 'file2 10',
                   'file2 11', 'file2 12', 'file2 13', 'file2 14', 'file2 15',
                   'file2 16', 'file2 17', 'file2 18', 'file2 19', 'file2 20'];
 
-// simple
-result = shell.head('resources/head/file1.txt');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, topOfFile1.slice(0, 10).join('\n') + '\n');
+test('simple', t => {
+  const result = shell.head('resources/head/file1.txt');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), topOfFile1.slice(0, 10).join('\n') + '\n');
+});
 
-// multiple files
-result = shell.head('resources/head/file2.txt', 'resources/head/file1.txt');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, topOfFile2
-                       .slice(0, 10)
-                       .concat(topOfFile1.slice(0, 10))
-                       .join('\n') + '\n'
-);
+test('multiple files', t => {
+  const result = shell.head('resources/head/file2.txt', 'resources/head/file1.txt');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), topOfFile2
+    .slice(0, 10)
+    .concat(topOfFile1.slice(0, 10))
+    .join('\n') + '\n');
+});
 
-// multiple files, array syntax
-result = shell.head(['resources/head/file2.txt', 'resources/head/file1.txt']);
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, topOfFile2
-                       .slice(0, 10)
-                       .concat(topOfFile1.slice(0, 10))
-                       .join('\n') + '\n'
-);
+test('multiple files, array syntax', t => {
+  const result = shell.head(['resources/head/file2.txt', 'resources/head/file1.txt']);
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), topOfFile2
+    .slice(0, 10)
+    .concat(topOfFile1.slice(0, 10))
+    .join('\n') + '\n');
+});
 
-// reading more lines than are in the file (no trailing newline)
-result = shell.head('resources/file2', 'resources/file1');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, 'test2\ntest1'); // these files only have one line (no \n)
+test('reading more lines than are in the file (no trailing newline)', t => {
+  const result = shell.head('resources/file2', 'resources/file1');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), 'test2\ntest1'); // these files only have one line (no \n)
+});
 
-// reading more lines than are in the file (with trailing newline)
-result = shell.head('resources/head/shortfile2', 'resources/head/shortfile1');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, 'short2\nshort1\n'); // these files only have one line (with \n)
+test('reading more lines than are in the file (with trailing newline)', t => {
+  const result = shell.head('resources/head/shortfile2', 'resources/head/shortfile1');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), 'short2\nshort1\n'); // these files only have one line (with \n)
+});
 
-// Globbed file
-result = shell.head('resources/head/file?.txt');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, topOfFile1
-                       .slice(0, 10)
-                       .concat(topOfFile2.slice(0, 10))
-                       .join('\n') + '\n'
-);
+test('Globbed file', t => {
+  const result = shell.head('resources/head/file?.txt');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), topOfFile1
+    .slice(0, 10)
+    .concat(topOfFile2.slice(0, 10))
+    .join('\n') + '\n');
+});
 
-// With `'-n' <num>` option
-result = shell.head('-n', 4, 'resources/head/file2.txt', 'resources/head/file1.txt');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, topOfFile2
-                       .slice(0, 4)
-                       .concat(topOfFile1.slice(0, 4))
-                       .join('\n') + '\n'
-);
+test('With `\'-n\' <num>` option', t => {
+  const result = shell.head('-n', 4, 'resources/head/file2.txt', 'resources/head/file1.txt');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), topOfFile2
+    .slice(0, 4)
+    .concat(topOfFile1.slice(0, 4))
+    .join('\n') + '\n');
+});
 
-// With `{'-n': <num>}` option
-result = shell.head({ '-n': 4 }, 'resources/head/file2.txt', 'resources/head/file1.txt');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, topOfFile2
-                       .slice(0, 4)
-                       .concat(topOfFile1.slice(0, 4))
-                       .join('\n') + '\n'
-);
+test('With `{\'-n\': <num>}` option', t => {
+  const result = shell.head({ '-n': 4 }, 'resources/head/file2.txt', 'resources/head/file1.txt');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), topOfFile2
+    .slice(0, 4)
+    .concat(topOfFile1.slice(0, 4))
+    .join('\n') + '\n');
+});
 
-// negative values (-num) are the same as (numLines - num)
-result = shell.head('-n', -46, 'resources/head/file1.txt');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, 'file1 1\nfile1 2\nfile1 3\nfile1 4\n');
-
-shell.exit(123);
+test('negative values (-num) are the same as (numLines - num)', t => {
+  const result = shell.head('-n', -46, 'resources/head/file1.txt');
+  t.is(shell.error(), null);
+  t.is(result.code, 0);
+  t.is(result.toString(), 'file1 1\nfile1 2\nfile1 3\nfile1 4\n');
+});

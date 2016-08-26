@@ -1,3 +1,5 @@
 test/resources/
 node_modules/
 make.js
+packages/
+codemods/

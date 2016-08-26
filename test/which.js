@@ -1,41 +1,53 @@
-var shell = require('..');
+import test from 'ava';
+import shell from '..';
+import fs from 'fs';
 
-var assert = require('assert');
-var fs = require('fs');
+let TMP;
 
-shell.config.silent = true;
+test.beforeEach(() => {
+  TMP = require('./utils/utils').getTempDir();
+  shell.config.silent = true;
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+  shell.rm('-rf', TMP);
+  shell.mkdir(TMP);
+});
+
 
 //
 // Invalids
 //
 
-shell.which();
-assert.ok(shell.error());
+test('No Test Title #57', t => {
+  shell.which();
+  t.truthy(shell.error());
+});
 
-var result = shell.which('asdfasdfasdfasdfasdf'); // what are the odds...
-assert.ok(!shell.error());
-assert.ok(!result);
+test('No Test Title #58', t => {
+  const result = shell.which('asdfasdfasdfasdfasdf'); // what are the odds...
+  t.truthy(!shell.error());
+  t.truthy(!result);
+});
 
 //
 // Valids
 //
 
-var node = shell.which('node');
-assert.equal(node.code, 0);
-assert.ok(!node.stderr);
-assert.ok(!shell.error());
-assert.ok(fs.existsSync(node + ''));
+test('No Test Title #59', t => {
+  const node = shell.which('node');
+  t.is(node.code, 0);
+  t.truthy(!node.stderr);
+  t.truthy(!shell.error());
+  t.truthy(fs.existsSync(node + ''));
+});
 
-if (process.platform === 'win32') {
-  // This should be equivalent on Windows
-  var nodeExe = shell.which('node.exe');
-  assert.ok(!shell.error());
-  // If the paths are equal, then this file *should* exist, since that's
-  // already been checked.
-  assert.equal(node + '', nodeExe + '');
-}
-
-shell.exit(123);
+test('No Test Title #60', t => {
+  if (process.platform === 'win32') {
+    // This should be equivalent on Windows
+    const node = shell.which('node');
+    const nodeExe = shell.which('node.exe');
+    t.truthy(!shell.error());
+    // If the paths are equal, then this file *should* exist, since that's
+    // already been checked.
+    t.is(node + '', nodeExe + '');
+  }
+});

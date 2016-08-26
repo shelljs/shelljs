@@ -1,98 +1,131 @@
-var shell = require('..');
-var common = require('../src/common');
+import test from 'ava';
+import shell from '..';
+import common from '../src/common';
 
-var assert = require('assert');
+let TMP;
 
-shell.config.silent = true;
+test.beforeEach(() => {
+  TMP = require('./utils/utils').getTempDir();
+  shell.config.silent = true;
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+  shell.rm('-rf', TMP);
+  shell.mkdir(TMP);
+});
+
 
 //
 // Invalids
 //
 
-var result;
+test('no expression given', t => {
+  shell.test();
+  t.truthy(shell.error());
+});
 
-result = shell.test(); // no expression given
-assert.ok(shell.error());
+test('bad expression', t => {
+  shell.test('asdf');
+  t.truthy(shell.error());
+});
 
-result = shell.test('asdf'); // bad expression
-assert.ok(shell.error());
+test('bad expression #2', t => {
+  shell.test('f', 'resources/file1');
+  t.truthy(shell.error());
+});
 
-result = shell.test('f', 'resources/file1'); // bad expression
-assert.ok(shell.error());
-
-result = shell.test('-f'); // no file
-assert.ok(shell.error());
+test('no file', t => {
+  shell.test('-f');
+  t.truthy(shell.error());
+});
 
 //
 // Valids
 //
 
-// exists
-result = shell.test('-e', 'resources/file1');
-assert.equal(shell.error(), null);
-assert.equal(result, true);// true
 
-result = shell.test('-e', 'resources/404');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('exists', t => {
+  const result = shell.test('-e', 'resources/file1');
+  t.is(shell.error(), null);
+  t.is(result, true);// true
+});
 
-// directory
-result = shell.test('-d', 'resources');
-assert.equal(shell.error(), null);
-assert.equal(result, true);// true
+test('No Test Title #35', t => {
+  const result = shell.test('-e', 'resources/404');
+  t.is(shell.error(), null);
+  t.is(result, false);
+});
 
-result = shell.test('-f', 'resources');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('directory', t => {
+  const result = shell.test('-d', 'resources');
+  t.is(shell.error(), null);
+  t.is(result, true);// true
+});
 
-result = shell.test('-L', 'resources');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('No Test Title #36', t => {
+  const result = shell.test('-f', 'resources');
+  t.is(shell.error(), null);
+  t.is(result, false);
+});
 
-// file
-result = shell.test('-d', 'resources/file1');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('No Test Title #37', t => {
+  const result = shell.test('-L', 'resources');
+  t.is(shell.error(), null);
+  t.is(result, false);
+});
 
-result = shell.test('-f', 'resources/file1');
-assert.equal(shell.error(), null);
-assert.equal(result, true);// true
+test('file', t => {
+  const result = shell.test('-d', 'resources/file1');
+  t.is(shell.error(), null);
+  t.is(result, false);
+});
 
-result = shell.test('-L', 'resources/file1');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('No Test Title #38', t => {
+  const result = shell.test('-f', 'resources/file1');
+  t.is(shell.error(), null);
+  t.is(result, true);// true
+});
 
-// regression #529
-result = shell.test('-f', 'resources/**/*.js');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('No Test Title #39', t => {
+  const result = shell.test('-L', 'resources/file1');
+  t.is(shell.error(), null);
+  t.is(result, false);
+});
 
+test('No Test Title #39', t => {
+  if (common.platform !== 'win') {
+    const result = shell.test('-d', 'resources/link');
+    t.is(shell.error(), null);
+    t.is(result, false);
+  }
+});
 
-// link
-// Windows is weird with links so skip these tests
-if (common.platform !== 'win') {
-  result = shell.test('-d', 'resources/link');
-  assert.equal(shell.error(), null);
-  assert.equal(result, false);
+test('No Test Title #39', t => {
+  if (common.platform !== 'win') {
+    const result = shell.test('-f', 'resources/link');
+    t.is(shell.error(), null);
+    t.is(result, true);// true
+  }
+});
 
-  result = shell.test('-f', 'resources/link');
-  assert.equal(shell.error(), null);
-  assert.equal(result, true);// true
+test('No Test Title #39', t => {
+  if (common.platform !== 'win') {
+    const result = shell.test('-L', 'resources/link');
+    t.is(shell.error(), null);
+    t.is(result, true);// true
+  }
+});
 
-  result = shell.test('-L', 'resources/link');
-  assert.equal(shell.error(), null);
-  assert.equal(result, true);// true
+test('No Test Title #39', t => {
+  if (common.platform !== 'win') {
+    const result = shell.test('-L', 'resources/badlink');
+    t.is(shell.error(), null);
+    t.is(result, true);// true
+  }
+});
 
-  result = shell.test('-L', 'resources/badlink');
-  assert.equal(shell.error(), null);
-  assert.equal(result, true);// true
-
-  result = shell.test('-L', 'resources/404');
-  assert.equal(shell.error(), null);
-  assert.equal(result, false);// false
-}
-
-shell.exit(123);
+test('No Test Title #39', t => {
+  if (common.platform !== 'win') {
+    const result = shell.test('-L', 'resources/404');
+    t.is(shell.error(), null);
+    t.is(result, false);// false
+  }
+});

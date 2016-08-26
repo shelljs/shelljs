@@ -1,47 +1,57 @@
-var shell = require('..');
+import test from 'ava';
+import shell from '..';
+import fs from 'fs';
 
-var assert = require('assert');
-var fs = require('fs');
+let TMP;
 
-shell.config.silent = true;
+test.beforeEach(() => {
+  TMP = require('./utils/utils').getTempDir();
+  shell.config.silent = true;
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+  shell.rm('-rf', TMP);
+  shell.mkdir(TMP);
+});
+
 
 //
 // Invalids
 //
 
-// Normal strings don't have '.to()' anymore
-var str = 'hello world';
-assert.ok(typeof str.to === 'undefined');
+test('Normal strings don\'t have \'.to()\' anymore', t => {
+  const str = 'hello world';
+  t.truthy(typeof str.to === 'undefined');
+});
 
-shell.ShellString('hello world').to();
-assert.ok(shell.error());
+test('No Test Title #48', t => {
+  shell.ShellString('hello world').to();
+  t.truthy(shell.error());
+});
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-shell.ShellString('hello world').to('/asdfasdf/file');
-assert.ok(shell.error());
+test('No Test Title #49', t => {
+  t.is(fs.existsSync('/asdfasdf'), false); // sanity check
+  shell.ShellString('hello world').to('/asdfasdf/file');
+  t.truthy(shell.error());
+});
 
 //
 // Valids
 //
 
-var result;
+test('No Test Title #51', t => {
+  shell.ShellString('hello world').to(`${TMP}/to1`).to(`${TMP}/to2`);
+  let result = shell.cat(`${TMP}/to1`);
+  t.is(shell.error(), null);
+  t.is(result.toString(), 'hello world');
+  result = shell.cat(`${TMP}/to2`);
+  t.is(shell.error(), null);
+  t.is(result.toString(), 'hello world');
+});
 
-shell.ShellString('hello world').to('tmp/to1').to('tmp/to2');
-result = shell.cat('tmp/to1');
-assert.equal(shell.error(), null);
-assert.equal(result, 'hello world');
-result = shell.cat('tmp/to2');
-assert.equal(shell.error(), null);
-assert.equal(result, 'hello world');
-
-// With a glob
-shell.ShellString('goodbye').to('tmp/t*1');
-assert.equal(fs.existsSync('tmp/t*1'), false, 'globs are not interpreted literally');
-result = shell.cat('tmp/to1');
-assert.equal(shell.error(), null);
-assert.equal(result, 'goodbye');
-
-shell.exit(123);
+test('With a glob', t => {
+  shell.touch(`${TMP}/to1`);
+  shell.ShellString('goodbye').to(`${TMP}/t*1`);
+  t.is(fs.existsSync(`${TMP}/t*1`), false, 'globs are not interpreted literally');
+  const result = shell.cat(`${TMP}/to1`);
+  t.is(shell.error(), null);
+  t.is(result.toString(), 'goodbye');
+});

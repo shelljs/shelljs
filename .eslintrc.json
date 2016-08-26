@@ -1,6 +1,7 @@
 {
   "env": {
-    "node": true
+    "node": true,
+    "es6": true
   },
   "extends": "airbnb-base/legacy",
   "rules": {
@@ -27,6 +28,7 @@
       "capIsNewExceptions": [
         "ShellString"
       ]}
-    ]
+    ],
+    "no-unused-vars": ["error", { "vars": "all", "args":"none", "argsIgnorePattern": "^t$" }]
   }
 }

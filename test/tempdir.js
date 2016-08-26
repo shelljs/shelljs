@@ -1,19 +1,18 @@
-var shell = require('..');
+import test from 'ava';
+import shell from '..';
+import fs from 'fs';
 
-var assert = require('assert');
-var fs = require('fs');
+test.beforeEach(() => {
+  shell.config.silent = true;
+});
 
-shell.config.silent = true;
-
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
 
 //
 // Valids
 //
 
-var tmp = shell.tempdir();
-assert.equal(shell.error(), null);
-assert.equal(fs.existsSync(tmp), true);
-
-shell.exit(123);
+test('No Test Title #19', t => {
+  const tmp = shell.tempdir();
+  t.is(shell.error(), null);
+  t.is(fs.existsSync(tmp), true);
+});

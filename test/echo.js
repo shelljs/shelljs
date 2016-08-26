@@ -1,56 +1,72 @@
-var shell = require('..');
+import test from 'ava';
+import shell from '..';
+import child from 'child_process';
 
-var assert = require('assert');
-var child = require('child_process');
+let TMP;
 
-shell.config.silent = true;
+test.beforeEach(() => {
+  TMP = require('./utils/utils').getTempDir();
+  shell.config.silent = true;
+  shell.rm('-rf', TMP);
+  shell.mkdir(TMP);
+});
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
 
 //
 // Valids
 //
 
+let file;
 
-// From here on we use child.exec() to intercept the stdout
+test.beforeEach(() => {
+  file = `${TMP}/tempscript${Math.random()}.js`;
+});
 
-
-// simple test with defaults
-shell.mkdir('-p', 'tmp');
-var file = 'tmp/tempscript' + Math.random() + '.js';
-var script = 'require(\'../../global.js\'); echo("-asdf", "111");'; // test '-' bug (see issue #20)
-shell.ShellString(script).to(file);
-child.exec(JSON.stringify(process.execPath) + ' ' + file, function (err, stdout) {
-  assert.equal(stdout, '-asdf 111\n');
-
-  // using null as an explicit argument doesn't crash the function
-  file = 'tmp/tempscript' + Math.random() + '.js';
-  script = 'require(\'../../global.js\'); echo(null);';
+test.cb('simple test with defaults', t => {
+  const script = 'require(\'../../global.js\'); echo("hello", "world");';
   shell.ShellString(script).to(file);
-  child.exec(JSON.stringify(process.execPath) + ' ' + file, function (err2, stdout2, stderr2) {
-    assert.equal(stdout2, 'null\n');
-    assert.equal(stderr2, '');
-
-    // simple test with silent(true)
-    script = 'require(\'../../global.js\'); config.silent=true; echo(555);';
-    shell.ShellString(script).to(file);
-    child.exec(JSON.stringify(process.execPath) + ' ' + file, function (err3, stdout3) {
-      assert.equal(stdout3, '555\n');
-
-      script = "require('../../global.js'); echo('-e', '\\tmessage');";
-      shell.ShellString(script).to(file);
-      child.exec(JSON.stringify(process.execPath) + ' ' + file, function (err4, stdout4) {
-        assert.equal(stdout4, '\tmessage\n');
-
-        theEnd();
-      });
-    });
-
-    // simple test with silent(true)
+  child.exec(JSON.stringify(process.execPath) + ' ' + file, (err, stdout, stderr) => {
+    t.is(stdout, 'hello world\n');
+    t.is(stderr, '');
+    t.end();
   });
 });
 
-function theEnd() {
-  shell.exit(123);
-}
+test.cb('allow arguments to begin with a hyphen', t => {
+  // see issue #20
+  const script = 'require(\'../../global.js\'); echo("-asdf", "111");';
+  shell.ShellString(script).to(file);
+  child.exec(JSON.stringify(process.execPath) + ' ' + file, (err, stdout, stderr) => {
+    t.is(stdout, '-asdf 111\n');
+    t.is(stderr, '');
+    t.end();
+  });
+});
+
+test.cb("using null as an explicit argument doesn't crash the function", t => {
+  const script = 'require(\'../../global.js\'); echo(null);';
+  shell.ShellString(script).to(file);
+  child.exec(JSON.stringify(process.execPath) + ' ' + file, (err, stdout, stderr) => {
+    t.is(stdout, 'null\n');
+    t.is(stderr, '');
+    t.end();
+  });
+});
+
+test.cb('simple test with silent(true)', t => {
+  const script = 'require(\'../../global.js\'); config.silent=true; echo(555);';
+  shell.ShellString(script).to(file);
+  child.exec(JSON.stringify(process.execPath) + ' ' + file, (err, stdout) => {
+    t.is(stdout, '555\n');
+    t.end();
+  });
+});
+
+test.cb('-e option', t => {
+  const script = "require('../../global.js'); echo('-e', '\\tmessage');";
+  shell.ShellString(script).to(file);
+  child.exec(JSON.stringify(process.execPath) + ' ' + file, (err, stdout) => {
+    t.is(stdout, '\tmessage\n');
+    t.end();
+  });
+});
