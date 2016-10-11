@@ -1,13 +1,14 @@
 var common = require('./common');
 var _tempDir = require('./tempdir');
+var _which = require('./which');
 var path = require('path');
 var fs = require('fs');
 var child = require('child_process');
 
 common.register('cmd', _cmd, {
-  unix: false,
   canReceivePipe: true,
   wrapOutput: false,
+  cmdOptions: null,
 });
 
 // Similar to shell.exec(), this is a hack so that we can get concurrent output.
@@ -21,8 +22,8 @@ function cmdSync(cmd, args, opts, pipe) {
     cwd: process.cwd(),
   }, opts);
 
-  if (common.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
-  if (common.existsSync(stderrFile)) common.unlinkSync(stderrFile);
+  if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
+  if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
 
   // resolve to an absolute path, so if we cd in the child process, it's a no-op
   opts.cwd = path.resolve(opts.cwd);
@@ -63,6 +64,9 @@ function cmdSync(cmd, args, opts, pipe) {
   if (code !== 0) {
     common.error(stderr, code, true);
   }
+  // common.state.error = stderr;
+  // common.state.errorCode = code;
+  // return stdout;
   return new common.ShellString(stdout, stderr, code);
 } // cmdSync()
 
@@ -90,24 +94,23 @@ function cmdSync(cmd, args, opts, pipe) {
 //@ By default, this performs globbing on all platforms (but you can disable
 //@ this for extra security using `set('-f')`).
 function _cmd() {
-  var args = [].slice.call(arguments, 0);
+  var args = [].slice.call(arguments, 1); // ignore the options at the start
   var command;
   var cmdArgs = [];
   var options = {};
   if (args.length < 1 || typeof args[0] !== 'string') {
     common.error('must specify a command to run');
   } else if (args.length === 1) {
-    command = args[0]; // just this command, no args, no options
+    command = _which('', args[0]); // just this command, no args, no options
   } else {
-    command = args[0];
+    command = _which('', args[0]);
     var lastArg = args[args.length - 1];
     cmdArgs = typeof lastArg === 'string' ? args.slice(1) : args.slice(1, args.length - 1);
     options = typeof lastArg === 'string' ? {} : lastArg;
   }
 
-  // Perform globbing, unless it's disabled
-  if (!common.config.noglob) {
-    cmdArgs = common.expand(cmdArgs);
+  if (!command) {
+    common.error('command not found: ' + args[0], 127);
   }
 
   var pipe = common.readFromPipe();
@@ -124,6 +127,9 @@ function _cmd() {
       process.stdout.write(result.stdout);
       process.stderr.write(result.stderr);
     }
+    // common.state.stderr = result.stderr;
+    // common.state.code = result.status;
+    // return stdout;
     return new common.ShellString(result.stdout, result.stderr, result.status);
   } else {
     try {

@@ -23,7 +23,7 @@ shell.config.fatal = true;
 
 assert.throws(function () {
   shell.cmd('asdfasdf'); // could not find command
-}, /cmd: internal error/);
+}, 'cmd: must specify command');
 
 shell.config.fatal = oldFatal;
 
@@ -37,20 +37,20 @@ shell.config.fatal = oldFatal;
 
 // check if stdout goes to output
 result = shell.cmd(process.execPath, '-e', 'console.log(1234);');
-assert.equal(shell.error(), null);
+assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.equal(result.stdout, '1234\n');
 
 // check if stderr goes to output
 result = shell.cmd(process.execPath, '-e', 'console.error(1234);');
-assert.equal(shell.error(), null);
+assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.equal(result.stdout, '');
 assert.equal(result.stderr, '1234\n');
 
 // check if stdout + stderr go to output
 result = shell.cmd(process.execPath, '-e', 'console.error(1234); console.log(666);');
-assert.equal(shell.error(), null);
+assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.equal(result.stdout, '666\n');
 assert.equal(result.stderr, '1234\n');
@@ -63,15 +63,14 @@ assert.equal(result.code, 12);
 // interaction with cd
 shell.cd('resources/external');
 result = shell.cmd(process.execPath, 'node_script.js');
-assert.equal(shell.error(), null);
+assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.equal(result.stdout, 'node_script_1234\n');
 shell.cd('../..');
 
 // set cwd
-var cmdString = process.platform === 'win32' ? 'cd' : 'pwd';
-result = shell.cmd(cmdString, { cwd: '..' });
-assert.equal(shell.error(), null);
+result = shell.cmd('shx', 'pwd', { cwd: '..' });
+assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.equal(result.stdout, path.resolve('..') + os.EOL);
 
