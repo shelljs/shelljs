@@ -379,6 +379,45 @@ if (process.platform !== 'win32') {
   assert.equal(common.existsSync('tmp/dest/z'), true);
 }
 
+// -u flag won't overwrite newer files
+shell.rm('-rf', 'tmp/*');
+shell.touch('tmp/file1.js');
+shell.cp('-u', 'resources/file1.js', 'tmp');
+assert.ok(!shell.error());
+assert.notEqual(shell.cat('resources/file1.js').toString(), shell.cat('tmp/file1.js').toString());
+
+// -u flag does overwrite older files
+shell.rm('-rf', 'tmp/*');
+shell.touch({ '-d': new Date(10) }, 'tmp/file1.js'); // really old file
+shell.cp('-u', 'resources/file1.js', 'tmp');
+assert.ok(!shell.error());
+assert.equal(shell.cat('resources/file1.js').toString(), shell.cat('tmp/file1.js').toString());
+
+// -u flag works even if it's not overwriting a file
+shell.rm('-rf', 'tmp/*');
+shell.cp('-u', 'resources/file1.js', 'tmp');
+assert.ok(!shell.error());
+assert.equal(shell.cat('resources/file1.js').toString(), shell.cat('tmp/file1.js').toString());
+
+// -u flag works correctly recursively
+shell.rm('-rf', 'tmp/*');
+shell.mkdir('tmp/foo');
+[1, 2, 3].forEach(function (num) {
+  new shell.ShellString('old\n').to('tmp/foo/file' + num);
+  shell.touch({ '-d': new Date(10) }, 'tmp/foo/file' + num);
+});
+shell.mkdir('tmp/bar');
+[1, 2, 3].forEach(function (num) {
+  new shell.ShellString('new\n').to('tmp/bar/file' + num);
+  shell.touch({ '-d': new Date(1000) }, 'tmp/bar/file' + num);
+});
+// put one new one in the foo directory
+new shell.ShellString('newest\n').to('tmp/foo/file3');
+shell.touch({ '-d': new Date(10000) }, 'tmp/foo/file3');
+shell.cp('-u', 'tmp/foo/*', 'tmp/bar');
+assert.ok(!shell.error());
+assert.equal(shell.cat('tmp/bar/*').toString(), 'new\nnew\nnewest\n');
+
 // using -R on a link to a folder *does* follow the link
 shell.rm('-rf', 'tmp/*');
 shell.cp('-R', 'resources/cp/symFolder', 'tmp');

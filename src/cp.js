@@ -7,6 +7,7 @@ common.register('cp', _cp, {
   cmdOptions: {
     'f': '!no_force',
     'n': 'no_force',
+    'u': 'update',
     'R': 'recursive',
     'r': 'recursive',
     'L': 'followsymlink',
@@ -21,6 +22,15 @@ common.register('cp', _cp, {
 function copyFileSync(srcFile, destFile, options) {
   if (!common.existsSync(srcFile)) {
     common.error('copyFileSync: no such file or directory: ' + srcFile);
+  }
+
+  // Check the mtimes of the files if the '-u' flag is provided
+  try {
+    if (options.update && fs.statSync(srcFile).mtime < fs.statSync(destFile).mtime) {
+      return;
+    }
+  } catch (e) {
+    // If we're here, destFile probably doesn't exist, so just do a normal copy
   }
 
   if (fs.lstatSync(srcFile).isSymbolicLink() && !options.followsymlink) {
@@ -173,6 +183,7 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@
 //@ + `-f`: force (default behavior)
 //@ + `-n`: no-clobber
+//@ + `-u`: only copy if source is newer than dest
 //@ + `-r`, `-R`: recursive
 //@ + `-L`: follow symlinks
 //@ + `-P`: don't follow symlinks
