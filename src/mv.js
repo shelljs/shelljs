@@ -41,7 +41,7 @@ function _mv(options, sources, dest) {
     common.error('invalid arguments');
   }
 
-  var exists = common.existsSync(dest);
+  var exists = fs.existsSync(dest);
   var stats = exists && fs.statSync(dest);
 
   // Dest is not existing dir, but multiple sources given
@@ -55,7 +55,7 @@ function _mv(options, sources, dest) {
   }
 
   sources.forEach(function (src) {
-    if (!common.existsSync(src)) {
+    if (!fs.existsSync(src)) {
       common.error('no such file or directory: ' + src, true);
       return; // skip file
     }
@@ -65,11 +65,11 @@ function _mv(options, sources, dest) {
     // When copying to '/path/dir':
     //    thisDest = '/path/dir/file1'
     var thisDest = dest;
-    if (common.existsSync(dest) && fs.statSync(dest).isDirectory()) {
+    if (fs.existsSync(dest) && fs.statSync(dest).isDirectory()) {
       thisDest = path.normalize(dest + '/' + path.basename(src));
     }
 
-    if (common.existsSync(thisDest) && options.no_force) {
+    if (fs.existsSync(thisDest) && options.no_force) {
       common.error('dest file already exists: ' + thisDest, true);
       return; // skip file
     }

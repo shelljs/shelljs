@@ -28,7 +28,7 @@ function _cat(options, files) {
   files = [].slice.call(arguments, 1);
 
   files.forEach(function (file) {
-    if (!common.existsSync(file)) {
+    if (!fs.existsSync(file)) {
       common.error('no such file or directory: ' + file);
     }
 

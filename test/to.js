@@ -1,7 +1,7 @@
 var shell = require('..');
-var common = require('../src/common');
 
 var assert = require('assert');
+var fs = require('fs');
 
 shell.config.silent = true;
 
@@ -19,7 +19,7 @@ assert.ok(typeof str.to === 'undefined');
 shell.ShellString('hello world').to();
 assert.ok(shell.error());
 
-assert.equal(common.existsSync('/asdfasdf'), false); // sanity check
+assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
 shell.ShellString('hello world').to('/asdfasdf/file');
 assert.ok(shell.error());
 
@@ -39,7 +39,7 @@ assert.equal(result, 'hello world');
 
 // With a glob
 shell.ShellString('goodbye').to('tmp/t*1');
-assert.equal(common.existsSync('tmp/t*1'), false, 'globs are not interpreted literally');
+assert.equal(fs.existsSync('tmp/t*1'), false, 'globs are not interpreted literally');
 result = shell.cat('tmp/to1');
 assert.equal(shell.error(), null);
 assert.equal(result, 'goodbye');

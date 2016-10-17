@@ -41,7 +41,7 @@ function _grep(options, regex, files) {
 
   var grep = [];
   files.forEach(function (file) {
-    if (!common.existsSync(file) && file !== '-') {
+    if (!fs.existsSync(file) && file !== '-') {
       common.error('no such file or directory: ' + file, 2, true);
       return;
     }
