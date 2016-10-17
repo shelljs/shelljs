@@ -65,6 +65,12 @@ result = shell.test('-L', 'resources/file1');
 assert.equal(shell.error(), null);
 assert.equal(result, false);
 
+// regression #529
+result = shell.test('-f', 'resources/**/*.js');
+assert.equal(shell.error(), null);
+assert.equal(result, false);
+
+
 // link
 // Windows is weird with links so skip these tests
 if (common.platform !== 'win') {

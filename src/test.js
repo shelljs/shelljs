@@ -13,6 +13,7 @@ common.register('test', _test, {
     'S': 'socket',
   },
   wrapOutput: false,
+  allowGlobbing: false,
 });
 
 
