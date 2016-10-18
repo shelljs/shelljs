@@ -9,7 +9,7 @@ common.register('tempdir', _tempDir, {
 
 // Returns false if 'dir' is not a writeable directory, 'dir' otherwise
 function writeableDir(dir) {
-  if (!dir || !common.existsSync(dir)) return false;
+  if (!dir || !fs.existsSync(dir)) return false;
 
   if (!fs.statSync(dir).isDirectory()) return false;
 

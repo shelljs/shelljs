@@ -1,5 +1,4 @@
 var shell = require('..');
-var common = require('../src/common');
 var assert = require('assert');
 var fs = require('fs');
 var crypto = require('crypto');
@@ -31,13 +30,13 @@ assert.equal(result.code, 0);
 // creates new files
 testFile = tmpFile();
 result = shell.touch(testFile);
-assert(common.existsSync(testFile));
+assert(fs.existsSync(testFile));
 
 // does not create a file if told not to
 testFile = tmpFile(true);
 result = shell.touch('-c', testFile);
 assert.equal(result.code, 0);
-assert.ok(!common.existsSync(testFile));
+assert.ok(!fs.existsSync(testFile));
 
 // handles globs correctly
 result = shell.touch('tmp/file.txt');
@@ -101,8 +100,8 @@ testFile2 = tmpFile(true);
 shell.rm('-f', testFile, testFile2);
 result = shell.touch(testFile, testFile2);
 assert.equal(result.code, 0);
-assert(common.existsSync(testFile));
-assert(common.existsSync(testFile2));
+assert(fs.existsSync(testFile));
+assert(fs.existsSync(testFile2));
 
 // file array
 testFile = tmpFile(true);
@@ -110,15 +109,15 @@ testFile2 = tmpFile(true);
 shell.rm('-f', testFile, testFile2);
 result = shell.touch([testFile, testFile2]);
 assert.equal(result.code, 0);
-assert(common.existsSync(testFile));
-assert(common.existsSync(testFile2));
+assert(fs.existsSync(testFile));
+assert(fs.existsSync(testFile2));
 
 // touching broken link creates a new file
 if (process.platform !== 'win32') {
   result = shell.touch('resources/badlink');
   assert.equal(result.code, 0);
   assert.ok(!shell.error());
-  assert.ok(common.existsSync('resources/not_existed_file'));
+  assert.ok(fs.existsSync('resources/not_existed_file'));
   shell.rm('resources/not_existed_file');
 }
 

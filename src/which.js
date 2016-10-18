@@ -22,7 +22,7 @@ function splitPath(p) {
 }
 
 function checkPath(pathName) {
-  return common.existsSync(pathName) && !fs.statSync(pathName).isDirectory();
+  return fs.existsSync(pathName) && !fs.statSync(pathName).isDirectory();
 }
 
 //@

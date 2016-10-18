@@ -1,5 +1,4 @@
 var shell = require('..');
-var common = require('../src/common');
 
 var assert = require('assert');
 var fs = require('fs');
@@ -34,13 +33,13 @@ assert.equal(result.code, 1);
 assert.equal(result.stderr, 'mkdir: path already exists: resources/badlink');
 assert.equal(fs.lstatSync('resources/badlink').mtime.toString(), mtime); // didn't mess with file
 
-assert.equal(common.existsSync('/asdfasdf'), false); // sanity check
+assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
 result = shell.mkdir('/asdfasdf/foobar'); // root path does not exist
 assert.ok(shell.error());
 assert.equal(result.code, 1);
 assert.equal(result.stderr, 'mkdir: no such file or directory: /asdfasdf');
-assert.equal(common.existsSync('/asdfasdf'), false);
-assert.equal(common.existsSync('/asdfasdf/foobar'), false);
+assert.equal(fs.existsSync('/asdfasdf'), false);
+assert.equal(fs.existsSync('/asdfasdf/foobar'), false);
 
 // Check for invalid permissions
 if (process.platform !== 'win32') {
@@ -53,7 +52,7 @@ if (process.platform !== 'win32') {
   assert.equal(result.code, 1);
   assert.equal(result.stderr, 'mkdir: cannot create directory nowritedir/foo: Permission denied');
   assert.ok(shell.error());
-  assert.equal(common.existsSync(dirName + '/foo'), false);
+  assert.equal(fs.existsSync(dirName + '/foo'), false);
   shell.rm('-rf', dirName); // clean up
 }
 
@@ -61,59 +60,59 @@ if (process.platform !== 'win32') {
 // Valids
 //
 
-assert.equal(common.existsSync('tmp/t1'), false);
+assert.equal(fs.existsSync('tmp/t1'), false);
 result = shell.mkdir('tmp/t1'); // simple dir
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(common.existsSync('tmp/t1'), true);
+assert.equal(fs.existsSync('tmp/t1'), true);
 
-assert.equal(common.existsSync('tmp/t2'), false);
-assert.equal(common.existsSync('tmp/t3'), false);
+assert.equal(fs.existsSync('tmp/t2'), false);
+assert.equal(fs.existsSync('tmp/t3'), false);
 result = shell.mkdir('tmp/t2', 'tmp/t3'); // multiple dirs
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(common.existsSync('tmp/t2'), true);
-assert.equal(common.existsSync('tmp/t3'), true);
+assert.equal(fs.existsSync('tmp/t2'), true);
+assert.equal(fs.existsSync('tmp/t3'), true);
 
-assert.equal(common.existsSync('tmp/t1'), true);
-assert.equal(common.existsSync('tmp/t4'), false);
+assert.equal(fs.existsSync('tmp/t1'), true);
+assert.equal(fs.existsSync('tmp/t4'), false);
 result = shell.mkdir('tmp/t1', 'tmp/t4'); // one dir exists, one doesn't
 assert.equal(numLines(shell.error()), 1);
-assert.equal(common.existsSync('tmp/t1'), true);
-assert.equal(common.existsSync('tmp/t4'), true);
+assert.equal(fs.existsSync('tmp/t1'), true);
+assert.equal(fs.existsSync('tmp/t4'), true);
 
-assert.equal(common.existsSync('tmp/a'), false);
+assert.equal(fs.existsSync('tmp/a'), false);
 result = shell.mkdir('-p', 'tmp/a/b/c');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(common.existsSync('tmp/a/b/c'), true);
+assert.equal(fs.existsSync('tmp/a/b/c'), true);
 shell.rm('-Rf', 'tmp/a'); // revert
 
 // multiple dirs
 result = shell.mkdir('-p', 'tmp/zzza', 'tmp/zzzb', 'tmp/zzzc');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(common.existsSync('tmp/zzza'), true);
-assert.equal(common.existsSync('tmp/zzzb'), true);
-assert.equal(common.existsSync('tmp/zzzc'), true);
+assert.equal(fs.existsSync('tmp/zzza'), true);
+assert.equal(fs.existsSync('tmp/zzzb'), true);
+assert.equal(fs.existsSync('tmp/zzzc'), true);
 
 // multiple dirs, array syntax
 result = shell.mkdir('-p', ['tmp/yyya', 'tmp/yyyb', 'tmp/yyyc']);
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(common.existsSync('tmp/yyya'), true);
-assert.equal(common.existsSync('tmp/yyyb'), true);
-assert.equal(common.existsSync('tmp/yyyc'), true);
+assert.equal(fs.existsSync('tmp/yyya'), true);
+assert.equal(fs.existsSync('tmp/yyyb'), true);
+assert.equal(fs.existsSync('tmp/yyyc'), true);
 
 // globbed dir
 result = shell.mkdir('-p', 'tmp/mydir');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(common.existsSync('tmp/mydir'), true);
+assert.equal(fs.existsSync('tmp/mydir'), true);
 result = shell.mkdir('-p', 'tmp/m*ir');
 assert.equal(shell.error(), null);
 assert.equal(result.code, 0);
-assert.equal(common.existsSync('tmp/mydir'), true);
-assert.equal(common.existsSync('tmp/m*ir'), false); // doesn't create literal name
+assert.equal(fs.existsSync('tmp/mydir'), true);
+assert.equal(fs.existsSync('tmp/m*ir'), false); // doesn't create literal name
 
 shell.exit(123);

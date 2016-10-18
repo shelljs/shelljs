@@ -1,5 +1,4 @@
 var shell = require('..');
-var common = require('../src/common');
 
 var assert = require('assert');
 var fs = require('fs');
@@ -16,7 +15,7 @@ var k;
 // Invalids
 //
 
-assert.equal(common.existsSync('/asdfasdf'), false); // sanity check
+assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
 var result = shell.ls('/asdfasdf'); // no such file or dir
 assert.ok(shell.error());
 assert.equal(result.code, 2);
@@ -418,7 +417,7 @@ shell.rm('-r', 'foo');
 assert.ok(!shell.error());
 
 // Check stderr field
-assert.equal(common.existsSync('/asdfasdf'), false); // sanity check
+assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
 result = shell.ls('resources/ls/file1', '/asdfasdf');
 assert.ok(shell.error());
 assert.equal('ls: no such file or directory: /asdfasdf', result.stderr);
