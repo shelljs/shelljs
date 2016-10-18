@@ -39,7 +39,7 @@ function cmdSync(cmd, args, opts, pipe) {
 
   var proc;
   try {
-    proc = child.spawnSync(process.execPath, [
+    proc = child.spawnSync(common.nodeBinPath, [
       path.join(__dirname, 'child.js'),
       stdoutFile,
       stderrFile,

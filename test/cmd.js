@@ -1,4 +1,5 @@
 var shell = require('..');
+var common = require('../src/common');
 
 var assert = require('assert');
 var path = require('path');
@@ -36,33 +37,33 @@ shell.config.fatal = oldFatal;
 //
 
 // check if stdout goes to output
-result = shell.cmd(process.execPath, '-e', 'console.log(1234);');
+result = shell.cmd(common.nodeBinPath, '-e', 'console.log(1234);');
 assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.equal(result.stdout, '1234\n');
 
 // check if stderr goes to output
-result = shell.cmd(process.execPath, '-e', 'console.error(1234);');
+result = shell.cmd(common.nodeBinPath, '-e', 'console.error(1234);');
 assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.equal(result.stdout, '');
 assert.equal(result.stderr, '1234\n');
 
 // check if stdout + stderr go to output
-result = shell.cmd(process.execPath, '-e', 'console.error(1234); console.log(666);');
+result = shell.cmd(common.nodeBinPath, '-e', 'console.error(1234); console.log(666);');
 assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.equal(result.stdout, '666\n');
 assert.equal(result.stderr, '1234\n');
 
 // check exit code
-result = shell.cmd(process.execPath, '-e', 'process.exit(12);');
+result = shell.cmd(common.nodeBinPath, '-e', 'process.exit(12);');
 assert.ok(shell.error());
 assert.equal(result.code, 12);
 
 // interaction with cd
 shell.cd('resources/external');
-result = shell.cmd(process.execPath, 'node_script.js');
+result = shell.cmd(common.nodeBinPath, 'node_script.js');
 assert.ok(!shell.error());
 assert.equal(result.code, 0);
 assert.equal(result.stdout, 'node_script_1234\n');
@@ -97,14 +98,14 @@ assert.strictEqual(result.toString(), result.stdout);
 
 // TODO(nate): make it exactly equivalent to stderr, unless stderr === ''
 // shell.error() contains the stderr of external command in the case of an error
-result = shell.cmd(process.execPath, '-e', 'console.error(1234); process.exit(1);');
+result = shell.cmd(common.nodeBinPath, '-e', 'console.error(1234); process.exit(1);');
 assert.equal(shell.error(), 'cmd: ' + result.stderr);
 assert.equal(result.code, 1);
 assert.equal(result.stdout, '');
 assert.equal(result.stderr, '1234\n');
 
 // option: realtimeOutput === false
-result = shell.cmd(process.execPath, '-e', 'console.error(1234); console.log(5678);', {
+result = shell.cmd(common.nodeBinPath, '-e', 'console.error(1234); console.log(5678);', {
   realtimeOutput: false
 });
 assert.ok(!shell.error());
