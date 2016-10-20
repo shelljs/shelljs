@@ -4,10 +4,22 @@
 
 var os = require('os');
 var fs = require('fs');
+var path = require('path');
 var glob = require('glob');
 var shell = require('..');
 
 var shellMethods = Object.create(shell);
+var PATH_IDENTIFIER = 'PATH';
+
+// windows calls it's path 'Path' usually, but this is not guaranteed.
+if (process.platform === 'win32') {
+  PATH_IDENTIFIER = 'Path';
+  Object.keys(process.env).forEach(function (e) {
+    if (e.match(/^PATH$/i)) {
+      PATH_IDENTIFIER = e;
+    }
+  });
+}
 
 // Module globals
 var config = {
@@ -16,7 +28,8 @@ var config = {
   verbose: false,
   noglob: false,
   globOptions: {},
-  maxdepth: 255
+  maxdepth: 255,
+  nodepath: false,
 };
 exports.config = config;
 
@@ -401,3 +414,15 @@ function _register(name, implementation, wrapOptions) {
   }
 }
 exports.register = _register;
+
+exports.getProcessEnv = function () {
+  var env = objectAssign({}, process.env);
+
+  if (config.nodepath) {
+    env[PATH_IDENTIFIER] += path.delimiter + path.join(process.cwd(), 'node_modules', '.bin');
+  }
+
+  return env;
+};
+
+exports.PATH_IDENTIFIER = PATH_IDENTIFIER;

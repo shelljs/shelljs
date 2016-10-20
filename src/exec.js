@@ -29,7 +29,7 @@ function execSync(cmd, opts, pipe) {
   opts = common.extend({
     silent: common.config.silent,
     cwd: _pwd().toString(),
-    env: process.env,
+    env: common.getProcessEnv(),
     maxBuffer: DEFAULT_MAXBUFFER_SIZE
   }, opts);
 
@@ -171,7 +171,7 @@ function execAsync(cmd, opts, pipe, callback) {
   opts = common.extend({
     silent: common.config.silent,
     cwd: _pwd().toString(),
-    env: process.env,
+    env: common.getProcessEnv(),
     maxBuffer: DEFAULT_MAXBUFFER_SIZE
   }, opts);
 

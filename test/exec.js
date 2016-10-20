@@ -4,6 +4,9 @@ var assert = require('assert');
 var util = require('util');
 var path = require('path');
 var os = require('os');
+var sinon = require('sinon');
+var sandbox = sinon.sandbox.create();
+var common = require('../src/common');
 
 shell.config.silent = true;
 
@@ -132,6 +135,52 @@ assert.ok(typeof result === 'object');
 assert.ok(result instanceof String);
 assert.ok(typeof result.stdout === 'string');
 assert.strictEqual(result.toString(), result.stdout);
+
+/*
+ Tests for nodepath
+ */
+var cwd = path.resolve(process.cwd(), '..');
+// Cross-platform method for splitting environment PATH variables
+function splitPath(p) {
+  if (!p) return [];
+
+  if (common.platform === 'win') {
+    return p.split(';');
+  } else {
+    return p.split(':');
+  }
+}
+
+function stubProcessData() {
+  var filteredPath = splitPath(process.env[common.PATH_IDENTIFIER])
+    .filter(function (pathText) {
+      return pathText.indexOf('.bin') === -1; // just remove the path to local .bin
+    }).join(path.delimiter);
+
+  sandbox.stub(process.env, 'PATH', filteredPath);
+  sandbox.stub(process, 'cwd', function () { return cwd; }); // test are ran from test folder
+}
+
+// fails since nodepath is not set
+stubProcessData();
+shell.config.fatal = true;
+assert.throws(function () {
+  shell.exec('eslint -v'); // could not find command
+}, /exec: internal error/);
+
+shell.config.fatal = oldFatal;
+sandbox.restore();
+
+// pass
+shell.config.nodepath = true;
+stubProcessData();
+result = shell.exec('eslint -v');
+assert.ok(!shell.error());
+assert.equal(result.code, 0);
+assert.equal(result.stdout.split('.').length, 3); // make sure a valid semver is returned
+sandbox.restore();
+shell.config.nodepath = false; // set it back to default
+
 
 //
 // async
