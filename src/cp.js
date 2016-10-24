@@ -230,14 +230,14 @@ function _cp(options, sources, dest) {
 
   sources.forEach(function (src) {
     if (!fs.existsSync(src)) {
-      common.error('no such file or directory: ' + src, true);
+      common.error('no such file or directory: ' + src, { continue: true });
       return; // skip file
     }
     var srcStat = fs.statSync(src);
     if (!options.noFollowsymlink && srcStat.isDirectory()) {
       if (!options.recursive) {
         // Non-Recursive
-        common.error("omitting directory '" + src + "'", true);
+        common.error("omitting directory '" + src + "'", { continue: true });
       } else {
         // Recursive
         // 'cp /a/source dest' should create 'source' in 'dest'

@@ -34,7 +34,7 @@ function rmdirSyncRecursive(dir, force) {
         try {
           common.unlinkSync(file);
         } catch (e) {
-          common.error('could not remove file (code ' + e.code + '): ' + file, true);
+          common.error('could not remove file (code ' + e.code + '): ' + file, { continue: true });
         }
       }
     }
@@ -65,7 +65,7 @@ function rmdirSyncRecursive(dir, force) {
       }
     }
   } catch (e) {
-    common.error('could not remove directory (code ' + e.code + '): ' + dir, true);
+    common.error('could not remove directory (code ' + e.code + '): ' + dir, { continue: true });
   }
 
   return result;
@@ -115,7 +115,7 @@ function _rm(options, files) {
     } catch (e) {
       // Path does not exist, no force flag given
       if (!options.force) {
-        common.error('no such file or directory: ' + file, true);
+        common.error('no such file or directory: ' + file, { continue: true });
       }
       return; // skip file
     }
@@ -131,7 +131,7 @@ function _rm(options, files) {
       if (isWriteable(file)) {
         common.unlinkSync(file);
       } else {
-        common.error('permission denied: ' + file, true);
+        common.error('permission denied: ' + file, { continue: true });
       }
 
       return;
@@ -139,7 +139,7 @@ function _rm(options, files) {
 
     // Path is an existing directory, but no -r flag given
     if (stats.isDirectory() && !options.recursive) {
-      common.error('path is a directory', true);
+      common.error('path is a directory', { continue: true });
       return; // skip path
     }
 

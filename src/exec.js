@@ -157,7 +157,7 @@ function execSync(cmd, opts, pipe) {
   try { common.unlinkSync(codeFile); } catch (e) {}
 
   if (code !== 0) {
-    common.error('', code, true);
+    common.error('', code, { continue: true });
   }
   var obj = common.ShellString(stdout, stderr, code);
   return obj;

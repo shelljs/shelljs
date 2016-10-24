@@ -7,7 +7,6 @@ var fs = require('fs');
 var glob = require('glob');
 var shell = require('..');
 
-var DEFAULT_ERROR_CODE = 1;
 var shellMethods = Object.create(shell);
 
 // Module globals
@@ -45,34 +44,39 @@ function log() {
 exports.log = log;
 
 // Shows error message. Throws if config.fatal is true
-function error(msg, _code, _continue) {
-  if (typeof _code === 'boolean') {
-    _continue = _code;
-    _code = DEFAULT_ERROR_CODE;
-  }
-  if (typeof _code !== 'number') {
-    _code = DEFAULT_ERROR_CODE;
-  }
+function error(msg, _code, options) {
+  // Validate input
+  if (typeof msg !== 'string') throw new Error('msg must be a string');
 
-  if (state.errorCode === 0) {
-    state.errorCode = _code;
-  }
+  var DEFAULT_OPTIONS = {
+    continue: false,
+    code: 1,
+    prefix: state.currentCmd + ': ',
+    silent: false,
+  };
 
-  if (state.error === null) {
-    state.error = '';
+  if (typeof _code === 'number' && typeof options === 'object') {
+    options.code = _code;
+  } else if (typeof _code === 'object') { // no 'code'
+    options = _code;
+  } else if (typeof _code === 'number') { // no 'options'
+    options = { code: _code };
+  } else if (typeof _code !== 'number') { // only 'msg'
+    options = {};
   }
-  var logEntry = state.currentCmd + ': ' + msg;
-  if (state.error === '') {
-    state.error = logEntry;
-  } else {
-    state.error += '\n' + logEntry;
-  }
+  options = objectAssign({}, DEFAULT_OPTIONS, options);
 
+  if (!state.errorCode) state.errorCode = options.code;
+
+  var logEntry = options.prefix + msg;
+  state.error = state.error ? state.error + '\n' : '';
+  state.error += logEntry;
+
+  // Throw an error, or log the entry
   if (config.fatal) throw new Error(logEntry);
+  if (msg.length > 0 && !options.silent) log(logEntry);
 
-  if (msg.length > 0) log(logEntry);
-
-  if (!_continue) {
+  if (!options.continue) {
     throw {
       msg: 'earlyExit',
       retValue: (new ShellString('', state.error, state.errorCode))
