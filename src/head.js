@@ -73,7 +73,7 @@ function _head(options, files) {
   var shouldAppendNewline = false;
   files.forEach(function (file) {
     if (!fs.existsSync(file) && file !== '-') {
-      common.error('no such file or directory: ' + file, true);
+      common.error('no such file or directory: ' + file, { continue: true });
       return;
     }
 

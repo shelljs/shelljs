@@ -59,7 +59,7 @@ function _mkdir(options, dirs) {
     try {
       fs.lstatSync(dir);
       if (!options.fullpath) {
-        common.error('path already exists: ' + dir, true);
+        common.error('path already exists: ' + dir, { continue: true });
       }
       return; // skip dir
     } catch (e) {
@@ -69,7 +69,7 @@ function _mkdir(options, dirs) {
     // Base dir does not exist, and no -p option given
     var baseDir = path.dirname(dir);
     if (!fs.existsSync(baseDir) && !options.fullpath) {
-      common.error('no such file or directory: ' + baseDir, true);
+      common.error('no such file or directory: ' + baseDir, { continue: true });
       return; // skip dir
     }
 

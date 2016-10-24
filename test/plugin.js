@@ -19,6 +19,14 @@ function fooImplementation(options, arg) {
 
   if (arg === 'exitWithCode5') {
     plugin.error('Exited with code 5', 5);
+  } else if (arg === 'changePrefix') {
+    plugin.error('prefix was changed', {
+      prefix: 'prefix: ',
+    });
+  } else if (arg === 'continue') {
+    plugin.error('Error, but continuing', {
+      continue: true,
+    });
   }
 
   if (options.flag) {
@@ -95,6 +103,20 @@ assert.equal(ret.code, 5);
 assert.equal(ret.stdout, '');
 assert.equal(ret.stderr, 'foo: Exited with code 5');
 assert.equal(shell.error(), 'foo: Exited with code 5');
+
+// Plugins can change the prefix
+ret = shell.foo('changePrefix');
+assert.equal(ret.code, 1);
+assert.equal(ret.stdout, '');
+assert.equal(ret.stderr, 'prefix: prefix was changed');
+assert.equal(shell.error(), 'prefix: prefix was changed');
+
+// Plugins can continue from errors
+ret = shell.foo('continue');
+assert.equal(ret.code, 1);
+assert.equal(ret.stdout, 'hello world');
+assert.equal(ret.stderr, 'foo: Error, but continuing');
+assert.equal(shell.error(), 'foo: Error, but continuing');
 
 // Cannot overwrite an existing command by default
 var oldCat = shell.cat;

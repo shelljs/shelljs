@@ -56,7 +56,7 @@ function _mv(options, sources, dest) {
 
   sources.forEach(function (src) {
     if (!fs.existsSync(src)) {
-      common.error('no such file or directory: ' + src, true);
+      common.error('no such file or directory: ' + src, { continue: true });
       return; // skip file
     }
 
@@ -70,12 +70,12 @@ function _mv(options, sources, dest) {
     }
 
     if (fs.existsSync(thisDest) && options.no_force) {
-      common.error('dest file already exists: ' + thisDest, true);
+      common.error('dest file already exists: ' + thisDest, { continue: true });
       return; // skip file
     }
 
     if (path.resolve(src) === path.dirname(path.resolve(thisDest))) {
-      common.error('cannot move to self: ' + src, true);
+      common.error('cannot move to self: ' + src, { continue: true });
       return; // skip file
     }
 
