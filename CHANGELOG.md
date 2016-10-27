@@ -1,5 +1,32 @@
 # Change Log
 
+## [Unreleased](https://github.com/shelljs/shelljs/tree/HEAD)
+
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.4...HEAD)
+
+**Closed issues:**
+
+- Project objectives: there is some higher goal to achieve? [\#533](https://github.com/shelljs/shelljs/issues/533)
+- fs.existsSync is un-deprecated [\#531](https://github.com/shelljs/shelljs/issues/531)
+- Inadvertent breaking change to shell.test\(\) [\#529](https://github.com/shelljs/shelljs/issues/529)
+- Add -u flag support for cp [\#526](https://github.com/shelljs/shelljs/issues/526)
+- API request: allow `plugin.error\(\)` to take an options parameter [\#522](https://github.com/shelljs/shelljs/issues/522)
+- FS Real Path error thrown when requiring shelljs [\#521](https://github.com/shelljs/shelljs/issues/521)
+- Question: passing code via pipe? [\#520](https://github.com/shelljs/shelljs/issues/520)
+- The performance in `cp` is different between `0.6.0` and `0.7.4` [\#517](https://github.com/shelljs/shelljs/issues/517)
+- ShellJS in Electron package don't find ffmpeg anymore [\#516](https://github.com/shelljs/shelljs/issues/516)
+- Exec issues with string option introduced in 0.7.4 [\#515](https://github.com/shelljs/shelljs/issues/515)
+- \[ Feature \] SSH command [\#435](https://github.com/shelljs/shelljs/issues/435)
+- Synchronous exec stalls permenantly when there is an error/w the shell [\#7](https://github.com/shelljs/shelljs/issues/7)
+
+**Merged pull requests:**
+
+- feat: plugin.error\(\) takes an options parameter [\#535](https://github.com/shelljs/shelljs/pull/535) ([nfischer](https://github.com/nfischer))
+- Revert "refactor: replace fs.existsSync" fixes\(\#531\) [\#532](https://github.com/shelljs/shelljs/pull/532) ([gyandeeps](https://github.com/gyandeeps))
+- Fix: Remove default glob from shell.test \(fixes \#529\) [\#530](https://github.com/shelljs/shelljs/pull/530) ([gyandeeps](https://github.com/gyandeeps))
+- feat: cp -u option [\#527](https://github.com/shelljs/shelljs/pull/527) ([nfischer](https://github.com/nfischer))
+- chore: add downloads per month on README [\#513](https://github.com/shelljs/shelljs/pull/513) ([nfischer](https://github.com/nfischer))
+
 ## [v0.7.4](https://github.com/shelljs/shelljs/tree/v0.7.4) (2016-08-26)
 [Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.3...v0.7.4)
 
@@ -219,6 +246,7 @@
 - why not support set 'cwd'  when invoke execAsync ? [\#250](https://github.com/shelljs/shelljs/issues/250)
 - Not possible to check the failure of cd? [\#247](https://github.com/shelljs/shelljs/issues/247)
 - By default shelljs runs command in root  [\#246](https://github.com/shelljs/shelljs/issues/246)
+- /usr/bin/env: node: No such file or directory [\#243](https://github.com/shelljs/shelljs/issues/243)
 - "Which" command not working properly on Windows Platform. [\#238](https://github.com/shelljs/shelljs/issues/238)
 - Arguments [\#237](https://github.com/shelljs/shelljs/issues/237)
 - sed\(\) should accept multiple file arguments [\#231](https://github.com/shelljs/shelljs/issues/231)
