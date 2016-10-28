@@ -1,3 +1,4 @@
+const test = require('ava').test;
 const child = require('child_process');
 
 function numLines(str) {
@@ -34,3 +35,7 @@ function sleep(time) {
   child.execFileSync(process.execPath, ['resources/exec/slow.js', time.toString()]);
 }
 exports.sleep = sleep;
+
+exports.skipIf = (cond, desc, impl) => {
+  (cond ? test.skip : test)(desc, impl);
+};

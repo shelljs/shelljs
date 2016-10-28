@@ -1,6 +1,9 @@
 import test from 'ava';
 import shell from '..';
 import fs from 'fs';
+import utils from './utils/utils';
+
+test.skipIf = utils.skipIf;
 
 test.beforeEach(() => {
   shell.config.silent = true;
@@ -20,7 +23,8 @@ test('invalid permissions', t => {
   t.is(result.code, 1);
 });
 
-test('Test files - the bitmasking is to ignore the upper bits.', t => {
+// TODO(nate): fix this description
+test.skipIf(process.platform === 'win32', 'Test files - the bitmasking is to ignore the upper bits.', t => {
   let result = shell.chmod('755', 'resources/chmod/file1');
   t.is(result.code, 0);
   t.is(
@@ -35,7 +39,7 @@ test('Test files - the bitmasking is to ignore the upper bits.', t => {
   );
 });
 
-test('symbolic mode', t => {
+test.skipIf(process.platform === 'win32', 'symbolic mode', t => {
   let result = shell.chmod('o+x', 'resources/chmod/file1');
   t.is(result.code, 0);
   t.is(
@@ -46,7 +50,7 @@ test('symbolic mode', t => {
   t.is(result.code, 0);
 });
 
-test('symbolic mode, without group', t => {
+test.skipIf(process.platform === 'win32', 'symbolic mode, without group', t => {
   let result = shell.chmod('+x', 'resources/chmod/file1');
   t.is(result.code, 0);
   t.is(
@@ -57,7 +61,7 @@ test('symbolic mode, without group', t => {
   t.is(result.code, 0);
 });
 
-test('Test setuid', t => {
+test.skipIf(process.platform === 'win32', 'Test setuid', t => {
   let result = shell.chmod('u+s', 'resources/chmod/file1');
   t.is(result.code, 0);
   t.is(
@@ -86,7 +90,7 @@ test('Test setuid', t => {
   t.is(result.code, 0);
 });
 
-test('Test setgid', t => {
+test.skipIf(process.platform === 'win32', 'Test setgid', t => {
   let result = shell.chmod('g+s', 'resources/chmod/file1');
   t.is(result.code, 0);
   t.is(
@@ -101,7 +105,7 @@ test('Test setgid', t => {
   );
 });
 
-test('Test sticky bit', t => {
+test.skipIf(process.platform === 'win32', 'Test sticky bit', t => {
   let result = shell.chmod('+t', 'resources/chmod/file1');
   t.is(result.code, 0);
   t.is(
@@ -117,7 +121,7 @@ test('Test sticky bit', t => {
   t.is(fs.statSync('resources/chmod/file1').mode & parseInt('1000', 8), 0);
 });
 
-test('Test directories', t => {
+test.skipIf(process.platform === 'win32', 'Test directories', t => {
   let result = shell.chmod('a-w', 'resources/chmod/b/a/b');
   t.is(result.code, 0);
   t.is(
@@ -128,7 +132,7 @@ test('Test directories', t => {
   t.is(result.code, 0);
 });
 
-test('Test recursion', t => {
+test.skipIf(process.platform === 'win32', 'Test recursion', t => {
   let result = shell.chmod('-R', 'a+w', 'resources/chmod/b');
   t.is(result.code, 0);
   t.is(
@@ -143,7 +147,7 @@ test('Test recursion', t => {
   );
 });
 
-test('Test symbolic links w/ recursion  - WARNING: *nix only', t => {
+test.skipIf(process.platform === 'win32', 'Test symbolic links w/ recursion  - WARNING: *nix only', t => {
   fs.symlinkSync('resources/chmod/b/a', 'resources/chmod/a/b/c/link', 'dir');
   let result = shell.chmod('-R', 'u-w', 'resources/chmod/a/b');
   t.is(result.code, 0);
@@ -193,7 +197,7 @@ test('multiple symbolic modes #2', t => {
   t.is(result.code, 0);
 });
 
-test('multiple symbolic modes #3', t => {
+test.skipIf(process.platform === 'win32', 'multiple symbolic modes #3', t => {
   let result = shell.chmod('a-rwx,u+rwx', 'resources/chmod/file1');
   t.is(result.code, 0);
   t.is(
@@ -217,7 +221,7 @@ test('No Test Title #20', t => {
   t.is(result.code, 0);
 });
 
-test('No Test Title #21', t => {
+test.skipIf(process.platform === 'win32', 'No Test Title #21', t => {
   let result = shell.chmod('000', 'resources/chmod/file1');
   t.is(result.code, 0);
   result = shell.chmod('u+wx', 'resources/chmod/file1');
@@ -230,7 +234,7 @@ test('No Test Title #21', t => {
   t.is(result.code, 0);
 });
 
-test('No Test Title #22', t => {
+test.skipIf(process.platform === 'win32', 'No Test Title #22', t => {
   let result = shell.chmod('000', 'resources/chmod/file1');
   t.is(result.code, 0);
   result = shell.chmod('u+r,g+w,o+x', 'resources/chmod/file1');
@@ -243,7 +247,7 @@ test('No Test Title #22', t => {
   t.is(result.code, 0);
 });
 
-test('No Test Title #23', t => {
+test.skipIf(process.platform === 'win32', 'No Test Title #23', t => {
   let result = shell.chmod('000', 'resources/chmod/file1');
   t.is(result.code, 0);
   result = shell.chmod('u+rw,g+wx', 'resources/chmod/file1');
@@ -299,7 +303,7 @@ test('No Test Title #26', t => {
   t.is(result.code, 0);
 });
 
-test('No Test Title #27', t => {
+test.skipIf(process.platform === 'win32', 'No Test Title #27', t => {
   t.is(
     fs.statSync('resources/chmod/xdir').mode & parseInt('755', 8),
     parseInt('755', 8)
