@@ -5,7 +5,7 @@ exports.numLines = numLines;
 
 function getTempDir() {
   // TODO: fix this to return a new directory for each test
-  return 'tmp';
+  return 'tmp' + Math.random();
 }
 exports.getTempDir = getTempDir;
 

@@ -3,14 +3,15 @@ import shell from '..';
 import fs from 'fs';
 
 const numLines = require('./utils/utils').numLines;
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
   shell.mkdir(TMP);
+});
+
+test.afterEach(() => {
+  shell.rm('-rf', TMP);
 });
 
 
@@ -30,7 +31,7 @@ test('No Test Title #31', t => {
   const result = shell.mkdir(TMP); // dir already exists
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'mkdir: path already exists: tmp');
+  t.is(result.stderr, `mkdir: path already exists: ${TMP}`);
   t.is(fs.statSync(TMP).mtime.toString(), mtime); // didn't mess with dir
 });
 
@@ -58,7 +59,7 @@ if (process.platform !== 'win32') {
       // This test case only works on unix, but should work on Windows as well
     const dirName = 'nowritedir';
     shell.mkdir(dirName);
-    t.truthy(!shell.error());
+    t.falsy(shell.error());
     shell.chmod('-w', dirName);
     const result = shell.mkdir(dirName + '/foo');
     t.is(result.code, 1);

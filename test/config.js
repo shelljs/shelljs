@@ -3,10 +3,10 @@ import shell from '..';
 import child from 'child_process';
 import common from '../src/common';
 
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
-test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
+test.afterEach(() => {
+  shell.rm('-rf', TMP);
 });
 
 
@@ -54,7 +54,7 @@ test.cb('config.fatal = true', t => {
   const script = 'require(\'../../global.js\'); config.silent=true; config.fatal=true; cp("this_file_doesnt_exist", "."); echo("got here");';
   shell.ShellString(script).to(file);
   child.exec(JSON.stringify(process.execPath) + ' ' + file, (err, stdout) => {
-    t.truthy(!stdout.match('got here'));
+    t.falsy(stdout.match('got here'));
     t.end();
   });
 });

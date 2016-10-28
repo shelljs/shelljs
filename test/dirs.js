@@ -4,7 +4,6 @@ import path from 'path';
 
 test.beforeEach(() => {
   shell.config.silent = true;
-
   shell.pushd('resources/pushd');
   shell.pushd('a');
 });
@@ -34,5 +33,5 @@ test('Single items', t => {
 
 test('Clearing items', t => {
   t.deepEqual(shell.dirs('-c'), []);
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
 });

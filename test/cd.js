@@ -4,18 +4,18 @@ import path from 'path';
 import common from '../src/common';
 import fs from 'fs';
 
-let TMP;
-
 const cur = shell.pwd().toString();
+const TMP = require('./utils/utils').getTempDir();
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
-  shell.mkdir(TMP);
-
   process.chdir(cur);
+  shell.mkdir(TMP);
+});
+
+test.afterEach(() => {
+  process.chdir(cur);
+  shell.rm('-rf', TMP);
 });
 
 //
@@ -97,7 +97,7 @@ test('Tilde expansion', t => {
 
 test('Goes to home directory if no arguments are passed', t => {
   const result = shell.cd();
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(process.cwd(), common.getUserHome());
 });

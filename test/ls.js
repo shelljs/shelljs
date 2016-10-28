@@ -2,14 +2,15 @@ import test from 'ava';
 import shell from '..';
 import fs from 'fs';
 
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
   shell.mkdir(TMP);
+});
+
+test.afterEach(() => {
+  shell.rm('-rf', TMP);
 });
 
 
@@ -468,12 +469,12 @@ test('Test new ShellString-like attributes', t => {
 
 test('No trailing newline for ls() on empty directories', t => {
   shell.mkdir('foo');
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   const result = shell.ls('foo');
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(result.stdout, '');
   shell.rm('-r', 'foo');
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
 });
 
 test('Check stderr field', t => {

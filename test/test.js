@@ -2,16 +2,10 @@ import test from 'ava';
 import shell from '..';
 import common from '../src/common';
 
-let TMP;
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
-  shell.mkdir(TMP);
 });
-
 
 //
 // Invalids

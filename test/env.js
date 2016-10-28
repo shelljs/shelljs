@@ -1,14 +1,15 @@
 import test from 'ava';
 import shell from '..';
 
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
   shell.mkdir(TMP);
+});
+
+test.afterEach(() => {
+  shell.rm('-rf', TMP);
 });
 
 

@@ -2,14 +2,8 @@ import test from 'ava';
 import shell from '..';
 import fs from 'fs';
 
-let TMP;
-
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
-  shell.mkdir(TMP);
 });
 
 const doubleSorted = shell.cat('resources/sort/sorted')

@@ -3,14 +3,15 @@ import test from 'ava';
 import '../global';
 import fs from 'fs';
 
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   config.silent = true;
-
-  rm('-rf', TMP);
   mkdir(TMP);
+});
+
+test.afterEach(() => {
+  rm('-rf', TMP);
 });
 
 

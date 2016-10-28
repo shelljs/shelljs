@@ -2,14 +2,15 @@ import test from 'ava';
 import shell from '..';
 import fs from 'fs';
 
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
   shell.cp('-r', 'resources', TMP);
+});
+
+test.afterEach(() => {
+  shell.rm('-rf', TMP);
 });
 
 
@@ -108,7 +109,7 @@ test('make sure * in regex is not globbed', t => {
 
 test('make sure * in string-regex is not globbed', t => {
   const result = shell.sed('alpha*beta', 'hello', 'resources/grep/file');
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(
     result.toString(),
@@ -118,7 +119,7 @@ test('make sure * in string-regex is not globbed', t => {
 
 test('make sure * in regex is not globbed', t => {
   const result = shell.sed(/l*\.js/, '', 'resources/grep/file');
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(
     result.toString(),
@@ -128,7 +129,7 @@ test('make sure * in regex is not globbed', t => {
 
 test('make sure * in string-regex is not globbed', t => {
   const result = shell.sed('l*\\.js', '', 'resources/grep/file');
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(
     result.toString(),

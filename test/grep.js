@@ -2,14 +2,15 @@ import test from 'ava';
 import shell from '..';
 import fs from 'fs';
 
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
   shell.cp('-r', 'resources', TMP);
+});
+
+test.afterEach(() => {
+  shell.rm('-rf', TMP);
 });
 
 
@@ -127,6 +128,6 @@ test('-l option', t => {
   t.is(shell.error(), null);
   t.truthy(result.match(/file1(\n|$)/));
   t.truthy(result.match(/file1.txt/));
-  t.truthy(!result.match(/file2.txt/));
+  t.falsy(result.match(/file2.txt/));
   t.is(result.split('\n').length - 1, 2);
 });

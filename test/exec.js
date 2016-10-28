@@ -106,7 +106,7 @@ test('set maxBuffer (very small)', t => {
 
 test('set timeout option', t => {
   const result = shell.exec(JSON.stringify(process.execPath) + ' resources/exec/slow.js 100'); // default timeout is ok
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(result.code, 0);
   if (process.version >= 'v0.11') {
     // this option doesn't work on v0.10
@@ -117,10 +117,10 @@ test('set timeout option', t => {
 });
 
 test('check process.env works', t => {
-  t.truthy(!shell.env.FOO);
+  t.falsy(shell.env.FOO);
   shell.env.FOO = 'Hello world';
   const result = shell.exec(process.platform !== 'win32' ? 'echo $FOO' : 'echo %FOO%');
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, 'Hello world' + os.EOL);
   t.is(result.stderr, '');
@@ -129,14 +129,14 @@ test('check process.env works', t => {
 test('set shell option (TODO: add tests for Windows)', t => {
   if (process.platform !== 'win32') {
     let result = shell.exec('echo $0');
-    t.truthy(!shell.error());
+    t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(result.stdout, '/bin/sh\n'); // sh by default
     const bashPath = shell.which('bash').trim();
     // this option doesn't work on v0.10
     if (bashPath && process.version >= 'v0.11') {
       result = shell.exec('echo $0', { shell: '/bin/bash' });
-      t.truthy(!shell.error());
+      t.falsy(shell.error());
       t.is(result.code, 0);
       t.is(result.stdout, '/bin/bash\n');
     }

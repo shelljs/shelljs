@@ -3,22 +3,17 @@ import shell from '..';
 import fs from 'fs';
 
 const numLines = require('./utils/utils').numLines;
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
   shell.cp('-r', 'resources', TMP);
-});
-
-test.beforeEach(() => {
   shell.cd(TMP);
 });
 
 test.afterEach(() => {
   shell.cd('..');
+  shell.rm('-rf', TMP);
 });
 
 
@@ -93,8 +88,8 @@ test('-n is no-force/no-clobber', t => {
 
 test('-f is the default behavior', t => {
   const result = shell.mv('file1', 'file2'); // dest already exists (but that's ok)
-  t.truthy(!shell.error());
-  t.truthy(!result.stderr);
+  t.falsy(shell.error());
+  t.falsy(result.stderr);
   t.is(result.code, 0);
 });
 

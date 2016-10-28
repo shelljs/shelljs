@@ -1,16 +1,9 @@
 import test from 'ava';
 import shell from '..';
 
-let TMP;
-
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
-  shell.mkdir(TMP);
 });
-
 
 //
 // Invalids
@@ -53,7 +46,7 @@ test('Equivalent to a simple grep() test case', t => {
 
 test('Equivalent to a simple sed() test case', t => {
   const result = shell.cat('resources/grep/file').sed(/l*\.js/, '');
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(
     result.toString(),
     'alphaaaaaaabeta\nhowareyou\nalphbeta\nthis line ends in\n\n'

@@ -1,17 +1,16 @@
 import test from 'ava';
 import shell from '..';
 
-let TMP;
-
-let oldConfigSilent;
+const TMP = require('./utils/utils').getTempDir();
+const oldConfigSilent = shell.config.silent;
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
-  oldConfigSilent = shell.config.silent;
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
   shell.cp('-r', 'resources', TMP);
+});
+
+test.afterEach(() => {
+  shell.rm('-rf', TMP);
 });
 
 const nodeVersion = process.versions.node.split('.').map(str => parseInt(str, 10));

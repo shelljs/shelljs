@@ -3,14 +3,15 @@ import shell from '..';
 import path from 'path';
 import fs from 'fs';
 
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
   shell.cp('-r', 'resources', TMP);
+});
+
+test.afterEach(() => {
+  shell.rm('-rf', TMP);
 });
 
 
@@ -259,7 +260,7 @@ test('remove broken symbolic link', t => {
     const result = shell.rm(`${TMP}/rm/fake.lnk`);
     t.is(shell.error(), null);
     t.is(result.code, 0);
-    t.truthy(!shell.test('-L', `${TMP}/rm/fake.lnk`));
+    t.falsy(shell.test('-L', `${TMP}/rm/fake.lnk`));
     t.is(fs.existsSync(`${TMP}/rm/fake.lnk`), false);
   }
 });

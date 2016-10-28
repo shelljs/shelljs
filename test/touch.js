@@ -3,7 +3,7 @@ import shell from '..';
 import fs from 'fs';
 import crypto from 'crypto';
 
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
 function resetUtimes(f) {
   const d = new Date();
@@ -22,10 +22,12 @@ function tmpFile(noCreate) {
 }
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-  shell.rm('-rf', TMP);
   shell.mkdir(TMP);
+});
+
+test.afterEach(() => {
+  shell.rm('-rf', TMP);
 });
 
 
@@ -47,7 +49,7 @@ test('arguments must be strings', t => {
 
 test('exits without error when trying to touch a directory', t => {
   const result = shell.touch(TMP);
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(result.code, 0);
 });
 
@@ -62,7 +64,7 @@ test('does not create a file if told not to', t => {
   const testFile = tmpFile(true);
   const result = shell.touch('-c', testFile);
   t.is(result.code, 0);
-  t.truthy(!fs.existsSync(testFile));
+  t.falsy(fs.existsSync(testFile));
 });
 
 test('handles globs correctly', t => {
@@ -90,7 +92,7 @@ test('uses a reference file for mtime', t => {
   shell.touch(testFile2);
   shell.exec(JSON.stringify(process.execPath) + ' resources/exec/slow.js 3000');
   let result = shell.touch(testFile);
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.not(
     fs.statSync(testFile).mtime.getTime(),
@@ -101,7 +103,7 @@ test('uses a reference file for mtime', t => {
     fs.statSync(testFile2).atime.getTime()
   );
   result = shell.touch({ '-r': testFile2 }, testFile);
-  t.truthy(!shell.error());
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(
     fs.statSync(testFile).mtime.getTime(),
@@ -163,7 +165,7 @@ test('touching broken link creates a new file', t => {
   if (process.platform !== 'win32') {
     const result = shell.touch('resources/badlink');
     t.is(result.code, 0);
-    t.truthy(!shell.error());
+    t.falsy(shell.error());
     t.truthy(fs.existsSync('resources/not_existed_file'));
     shell.rm('resources/not_existed_file');
   }

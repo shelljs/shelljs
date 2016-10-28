@@ -2,15 +2,9 @@ import test from 'ava';
 import shell from '..';
 import fs from 'fs';
 
-let TMP;
-
 test.beforeEach(() => {
   shell.config.silent = true;
-
-  shell.rm('-rf', TMP);
-  shell.mkdir(TMP);
 });
-
 
 //
 // Invalids

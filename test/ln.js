@@ -5,13 +5,15 @@ import path from 'path';
 
 const skipOnWinForEPERM = require('./utils/utils').skipOnWinForEPERM;
 
-let TMP;
+const TMP = require('./utils/utils').getTempDir();
 
 test.beforeEach(() => {
-  TMP = require('./utils/utils').getTempDir();
   shell.config.silent = true;
-  shell.rm('-rf', TMP);
   shell.cp('-r', 'resources/', TMP);
+});
+
+test.afterEach(() => {
+  shell.rm('-rf', TMP);
 });
 
 
@@ -128,7 +130,7 @@ test('To current directory', t => {
   t.truthy(fs.existsSync('testfile.txt'));
   t.truthy(fs.existsSync('dest/testfile.txt'));
   t.truthy(fs.existsSync('dir1/insideDir.txt'));
-  t.truthy(!fs.existsSync('dest/insideDir.txt'));
+  t.falsy(fs.existsSync('dest/insideDir.txt'));
   shell.cd('..');
 });
 
