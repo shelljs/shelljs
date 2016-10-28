@@ -3,11 +3,13 @@ import shell from '..';
 import path from 'path';
 import common from '../src/common';
 import fs from 'fs';
+import utils from './utils/utils';
 
 const cur = shell.pwd().toString();
-const TMP = require('./utils/utils').getTempDir();
+let TMP;
 
 test.beforeEach(() => {
+  TMP = utils.getTempDir();
   shell.config.silent = true;
   process.chdir(cur);
   shell.mkdir(TMP);

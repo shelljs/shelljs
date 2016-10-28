@@ -2,10 +2,12 @@ import test from 'ava';
 import shell from '..';
 import path from 'path';
 import fs from 'fs';
+import utils from './utils/utils';
 
-const TMP = require('./utils/utils').getTempDir();
+let TMP;
 
 test.beforeEach(() => {
+  TMP = utils.getTempDir();
   shell.config.silent = true;
   shell.cp('-r', 'resources', TMP);
 });

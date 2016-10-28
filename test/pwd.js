@@ -1,11 +1,13 @@
 import test from 'ava';
 import shell from '..';
 import path from 'path';
+import utils from './utils/utils';
 
-const TMP = require('./utils/utils').getTempDir();
+let TMP;
 const cur = process.cwd();
 
 test.beforeEach(() => {
+  TMP = utils.getTempDir();
   shell.config.silent = true;
   shell.mkdir(TMP);
 });

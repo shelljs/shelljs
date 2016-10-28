@@ -1,14 +1,7 @@
 import test from 'ava';
 import shell from '..';
-import child from 'child_process';
 import common from '../src/common';
-
-const TMP = require('./utils/utils').getTempDir();
-
-test.afterEach(() => {
-  shell.rm('-rf', TMP);
-});
-
+import utils from './utils/utils';
 
 //
 // Valids
@@ -38,22 +31,16 @@ test('config.silent can be set to false', t => {
 
 test.cb('config.fatal = false', t => {
   t.is(shell.config.fatal, false);
-  shell.mkdir('-p', TMP);
-  const file = `${TMP}/tempscript${Math.random()}.js`;
-  const script = 'require(\'../../global.js\'); config.silent=true; config.fatal=false; cp("this_file_doesnt_exist", "."); echo("got here");';
-  shell.ShellString(script).to(file);
-  child.exec(JSON.stringify(process.execPath) + ' ' + file, (err, stdout) => {
+  const script = 'require(\'../global.js\'); config.silent=true; config.fatal=false; cp("this_file_doesnt_exist", "."); echo("got here");';
+  utils.runScript(script, (err, stdout) => {
     t.truthy(stdout.match('got here'));
     t.end();
   });
 });
 
 test.cb('config.fatal = true', t => {
-  shell.mkdir('-p', TMP);
-  const file = `${TMP}/tempscript${Math.random()}.js`;
-  const script = 'require(\'../../global.js\'); config.silent=true; config.fatal=true; cp("this_file_doesnt_exist", "."); echo("got here");';
-  shell.ShellString(script).to(file);
-  child.exec(JSON.stringify(process.execPath) + ' ' + file, (err, stdout) => {
+  const script = 'require(\'../global.js\'); config.silent=true; config.fatal=true; cp("this_file_doesnt_exist", "."); echo("got here");';
+  utils.runScript(script, (err, stdout) => {
     t.falsy(stdout.match('got here'));
     t.end();
   });

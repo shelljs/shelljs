@@ -25,7 +25,7 @@
   "main": "./shell.js",
   "scripts": {
     "posttest": "npm run lint",
-    "test": "ava --serial test/*.js",
+    "test": "ava test/*.js",
     "gendocs": "node scripts/generate-docs",
     "lint": "eslint .",
     "after-travis": "travis-check-changes",

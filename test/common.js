@@ -39,13 +39,13 @@ test('multiple file, glob syntax, * for file name', t => {
 });
 
 test('multiple file, glob syntax, * for directory name', t => {
-  const result = common.expand(['*/file*.txt']);
+  const result = common.expand(['r*/file*.txt']);
   t.is(shell.error(), null);
   t.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 });
 
 test('multiple file, glob syntax, ** for directory name', t => {
-  const result = common.expand(['**/file*.js']);
+  const result = common.expand(['resources/**/file*.js']);
   t.is(shell.error(), null);
   t.deepEqual(
     result.sort(),

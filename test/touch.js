@@ -2,8 +2,9 @@ import test from 'ava';
 import shell from '..';
 import fs from 'fs';
 import crypto from 'crypto';
+import utils from './utils/utils';
 
-const TMP = require('./utils/utils').getTempDir();
+let TMP;
 
 function resetUtimes(f) {
   const d = new Date();
@@ -22,6 +23,7 @@ function tmpFile(noCreate) {
 }
 
 test.beforeEach(() => {
+  TMP = utils.getTempDir();
   shell.config.silent = true;
   shell.mkdir(TMP);
 });

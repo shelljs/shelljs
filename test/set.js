@@ -1,10 +1,12 @@
 import test from 'ava';
 import shell from '..';
+import utils from './utils/utils';
 
-const TMP = require('./utils/utils').getTempDir();
+let TMP;
 const oldConfigSilent = shell.config.silent;
 
 test.beforeEach(() => {
+  TMP = utils.getTempDir();
   shell.config.silent = true;
   shell.cp('-r', 'resources', TMP);
 });

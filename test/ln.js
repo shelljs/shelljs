@@ -2,12 +2,14 @@ import test from 'ava';
 import shell from '..';
 import fs from 'fs';
 import path from 'path';
+import utils from './utils/utils';
 
 const skipOnWinForEPERM = require('./utils/utils').skipOnWinForEPERM;
 
-const TMP = require('./utils/utils').getTempDir();
+let TMP;
 
 test.beforeEach(() => {
+  TMP = utils.getTempDir();
   shell.config.silent = true;
   shell.cp('-r', 'resources/', TMP);
 });

@@ -2,7 +2,6 @@ import test from 'ava';
 import shell from '..';
 import fs from 'fs';
 
-
 test.beforeEach(() => {
   shell.config.silent = true;
 });

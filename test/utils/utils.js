@@ -1,3 +1,5 @@
+const child = require('child_process');
+
 function numLines(str) {
   return typeof str === 'string' ? (str.match(/\n/g) || []).length + 1 : 0;
 }
@@ -22,3 +24,8 @@ function skipOnWinForEPERM(action, testCase) {
   }
 }
 exports.skipOnWinForEPERM = skipOnWinForEPERM;
+
+function runScript(script, cb) {
+  child.execFile(process.execPath, ['-e', script], cb);
+}
+exports.runScript = runScript;

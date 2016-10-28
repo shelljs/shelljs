@@ -2,7 +2,6 @@ import test from 'ava';
 import shell from '..';
 import common from '../src/common';
 
-
 test.beforeEach(() => {
   shell.config.silent = true;
 });

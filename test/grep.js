@@ -1,10 +1,12 @@
 import test from 'ava';
 import shell from '..';
 import fs from 'fs';
+import utils from './utils/utils';
 
-const TMP = require('./utils/utils').getTempDir();
+let TMP;
 
 test.beforeEach(() => {
+  TMP = utils.getTempDir();
   shell.config.silent = true;
   shell.cp('-r', 'resources', TMP);
 });
@@ -88,15 +90,15 @@ test('multiple files, glob syntax, * for file name', t => {
 });
 
 test('multiple files, glob syntax, * for directory name', t => {
-  const result = shell.grep(/test/, '*/file*.txt');
+  const result = shell.grep(/test/, 'r*/file*.txt');
   t.is(shell.error(), null);
-  t.is(result.toString(), 'test1\ntest2\ntest1\ntest2\n');
+  t.is(result.toString(), 'test1\ntest2\n');
 });
 
 test('multiple files, double-star glob', t => {
-  const result = shell.grep(/test/, '**/file*.js');
+  const result = shell.grep(/test/, 'resources/**/file*.js');
   t.is(shell.error(), null);
-  t.is(result.toString(), 'test\ntest\ntest\ntest\ntest\ntest\ntest\ntest\n');
+  t.is(result.toString(), 'test\ntest\ntest\ntest\n');
 });
 
 test('one file, * in regex', t => {

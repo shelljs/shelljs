@@ -1,11 +1,13 @@
 import test from 'ava';
 import shell from '..';
 import fs from 'fs';
+import utils from './utils/utils';
 
-const numLines = require('./utils/utils').numLines;
-const TMP = require('./utils/utils').getTempDir();
+const numLines = utils.numLines;
+let TMP;
 
 test.beforeEach(() => {
+  TMP = utils.getTempDir();
   shell.config.silent = true;
   shell.mkdir(TMP);
 });

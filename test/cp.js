@@ -2,16 +2,18 @@ import test from 'ava';
 import shell from '..';
 import common from '../src/common';
 import fs from 'fs';
+import utils from './utils/utils';
 
-const numLines = require('./utils/utils').numLines;
+const numLines = utils.numLines;
 const skipOnWinForEPERM = require('./utils/utils').skipOnWinForEPERM;
 
 const curDir = process.cwd();
 const oldMaxDepth = shell.config.maxdepth;
 
-const TMP = require('./utils/utils').getTempDir();
+let TMP;
 
 test.beforeEach(() => {
+  TMP = utils.getTempDir();
   shell.config.silent = true;
   shell.cd(curDir);
   shell.mkdir(TMP);

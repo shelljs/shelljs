@@ -2,10 +2,12 @@
 import test from 'ava';
 import '../global';
 import fs from 'fs';
+import utils from './utils/utils';
 
-const TMP = require('./utils/utils').getTempDir();
+let TMP;
 
 test.beforeEach(() => {
+  TMP = utils.getTempDir();
   config.silent = true;
   mkdir(TMP);
 });
