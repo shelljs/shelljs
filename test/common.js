@@ -1,6 +1,7 @@
 import test from 'ava';
 import shell from '..';
 import common from '../src/common';
+import utils from './utils/utils';
 
 test.beforeEach(() => {
   shell.config.silent = true;
@@ -123,12 +124,15 @@ test('Some basic tests on the ShellString type', t => {
   t.truthy(result.toEnd);
 });
 
-test('Commands that fail will still output error messages to stderr', t => {
-  const result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); ls(\'noexist\'); cd(\'noexist\');"');
-  t.is(result.stdout, '');
-  t.is(
-    result.stderr,
-    'ls: no such file or directory: noexist\ncd: no such file or directory: noexist\n'
-  );
+test.cb('Commands that fail will still output error messages to stderr', t => {
+  const script = 'require(\'../global\'); ls(\'noexist\'); cd(\'noexist\');';
+  utils.runScript(script, (err, stdout, stderr) => {
+    t.is(stdout, '');
+    t.is(
+      stderr,
+      'ls: no such file or directory: noexist\ncd: no such file or directory: noexist\n'
+    );
+    t.end();
+  });
 });
 

@@ -92,7 +92,7 @@ test('uses a reference file for mtime', t => {
   const testFile = tmpFile(false);
   const testFile2 = tmpFile();
   shell.touch(testFile2);
-  shell.exec(JSON.stringify(process.execPath) + ' resources/exec/slow.js 3000');
+  utils.sleep(1000);
   let result = shell.touch(testFile);
   t.falsy(shell.error());
   t.is(result.code, 0);

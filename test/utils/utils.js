@@ -29,3 +29,8 @@ function runScript(script, cb) {
   child.execFile(process.execPath, ['-e', script], cb);
 }
 exports.runScript = runScript;
+
+function sleep(time) {
+  child.execFileSync(process.execPath, ['resources/exec/slow.js', time.toString()]);
+}
+exports.sleep = sleep;
