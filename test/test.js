@@ -84,6 +84,13 @@ test('No Test Title #39', t => {
   t.is(result, false);
 });
 
+test('test command is not globbed', t => {
+  // regression #529
+  const result = shell.test('-f', 'resources/**/*.js');
+  t.is(shell.error(), null);
+  t.is(result, false);
+});
+
 test('No Test Title #39', t => {
   if (common.platform !== 'win') {
     const result = shell.test('-d', 'resources/link');
