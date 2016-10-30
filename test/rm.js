@@ -21,29 +21,29 @@ test.afterEach(() => {
 // Invalids
 //
 
-test('No Test Title #85', t => {
+test('no args', t => {
   const result = shell.rm();
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(result.stderr, 'rm: no paths given');
 });
 
-test('No Test Title #86', t => {
-  const result = shell.rm('asdfasdf'); // file does not exist
+test('file does not exist', t => {
+  const result = shell.rm('asdfasdf');
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(result.stderr, 'rm: no such file or directory: asdfasdf');
 });
 
-test('No Test Title #87', t => {
-  const result = shell.rm('-f'); // no file
+test('only an option', t => {
+  const result = shell.rm('-f');
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(result.stderr, 'rm: no paths given');
 });
 
-test('No Test Title #88', t => {
-  const result = shell.rm('-@', 'resources/file1'); // invalid option
+test('invalid option', t => {
+  const result = shell.rm('-@', 'resources/file1');
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(fs.existsSync('resources/file1'), true);

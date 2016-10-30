@@ -22,7 +22,7 @@ test.afterEach(() => {
 // Valids
 //
 
-test('No Test Title #81', t => {
+test('initial directory', t => {
   const _pwd = shell.pwd();
   t.is(shell.error(), null);
   t.is(_pwd.code, 0);
@@ -30,7 +30,7 @@ test('No Test Title #81', t => {
   t.is(_pwd.toString(), path.resolve('.'));
 });
 
-test('No Test Title #82', t => {
+test('after changing directory', t => {
   shell.cd(TMP);
   const _pwd = shell.pwd();
   t.is(_pwd.code, 0);

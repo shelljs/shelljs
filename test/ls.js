@@ -20,7 +20,7 @@ test.afterEach(() => {
 // Invalids
 //
 
-test('No Test Title #26', t => {
+test('no such file or dir', t => {
   t.is(fs.existsSync('/asdfasdf'), false);
   const result = shell.ls('/asdfasdf'); // no such file or dir
   t.truthy(shell.error());
@@ -32,19 +32,19 @@ test('No Test Title #26', t => {
 // Valids
 //
 
-test('No Test Title #27', t => {
+test('no args is allowed', t => {
   const result = shell.ls();
   t.is(shell.error(), null);
   t.is(result.code, 0);
 });
 
-test('No Test Title #28', t => {
+test('root directory', t => {
   const result = shell.ls('/');
   t.is(shell.error(), null);
   t.is(result.code, 0);
 });
 
-test('no args', t => {
+test('no args provides the correct result', t => {
   shell.cd('resources/ls');
   const result = shell.ls();
   t.is(shell.error(), null);

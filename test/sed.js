@@ -20,33 +20,34 @@ test.afterEach(() => {
 // Invalids
 //
 
-test('No Test Title #1', t => {
+test('no arguments', t => {
   const result = shell.sed();
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.truthy(result.stderr);
 });
 
-test('No Test Title #2', t => {
-  const result = shell.sed(/asdf/g); // too few args
+test('only one argument', t => {
+  const result = shell.sed(/asdf/g);
   t.truthy(shell.error());
   t.is(result.code, 1);
 });
 
-test('No Test Title #3', t => {
-  const result = shell.sed(/asdf/g, 'nada'); // too few args
+test('only two arguments', t => {
+  const result = shell.sed(/asdf/g, 'nada');
   t.truthy(shell.error());
   t.is(result.code, 1);
 });
 
-test('No Test Title #4', t => {
+test('no such file', t => {
   t.is(fs.existsSync('asdfasdf'), false); // sanity check
-  const result = shell.sed(/asdf/g, 'nada', 'asdfasdf'); // no such file
+  const result = shell.sed(/asdf/g, 'nada', 'asdfasdf');
   t.truthy(shell.error());
   t.is(result.code, 2);
   t.is(result.stderr, 'sed: no such file or directory: asdfasdf');
 });
 
+// TODO(nate): flaky test
 test('if at least one file is missing, this should be an error', t => {
   t.is(fs.existsSync('asdfasdf'), false); // sanity check
   t.is(fs.existsSync(`${TMP}/file1`), true); // sanity check
@@ -60,38 +61,38 @@ test('if at least one file is missing, this should be an error', t => {
 // Valids
 //
 
-test('No Test Title #5', t => {
-  const result = shell.sed('test1', 'hello', `${TMP}/file1`); // search string
+test('search with a string', t => {
+  const result = shell.sed('test1', 'hello', `${TMP}/file1`);
   t.is(shell.error(), null);
   t.is(result.code, 0);
   t.is(result.toString(), 'hello');
 });
 
-test('No Test Title #6', t => {
-  const result = shell.sed(/test1/, 'hello', `${TMP}/file1`); // search regex
+test('search with a regex', t => {
+  const result = shell.sed(/test1/, 'hello', `${TMP}/file1`);
   t.is(shell.error(), null);
   t.is(result.code, 0);
   t.is(result.toString(), 'hello');
 });
 
-test('No Test Title #7', t => {
-  const result = shell.sed(/test1/, 1234, `${TMP}/file1`); // numeric replacement
+test('replace with a number instead of a string', t => {
+  const result = shell.sed(/test1/, 1234, `${TMP}/file1`);
   t.is(shell.error(), null);
   t.is(result.code, 0);
   t.is(result.toString(), '1234');
 });
 
-test('No Test Title #8', t => {
+test('replace using a function', t => {
   function replaceFun(match) {
     return match.toUpperCase() + match;
   }
-  const result = shell.sed(/test1/, replaceFun, `${TMP}/file1`); // replacement function
+  const result = shell.sed(/test1/, replaceFun, `${TMP}/file1`);
   t.is(shell.error(), null);
   t.is(result.code, 0);
   t.is(result.toString(), 'TEST1test1');
 });
 
-test('No Test Title #9', t => {
+test('-i option', t => {
   const result = shell.sed('-i', /test1/, 'hello', `${TMP}/file1`);
   t.is(shell.error(), null);
   t.is(result.code, 0);

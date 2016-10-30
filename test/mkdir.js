@@ -23,14 +23,14 @@ test.afterEach(() => {
 // Invalids
 //
 
-test('No Test Title #30', t => {
+test('no args', t => {
   const result = shell.mkdir();
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(result.stderr, 'mkdir: no paths given');
 });
 
-test('No Test Title #31', t => {
+test('dir already exists', t => {
   const mtime = fs.statSync(TMP).mtime.toString();
   const result = shell.mkdir(TMP); // dir already exists
   t.truthy(shell.error());
@@ -48,7 +48,7 @@ test('Can\'t overwrite a broken link', t => {
   t.is(fs.lstatSync('resources/badlink').mtime.toString(), mtime); // didn't mess with file
 });
 
-test('No Test Title #32', t => {
+test('root path does not exist', t => {
   t.is(fs.existsSync('/asdfasdf'), false); // sanity check
   const result = shell.mkdir('/asdfasdf/foobar'); // root path does not exist
   t.truthy(shell.error());
@@ -79,36 +79,36 @@ test.skipIf(process.platform === 'win32', 'Check for invalid permissions', t => 
 // Valids
 //
 
-test('No Test Title #33', t => {
+test('basic usage', t => {
   t.is(fs.existsSync(`${TMP}/t1`), false);
-  const result = shell.mkdir(`${TMP}/t1`); // simple dir
+  const result = shell.mkdir(`${TMP}/t1`);
   t.is(shell.error(), null);
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/t1`), true);
 });
 
-test('No Test Title #34', t => {
+test('multiple dirs', t => {
   t.is(fs.existsSync(`${TMP}/t2`), false);
   t.is(fs.existsSync(`${TMP}/t3`), false);
-  const result = shell.mkdir(`${TMP}/t2`, `${TMP}/t3`); // multiple dirs
+  const result = shell.mkdir(`${TMP}/t2`, `${TMP}/t3`);
   t.is(shell.error(), null);
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/t2`), true);
   t.is(fs.existsSync(`${TMP}/t3`), true);
 });
 
-test('No Test Title #35', t => {
+test('one dir exists, the other does not', t => {
   shell.mkdir(`${TMP}/t1`);
   t.is(fs.existsSync(`${TMP}/t1`), true);
   t.is(fs.existsSync(`${TMP}/t4`), false);
-  const result = shell.mkdir(`${TMP}/t1`, `${TMP}/t4`); // one dir exists, one doesn't
+  const result = shell.mkdir(`${TMP}/t1`, `${TMP}/t4`);
   t.is(result.code, 1);
   t.is(numLines(shell.error()), 1);
   t.is(fs.existsSync(`${TMP}/t1`), true);
   t.is(fs.existsSync(`${TMP}/t4`), true);
 });
 
-test('No Test Title #36', t => {
+test('-p flag', t => {
   t.is(fs.existsSync(`${TMP}/a`), false);
   const result = shell.mkdir('-p', `${TMP}/a/b/c`);
   t.is(shell.error(), null);

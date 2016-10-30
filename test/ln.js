@@ -41,7 +41,7 @@ test('only an option', t => {
   t.is(result.code, 1);
 });
 
-test('No Test Title #16', t => {
+test('destination already exists', t => {
   const result = shell.ln(`${TMP}/file1`, `${TMP}/file2`);
   t.truthy(shell.error());
   t.is(result.code, 1);

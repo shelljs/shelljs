@@ -25,7 +25,7 @@ test('Normal strings don\'t have \'.toEnd()\' anymore', t => {
   t.truthy(typeof str.toEnd === 'undefined');
 });
 
-test('No Test Title #24', t => {
+test('missing file argument', t => {
   shell.ShellString('hello world').toEnd();
   t.truthy(shell.error());
 });
@@ -34,7 +34,8 @@ test('No Test Title #24', t => {
 // Valids
 //
 
-test('No Test Title #26', t => {
+// TODO(nate): break this into multiple tests
+test('creates a new file', t => {
   let result;
   t.is(fs.existsSync(`${TMP}/toEnd1`), false); // Check file toEnd() creates does not already exist
   t.is(fs.existsSync(`${TMP}/toEnd2`), false);

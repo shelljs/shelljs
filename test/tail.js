@@ -10,15 +10,15 @@ test.beforeEach(() => {
 // Invalids
 //
 
-test('No Test Title #15', t => {
+test('no args', t => {
   const result = shell.tail();
   t.truthy(shell.error());
   t.is(result.code, 1);
 });
 
-test('No Test Title #16', t => {
+test('file does not exist', t => {
   t.is(fs.existsSync('/asdfasdf'), false); // sanity check
-  const result = shell.tail('/adsfasdf'); // file does not exist
+  const result = shell.tail('/adsfasdf');
   t.truthy(shell.error());
   t.is(result.code, 1);
 });

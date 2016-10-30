@@ -11,7 +11,7 @@ test.beforeEach(() => {
 // Valids
 //
 
-test('No Test Title #19', t => {
+test('basic usage', t => {
   const tmp = shell.tempdir();
   t.is(shell.error(), null);
   t.is(fs.existsSync(tmp), true);

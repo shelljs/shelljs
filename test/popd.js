@@ -22,7 +22,7 @@ test.after(() => {
 // Valids
 //
 
-test('No Test Title #54', t => {
+test('basic usage', t => {
   shell.pushd('resources/pushd');
   const trail = shell.popd();
   t.is(shell.error(), null);

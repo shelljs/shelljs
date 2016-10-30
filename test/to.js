@@ -25,12 +25,12 @@ test('Normal strings don\'t have \'.to()\' anymore', t => {
   t.truthy(typeof str.to === 'undefined');
 });
 
-test('No Test Title #48', t => {
+test('no file argument', t => {
   shell.ShellString('hello world').to();
   t.truthy(shell.error());
 });
 
-test('No Test Title #49', t => {
+test('cannot write to a non-existent directory', t => {
   t.is(fs.existsSync('/asdfasdf'), false); // sanity check
   shell.ShellString('hello world').to('/asdfasdf/file');
   t.truthy(shell.error());
@@ -40,7 +40,7 @@ test('No Test Title #49', t => {
 // Valids
 //
 
-test('No Test Title #51', t => {
+test('can be chained', t => {
   shell.ShellString('hello world').to(`${TMP}/to1`).to(`${TMP}/to2`);
   let result = shell.cat(`${TMP}/to1`);
   t.is(shell.error(), null);

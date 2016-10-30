@@ -35,49 +35,49 @@ test('no file', t => {
 //
 
 
-test('exists', t => {
+test('-e option (exists)', t => {
   const result = shell.test('-e', 'resources/file1');
   t.is(shell.error(), null);
   t.is(result, true);// true
 });
 
-test('No Test Title #35', t => {
+test('-e option (does not exist)', t => {
   const result = shell.test('-e', 'resources/404');
   t.is(shell.error(), null);
   t.is(result, false);
 });
 
-test('directory', t => {
+test('-d option (directory)', t => {
   const result = shell.test('-d', 'resources');
   t.is(shell.error(), null);
   t.is(result, true);// true
 });
 
-test('No Test Title #36', t => {
+test('-f option fails for a directory', t => {
   const result = shell.test('-f', 'resources');
   t.is(shell.error(), null);
   t.is(result, false);
 });
 
-test('No Test Title #37', t => {
+test('-L option fails for a directory', t => {
   const result = shell.test('-L', 'resources');
   t.is(shell.error(), null);
   t.is(result, false);
 });
 
-test('file', t => {
+test('-d option fails for a file', t => {
   const result = shell.test('-d', 'resources/file1');
   t.is(shell.error(), null);
   t.is(result, false);
 });
 
-test('No Test Title #38', t => {
+test('-f option (file)', t => {
   const result = shell.test('-f', 'resources/file1');
   t.is(shell.error(), null);
   t.is(result, true);// true
 });
 
-test('No Test Title #39', t => {
+test('-L option fails for a file', t => {
   const result = shell.test('-L', 'resources/file1');
   t.is(shell.error(), null);
   t.is(result, false);
@@ -90,7 +90,7 @@ test('test command is not globbed', t => {
   t.is(result, false);
 });
 
-test('No Test Title #39', t => {
+test('-d option fails for a link', t => {
   if (common.platform !== 'win') {
     const result = shell.test('-d', 'resources/link');
     t.is(shell.error(), null);
@@ -98,7 +98,7 @@ test('No Test Title #39', t => {
   }
 });
 
-test('No Test Title #39', t => {
+test('-f option succeeds for a link', t => {
   if (common.platform !== 'win') {
     const result = shell.test('-f', 'resources/link');
     t.is(shell.error(), null);
@@ -106,7 +106,7 @@ test('No Test Title #39', t => {
   }
 });
 
-test('No Test Title #39', t => {
+test('-L option (link)', t => {
   if (common.platform !== 'win') {
     const result = shell.test('-L', 'resources/link');
     t.is(shell.error(), null);
@@ -114,7 +114,7 @@ test('No Test Title #39', t => {
   }
 });
 
-test('No Test Title #39', t => {
+test('-L option works for broken symlinks', t => {
   if (common.platform !== 'win') {
     const result = shell.test('-L', 'resources/badlink');
     t.is(shell.error(), null);
@@ -122,7 +122,7 @@ test('No Test Title #39', t => {
   }
 });
 
-test('No Test Title #39', t => {
+test('-L option fails for missing files', t => {
   if (common.platform !== 'win') {
     const result = shell.test('-L', 'resources/404');
     t.is(shell.error(), null);

@@ -28,14 +28,14 @@ test('piping ls() into cat() converts to a string', t => {
   t.true(shell.ls('resources/').cat().toString() === shell.ls('resources/').stdout);
 });
 
-test('No Test Title #52', t => {
+test('grep works in a pipe', t => {
   const result = shell.ls('resources/').grep('file1');
-  t.is(result + '', 'file1\nfile1.js\nfile1.txt\n');
+  t.is(result.toString(), 'file1\nfile1.js\nfile1.txt\n');
 });
 
-test('No Test Title #53', t => {
+test('multiple pipes work', t => {
   const result = shell.ls('resources/').cat().grep('file1');
-  t.is(result + '', 'file1\nfile1.js\nfile1.txt\n');
+  t.is(result.toString(), 'file1\nfile1.js\nfile1.txt\n');
 });
 
 test('Equivalent to a simple grep() test case', t => {
