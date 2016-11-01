@@ -1,9 +1,6 @@
 import test from 'ava';
 import shell from '..';
 import fs from 'fs';
-import utils from './utils/utils';
-
-test.skipIf = utils.skipIf;
 
 test.beforeEach(() => {
   shell.config.silent = true;
@@ -24,144 +21,162 @@ test('invalid permissions', t => {
 });
 
 // TODO(nate): fix this description
-test.skipIf(process.platform === 'win32', 'Test files - the bitmasking is to ignore the upper bits.', t => {
-  let result = shell.chmod('755', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
-    parseInt('755', 8)
-  );
-  result = shell.chmod('644', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
-    parseInt('644', 8)
-  );
+test('Test files - the bitmasking is to ignore the upper bits.', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('755', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
+      parseInt('755', 8)
+    );
+    result = shell.chmod('644', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
+      parseInt('644', 8)
+    );
+  }
 });
 
-test.skipIf(process.platform === 'win32', 'symbolic mode', t => {
-  let result = shell.chmod('o+x', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('007', 8),
-    parseInt('005', 8)
-  );
-  result = shell.chmod('644', 'resources/chmod/file1');
-  t.is(result.code, 0);
+test('symbolic mode', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('o+x', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('007', 8),
+      parseInt('005', 8)
+    );
+    result = shell.chmod('644', 'resources/chmod/file1');
+    t.is(result.code, 0);
+  }
 });
 
-test.skipIf(process.platform === 'win32', 'symbolic mode, without group', t => {
-  let result = shell.chmod('+x', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
-    parseInt('755', 8)
-  );
-  result = shell.chmod('644', 'resources/chmod/file1');
-  t.is(result.code, 0);
+test('symbolic mode, without group', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('+x', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
+      parseInt('755', 8)
+    );
+    result = shell.chmod('644', 'resources/chmod/file1');
+    t.is(result.code, 0);
+  }
 });
 
-test.skipIf(process.platform === 'win32', 'Test setuid', t => {
-  let result = shell.chmod('u+s', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('4000', 8),
-    parseInt('4000', 8)
-  );
-  result = shell.chmod('u-s', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
-    parseInt('644', 8)
-  );
+test('Test setuid', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('u+s', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('4000', 8),
+      parseInt('4000', 8)
+    );
+    result = shell.chmod('u-s', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
+      parseInt('644', 8)
+    );
 
-  // according to POSIX standards at http://linux.die.net/man/1/chmod,
-  // setuid is never cleared from a directory unless explicitly asked for.
-  result = shell.chmod('u+s', 'resources/chmod/c');
+    // according to POSIX standards at http://linux.die.net/man/1/chmod,
+    // setuid is never cleared from a directory unless explicitly asked for.
+    result = shell.chmod('u+s', 'resources/chmod/c');
 
-  t.is(result.code, 0);
-  result = shell.chmod('755', 'resources/chmod/c');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/c').mode & parseInt('4000', 8),
-    parseInt('4000', 8)
-  );
-  result = shell.chmod('u-s', 'resources/chmod/c');
-  t.is(result.code, 0);
+    t.is(result.code, 0);
+    result = shell.chmod('755', 'resources/chmod/c');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/c').mode & parseInt('4000', 8),
+      parseInt('4000', 8)
+    );
+    result = shell.chmod('u-s', 'resources/chmod/c');
+    t.is(result.code, 0);
+  }
 });
 
-test.skipIf(process.platform === 'win32', 'Test setgid', t => {
-  let result = shell.chmod('g+s', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('2000', 8),
-    parseInt('2000', 8)
-  );
-  result = shell.chmod('g-s', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
-    parseInt('644', 8)
-  );
+test('Test setgid', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('g+s', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('2000', 8),
+      parseInt('2000', 8)
+    );
+    result = shell.chmod('g-s', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
+      parseInt('644', 8)
+    );
+  }
 });
 
-test.skipIf(process.platform === 'win32', 'Test sticky bit', t => {
-  let result = shell.chmod('+t', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('1000', 8),
-    parseInt('1000', 8)
-  );
-  result = shell.chmod('-t', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
-    parseInt('644', 8)
-  );
-  t.is(fs.statSync('resources/chmod/file1').mode & parseInt('1000', 8), 0);
+test('Test sticky bit', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('+t', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('1000', 8),
+      parseInt('1000', 8)
+    );
+    result = shell.chmod('-t', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('777', 8),
+      parseInt('644', 8)
+    );
+    t.is(fs.statSync('resources/chmod/file1').mode & parseInt('1000', 8), 0);
+  }
 });
 
-test.skipIf(process.platform === 'win32', 'Test directories', t => {
-  let result = shell.chmod('a-w', 'resources/chmod/b/a/b');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/b/a/b').mode & parseInt('777', 8),
-    parseInt('555', 8)
-  );
-  result = shell.chmod('755', 'resources/chmod/b/a/b');
-  t.is(result.code, 0);
+test('Test directories', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('a-w', 'resources/chmod/b/a/b');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/b/a/b').mode & parseInt('777', 8),
+      parseInt('555', 8)
+    );
+    result = shell.chmod('755', 'resources/chmod/b/a/b');
+    t.is(result.code, 0);
+  }
 });
 
-test.skipIf(process.platform === 'win32', 'Test recursion', t => {
-  let result = shell.chmod('-R', 'a+w', 'resources/chmod/b');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/b/a/b').mode & parseInt('777', 8),
-    parseInt('777', 8)
-  );
-  result = shell.chmod('-R', '755', 'resources/chmod/b');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/b/a/b').mode & parseInt('777', 8),
-    parseInt('755', 8)
-  );
+test('Test recursion', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('-R', 'a+w', 'resources/chmod/b');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/b/a/b').mode & parseInt('777', 8),
+      parseInt('777', 8)
+    );
+    result = shell.chmod('-R', '755', 'resources/chmod/b');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/b/a/b').mode & parseInt('777', 8),
+      parseInt('755', 8)
+    );
+  }
 });
 
-test.skipIf(process.platform === 'win32', 'Test symbolic links w/ recursion  - WARNING: *nix only', t => {
-  fs.symlinkSync('resources/chmod/b/a', 'resources/chmod/a/b/c/link', 'dir');
-  let result = shell.chmod('-R', 'u-w', 'resources/chmod/a/b');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/a/b/c').mode & parseInt('700', 8),
-    parseInt('500', 8)
-  );
-  t.is(
-    fs.statSync('resources/chmod/b/a').mode & parseInt('700', 8),
-    parseInt('700', 8)
-  );
-  result = shell.chmod('-R', 'u+w', 'resources/chmod/a/b');
-  t.is(result.code, 0);
-  fs.unlinkSync('resources/chmod/a/b/c/link');
+test('Test symbolic links w/ recursion  - WARNING: *nix only', t => {
+  if (process.platform !== 'win32') {
+    fs.symlinkSync('resources/chmod/b/a', 'resources/chmod/a/b/c/link', 'dir');
+    let result = shell.chmod('-R', 'u-w', 'resources/chmod/a/b');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/a/b/c').mode & parseInt('700', 8),
+      parseInt('500', 8)
+    );
+    t.is(
+      fs.statSync('resources/chmod/b/a').mode & parseInt('700', 8),
+      parseInt('700', 8)
+    );
+    result = shell.chmod('-R', 'u+w', 'resources/chmod/a/b');
+    t.is(result.code, 0);
+    fs.unlinkSync('resources/chmod/a/b/c/link');
+  }
 });
 
 test('Test combinations', t => {
@@ -197,15 +212,17 @@ test('multiple symbolic modes #2', t => {
   t.is(result.code, 0);
 });
 
-test.skipIf(process.platform === 'win32', 'multiple symbolic modes #3', t => {
-  let result = shell.chmod('a-rwx,u+rwx', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('700', 8),
-    parseInt('700', 8)
-  );
-  result = shell.chmod('644', 'resources/chmod/file1');
-  t.is(result.code, 0);
+test('multiple symbolic modes #3', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('a-rwx,u+rwx', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('700', 8),
+      parseInt('700', 8)
+    );
+    result = shell.chmod('644', 'resources/chmod/file1');
+    t.is(result.code, 0);
+  }
 });
 
 test('No Test Title #20', t => {
@@ -221,43 +238,49 @@ test('No Test Title #20', t => {
   t.is(result.code, 0);
 });
 
-test.skipIf(process.platform === 'win32', 'No Test Title #21', t => {
-  let result = shell.chmod('000', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  result = shell.chmod('u+wx', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('300', 8),
-    parseInt('300', 8)
-  );
-  result = shell.chmod('644', 'resources/chmod/file1');
-  t.is(result.code, 0);
+test('No Test Title #21', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('000', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    result = shell.chmod('u+wx', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('300', 8),
+      parseInt('300', 8)
+    );
+    result = shell.chmod('644', 'resources/chmod/file1');
+    t.is(result.code, 0);
+  }
 });
 
-test.skipIf(process.platform === 'win32', 'No Test Title #22', t => {
-  let result = shell.chmod('000', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  result = shell.chmod('u+r,g+w,o+x', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('421', 8),
-    parseInt('421', 8)
-  );
-  result = shell.chmod('644', 'resources/chmod/file1');
-  t.is(result.code, 0);
+test('No Test Title #22', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('000', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    result = shell.chmod('u+r,g+w,o+x', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('421', 8),
+      parseInt('421', 8)
+    );
+    result = shell.chmod('644', 'resources/chmod/file1');
+    t.is(result.code, 0);
+  }
 });
 
-test.skipIf(process.platform === 'win32', 'No Test Title #23', t => {
-  let result = shell.chmod('000', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  result = shell.chmod('u+rw,g+wx', 'resources/chmod/file1');
-  t.is(result.code, 0);
-  t.is(
-    fs.statSync('resources/chmod/file1').mode & parseInt('630', 8),
-    parseInt('630', 8)
-  );
-  result = shell.chmod('644', 'resources/chmod/file1');
-  t.is(result.code, 0);
+test('No Test Title #23', t => {
+  if (process.platform !== 'win32') {
+    let result = shell.chmod('000', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    result = shell.chmod('u+rw,g+wx', 'resources/chmod/file1');
+    t.is(result.code, 0);
+    t.is(
+      fs.statSync('resources/chmod/file1').mode & parseInt('630', 8),
+      parseInt('630', 8)
+    );
+    result = shell.chmod('644', 'resources/chmod/file1');
+    t.is(result.code, 0);
+  }
 });
 
 test('No Test Title #24', t => {
@@ -303,21 +326,23 @@ test('No Test Title #26', t => {
   t.is(result.code, 0);
 });
 
-test.skipIf(process.platform === 'win32', 'No Test Title #27', t => {
-  t.is(
-    fs.statSync('resources/chmod/xdir').mode & parseInt('755', 8),
-    parseInt('755', 8)
-  );
-  t.is(
-    fs.statSync('resources/chmod/xdir/file').mode & parseInt('644', 8),
-    parseInt('644', 8)
-  );
-  t.is(
-    fs.statSync('resources/chmod/xdir/deep').mode & parseInt('755', 8),
-    parseInt('755', 8)
-  );
-  t.is(
-    fs.statSync('resources/chmod/xdir/deep/file').mode & parseInt('644', 8),
-    parseInt('644', 8)
-  );
+test('No Test Title #27', t => {
+  if (process.platform !== 'win32') {
+    t.is(
+      fs.statSync('resources/chmod/xdir').mode & parseInt('755', 8),
+      parseInt('755', 8)
+    );
+    t.is(
+      fs.statSync('resources/chmod/xdir/file').mode & parseInt('644', 8),
+      parseInt('644', 8)
+    );
+    t.is(
+      fs.statSync('resources/chmod/xdir/deep').mode & parseInt('755', 8),
+      parseInt('755', 8)
+    );
+    t.is(
+      fs.statSync('resources/chmod/xdir/deep/file').mode & parseInt('644', 8),
+      parseInt('644', 8)
+    );
+  }
 });

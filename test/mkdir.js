@@ -6,8 +6,6 @@ import utils from './utils/utils';
 const numLines = utils.numLines;
 let TMP;
 
-test.skipIf = utils.skipIf;
-
 test.beforeEach(() => {
   TMP = utils.getTempDir();
   shell.config.silent = true;
@@ -58,21 +56,23 @@ test('root path does not exist', t => {
   t.is(fs.existsSync('/asdfasdf/foobar'), false);
 });
 
-test.skipIf(process.platform === 'win32', 'Check for invalid permissions', t => {
-  // This test case only works on unix, but should work on Windows as well
-  const dirName = 'nowritedir';
-  shell.mkdir(dirName);
-  t.falsy(shell.error());
-  shell.chmod('-w', dirName);
-  const result = shell.mkdir(dirName + '/foo');
-  t.is(result.code, 1);
-  t.is(
-      result.stderr,
-      'mkdir: cannot create directory nowritedir/foo: Permission denied'
-    );
-  t.truthy(shell.error());
-  t.is(fs.existsSync(dirName + '/foo'), false);
-  shell.rm('-rf', dirName); // clean up
+test('Check for invalid permissions', t => {
+  if (process.platform !== 'win32') {
+    // This test case only works on unix, but should work on Windows as well
+    const dirName = 'nowritedir';
+    shell.mkdir(dirName);
+    t.falsy(shell.error());
+    shell.chmod('-w', dirName);
+    const result = shell.mkdir(dirName + '/foo');
+    t.is(result.code, 1);
+    t.is(
+        result.stderr,
+        'mkdir: cannot create directory nowritedir/foo: Permission denied'
+      );
+    t.truthy(shell.error());
+    t.is(fs.existsSync(dirName + '/foo'), false);
+    shell.rm('-rf', dirName); // clean up
+  }
 });
 
 //
