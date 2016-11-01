@@ -29,28 +29,28 @@ test('file does not exist', t => {
 
 test('uniq file1', t => {
   const result = shell.uniq('resources/uniq/file1');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), shell.cat('resources/uniq/file1u').toString());
 });
 
 test('uniq -i file2', t => {
   const result = shell.uniq('-i', 'resources/uniq/file2');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), shell.cat('resources/uniq/file2u').toString());
 });
 
 test('with glob character', t => {
   const result = shell.uniq('-i', 'resources/uniq/fi?e2');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), shell.cat('resources/uniq/file2u').toString());
 });
 
 test('uniq file1 file2', t => {
   const result = shell.uniq('resources/uniq/file1', 'resources/uniq/file1t');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(
     shell.cat('resources/uniq/file1u').toString(),
@@ -60,21 +60,21 @@ test('uniq file1 file2', t => {
 
 test('cat file1 |uniq', t => {
   const result = shell.cat('resources/uniq/file1').uniq();
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), shell.cat('resources/uniq/file1u').toString());
 });
 
 test('uniq -c file1', t => {
   const result = shell.uniq('-c', 'resources/uniq/file1');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), shell.cat('resources/uniq/file1c').toString());
 });
 
 test('uniq -d file1', t => {
   const result = shell.uniq('-d', 'resources/uniq/file1');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), shell.cat('resources/uniq/file1d').toString());
 });

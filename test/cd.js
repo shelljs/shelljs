@@ -53,14 +53,14 @@ test('no previous dir', t => {
 
 test('relative path', t => {
   const result = shell.cd(TMP);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(path.basename(process.cwd()), TMP);
 });
 
 test('absolute path', t => {
   const result = shell.cd('/');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(process.cwd(), path.resolve('/'));
 });
@@ -68,7 +68,7 @@ test('absolute path', t => {
 test('previous directory (-)', t => {
   shell.cd('/');
   const result = shell.cd('-');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(process.cwd(), path.resolve(cur.toString()));
 });
@@ -77,13 +77,13 @@ test('cd + other commands', t => {
   shell.rm('-f', `${TMP}/*`);
   t.is(fs.existsSync(`${TMP}/file1`), false);
   let result = shell.cd('resources');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   result = shell.cp('file1', `../${TMP}`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   result = shell.cd(`../${TMP}`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync('file1'), true);
 });

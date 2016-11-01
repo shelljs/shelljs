@@ -29,25 +29,25 @@ test('should be a list', t => {
 
 test('single file, array syntax', t => {
   const result = common.expand(['resources/file1.txt']);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.deepEqual(result, ['resources/file1.txt']);
 });
 
 test('multiple file, glob syntax, * for file name', t => {
   const result = common.expand(['resources/file*.txt']);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 });
 
 test('multiple file, glob syntax, * for directory name', t => {
   const result = common.expand(['r*/file*.txt']);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 });
 
 test('multiple file, glob syntax, ** for directory name', t => {
   const result = common.expand(['resources/**/file*.js']);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.deepEqual(
     result.sort(),
     ['resources/file1.js', 'resources/file2.js', 'resources/ls/file1.js', 'resources/ls/file2.js'].sort()
@@ -56,7 +56,7 @@ test('multiple file, glob syntax, ** for directory name', t => {
 
 test('broken links still expand', t => {
   const result = common.expand(['resources/b*dlink']);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.deepEqual(result, ['resources/badlink']);
 });
 

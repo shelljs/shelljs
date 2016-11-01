@@ -24,7 +24,7 @@ test.afterEach(() => {
 
 test('initial directory', t => {
   const _pwd = shell.pwd();
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(_pwd.code, 0);
   t.falsy(_pwd.stderr);
   t.is(_pwd.toString(), path.resolve('.'));
@@ -35,6 +35,6 @@ test('after changing directory', t => {
   const _pwd = shell.pwd();
   t.is(_pwd.code, 0);
   t.falsy(_pwd.stderr);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(path.basename(_pwd.toString()), TMP);
 });

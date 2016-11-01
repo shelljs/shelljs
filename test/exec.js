@@ -42,14 +42,14 @@ test('config.fatal and unknown command', t => {
 
 test('check if stdout goes to output', t => {
   const result = shell.exec(JSON.stringify(process.execPath) + ' -e "console.log(1234);"');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.stdout === '1234\n' || result.stdout === '1234\nundefined\n'); // 'undefined' for v0.4
 });
 
 test('check if stderr goes to output', t => {
   const result = shell.exec(JSON.stringify(process.execPath) + ' -e "console.error(1234);"');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.stdout === '' || result.stdout === 'undefined\n'); // 'undefined' for v0.4
   t.truthy(result.stderr === '1234\n' || result.stderr === '1234\nundefined\n'); // 'undefined' for v0.4
@@ -57,7 +57,7 @@ test('check if stderr goes to output', t => {
 
 test('check if stdout + stderr go to output', t => {
   const result = shell.exec(JSON.stringify(process.execPath) + ' -e "console.error(1234); console.log(666);"');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.stdout === '666\n' || result.stdout === '666\nundefined\n');  // 'undefined' for v0.4
   t.truthy(result.stderr === '1234\n' || result.stderr === '1234\nundefined\n');  // 'undefined' for v0.4
@@ -72,7 +72,7 @@ test('check exit code', t => {
 test('interaction with cd', t => {
   shell.cd('resources/external');
   const result = shell.exec(JSON.stringify(process.execPath) + ' node_script.js');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, 'node_script_1234\n');
   shell.cd('../..');
@@ -80,7 +80,7 @@ test('interaction with cd', t => {
 
 test('check quotes escaping', t => {
   const result = shell.exec(util.format(JSON.stringify(process.execPath) + ' -e "console.log(%s);"', "\\\"\\'+\\'_\\'+\\'\\\""));
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, "'+'_'+'\n");
 });
@@ -88,14 +88,14 @@ test('check quotes escaping', t => {
 test('set cwd', t => {
   const cmdString = process.platform === 'win32' ? 'cd' : 'pwd';
   const result = shell.exec(cmdString, { cwd: '..' });
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, path.resolve('..') + os.EOL);
 });
 
 test('set maxBuffer (very small)', t => {
   const result = shell.exec('echo 1234567890'); // default maxBuffer is ok
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, '1234567890' + os.EOL);
   if (process.version >= 'v0.11') { // this option doesn't work on v0.10
@@ -157,7 +157,7 @@ test('exec returns a ShellString', t => {
 
 test.cb('no callback', t => {
   const c = shell.exec(JSON.stringify(process.execPath) + ' -e "console.log(1234)"', { async: true });
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.truthy('stdout' in c, 'async exec returns child process object');
   t.end();
 });

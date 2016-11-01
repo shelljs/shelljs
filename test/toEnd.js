@@ -43,10 +43,10 @@ test('creates a new file', t => {
   t.is(fs.existsSync(`${TMP}/toEnd1`), true); // Check that file was created
   shell.ShellString('world').toEnd(`${TMP}/toEnd1`).toEnd(`${TMP}/toEnd2`); // Write some more to the file
   result = shell.cat(`${TMP}/toEnd1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.toString(), 'hello world'); // Check that the result is what we expect
   result = shell.cat(`${TMP}/toEnd2`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.toString(), 'world'); // Check that the result is what we expect
 });
 
@@ -60,6 +60,6 @@ test('With a glob', t => {
     'globs are not interpreted literally'
   );
   const result = shell.cat(`${TMP}/toEnd1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.toString(), 'goodbye');
 });

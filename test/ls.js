@@ -34,20 +34,20 @@ test('no such file or dir', t => {
 
 test('no args is allowed', t => {
   const result = shell.ls();
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
 });
 
 test('root directory', t => {
   const result = shell.ls('/');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
 });
 
 test('no args provides the correct result', t => {
   shell.cd('resources/ls');
   const result = shell.ls();
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('file1') > -1, true);
   t.is(result.indexOf('file2') > -1, true);
@@ -61,7 +61,7 @@ test('no args provides the correct result', t => {
 
 test('simple arg', t => {
   const result = shell.ls('resources/ls');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('file1') > -1, true);
   t.is(result.indexOf('file2') > -1, true);
@@ -74,7 +74,7 @@ test('simple arg', t => {
 
 test('simple arg, with a trailing slash', t => {
   const result = shell.ls('resources/ls/');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('file1') > -1, true);
   t.is(result.indexOf('file2') > -1, true);
@@ -88,7 +88,7 @@ test('simple arg, with a trailing slash', t => {
 test('no args, \'all\' option', t => {
   shell.cd('resources/ls');
   const result = shell.ls('-A');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('file1') > -1, true);
   t.is(result.indexOf('file2') > -1, true);
@@ -105,7 +105,7 @@ test('no args, \'all\' option', t => {
 test('no args, \'all\' option', t => {
   shell.cd('resources/ls');
   const result = shell.ls('-a'); // (deprecated) backwards compatibility test
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('file1') > -1, true);
   t.is(result.indexOf('file2') > -1, true);
@@ -121,7 +121,7 @@ test('no args, \'all\' option', t => {
 
 test('wildcard, very simple', t => {
   const result = shell.ls('resources/cat/*');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('resources/cat/file1') > -1, true);
   t.is(result.indexOf('resources/cat/file2') > -1, true);
@@ -130,7 +130,7 @@ test('wildcard, very simple', t => {
 
 test('wildcard, simple', t => {
   const result = shell.ls('resources/ls/*');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('resources/ls/file1') > -1, true);
   t.is(result.indexOf('resources/ls/file2') > -1, true);
@@ -148,7 +148,7 @@ test('wildcard, simple', t => {
 
 test('wildcard, simple, with -d', t => {
   const result = shell.ls('-d', 'resources/ls/*');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('resources/ls/file1') > -1, true);
   t.is(result.indexOf('resources/ls/file2') > -1, true);
@@ -164,7 +164,7 @@ test('wildcard, simple, with -d', t => {
 
 test('wildcard, hidden only', t => {
   const result = shell.ls('-d', 'resources/ls/.*');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('resources/ls/.hidden_file') > -1, true);
   t.is(result.indexOf('resources/ls/.hidden_dir') > -1, true);
@@ -173,7 +173,7 @@ test('wildcard, hidden only', t => {
 
 test('wildcard, mid-file', t => {
   const result = shell.ls('resources/ls/f*le*');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 5);
   t.is(result.indexOf('resources/ls/file1') > -1, true);
@@ -188,7 +188,7 @@ test('wildcard, mid-file', t => {
 
 test('wildcard, mid-file with dot (should escape dot for regex)', t => {
   const result = shell.ls('resources/ls/f*le*.js');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 2);
   t.is(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -220,7 +220,7 @@ test('wildcard, should not do partial matches', t => {
 
 test('wildcard, all files with extension', t => {
   const result = shell.ls('resources/ls/*.*');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 3);
   t.is(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -233,7 +233,7 @@ test('wildcard, all files with extension', t => {
 
 test('wildcard, with additional path', t => {
   const result = shell.ls('resources/ls/f*le*.js', 'resources/ls/a_dir');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 4);
   t.is(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -244,7 +244,7 @@ test('wildcard, with additional path', t => {
 
 test('wildcard for both paths', t => {
   const result = shell.ls('resources/ls/f*le*.js', 'resources/ls/a_dir/*');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 4);
   t.is(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -255,7 +255,7 @@ test('wildcard for both paths', t => {
 
 test('wildcard for both paths, array', t => {
   const result = shell.ls(['resources/ls/f*le*.js', 'resources/ls/a_dir/*']);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 4);
   t.is(result.indexOf('resources/ls/file1.js') > -1, true);
@@ -267,7 +267,7 @@ test('wildcard for both paths, array', t => {
 test('recursive, no path', t => {
   shell.cd('resources/ls');
   const result = shell.ls('-R');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('a_dir') > -1, true);
   t.is(result.indexOf('a_dir/b_dir') > -1, true);
@@ -278,7 +278,7 @@ test('recursive, no path', t => {
 
 test('recusive, path given', t => {
   const result = shell.ls('-R', 'resources/ls');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('a_dir') > -1, true);
   t.is(result.indexOf('a_dir/b_dir') > -1, true);
@@ -288,7 +288,7 @@ test('recusive, path given', t => {
 
 test('recusive, path given - \'all\' flag', t => {
   const result = shell.ls('-RA', 'resources/ls');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('a_dir') > -1, true);
   t.is(result.indexOf('a_dir/b_dir') > -1, true);
@@ -299,7 +299,7 @@ test('recusive, path given - \'all\' flag', t => {
 
 test('recursive, wildcard', t => {
   const result = shell.ls('-R', 'resources/ls');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('a_dir') > -1, true);
   t.is(result.indexOf('a_dir/b_dir') > -1, true);
@@ -309,27 +309,27 @@ test('recursive, wildcard', t => {
 
 test('-Rd works like -d', t => {
   const result = shell.ls('-Rd', 'resources/ls');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.length, 1);
 });
 
 test('directory option, single arg', t => {
   const result = shell.ls('-d', 'resources/ls');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 1);
 });
 
 test('directory option, single arg with trailing \'/\'', t => {
   const result = shell.ls('-d', 'resources/ls/');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 1);
 });
 
 test('directory option, multiple args', t => {
   const result = shell.ls('-d', 'resources/ls/a_dir', 'resources/ls/file1');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.indexOf('resources/ls/a_dir') > -1);
   t.truthy(result.indexOf('resources/ls/file1') > -1);
@@ -338,7 +338,7 @@ test('directory option, multiple args', t => {
 
 test('directory option, globbed arg', t => {
   const result = shell.ls('-d', 'resources/ls/*');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.indexOf('resources/ls/a_dir') > -1);
   t.truthy(result.indexOf('resources/ls/file1') > -1);
@@ -356,7 +356,7 @@ test('long option, single file', t => {
   let result = shell.ls('-l', 'resources/ls/file1');
   t.is(result.length, 1);
   result = result[0];
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.truthy(result.name, 'file1');
   t.is(result.nlink, 1);
   t.is(result.size, 5);
@@ -373,7 +373,7 @@ test('long option, glob files', t => {
   let result = shell.ls('-l', 'resources/ls/f*le1');
   t.is(result.length, 1);
   result = result[0];
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.truthy(result.name, 'file1');
   t.is(result.nlink, 1);
   t.is(result.size, 5);
@@ -388,7 +388,7 @@ test('long option, glob files', t => {
 
 test('long option, directory', t => {
   let result = shell.ls('-l', 'resources/ls');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   let idx = -1;
   for (let k = 0; k < result.length; k++) {
@@ -414,7 +414,7 @@ test('long option, directory', t => {
 
 test('long option, directory, recursive (and windows converts slashes)', t => {
   let result = shell.ls('-lR', 'resources/ls/');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   let idx = -1;
   for (let k = 0; k < result.length; k++) {
@@ -442,7 +442,7 @@ test('long option, directory, recursive (and windows converts slashes)', t => {
 
 test('still lists broken links', t => {
   const result = shell.ls('resources/badlink');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.indexOf('resources/badlink') > -1, true);
   t.is(result.length, 1);
@@ -450,7 +450,7 @@ test('still lists broken links', t => {
 
 test('Test new ShellString-like attributes', t => {
   const result = shell.ls('resources/ls');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout.indexOf('file1') > -1, true);
   t.is(result.stdout.indexOf('file2') > -1, true);

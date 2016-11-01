@@ -43,10 +43,10 @@ test('cannot write to a non-existent directory', t => {
 test('can be chained', t => {
   shell.ShellString('hello world').to(`${TMP}/to1`).to(`${TMP}/to2`);
   let result = shell.cat(`${TMP}/to1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.toString(), 'hello world');
   result = shell.cat(`${TMP}/to2`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.toString(), 'hello world');
 });
 
@@ -55,6 +55,6 @@ test('With a glob', t => {
   shell.ShellString('goodbye').to(`${TMP}/t*1`);
   t.is(fs.existsSync(`${TMP}/t*1`), false, 'globs are not interpreted literally');
   const result = shell.cat(`${TMP}/to1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.toString(), 'goodbye');
 });

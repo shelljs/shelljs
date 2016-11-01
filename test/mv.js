@@ -139,12 +139,12 @@ test('handles self OK', t => {
 
 test('one source', t => {
   let result = shell.mv('file1', 'file3');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync('file1'), false);
   t.is(fs.existsSync('file3'), true);
   result = shell.mv('file3', 'file1'); // revert
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(fs.existsSync('file1'), true);
   t.is(result.code, 0);
 });
@@ -153,7 +153,7 @@ test('two sources', t => {
   shell.rm('-rf', 't');
   shell.mkdir('-p', 't');
   let result = shell.mv('file1', 'file2', 't');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync('file1'), false);
   t.is(fs.existsSync('file2'), false);
@@ -169,7 +169,7 @@ test('two sources, array style', t => {
   shell.rm('-rf', 't');
   shell.mkdir('-p', 't');
   let result = shell.mv(['file1', 'file2'], 't'); // two sources
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync('file1'), false);
   t.is(fs.existsSync('file2'), false);
@@ -183,7 +183,7 @@ test('two sources, array style', t => {
 test('wildcard', t => {
   shell.mkdir('-p', 't');
   let result = shell.mv('file*.js', 't'); // wildcard
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync('file1.js'), false);
   t.is(fs.existsSync('file2.js'), false);
@@ -196,7 +196,7 @@ test('wildcard', t => {
 
 test('dest exists, but -f given', t => {
   const result = shell.mv('-f', 'file1', 'file2');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync('file1'), false);
   t.is(fs.existsSync('file2'), true);

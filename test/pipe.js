@@ -40,7 +40,7 @@ test('multiple pipes work', t => {
 
 test('Equivalent to a simple grep() test case', t => {
   const result = shell.cat('resources/grep/file').grep(/alpha*beta/);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.toString(), 'alphaaaaaaabeta\nalphbeta\n');
 });
 
@@ -55,7 +55,7 @@ test('Equivalent to a simple sed() test case', t => {
 
 test('Sort a file by frequency of each line', t => {
   const result = shell.sort('resources/uniq/pipe').uniq('-c').sort('-n');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.toString(), shell.cat('resources/uniq/pipeSorted').toString());
 });
 
@@ -77,7 +77,7 @@ test('Sort a file by frequency of each line', t => {
 test('Synchronous exec', t => {
   if (shell.which('grep').stdout) {
     const result = shell.cat('resources/grep/file').exec("grep 'alpha*beta'");
-    t.is(shell.error(), null);
+    t.falsy(shell.error());
     t.is(result.toString(), 'alphaaaaaaabeta\nalphbeta\n');
   } else {
     console.error('Warning: Cannot verify piped exec');

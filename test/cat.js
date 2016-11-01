@@ -31,28 +31,28 @@ test('nonexistent file', t => {
 
 test('simple', t => {
   const result = shell.cat('resources/cat/file1');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'test1\n');
 });
 
 test('multiple files', t => {
   const result = shell.cat('resources/cat/file2', 'resources/cat/file1');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'test2\ntest1\n');
 });
 
 test('multiple files, array syntax', t => {
   const result = shell.cat(['resources/cat/file2', 'resources/cat/file1']);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'test2\ntest1\n');
 });
 
 test('glob', t => {
   const result = shell.cat('resources/file*.txt');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.search('test1') > -1); // file order might be random
   t.truthy(result.search('test2') > -1);

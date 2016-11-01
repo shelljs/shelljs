@@ -38,14 +38,14 @@ const bottomOfFile2 = ['file2 50', 'file2 49', 'file2 48', 'file2 47', 'file2 46
 
 test('simple', t => {
   const result = shell.tail('resources/head/file1.txt');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), bottomOfFile1.slice(0, 10).reverse().join('\n') + '\n');
 });
 
 test('multiple files', t => {
   const result = shell.tail('resources/head/file2.txt', 'resources/head/file1.txt');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(),
     bottomOfFile2
@@ -57,7 +57,7 @@ test('multiple files', t => {
 
 test('multiple files, array syntax', t => {
   const result = shell.tail(['resources/head/file2.txt', 'resources/head/file1.txt']);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(),
     bottomOfFile2
@@ -69,21 +69,21 @@ test('multiple files, array syntax', t => {
 
 test('reading more lines than are in the file (no trailing newline)', t => {
   const result = shell.tail('resources/file2', 'resources/file1');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'test2\ntest1'); // these files only have one line (no \n)
 });
 
 test('reading more lines than are in the file (with trailing newline)', t => {
   const result = shell.tail('resources/head/shortfile2', 'resources/head/shortfile1');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'short2\nshort1\n'); // these files only have one line (with \n)
 });
 
 test('Globbed file', t => {
   const result = shell.tail('resources/head/file?.txt');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(),
     bottomOfFile1
@@ -95,7 +95,7 @@ test('Globbed file', t => {
 
 test('With `\'-n\' <num>` option', t => {
   const result = shell.tail('-n', 4, 'resources/head/file2.txt', 'resources/head/file1.txt');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(),
     bottomOfFile2
@@ -107,7 +107,7 @@ test('With `\'-n\' <num>` option', t => {
 
 test('With `{\'-n\': <num>}` option', t => {
   const result = shell.tail({ '-n': 4 }, 'resources/head/file2.txt', 'resources/head/file1.txt');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(),
     bottomOfFile2
@@ -119,7 +119,7 @@ test('With `{\'-n\': <num>}` option', t => {
 
 test('negative values are the same as positive values', t => {
   const result = shell.tail('-n', -4, 'resources/head/file2.txt', 'resources/head/file1.txt');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(),
     bottomOfFile2

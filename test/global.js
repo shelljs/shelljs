@@ -27,7 +27,7 @@ test('env is exported', t => {
 
 test('cat', t => {
   const result = cat('resources/cat/file1');
-  t.is(error(), null);
+  t.falsy(error());
   t.is(result.code, 0);
   t.is(result.toString(), 'test1\n');
 });
@@ -36,7 +36,7 @@ test('rm', t => {
   cp('-f', 'resources/file1', `${TMP}/file1`);
   t.is(fs.existsSync(`${TMP}/file1`), true);
   const result = rm(`${TMP}/file1`);
-  t.is(error(), null);
+  t.falsy(error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/file1`), false);
 });

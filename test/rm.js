@@ -56,38 +56,38 @@ test('invalid option', t => {
 
 test('file does not exist, but -f specified', t => {
   const result = shell.rm('-f', 'asdfasdf');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
 });
 
 test('directory does not exist, but -fr specified', t => {
   const result = shell.rm('-fr', 'fake_dir/');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
 });
 
 test('directory does not exist, but *only -f* specified', t => {
   const result = shell.rm('-f', 'fake_dir/');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
 });
 
 test('file (in fake dir) does not exist, but -f specified', t => {
   const result = shell.rm('-f', 'fake_dir/asdfasdf');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
 });
 
 test('dir (in fake dir) does not exist, but -fr specified', t => {
   const result = shell.rm('-fr', 'fake_dir/sub/');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
 });
 
 test('simple rm', t => {
   t.is(fs.existsSync(`${TMP}/file1`), true);
   const result = shell.rm(`${TMP}/file1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/file1`), false);
 });
@@ -96,7 +96,7 @@ test('recursive dir removal - small-caps \'-r\'', t => {
   shell.mkdir('-p', `${TMP}/a/b/c`);
   t.is(fs.existsSync(`${TMP}/a/b/c`), true);
   const result = shell.rm('-rf', `${TMP}/a`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/a`), false);
 });
@@ -105,7 +105,7 @@ test('recursive dir removal - capital \'-R\'', t => {
   shell.mkdir('-p', `${TMP}/a/b/c`);
   t.is(fs.existsSync(`${TMP}/a/b/c`), true);
   const result = shell.rm('-Rf', `${TMP}/a`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/a`), false);
 });
@@ -114,14 +114,14 @@ test('recursive dir removal - absolute path', t => {
   shell.mkdir('-p', `${TMP}/a/b/c`);
   t.is(fs.existsSync(`${TMP}/a/b/c`), true);
   const result = shell.rm('-Rf', path.resolve(`./${TMP}/a`));
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/a`), false);
 });
 
 test('wildcard', t => {
   const result = shell.rm(`${TMP}/file*`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/file1`), false);
   t.is(fs.existsSync(`${TMP}/file2`), false);
@@ -139,7 +139,7 @@ test('recursive dir removal', t => {
   t.is(fs.existsSync(`${TMP}/c`), true);
   t.is(fs.existsSync(`${TMP}/.hidden`), true);
   const result = shell.rm('-rf', `${TMP}/*`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   const contents = fs.readdirSync(TMP);
   t.is(contents.length, 1);
@@ -156,7 +156,7 @@ test('recursive dir removal #2', t => {
   t.is(fs.existsSync(`${TMP}/c`), true);
   t.is(fs.existsSync(`${TMP}/.hidden`), true);
   const result = shell.rm('-rf', `${TMP}/*`, `${TMP}/.*`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   const contents = fs.readdirSync(TMP);
   t.is(contents.length, 0);
@@ -172,7 +172,7 @@ test('recursive dir removal - array-syntax', t => {
   t.is(fs.existsSync(`${TMP}/c`), true);
   t.is(fs.existsSync(`${TMP}/.hidden`), true);
   const result = shell.rm('-rf', [`${TMP}/*`, `${TMP}/.*`]);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   const contents = fs.readdirSync(TMP);
   t.is(contents.length, 0);
@@ -250,7 +250,7 @@ test(
 
 test('remove symbolic link to a dir', t => {
   const result = shell.rm('-f', `${TMP}/rm/link_to_a_dir`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/rm/link_to_a_dir`), false);
   t.is(fs.existsSync(`${TMP}/rm/a_dir`), true);
@@ -260,7 +260,7 @@ test('remove broken symbolic link', t => {
   if (process.platform !== 'win32') {
     t.truthy(shell.test('-L', `${TMP}/rm/fake.lnk`));
     const result = shell.rm(`${TMP}/rm/fake.lnk`);
-    t.is(shell.error(), null);
+    t.falsy(shell.error());
     t.is(result.code, 0);
     t.falsy(shell.test('-L', `${TMP}/rm/fake.lnk`));
     t.is(fs.existsSync(`${TMP}/rm/fake.lnk`), false);

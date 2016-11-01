@@ -82,7 +82,7 @@ test('Check for invalid permissions', t => {
 test('basic usage', t => {
   t.is(fs.existsSync(`${TMP}/t1`), false);
   const result = shell.mkdir(`${TMP}/t1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/t1`), true);
 });
@@ -91,7 +91,7 @@ test('multiple dirs', t => {
   t.is(fs.existsSync(`${TMP}/t2`), false);
   t.is(fs.existsSync(`${TMP}/t3`), false);
   const result = shell.mkdir(`${TMP}/t2`, `${TMP}/t3`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/t2`), true);
   t.is(fs.existsSync(`${TMP}/t3`), true);
@@ -111,7 +111,7 @@ test('one dir exists, the other does not', t => {
 test('-p flag', t => {
   t.is(fs.existsSync(`${TMP}/a`), false);
   const result = shell.mkdir('-p', `${TMP}/a/b/c`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/a/b/c`), true);
   shell.rm('-Rf', `${TMP}/a`); // revert
@@ -119,7 +119,7 @@ test('-p flag', t => {
 
 test('multiple dirs', t => {
   const result = shell.mkdir('-p', `${TMP}/zzza`, `${TMP}/zzzb`, `${TMP}/zzzc`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/zzza`), true);
   t.is(fs.existsSync(`${TMP}/zzzb`), true);
@@ -128,7 +128,7 @@ test('multiple dirs', t => {
 
 test('multiple dirs, array syntax', t => {
   const result = shell.mkdir('-p', [`${TMP}/yyya`, `${TMP}/yyyb`, `${TMP}/yyyc`]);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/yyya`), true);
   t.is(fs.existsSync(`${TMP}/yyyb`), true);
@@ -137,11 +137,11 @@ test('multiple dirs, array syntax', t => {
 
 test('globbed dir', t => {
   let result = shell.mkdir('-p', `${TMP}/mydir`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/mydir`), true);
   result = shell.mkdir('-p', `${TMP}/m*ir`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/mydir`), true);
   t.is(fs.existsSync(`${TMP}/m*ir`), false); // doesn't create literal name

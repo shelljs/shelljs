@@ -13,6 +13,6 @@ test.beforeEach(() => {
 
 test('basic usage', t => {
   const tmp = shell.tempdir();
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(fs.existsSync(tmp), true);
 });

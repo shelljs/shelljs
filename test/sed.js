@@ -63,21 +63,21 @@ test('if at least one file is missing, this should be an error', t => {
 
 test('search with a string', t => {
   const result = shell.sed('test1', 'hello', `${TMP}/file1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'hello');
 });
 
 test('search with a regex', t => {
   const result = shell.sed(/test1/, 'hello', `${TMP}/file1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'hello');
 });
 
 test('replace with a number instead of a string', t => {
   const result = shell.sed(/test1/, 1234, `${TMP}/file1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), '1234');
 });
@@ -87,14 +87,14 @@ test('replace using a function', t => {
     return match.toUpperCase() + match;
   }
   const result = shell.sed(/test1/, replaceFun, `${TMP}/file1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'TEST1test1');
 });
 
 test('-i option', t => {
   const result = shell.sed('-i', /test1/, 'hello', `${TMP}/file1`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'hello');
   t.is(shell.cat(`${TMP}/file1`).toString(), 'hello');
@@ -102,7 +102,7 @@ test('-i option', t => {
 
 test('make sure * in regex is not globbed', t => {
   const result = shell.sed(/alpha*beta/, 'hello', 'resources/grep/file');
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(
     result.toString(),
@@ -142,21 +142,21 @@ test('make sure * in string-regex is not globbed', t => {
 
 test('multiple file names', t => {
   const result = shell.sed('test', 'hello', `${TMP}/file1`, `${TMP}/file2`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'hello1\nhello2');
 });
 
 test('array of file names (and try it out with a simple regex)', t => {
   const result = shell.sed(/t.*st/, 'hello', [`${TMP}/file1`, `${TMP}/file2`]);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'hello1\nhello2');
 });
 
 test('multiple file names, with in-place-replacement', t => {
   const result = shell.sed('-i', 'test', 'hello', [`${TMP}/file1`, `${TMP}/file2`]);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'hello1\nhello2');
   t.is(shell.cat(`${TMP}/file1`).toString(), 'hello1');
@@ -167,7 +167,7 @@ test('glob file names, with in-place-replacement', t => {
   t.is(shell.cat(`${TMP}/file1.txt`).toString(), 'test1\n');
   t.is(shell.cat(`${TMP}/file2.txt`).toString(), 'test2\n');
   const result = shell.sed('-i', 'test', 'hello', `${TMP}/file*.txt`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'hello1\n\nhello2\n'); // TODO: fix sed's behavior
   t.is(shell.cat(`${TMP}/file1.txt`).toString(), 'hello1\n');
