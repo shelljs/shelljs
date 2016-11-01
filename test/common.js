@@ -67,9 +67,9 @@ test('common.parseOptions (normal case)', t => {
     r: 'reverse',
   });
 
-  t.is(result.recursive, true);
-  t.is(result.force, true);
-  t.is(result.reverse, false);
+  t.truthy(result.recursive);
+  t.truthy(result.force);
+  t.falsy(result.reverse);
 });
 
 test('common.parseOptions (with mutually-negating options)', t => {
@@ -79,8 +79,8 @@ test('common.parseOptions (with mutually-negating options)', t => {
     R: 'recursive',
   });
 
-  t.is(result.recursive, false);
-  t.is(result.no_force, false);
+  t.falsy(result.recursive);
+  t.falsy(result.no_force);
   t.is(result.force, undefined); // this key shouldn't exist
 });
 

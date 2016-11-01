@@ -14,5 +14,5 @@ test.beforeEach(() => {
 test('basic usage', t => {
   const tmp = shell.tempdir();
   t.falsy(shell.error());
-  t.is(fs.existsSync(tmp), true);
+  t.truthy(fs.existsSync(tmp));
 });

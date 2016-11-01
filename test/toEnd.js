@@ -37,10 +37,10 @@ test('missing file argument', t => {
 // TODO(nate): break this into multiple tests
 test('creates a new file', t => {
   let result;
-  t.is(fs.existsSync(`${TMP}/toEnd1`), false); // Check file toEnd() creates does not already exist
-  t.is(fs.existsSync(`${TMP}/toEnd2`), false);
+  t.falsy(fs.existsSync(`${TMP}/toEnd1`)); // Check file toEnd() creates does not already exist
+  t.falsy(fs.existsSync(`${TMP}/toEnd2`));
   shell.ShellString('hello ').toEnd(`${TMP}/toEnd1`);
-  t.is(fs.existsSync(`${TMP}/toEnd1`), true); // Check that file was created
+  t.truthy(fs.existsSync(`${TMP}/toEnd1`)); // Check that file was created
   shell.ShellString('world').toEnd(`${TMP}/toEnd1`).toEnd(`${TMP}/toEnd2`); // Write some more to the file
   result = shell.cat(`${TMP}/toEnd1`);
   t.falsy(shell.error());
@@ -54,10 +54,8 @@ test('With a glob', t => {
   shell.touch(`${TMP}/toEnd1`);
   shell.ShellString('good').to(`${TMP}/toE*1`);
   shell.ShellString('bye').toEnd(`${TMP}/toE*1`);
-  t.is(
-    fs.existsSync(`${TMP}/toE*1`),
-    false,
-    'globs are not interpreted literally'
+  t.falsy(
+    fs.existsSync(`${TMP}/toE*1`)
   );
   const result = shell.cat(`${TMP}/toEnd1`);
   t.falsy(shell.error());

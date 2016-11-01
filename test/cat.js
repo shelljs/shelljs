@@ -18,7 +18,7 @@ test('no paths given', t => {
 });
 
 test('nonexistent file', t => {
-  t.is(fs.existsSync('/asdfasdf'), false); // sanity check
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
   const result = shell.cat('/asdfasdf'); // file does not exist
   t.truthy(shell.error());
   t.is(result.code, 1);

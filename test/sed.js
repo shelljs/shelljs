@@ -40,7 +40,7 @@ test('only two arguments', t => {
 });
 
 test('no such file', t => {
-  t.is(fs.existsSync('asdfasdf'), false); // sanity check
+  t.falsy(fs.existsSync('asdfasdf')); // sanity check
   const result = shell.sed(/asdf/g, 'nada', 'asdfasdf');
   t.truthy(shell.error());
   t.is(result.code, 2);
@@ -49,8 +49,8 @@ test('no such file', t => {
 
 // TODO(nate): flaky test
 test('if at least one file is missing, this should be an error', t => {
-  t.is(fs.existsSync('asdfasdf'), false); // sanity check
-  t.is(fs.existsSync(`${TMP}/file1`), true); // sanity check
+  t.falsy(fs.existsSync('asdfasdf')); // sanity check
+  t.truthy(fs.existsSync(`${TMP}/file1`)); // sanity check
   const result = shell.sed(/asdf/g, 'nada', `${TMP}/file1`, 'asdfasdf');
   t.truthy(shell.error());
   t.is(result.code, 2);

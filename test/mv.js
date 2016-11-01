@@ -46,10 +46,10 @@ test('option only', t => {
 });
 
 test('option not supported', t => {
-  t.is(fs.existsSync('file1'), true); // precondition
+  t.truthy(fs.existsSync('file1')); // precondition
   const result = shell.mv('-Z', 'file1', 'file1');
   t.truthy(shell.error());
-  t.is(fs.existsSync('file1'), true);
+  t.truthy(fs.existsSync('file1'));
   t.is(result.code, 1);
   t.is(result.stderr, 'mv: option not recognized: Z');
 });
@@ -58,7 +58,7 @@ test('source does not exist', t => {
   const result = shell.mv('asdfasdf', '..');
   t.truthy(shell.error());
   t.is(numLines(shell.error()), 1);
-  t.is(fs.existsSync('../asdfasdf'), false);
+  t.falsy(fs.existsSync('../asdfasdf'));
   t.is(result.code, 1);
   t.is(result.stderr, 'mv: no such file or directory: asdfasdf');
 });
@@ -67,8 +67,8 @@ test('sources do not exist', t => {
   const result = shell.mv('asdfasdf1', 'asdfasdf2', '..');
   t.truthy(shell.error());
   t.is(numLines(shell.error()), 2);
-  t.is(fs.existsSync('../asdfasdf1'), false);
-  t.is(fs.existsSync('../asdfasdf2'), false);
+  t.falsy(fs.existsSync('../asdfasdf1'));
+  t.falsy(fs.existsSync('../asdfasdf2'));
   t.is(result.code, 1);
   t.is(
     result.stderr,
@@ -107,7 +107,7 @@ test('-fn is the same as -n', t => {
 test('too many sources (exist, but dest is file)', t => {
   const result = shell.mv('file1', 'file2', 'a_file');
   t.truthy(shell.error());
-  t.is(fs.existsSync('a_file'), false);
+  t.falsy(fs.existsSync('a_file'));
   t.is(result.code, 1);
   t.is(result.stderr, 'mv: dest is not a directory (too many sources)');
 });
@@ -115,10 +115,10 @@ test('too many sources (exist, but dest is file)', t => {
 test('can\'t use wildcard when dest is file', t => {
   const result = shell.mv('file*', 'file1');
   t.truthy(shell.error());
-  t.is(fs.existsSync('file1'), true);
-  t.is(fs.existsSync('file2'), true);
-  t.is(fs.existsSync('file1.js'), true);
-  t.is(fs.existsSync('file2.js'), true);
+  t.truthy(fs.existsSync('file1'));
+  t.truthy(fs.existsSync('file2'));
+  t.truthy(fs.existsSync('file1.js'));
+  t.truthy(fs.existsSync('file2.js'));
   t.is(result.code, 1);
   t.is(result.stderr, 'mv: dest is not a directory (too many sources)');
 });
@@ -132,10 +132,10 @@ test('handles self OK', t => {
   shell.mkdir(TMP2);
   let result = shell.mv('*', TMP2); // has to handle self (TMP2 --> TMP2) without throwing error
   t.truthy(shell.error()); // there's an error, but not fatal
-  t.is(fs.existsSync(`${TMP2}/file1`), true); // moved OK
+  t.truthy(fs.existsSync(`${TMP2}/file1`)); // moved OK
   t.is(result.code, 1);
   result = shell.mv(`${TMP2}/*`, '.'); // revert
-  t.is(fs.existsSync('file1'), true); // moved OK
+  t.truthy(fs.existsSync('file1')); // moved OK
   t.is(result.code, 0);
 });
 
@@ -143,11 +143,11 @@ test('one source', t => {
   let result = shell.mv('file1', 'file3');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync('file1'), false);
-  t.is(fs.existsSync('file3'), true);
+  t.falsy(fs.existsSync('file1'));
+  t.truthy(fs.existsSync('file3'));
   result = shell.mv('file3', 'file1'); // revert
   t.falsy(shell.error());
-  t.is(fs.existsSync('file1'), true);
+  t.truthy(fs.existsSync('file1'));
   t.is(result.code, 0);
 });
 
@@ -157,14 +157,14 @@ test('two sources', t => {
   let result = shell.mv('file1', 'file2', 't');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync('file1'), false);
-  t.is(fs.existsSync('file2'), false);
-  t.is(fs.existsSync('t/file1'), true);
-  t.is(fs.existsSync('t/file2'), true);
+  t.falsy(fs.existsSync('file1'));
+  t.falsy(fs.existsSync('file2'));
+  t.truthy(fs.existsSync('t/file1'));
+  t.truthy(fs.existsSync('t/file2'));
   result = shell.mv('t/*', '.'); // revert
   t.is(result.code, 0);
-  t.is(fs.existsSync('file1'), true);
-  t.is(fs.existsSync('file2'), true);
+  t.truthy(fs.existsSync('file1'));
+  t.truthy(fs.existsSync('file2'));
 });
 
 test('two sources, array style', t => {
@@ -173,13 +173,13 @@ test('two sources, array style', t => {
   let result = shell.mv(['file1', 'file2'], 't'); // two sources
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync('file1'), false);
-  t.is(fs.existsSync('file2'), false);
-  t.is(fs.existsSync('t/file1'), true);
-  t.is(fs.existsSync('t/file2'), true);
+  t.falsy(fs.existsSync('file1'));
+  t.falsy(fs.existsSync('file2'));
+  t.truthy(fs.existsSync('t/file1'));
+  t.truthy(fs.existsSync('t/file2'));
   result = shell.mv('t/*', '.'); // revert
-  t.is(fs.existsSync('file1'), true);
-  t.is(fs.existsSync('file2'), true);
+  t.truthy(fs.existsSync('file1'));
+  t.truthy(fs.existsSync('file2'));
 });
 
 test('wildcard', t => {
@@ -187,19 +187,19 @@ test('wildcard', t => {
   let result = shell.mv('file*.js', 't'); // wildcard
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync('file1.js'), false);
-  t.is(fs.existsSync('file2.js'), false);
-  t.is(fs.existsSync('t/file1.js'), true);
-  t.is(fs.existsSync('t/file2.js'), true);
+  t.falsy(fs.existsSync('file1.js'));
+  t.falsy(fs.existsSync('file2.js'));
+  t.truthy(fs.existsSync('t/file1.js'));
+  t.truthy(fs.existsSync('t/file2.js'));
   result = shell.mv('t/*', '.'); // revert
-  t.is(fs.existsSync('file1.js'), true);
-  t.is(fs.existsSync('file2.js'), true);
+  t.truthy(fs.existsSync('file1.js'));
+  t.truthy(fs.existsSync('file2.js'));
 });
 
 test('dest exists, but -f given', t => {
   const result = shell.mv('-f', 'file1', 'file2');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync('file1'), false);
-  t.is(fs.existsSync('file2'), true);
+  t.falsy(fs.existsSync('file1'));
+  t.truthy(fs.existsSync('file2'));
 });

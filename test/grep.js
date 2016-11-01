@@ -33,7 +33,7 @@ test('too few args', t => {
 });
 
 test('no such file', t => {
-  t.is(fs.existsSync('/asdfasdf'), false); // sanity check
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
   const result = shell.grep(/asdf/g, '/asdfasdf'); // no such file
   t.truthy(shell.error());
   t.is(result.stderr, 'grep: no such file or directory: /asdfasdf');
@@ -41,8 +41,8 @@ test('no such file', t => {
 });
 
 test('if at least one file is missing, this should be an error', t => {
-  t.is(fs.existsSync('asdfasdf'), false); // sanity check
-  t.is(fs.existsSync(`${TMP}/file1`), true); // sanity check
+  t.falsy(fs.existsSync('asdfasdf')); // sanity check
+  t.truthy(fs.existsSync(`${TMP}/file1`)); // sanity check
   const result = shell.grep(/asdf/g, `${TMP}/file1`, 'asdfasdf');
   t.truthy(shell.error());
   t.is(result.stderr, 'grep: no such file or directory: asdfasdf');

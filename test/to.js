@@ -31,7 +31,7 @@ test('no file argument', t => {
 });
 
 test('cannot write to a non-existent directory', t => {
-  t.is(fs.existsSync('/asdfasdf'), false); // sanity check
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
   shell.ShellString('hello world').to('/asdfasdf/file');
   t.truthy(shell.error());
 });
@@ -53,7 +53,7 @@ test('can be chained', t => {
 test('With a glob', t => {
   shell.touch(`${TMP}/to1`);
   shell.ShellString('goodbye').to(`${TMP}/t*1`);
-  t.is(fs.existsSync(`${TMP}/t*1`), false, 'globs are not interpreted literally');
+  t.falsy(fs.existsSync(`${TMP}/t*1`), 'globs are not interpreted literally');
   const result = shell.cat(`${TMP}/to1`);
   t.falsy(shell.error());
   t.is(result.toString(), 'goodbye');

@@ -34,11 +34,11 @@ test('cat', t => {
 
 test('rm', t => {
   cp('-f', 'resources/file1', `${TMP}/file1`);
-  t.is(fs.existsSync(`${TMP}/file1`), true);
+  t.truthy(fs.existsSync(`${TMP}/file1`));
   const result = rm(`${TMP}/file1`);
   t.falsy(error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/file1`), false);
+  t.falsy(fs.existsSync(`${TMP}/file1`));
 });
 
 test('String.prototype is modified for global require', t => {

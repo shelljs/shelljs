@@ -31,8 +31,8 @@ test('current path', t => {
   const result = shell.find('.');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('.hidden') > -1, true);
-  t.is(result.indexOf('dir1/dir11/a_dir11') > -1, true);
+  t.truthy(result.indexOf('.hidden') > -1);
+  t.truthy(result.indexOf('dir1/dir11/a_dir11') > -1);
   t.is(result.length, 11);
   shell.cd('../..');
 });
@@ -41,8 +41,8 @@ test('simple path', t => {
   const result = shell.find('resources/find');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('resources/find/.hidden') > -1, true);
-  t.is(result.indexOf('resources/find/dir1/dir11/a_dir11') > -1, true);
+  t.truthy(result.indexOf('resources/find/.hidden') > -1);
+  t.truthy(result.indexOf('resources/find/dir1/dir11/a_dir11') > -1);
   t.is(result.length, 11);
 });
 
@@ -50,8 +50,8 @@ test('multiple paths - comma', t => {
   const result = shell.find('resources/find/dir1', 'resources/find/dir2');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('resources/find/dir1/dir11/a_dir11') > -1, true);
-  t.is(result.indexOf('resources/find/dir2/a_dir1') > -1, true);
+  t.truthy(result.indexOf('resources/find/dir1/dir11/a_dir11') > -1);
+  t.truthy(result.indexOf('resources/find/dir2/a_dir1') > -1);
   t.is(result.length, 6);
 });
 
@@ -59,7 +59,7 @@ test('multiple paths - array', t => {
   const result = shell.find(['resources/find/dir1', 'resources/find/dir2']);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('resources/find/dir1/dir11/a_dir11') > -1, true);
-  t.is(result.indexOf('resources/find/dir2/a_dir1') > -1, true);
+  t.truthy(result.indexOf('resources/find/dir1/dir11/a_dir11') > -1);
+  t.truthy(result.indexOf('resources/find/dir2/a_dir1') > -1);
   t.is(result.length, 6);
 });

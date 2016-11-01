@@ -46,7 +46,7 @@ test('invalid option', t => {
   const result = shell.rm('-@', 'resources/file1');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(fs.existsSync('resources/file1'), true);
+  t.truthy(fs.existsSync('resources/file1'));
   t.is(result.stderr, 'rm: option not recognized: @');
 });
 
@@ -85,48 +85,48 @@ test('dir (in fake dir) does not exist, but -fr specified', t => {
 });
 
 test('simple rm', t => {
-  t.is(fs.existsSync(`${TMP}/file1`), true);
+  t.truthy(fs.existsSync(`${TMP}/file1`));
   const result = shell.rm(`${TMP}/file1`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/file1`), false);
+  t.falsy(fs.existsSync(`${TMP}/file1`));
 });
 
 test('recursive dir removal - small-caps \'-r\'', t => {
   shell.mkdir('-p', `${TMP}/a/b/c`);
-  t.is(fs.existsSync(`${TMP}/a/b/c`), true);
+  t.truthy(fs.existsSync(`${TMP}/a/b/c`));
   const result = shell.rm('-rf', `${TMP}/a`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/a`), false);
+  t.falsy(fs.existsSync(`${TMP}/a`));
 });
 
 test('recursive dir removal - capital \'-R\'', t => {
   shell.mkdir('-p', `${TMP}/a/b/c`);
-  t.is(fs.existsSync(`${TMP}/a/b/c`), true);
+  t.truthy(fs.existsSync(`${TMP}/a/b/c`));
   const result = shell.rm('-Rf', `${TMP}/a`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/a`), false);
+  t.falsy(fs.existsSync(`${TMP}/a`));
 });
 
 test('recursive dir removal - absolute path', t => {
   shell.mkdir('-p', `${TMP}/a/b/c`);
-  t.is(fs.existsSync(`${TMP}/a/b/c`), true);
+  t.truthy(fs.existsSync(`${TMP}/a/b/c`));
   const result = shell.rm('-Rf', path.resolve(`./${TMP}/a`));
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/a`), false);
+  t.falsy(fs.existsSync(`${TMP}/a`));
 });
 
 test('wildcard', t => {
   const result = shell.rm(`${TMP}/file*`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/file1`), false);
-  t.is(fs.existsSync(`${TMP}/file2`), false);
-  t.is(fs.existsSync(`${TMP}/file1.js`), false);
-  t.is(fs.existsSync(`${TMP}/file2.js`), false);
+  t.falsy(fs.existsSync(`${TMP}/file1`));
+  t.falsy(fs.existsSync(`${TMP}/file2`));
+  t.falsy(fs.existsSync(`${TMP}/file1.js`));
+  t.falsy(fs.existsSync(`${TMP}/file2.js`));
 });
 
 test('recursive dir removal', t => {
@@ -134,10 +134,10 @@ test('recursive dir removal', t => {
   shell.mkdir('-p', `${TMP}/b`);
   shell.mkdir('-p', `${TMP}/c`);
   shell.mkdir('-p', `${TMP}/.hidden`);
-  t.is(fs.existsSync(`${TMP}/a/b/c`), true);
-  t.is(fs.existsSync(`${TMP}/b`), true);
-  t.is(fs.existsSync(`${TMP}/c`), true);
-  t.is(fs.existsSync(`${TMP}/.hidden`), true);
+  t.truthy(fs.existsSync(`${TMP}/a/b/c`));
+  t.truthy(fs.existsSync(`${TMP}/b`));
+  t.truthy(fs.existsSync(`${TMP}/c`));
+  t.truthy(fs.existsSync(`${TMP}/.hidden`));
   const result = shell.rm('-rf', `${TMP}/*`);
   t.falsy(shell.error());
   t.is(result.code, 0);
@@ -151,10 +151,10 @@ test('recursive dir removal #2', t => {
   shell.mkdir('-p', `${TMP}/b`);
   shell.mkdir('-p', `${TMP}/c`);
   shell.mkdir('-p', `${TMP}/.hidden`);
-  t.is(fs.existsSync(`${TMP}/a/b/c`), true);
-  t.is(fs.existsSync(`${TMP}/b`), true);
-  t.is(fs.existsSync(`${TMP}/c`), true);
-  t.is(fs.existsSync(`${TMP}/.hidden`), true);
+  t.truthy(fs.existsSync(`${TMP}/a/b/c`));
+  t.truthy(fs.existsSync(`${TMP}/b`));
+  t.truthy(fs.existsSync(`${TMP}/c`));
+  t.truthy(fs.existsSync(`${TMP}/.hidden`));
   const result = shell.rm('-rf', `${TMP}/*`, `${TMP}/.*`);
   t.falsy(shell.error());
   t.is(result.code, 0);
@@ -167,10 +167,10 @@ test('recursive dir removal - array-syntax', t => {
   shell.mkdir('-p', `${TMP}/b`);
   shell.mkdir('-p', `${TMP}/c`);
   shell.mkdir('-p', `${TMP}/.hidden`);
-  t.is(fs.existsSync(`${TMP}/a/b/c`), true);
-  t.is(fs.existsSync(`${TMP}/b`), true);
-  t.is(fs.existsSync(`${TMP}/c`), true);
-  t.is(fs.existsSync(`${TMP}/.hidden`), true);
+  t.truthy(fs.existsSync(`${TMP}/a/b/c`));
+  t.truthy(fs.existsSync(`${TMP}/b`));
+  t.truthy(fs.existsSync(`${TMP}/c`));
+  t.truthy(fs.existsSync(`${TMP}/.hidden`));
   const result = shell.rm('-rf', [`${TMP}/*`, `${TMP}/.*`]);
   t.falsy(shell.error());
   t.is(result.code, 0);
@@ -183,7 +183,7 @@ test('removal of a read-only file (unforced)', t => {
   shell.ShellString('asdf').to(`${TMP}/readonly/file1`);
   fs.chmodSync(`${TMP}/readonly/file1`, '0444'); // -r--r--r--
   shell.rm(`${TMP}/readonly/file1`);
-  t.is(fs.existsSync(`${TMP}/readonly/file1`), true); // bash's rm always asks before removing read-only files
+  t.truthy(fs.existsSync(`${TMP}/readonly/file1`)); // bash's rm always asks before removing read-only files
   // here we just assume "no"
 });
 
@@ -192,7 +192,7 @@ test('removal of a read-only file (forced)', t => {
   shell.ShellString('asdf').to(`${TMP}/readonly/file2`);
   fs.chmodSync(`${TMP}/readonly/file2`, '0444'); // -r--r--r--
   shell.rm('-f', `${TMP}/readonly/file2`);
-  t.is(fs.existsSync(`${TMP}/readonly/file2`), false);
+  t.falsy(fs.existsSync(`${TMP}/readonly/file2`));
 });
 
 test('removal of a tree containing read-only files (unforced)', t => {
@@ -201,8 +201,8 @@ test('removal of a tree containing read-only files (unforced)', t => {
   shell.ShellString('asdf').to(`${TMP}/tree2/file2`);
   fs.chmodSync(`${TMP}/tree2/file1`, '0444'); // -r--r--r--
   shell.rm('-r', `${TMP}/tree2`);
-  t.is(fs.existsSync(`${TMP}/tree2/file1`), true);
-  t.is(fs.existsSync(`${TMP}/tree2/file2`), false);
+  t.truthy(fs.existsSync(`${TMP}/tree2/file1`));
+  t.falsy(fs.existsSync(`${TMP}/tree2/file2`));
 });
 
 test('removal of a tree containing read-only files (forced)', t => {
@@ -211,7 +211,7 @@ test('removal of a tree containing read-only files (forced)', t => {
   shell.ShellString('asdf').to(`${TMP}/tree/file2`);
   fs.chmodSync(`${TMP}/tree/file1`, '0444'); // -r--r--r--
   shell.rm('-rf', `${TMP}/tree`);
-  t.is(fs.existsSync(`${TMP}/tree`), false);
+  t.falsy(fs.existsSync(`${TMP}/tree`));
 });
 
 test(
@@ -244,7 +244,7 @@ test(
     fs.chmodSync(`${TMP}/tree4/subtree/file`, '0444'); // -r--r--r--
     fs.chmodSync(`${TMP}/tree4/.hidden/file`, '0444'); // -r--r--r--
     shell.rm('-rf', `${TMP}/tree4`); // erase dir contents
-    t.is(fs.existsSync(`${TMP}/tree4`), false);
+    t.falsy(fs.existsSync(`${TMP}/tree4`));
   }
 );
 
@@ -252,8 +252,8 @@ test('remove symbolic link to a dir', t => {
   const result = shell.rm('-f', `${TMP}/rm/link_to_a_dir`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/rm/link_to_a_dir`), false);
-  t.is(fs.existsSync(`${TMP}/rm/a_dir`), true);
+  t.falsy(fs.existsSync(`${TMP}/rm/link_to_a_dir`));
+  t.truthy(fs.existsSync(`${TMP}/rm/a_dir`));
 });
 
 test('remove broken symbolic link', t => {
@@ -263,6 +263,6 @@ test('remove broken symbolic link', t => {
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.falsy(shell.test('-L', `${TMP}/rm/fake.lnk`));
-    t.is(fs.existsSync(`${TMP}/rm/fake.lnk`), false);
+    t.falsy(fs.existsSync(`${TMP}/rm/fake.lnk`));
   }
 });

@@ -25,7 +25,7 @@ test.afterEach.always(() => {
 //
 
 test('nonexistent directory', t => {
-  t.is(fs.existsSync('/asdfasdf'), false);
+  t.falsy(fs.existsSync('/asdfasdf'));
   const result = shell.cd('/asdfasdf'); // dir does not exist
   t.truthy(shell.error());
   t.is(result.code, 1);
@@ -33,7 +33,7 @@ test('nonexistent directory', t => {
 });
 
 test('file not dir', t => {
-  t.is(fs.existsSync('resources/file1'), true); // sanity check
+  t.truthy(fs.existsSync('resources/file1')); // sanity check
   const result = shell.cd('resources/file1'); // file, not dir
   t.truthy(shell.error());
   t.is(result.code, 1);
@@ -74,7 +74,7 @@ test('previous directory (-)', t => {
 });
 
 test('cd + other commands', t => {
-  t.is(fs.existsSync(`${TMP}/file1`), false);
+  t.falsy(fs.existsSync(`${TMP}/file1`));
   let result = shell.cd('resources');
   t.falsy(shell.error());
   t.is(result.code, 0);
@@ -84,7 +84,7 @@ test('cd + other commands', t => {
   result = shell.cd(`../${TMP}`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync('file1'), true);
+  t.truthy(fs.existsSync('file1'));
 });
 
 test('Tilde expansion', t => {

@@ -17,7 +17,7 @@ test('no args', t => {
 });
 
 test('file does not exist', t => {
-  t.is(fs.existsSync('/asdfasdf'), false); // sanity check
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
   const result = shell.head('/adsfasdf'); // file does not exist
   t.truthy(shell.error());
   t.is(result.code, 1);

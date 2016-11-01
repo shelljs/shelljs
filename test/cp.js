@@ -52,7 +52,7 @@ test('invalid option', t => {
   const result = shell.cp('-@', 'resources/file1', `${TMP}/file1`);
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(fs.existsSync(`${TMP}/file1`), false);
+  t.falsy(fs.existsSync(`${TMP}/file1`));
   t.is(result.stderr, 'cp: option not recognized: @');
 });
 
@@ -60,7 +60,7 @@ test('invalid option', t => {
   const result = shell.cp('-Z', 'asdfasdf', `${TMP}/file2`);
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(fs.existsSync(`${TMP}/file2`), false);
+  t.falsy(fs.existsSync(`${TMP}/file2`));
   t.is(result.stderr, 'cp: option not recognized: Z');
 });
 
@@ -69,7 +69,7 @@ test('source does not exist', t => {
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(numLines(result.stderr), 1);
-  t.is(fs.existsSync(`${TMP}/asdfasdf`), false);
+  t.falsy(fs.existsSync(`${TMP}/asdfasdf`));
   t.is(result.stderr, 'cp: no such file or directory: asdfasdf');
 });
 
@@ -78,8 +78,8 @@ test('sources does not exist', t => {
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(numLines(result.stderr), 2);
-  t.is(fs.existsSync(`${TMP}/asdfasdf1`), false);
-  t.is(fs.existsSync(`${TMP}/asdfasdf2`), false);
+  t.falsy(fs.existsSync(`${TMP}/asdfasdf1`));
+  t.falsy(fs.existsSync(`${TMP}/asdfasdf2`));
   t.is(
     result.stderr,
     'cp: no such file or directory: asdfasdf1\ncp: no such file or directory: asdfasdf2'
@@ -97,7 +97,7 @@ test('too many sources #2', t => {
   const result = shell.cp('resources/file1', 'resources/file2', `${TMP}/a_file`);
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(fs.existsSync(`${TMP}/a_file`), false);
+  t.falsy(fs.existsSync(`${TMP}/a_file`));
   t.is(result.stderr, 'cp: dest is not a directory (too many sources)');
 });
 
@@ -142,7 +142,7 @@ test('simple - to dir', t => {
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/file1`), true);
+  t.truthy(fs.existsSync(`${TMP}/file1`));
 });
 
 test('simple - to file', t => {
@@ -150,7 +150,7 @@ test('simple - to file', t => {
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/file2`), true);
+  t.truthy(fs.existsSync(`${TMP}/file2`));
 });
 
 test('simple - file list', t => {
@@ -158,8 +158,8 @@ test('simple - file list', t => {
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/file1`), true);
-  t.is(fs.existsSync(`${TMP}/file2`), true);
+  t.truthy(fs.existsSync(`${TMP}/file1`));
+  t.truthy(fs.existsSync(`${TMP}/file2`));
 });
 
 test('simple - file list, array syntax', t => {
@@ -167,18 +167,18 @@ test('simple - file list, array syntax', t => {
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/file1`), true);
-  t.is(fs.existsSync(`${TMP}/file2`), true);
+  t.truthy(fs.existsSync(`${TMP}/file1`));
+  t.truthy(fs.existsSync(`${TMP}/file2`));
 });
 
 test('-f option', t => {
   shell.cp('resources/file2', `${TMP}/file3`);
-  t.is(fs.existsSync(`${TMP}/file3`), true);
+  t.truthy(fs.existsSync(`${TMP}/file3`));
   const result = shell.cp('-f', 'resources/file2', `${TMP}/file3`); // file exists, but -f specified
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/file3`), true);
+  t.truthy(fs.existsSync(`${TMP}/file3`));
 });
 
 test('glob', t => {
@@ -351,7 +351,7 @@ test(
       `cp: cannot create directory '${TMP}/dir2/dir3': No such file or directory`
     );
     t.is(result.code, 1);
-    t.is(fs.existsSync(`${TMP}/dir2`), false);
+    t.falsy(fs.existsSync(`${TMP}/dir2`));
   }
 );
 
@@ -360,14 +360,14 @@ test('recursive, copies entire directory', t => {
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/dest/z`), true);
+  t.truthy(fs.existsSync(`${TMP}/dest/z`));
 });
 
 test('recursive, with trailing slash, does the exact same', t => {
   const result = shell.cp('-r', 'resources/cp/dir_a/', `${TMP}/dest`);
   t.is(result.code, 0);
   t.falsy(shell.error());
-  t.is(fs.existsSync(`${TMP}/dest/z`), true);
+  t.truthy(fs.existsSync(`${TMP}/dest/z`));
 });
 
 test(
@@ -453,7 +453,7 @@ test('Recursive, copies entire directory with no symlinks and -L option does not
     t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
-    t.is(fs.existsSync(`${TMP}/dest/z`), true);
+    t.truthy(fs.existsSync(`${TMP}/dest/z`));
   }
 });
 
@@ -597,8 +597,8 @@ test('cp -L follows symlinks', t => {
     // Ensure other files have not changed.
     t.is(shell.cat('foo.lnk').toString(), 'test1\n');
     t.is(shell.cat('sym.lnk').toString(), 'test1\n');
-    t.is(shell.test('-L', 'foo.lnk'), false);
-    t.is(shell.test('-L', 'sym.lnk'), false);
+    t.falsy(shell.test('-L', 'foo.lnk'));
+    t.falsy(shell.test('-L', 'sym.lnk'));
     shell.cd('../..');
   });
 });
@@ -619,8 +619,8 @@ test('Test with recursive option and symlinks.', t => {
     t.is(shell.cat('file.txt').toString(), 'test1\n');
     t.is(shell.cat('foo.lnk').toString(), 'test1\n');
     t.is(shell.cat('sym.lnk').toString(), 'test1\n');
-    t.is(shell.test('-L', 'foo.lnk'), true);
-    t.is(shell.test('-L', 'sym.lnk'), true);
+    t.truthy(shell.test('-L', 'foo.lnk'));
+    t.truthy(shell.test('-L', 'sym.lnk'));
     shell.cd('../..');
     shell.cp('-rL', 'sub/', 'new/');
     shell.cd('new');
@@ -633,8 +633,8 @@ test('Test with recursive option and symlinks.', t => {
     t.is(shell.cat('sym.lnk').toString(), 'test1\n');
 
     // Ensure the links are converted to files.
-    t.is(shell.test('-L', 'foo.lnk'), false);
-    t.is(shell.test('-L', 'sym.lnk'), false);
+    t.falsy(shell.test('-L', 'foo.lnk'));
+    t.falsy(shell.test('-L', 'sym.lnk'));
 
     // Ensure other files have not changed.
     shell.cd('sub1');
@@ -644,7 +644,7 @@ test('Test with recursive option and symlinks.', t => {
     t.is(shell.cat('sym.lnk').toString(), 'test1\n');
 
     // Ensure the links are converted to files
-    t.is(shell.test('-L', 'foo.lnk'), false);
-    t.is(shell.test('-L', 'sym.lnk'), false);
+    t.falsy(shell.test('-L', 'foo.lnk'));
+    t.falsy(shell.test('-L', 'sym.lnk'));
   });
 });

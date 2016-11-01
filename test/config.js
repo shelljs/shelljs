@@ -11,18 +11,18 @@ import utils from './utils/utils';
 // config.silent
 //
 
-test('config.silent is false by defaul', t => {
-  t.is(shell.config.silent, false);
+test('config.silent is false by default', t => {
+  t.falsy(shell.config.silent);
 });
 
 test('config.silent can be set to true', t => {
   shell.config.silent = true;
-  t.is(shell.config.silent, true);
+  t.truthy(shell.config.silent);
 });
 
 test('config.silent can be set to false', t => {
   shell.config.silent = false;
-  t.is(shell.config.silent, false);
+  t.falsy(shell.config.silent);
 });
 
 //
@@ -30,7 +30,7 @@ test('config.silent can be set to false', t => {
 //
 
 test.cb('config.fatal = false', t => {
-  t.is(shell.config.fatal, false);
+  t.falsy(shell.config.fatal);
   const script = 'require(\'../global.js\'); config.silent=true; config.fatal=false; cp("this_file_doesnt_exist", "."); echo("got here");';
   utils.runScript(script, (err, stdout) => {
     t.truthy(stdout.match('got here'));

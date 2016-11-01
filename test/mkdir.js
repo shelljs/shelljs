@@ -47,13 +47,13 @@ test('Can\'t overwrite a broken link', t => {
 });
 
 test('root path does not exist', t => {
-  t.is(fs.existsSync('/asdfasdf'), false); // sanity check
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
   const result = shell.mkdir('/asdfasdf/foobar'); // root path does not exist
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(result.stderr, 'mkdir: no such file or directory: /asdfasdf');
-  t.is(fs.existsSync('/asdfasdf'), false);
-  t.is(fs.existsSync('/asdfasdf/foobar'), false);
+  t.falsy(fs.existsSync('/asdfasdf'));
+  t.falsy(fs.existsSync('/asdfasdf/foobar'));
 });
 
 test('Check for invalid permissions', t => {
@@ -70,7 +70,7 @@ test('Check for invalid permissions', t => {
         'mkdir: cannot create directory nowritedir/foo: Permission denied'
       );
     t.truthy(shell.error());
-    t.is(fs.existsSync(dirName + '/foo'), false);
+    t.falsy(fs.existsSync(dirName + '/foo'));
     shell.rm('-rf', dirName); // clean up
   }
 });
@@ -80,40 +80,40 @@ test('Check for invalid permissions', t => {
 //
 
 test('basic usage', t => {
-  t.is(fs.existsSync(`${TMP}/t1`), false);
+  t.falsy(fs.existsSync(`${TMP}/t1`));
   const result = shell.mkdir(`${TMP}/t1`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/t1`), true);
+  t.truthy(fs.existsSync(`${TMP}/t1`));
 });
 
 test('multiple dirs', t => {
-  t.is(fs.existsSync(`${TMP}/t2`), false);
-  t.is(fs.existsSync(`${TMP}/t3`), false);
+  t.falsy(fs.existsSync(`${TMP}/t2`));
+  t.falsy(fs.existsSync(`${TMP}/t3`));
   const result = shell.mkdir(`${TMP}/t2`, `${TMP}/t3`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/t2`), true);
-  t.is(fs.existsSync(`${TMP}/t3`), true);
+  t.truthy(fs.existsSync(`${TMP}/t2`));
+  t.truthy(fs.existsSync(`${TMP}/t3`));
 });
 
 test('one dir exists, the other does not', t => {
   shell.mkdir(`${TMP}/t1`);
-  t.is(fs.existsSync(`${TMP}/t1`), true);
-  t.is(fs.existsSync(`${TMP}/t4`), false);
+  t.truthy(fs.existsSync(`${TMP}/t1`));
+  t.falsy(fs.existsSync(`${TMP}/t4`));
   const result = shell.mkdir(`${TMP}/t1`, `${TMP}/t4`);
   t.is(result.code, 1);
   t.is(numLines(shell.error()), 1);
-  t.is(fs.existsSync(`${TMP}/t1`), true);
-  t.is(fs.existsSync(`${TMP}/t4`), true);
+  t.truthy(fs.existsSync(`${TMP}/t1`));
+  t.truthy(fs.existsSync(`${TMP}/t4`));
 });
 
 test('-p flag', t => {
-  t.is(fs.existsSync(`${TMP}/a`), false);
+  t.falsy(fs.existsSync(`${TMP}/a`));
   const result = shell.mkdir('-p', `${TMP}/a/b/c`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/a/b/c`), true);
+  t.truthy(fs.existsSync(`${TMP}/a/b/c`));
   shell.rm('-Rf', `${TMP}/a`); // revert
 });
 
@@ -121,28 +121,28 @@ test('multiple dirs', t => {
   const result = shell.mkdir('-p', `${TMP}/zzza`, `${TMP}/zzzb`, `${TMP}/zzzc`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/zzza`), true);
-  t.is(fs.existsSync(`${TMP}/zzzb`), true);
-  t.is(fs.existsSync(`${TMP}/zzzc`), true);
+  t.truthy(fs.existsSync(`${TMP}/zzza`));
+  t.truthy(fs.existsSync(`${TMP}/zzzb`));
+  t.truthy(fs.existsSync(`${TMP}/zzzc`));
 });
 
 test('multiple dirs, array syntax', t => {
   const result = shell.mkdir('-p', [`${TMP}/yyya`, `${TMP}/yyyb`, `${TMP}/yyyc`]);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/yyya`), true);
-  t.is(fs.existsSync(`${TMP}/yyyb`), true);
-  t.is(fs.existsSync(`${TMP}/yyyc`), true);
+  t.truthy(fs.existsSync(`${TMP}/yyya`));
+  t.truthy(fs.existsSync(`${TMP}/yyyb`));
+  t.truthy(fs.existsSync(`${TMP}/yyyc`));
 });
 
 test('globbed dir', t => {
   let result = shell.mkdir('-p', `${TMP}/mydir`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/mydir`), true);
+  t.truthy(fs.existsSync(`${TMP}/mydir`));
   result = shell.mkdir('-p', `${TMP}/m*ir`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(fs.existsSync(`${TMP}/mydir`), true);
-  t.is(fs.existsSync(`${TMP}/m*ir`), false); // doesn't create literal name
+  t.truthy(fs.existsSync(`${TMP}/mydir`));
+  t.falsy(fs.existsSync(`${TMP}/m*ir`)); // doesn't create literal name
 });

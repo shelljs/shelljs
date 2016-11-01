@@ -23,7 +23,7 @@ test.afterEach.always(() => {
 //
 
 test('no such file or dir', t => {
-  t.is(fs.existsSync('/asdfasdf'), false);
+  t.falsy(fs.existsSync('/asdfasdf'));
   const result = shell.ls('/asdfasdf'); // no such file or dir
   t.truthy(shell.error());
   t.is(result.code, 2);
@@ -51,12 +51,12 @@ test('no args provides the correct result', t => {
   const result = shell.ls();
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('file1') > -1, true);
-  t.is(result.indexOf('file2') > -1, true);
-  t.is(result.indexOf('file1.js') > -1, true);
-  t.is(result.indexOf('file2.js') > -1, true);
-  t.is(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1, true);
-  t.is(result.indexOf('a_dir') > -1, true);
+  t.truthy(result.indexOf('file1') > -1);
+  t.truthy(result.indexOf('file2') > -1);
+  t.truthy(result.indexOf('file1.js') > -1);
+  t.truthy(result.indexOf('file2.js') > -1);
+  t.truthy(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1);
+  t.truthy(result.indexOf('a_dir') > -1);
   t.is(result.length, 6);
   shell.cd('../..');
 });
@@ -65,12 +65,12 @@ test('simple arg', t => {
   const result = shell.ls('resources/ls');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('file1') > -1, true);
-  t.is(result.indexOf('file2') > -1, true);
-  t.is(result.indexOf('file1.js') > -1, true);
-  t.is(result.indexOf('file2.js') > -1, true);
-  t.is(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1, true);
-  t.is(result.indexOf('a_dir') > -1, true);
+  t.truthy(result.indexOf('file1') > -1);
+  t.truthy(result.indexOf('file2') > -1);
+  t.truthy(result.indexOf('file1.js') > -1);
+  t.truthy(result.indexOf('file2.js') > -1);
+  t.truthy(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1);
+  t.truthy(result.indexOf('a_dir') > -1);
   t.is(result.length, 6);
 });
 
@@ -78,12 +78,12 @@ test('simple arg, with a trailing slash', t => {
   const result = shell.ls('resources/ls/');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('file1') > -1, true);
-  t.is(result.indexOf('file2') > -1, true);
-  t.is(result.indexOf('file1.js') > -1, true);
-  t.is(result.indexOf('file2.js') > -1, true);
-  t.is(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1, true);
-  t.is(result.indexOf('a_dir') > -1, true);
+  t.truthy(result.indexOf('file1') > -1);
+  t.truthy(result.indexOf('file2') > -1);
+  t.truthy(result.indexOf('file1.js') > -1);
+  t.truthy(result.indexOf('file2.js') > -1);
+  t.truthy(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1);
+  t.truthy(result.indexOf('a_dir') > -1);
   t.is(result.length, 6);
 });
 
@@ -92,14 +92,14 @@ test('no args, \'all\' option', t => {
   const result = shell.ls('-A');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('file1') > -1, true);
-  t.is(result.indexOf('file2') > -1, true);
-  t.is(result.indexOf('file1.js') > -1, true);
-  t.is(result.indexOf('file2.js') > -1, true);
-  t.is(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1, true);
-  t.is(result.indexOf('a_dir') > -1, true);
-  t.is(result.indexOf('.hidden_file') > -1, true);
-  t.is(result.indexOf('.hidden_dir') > -1, true);
+  t.truthy(result.indexOf('file1') > -1);
+  t.truthy(result.indexOf('file2') > -1);
+  t.truthy(result.indexOf('file1.js') > -1);
+  t.truthy(result.indexOf('file2.js') > -1);
+  t.truthy(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1);
+  t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('.hidden_file') > -1);
+  t.truthy(result.indexOf('.hidden_dir') > -1);
   t.is(result.length, 8);
   shell.cd('../..');
 });
@@ -109,14 +109,14 @@ test('no args, \'all\' option', t => {
   const result = shell.ls('-a'); // (deprecated) backwards compatibility test
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('file1') > -1, true);
-  t.is(result.indexOf('file2') > -1, true);
-  t.is(result.indexOf('file1.js') > -1, true);
-  t.is(result.indexOf('file2.js') > -1, true);
-  t.is(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1, true);
-  t.is(result.indexOf('a_dir') > -1, true);
-  t.is(result.indexOf('.hidden_file') > -1, true);
-  t.is(result.indexOf('.hidden_dir') > -1, true);
+  t.truthy(result.indexOf('file1') > -1);
+  t.truthy(result.indexOf('file2') > -1);
+  t.truthy(result.indexOf('file1.js') > -1);
+  t.truthy(result.indexOf('file2.js') > -1);
+  t.truthy(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1);
+  t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('.hidden_file') > -1);
+  t.truthy(result.indexOf('.hidden_dir') > -1);
   t.is(result.length, 8);
   shell.cd('../..');
 });
@@ -125,8 +125,8 @@ test('wildcard, very simple', t => {
   const result = shell.ls('resources/cat/*');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('resources/cat/file1') > -1, true);
-  t.is(result.indexOf('resources/cat/file2') > -1, true);
+  t.truthy(result.indexOf('resources/cat/file1') > -1);
+  t.truthy(result.indexOf('resources/cat/file2') > -1);
   t.is(result.length, 2);
 });
 
@@ -134,13 +134,12 @@ test('wildcard, simple', t => {
   const result = shell.ls('resources/ls/*');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('resources/ls/file1') > -1, true);
-  t.is(result.indexOf('resources/ls/file2') > -1, true);
-  t.is(result.indexOf('resources/ls/file1.js') > -1, true);
-  t.is(result.indexOf('resources/ls/file2.js') > -1, true);
-  t.is(
-    result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1,
-    true
+  t.truthy(result.indexOf('resources/ls/file1') > -1);
+  t.truthy(result.indexOf('resources/ls/file2') > -1);
+  t.truthy(result.indexOf('resources/ls/file1.js') > -1);
+  t.truthy(result.indexOf('resources/ls/file2.js') > -1);
+  t.truthy(
+    result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1
   );
   t.is(result.indexOf('resources/ls/a_dir'), -1); // this shouldn't be there
   t.truthy(result.indexOf('nada') > -1);
@@ -152,13 +151,12 @@ test('wildcard, simple, with -d', t => {
   const result = shell.ls('-d', 'resources/ls/*');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('resources/ls/file1') > -1, true);
-  t.is(result.indexOf('resources/ls/file2') > -1, true);
-  t.is(result.indexOf('resources/ls/file1.js') > -1, true);
-  t.is(result.indexOf('resources/ls/file2.js') > -1, true);
-  t.is(
-    result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1,
-    true
+  t.truthy(result.indexOf('resources/ls/file1') > -1);
+  t.truthy(result.indexOf('resources/ls/file2') > -1);
+  t.truthy(result.indexOf('resources/ls/file1.js') > -1);
+  t.truthy(result.indexOf('resources/ls/file2.js') > -1);
+  t.truthy(
+    result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1
   );
   t.truthy(result.indexOf('resources/ls/a_dir') > -1);
   t.is(result.length, 6);
@@ -168,8 +166,8 @@ test('wildcard, hidden only', t => {
   const result = shell.ls('-d', 'resources/ls/.*');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('resources/ls/.hidden_file') > -1, true);
-  t.is(result.indexOf('resources/ls/.hidden_dir') > -1, true);
+  t.truthy(result.indexOf('resources/ls/.hidden_file') > -1);
+  t.truthy(result.indexOf('resources/ls/.hidden_dir') > -1);
   t.is(result.length, 2);
 });
 
@@ -178,13 +176,12 @@ test('wildcard, mid-file', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 5);
-  t.is(result.indexOf('resources/ls/file1') > -1, true);
-  t.is(result.indexOf('resources/ls/file2') > -1, true);
-  t.is(result.indexOf('resources/ls/file1.js') > -1, true);
-  t.is(result.indexOf('resources/ls/file2.js') > -1, true);
-  t.is(
-    result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1,
-    true
+  t.truthy(result.indexOf('resources/ls/file1') > -1);
+  t.truthy(result.indexOf('resources/ls/file2') > -1);
+  t.truthy(result.indexOf('resources/ls/file1.js') > -1);
+  t.truthy(result.indexOf('resources/ls/file2.js') > -1);
+  t.truthy(
+    result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1
   );
 });
 
@@ -193,8 +190,8 @@ test('wildcard, mid-file with dot (should escape dot for regex)', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 2);
-  t.is(result.indexOf('resources/ls/file1.js') > -1, true);
-  t.is(result.indexOf('resources/ls/file2.js') > -1, true);
+  t.truthy(result.indexOf('resources/ls/file1.js') > -1);
+  t.truthy(result.indexOf('resources/ls/file2.js') > -1);
 });
 
 test('one file that exists, one that doesn\'t', t => {
@@ -202,7 +199,7 @@ test('one file that exists, one that doesn\'t', t => {
   t.truthy(shell.error());
   t.is(result.code, 2);
   t.is(result.length, 1);
-  t.is(result.indexOf('resources/ls/file1.js') > -1, true);
+  t.truthy(result.indexOf('resources/ls/file1.js') > -1);
 });
 
 test('one file that exists, one that doesn\'t (other order)', t => {
@@ -210,7 +207,7 @@ test('one file that exists, one that doesn\'t (other order)', t => {
   t.truthy(shell.error());
   t.is(result.code, 2);
   t.is(result.length, 1);
-  t.is(result.indexOf('resources/ls/file1.js') > -1, true);
+  t.truthy(result.indexOf('resources/ls/file1.js') > -1);
 });
 
 test('wildcard, should not do partial matches', t => {
@@ -225,11 +222,10 @@ test('wildcard, all files with extension', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 3);
-  t.is(result.indexOf('resources/ls/file1.js') > -1, true);
-  t.is(result.indexOf('resources/ls/file2.js') > -1, true);
-  t.is(
-    result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1,
-    true
+  t.truthy(result.indexOf('resources/ls/file1.js') > -1);
+  t.truthy(result.indexOf('resources/ls/file2.js') > -1);
+  t.truthy(
+    result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1
   );
 });
 
@@ -238,10 +234,10 @@ test('wildcard, with additional path', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 4);
-  t.is(result.indexOf('resources/ls/file1.js') > -1, true);
-  t.is(result.indexOf('resources/ls/file2.js') > -1, true);
-  t.is(result.indexOf('b_dir') > -1, true); // no wildcard == no path prefix
-  t.is(result.indexOf('nada') > -1, true); // no wildcard == no path prefix
+  t.truthy(result.indexOf('resources/ls/file1.js') > -1);
+  t.truthy(result.indexOf('resources/ls/file2.js') > -1);
+  t.truthy(result.indexOf('b_dir') > -1); // no wildcard == no path prefix
+  t.truthy(result.indexOf('nada') > -1); // no wildcard == no path prefix
 });
 
 test('wildcard for both paths', t => {
@@ -249,10 +245,10 @@ test('wildcard for both paths', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 4);
-  t.is(result.indexOf('resources/ls/file1.js') > -1, true);
-  t.is(result.indexOf('resources/ls/file2.js') > -1, true);
-  t.is(result.indexOf('z') > -1, true);
-  t.is(result.indexOf('resources/ls/a_dir/nada') > -1, true);
+  t.truthy(result.indexOf('resources/ls/file1.js') > -1);
+  t.truthy(result.indexOf('resources/ls/file2.js') > -1);
+  t.truthy(result.indexOf('z') > -1);
+  t.truthy(result.indexOf('resources/ls/a_dir/nada') > -1);
 });
 
 test('wildcard for both paths, array', t => {
@@ -260,10 +256,10 @@ test('wildcard for both paths, array', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.length, 4);
-  t.is(result.indexOf('resources/ls/file1.js') > -1, true);
-  t.is(result.indexOf('resources/ls/file2.js') > -1, true);
-  t.is(result.indexOf('z') > -1, true);
-  t.is(result.indexOf('resources/ls/a_dir/nada') > -1, true);
+  t.truthy(result.indexOf('resources/ls/file1.js') > -1);
+  t.truthy(result.indexOf('resources/ls/file2.js') > -1);
+  t.truthy(result.indexOf('z') > -1);
+  t.truthy(result.indexOf('resources/ls/a_dir/nada') > -1);
 });
 
 test('recursive, no path', t => {
@@ -271,9 +267,9 @@ test('recursive, no path', t => {
   const result = shell.ls('-R');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('a_dir') > -1, true);
-  t.is(result.indexOf('a_dir/b_dir') > -1, true);
-  t.is(result.indexOf('a_dir/b_dir/z') > -1, true);
+  t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir/b_dir') > -1);
+  t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
   t.is(result.length, 9);
   shell.cd('../..');
 });
@@ -282,9 +278,9 @@ test('recusive, path given', t => {
   const result = shell.ls('-R', 'resources/ls');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('a_dir') > -1, true);
-  t.is(result.indexOf('a_dir/b_dir') > -1, true);
-  t.is(result.indexOf('a_dir/b_dir/z') > -1, true);
+  t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir/b_dir') > -1);
+  t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
   t.is(result.length, 9);
 });
 
@@ -292,10 +288,10 @@ test('recusive, path given - \'all\' flag', t => {
   const result = shell.ls('-RA', 'resources/ls');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('a_dir') > -1, true);
-  t.is(result.indexOf('a_dir/b_dir') > -1, true);
-  t.is(result.indexOf('a_dir/b_dir/z') > -1, true);
-  t.is(result.indexOf('a_dir/.hidden_dir/nada') > -1, true);
+  t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir/b_dir') > -1);
+  t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
+  t.truthy(result.indexOf('a_dir/.hidden_dir/nada') > -1);
   t.is(result.length, 14);
 });
 
@@ -303,9 +299,9 @@ test('recursive, wildcard', t => {
   const result = shell.ls('-R', 'resources/ls');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('a_dir') > -1, true);
-  t.is(result.indexOf('a_dir/b_dir') > -1, true);
-  t.is(result.indexOf('a_dir/b_dir/z') > -1, true);
+  t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir/b_dir') > -1);
+  t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
   t.is(result.length, 9);
 });
 
@@ -446,7 +442,7 @@ test('still lists broken links', t => {
   const result = shell.ls('resources/badlink');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.indexOf('resources/badlink') > -1, true);
+  t.truthy(result.indexOf('resources/badlink') > -1);
   t.is(result.length, 1);
 });
 
@@ -454,15 +450,14 @@ test('Test new ShellString-like attributes', t => {
   const result = shell.ls('resources/ls');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout.indexOf('file1') > -1, true);
-  t.is(result.stdout.indexOf('file2') > -1, true);
-  t.is(result.stdout.indexOf('file1.js') > -1, true);
-  t.is(result.stdout.indexOf('file2.js') > -1, true);
-  t.is(
-    result.stdout.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1,
-    true
+  t.truthy(result.stdout.indexOf('file1') > -1);
+  t.truthy(result.stdout.indexOf('file2') > -1);
+  t.truthy(result.stdout.indexOf('file1.js') > -1);
+  t.truthy(result.stdout.indexOf('file2.js') > -1);
+  t.truthy(
+    result.stdout.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1
   );
-  t.is(result.stdout.indexOf('a_dir') > -1, true);
+  t.truthy(result.stdout.indexOf('a_dir') > -1);
   t.is(typeof result.stdout, 'string');
   t.truthy(result.to);
   t.truthy(result.toEnd);
@@ -482,7 +477,7 @@ test('No trailing newline for ls() on empty directories', t => {
 });
 
 test('Check stderr field', t => {
-  t.is(fs.existsSync('/asdfasdf'), false); // sanity check
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
   const result = shell.ls('resources/ls/file1', '/asdfasdf');
   t.truthy(shell.error());
   t.is('ls: no such file or directory: /asdfasdf', result.stderr);
