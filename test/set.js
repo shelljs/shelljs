@@ -11,7 +11,7 @@ test.beforeEach(() => {
   shell.cp('-r', 'resources', TMP);
 });
 
-test.afterEach(() => {
+test.afterEach.always(() => {
   shell.rm('-rf', TMP);
 });
 
@@ -23,10 +23,10 @@ const uncaughtErrorExitCode = (nodeVersion[0] === 0 && nodeVersion[1] < 11) ? 8 
 //
 
 test('initial values', t => {
-  t.true(oldConfigSilent === false);
-  t.true(shell.config.verbose === false);
-  t.true(shell.config.fatal === false);
-  t.true(shell.config.noglob === false);
+  t.false(oldConfigSilent);
+  t.false(shell.config.verbose);
+  t.false(shell.config.fatal);
+  t.false(shell.config.noglob);
 });
 
 test('default behavior', t => {

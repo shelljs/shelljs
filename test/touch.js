@@ -28,7 +28,7 @@ test.beforeEach(() => {
   shell.mkdir(TMP);
 });
 
-test.afterEach(() => {
+test.afterEach.always(() => {
   shell.rm('-rf', TMP);
 });
 

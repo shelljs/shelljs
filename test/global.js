@@ -12,7 +12,7 @@ test.beforeEach(() => {
   mkdir(TMP);
 });
 
-test.afterEach(() => {
+test.afterEach.always(() => {
   rm('-rf', TMP);
 });
 

@@ -3,6 +3,7 @@ import shell from '..';
 import fs from 'fs';
 import utils from './utils/utils';
 
+const CWD = process.cwd();
 const numLines = utils.numLines;
 let TMP;
 
@@ -13,8 +14,8 @@ test.beforeEach(() => {
   shell.cd(TMP);
 });
 
-test.afterEach(() => {
-  shell.cd('..');
+test.afterEach.always(() => {
+  process.chdir(CWD);
   shell.rm('-rf', TMP);
 });
 
@@ -45,6 +46,7 @@ test('option only', t => {
 });
 
 test('option not supported', t => {
+  t.is(fs.existsSync('file1'), true); // precondition
   const result = shell.mv('-Z', 'file1', 'file1');
   t.truthy(shell.error());
   t.is(fs.existsSync('file1'), true);

@@ -11,7 +11,7 @@ test.beforeEach(() => {
   shell.cp('-r', 'resources', TMP);
 });
 
-test.afterEach(() => {
+test.afterEach.always(() => {
   shell.rm('-rf', TMP);
 });
 

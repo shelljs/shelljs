@@ -6,8 +6,8 @@ function numLines(str) {
 exports.numLines = numLines;
 
 function getTempDir() {
-  // TODO: fix this to return a new directory for each test
-  return 'tmp' + Math.random();
+  // a very random directory
+  return ('tmp' + Math.random() + Math.random()).replace(/\./g, '');
 }
 exports.getTempDir = getTempDir;
 

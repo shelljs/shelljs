@@ -19,13 +19,13 @@ test('commands like `rm` can\'t be on the right side of pipes', t => {
 //
 
 test('piping to cat() should return roughly the same thing', t => {
-  t.true(
-    shell.cat('resources/file1.txt').cat().toString() === shell.cat('resources/file1.txt').toString()
+  t.is(
+    shell.cat('resources/file1.txt').cat().toString(), shell.cat('resources/file1.txt').toString()
   );
 });
 
 test('piping ls() into cat() converts to a string', t => {
-  t.true(shell.ls('resources/').cat().toString() === shell.ls('resources/').stdout);
+  t.is(shell.ls('resources/').cat().toString(), shell.ls('resources/').stdout);
 });
 
 test('grep works in a pipe', t => {

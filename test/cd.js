@@ -15,7 +15,7 @@ test.beforeEach(() => {
   shell.mkdir(TMP);
 });
 
-test.afterEach(() => {
+test.afterEach.always(() => {
   process.chdir(cur);
   shell.rm('-rf', TMP);
 });
@@ -74,7 +74,6 @@ test('previous directory (-)', t => {
 });
 
 test('cd + other commands', t => {
-  shell.rm('-f', `${TMP}/*`);
   t.is(fs.existsSync(`${TMP}/file1`), false);
   let result = shell.cd('resources');
   t.falsy(shell.error());

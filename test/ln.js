@@ -11,10 +11,10 @@ let TMP;
 test.beforeEach(() => {
   TMP = utils.getTempDir();
   shell.config.silent = true;
-  shell.cp('-r', 'resources/', TMP);
+  shell.cp('-r', 'resources', TMP);
 });
 
-test.afterEach(() => {
+test.afterEach.always(() => {
   shell.rm('-rf', TMP);
 });
 

@@ -1,8 +1,15 @@
 import test from 'ava';
 import shell from '..';
 
+const CWD = process.cwd();
+
 test.beforeEach(() => {
   shell.config.silent = true;
+});
+
+test.afterEach.always(() => {
+  shell.config.silent = true;
+  process.chdir(CWD);
 });
 
 //

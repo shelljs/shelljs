@@ -11,7 +11,7 @@ test.beforeEach(() => {
   shell.mkdir(TMP);
 });
 
-test.afterEach(() => {
+test.afterEach.always(() => {
   shell.rm('-rf', TMP);
 });
 
@@ -22,7 +22,7 @@ test.afterEach(() => {
 
 test('Normal strings don\'t have \'.toEnd()\' anymore', t => {
   const str = 'hello world';
-  t.truthy(typeof str.toEnd === 'undefined');
+  t.is(typeof str.toEnd, 'undefined');
 });
 
 test('missing file argument', t => {

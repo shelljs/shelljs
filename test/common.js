@@ -67,9 +67,9 @@ test('common.parseOptions (normal case)', t => {
     r: 'reverse',
   });
 
-  t.truthy(result.recursive === true);
-  t.truthy(result.force === true);
-  t.truthy(result.reverse === false);
+  t.is(result.recursive, true);
+  t.is(result.force, true);
+  t.is(result.reverse, false);
 });
 
 test('common.parseOptions (with mutually-negating options)', t => {
@@ -79,9 +79,9 @@ test('common.parseOptions (with mutually-negating options)', t => {
     R: 'recursive',
   });
 
-  t.truthy(result.recursive === false);
-  t.truthy(result.no_force === false);
-  t.truthy(result.force === undefined); // this key shouldn't exist
+  t.is(result.recursive, false);
+  t.is(result.no_force, false);
+  t.is(result.force, undefined); // this key shouldn't exist
 });
 
 test(
@@ -93,13 +93,13 @@ test(
       R: 'recursive',
     };
     let result = common.parseOptions('-fn', options);
-    t.truthy(result.recursive === false);
-    t.truthy(result.no_force === true);
-    t.truthy(result.force === undefined); // this key shouldn't exist
+    t.false(result.recursive);
+    t.truthy(result.no_force);
+    t.is(result.force, undefined); // this key shouldn't exist
     result = common.parseOptions('-nf', options);
-    t.truthy(result.recursive === false);
-    t.truthy(result.no_force === false);
-    t.truthy(result.force === undefined); // this key shouldn't exist
+    t.false(result.recursive);
+    t.false(result.no_force);
+    t.is(result.force, undefined); // this key shouldn't exist
   }
 );
 
@@ -110,16 +110,16 @@ test('common.parseOptions using an object to hold options', t => {
     r: 'reverse',
   });
 
-  t.truthy(result.value === 'some text here');
-  t.truthy(result.force === false);
-  t.truthy(result.reverse === false);
+  t.is(result.value, 'some text here');
+  t.false(result.force);
+  t.false(result.reverse);
 });
 
 test('Some basic tests on the ShellString type', t => {
   const result = shell.ShellString('foo');
-  t.true(result.toString() === 'foo');
+  t.is(result.toString(), 'foo');
   t.is(result.stdout, 'foo');
-  t.truthy(typeof result.stderr === 'undefined');
+  t.is(typeof result.stderr, 'undefined');
   t.truthy(result.to);
   t.truthy(result.toEnd);
 });

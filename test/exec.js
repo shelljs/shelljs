@@ -4,10 +4,15 @@ import util from 'util';
 import path from 'path';
 import os from 'os';
 
+const CWD = process.cwd();
+
 test.beforeEach(() => {
   shell.config.silent = true;
 });
 
+test.afterEach.always(() => {
+  process.chdir(CWD);
+});
 
 //
 // Invalids
@@ -44,23 +49,23 @@ test('check if stdout goes to output', t => {
   const result = shell.exec(JSON.stringify(process.execPath) + ' -e "console.log(1234);"');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.stdout === '1234\n' || result.stdout === '1234\nundefined\n'); // 'undefined' for v0.4
+  t.is(result.stdout, '1234\n');
 });
 
 test('check if stderr goes to output', t => {
   const result = shell.exec(JSON.stringify(process.execPath) + ' -e "console.error(1234);"');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.stdout === '' || result.stdout === 'undefined\n'); // 'undefined' for v0.4
-  t.truthy(result.stderr === '1234\n' || result.stderr === '1234\nundefined\n'); // 'undefined' for v0.4
+  t.is(result.stdout, '');
+  t.is(result.stderr, '1234\n');
 });
 
 test('check if stdout + stderr go to output', t => {
   const result = shell.exec(JSON.stringify(process.execPath) + ' -e "console.error(1234); console.log(666);"');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.stdout === '666\n' || result.stdout === '666\nundefined\n');  // 'undefined' for v0.4
-  t.truthy(result.stderr === '1234\n' || result.stderr === '1234\nundefined\n');  // 'undefined' for v0.4
+  t.is(result.stdout, '666\n');
+  t.is(result.stderr, '1234\n');
 });
 
 test('check exit code', t => {
@@ -75,7 +80,6 @@ test('interaction with cd', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, 'node_script_1234\n');
-  shell.cd('../..');
 });
 
 test('check quotes escaping', t => {
@@ -145,10 +149,10 @@ test('set shell option (TODO: add tests for Windows)', t => {
 
 test('exec returns a ShellString', t => {
   const result = shell.exec('echo foo');
-  t.truthy(typeof result === 'object');
+  t.is(typeof result, 'object');
   t.truthy(result instanceof String);
-  t.truthy(typeof result.stdout === 'string');
-  t.true(result.toString() === result.stdout);
+  t.is(typeof result.stdout, 'string');
+  t.is(result.toString(), result.stdout);
 });
 
 //
@@ -165,8 +169,8 @@ test.cb('no callback', t => {
 test.cb('callback as 2nd argument', t => {
   shell.exec(JSON.stringify(process.execPath) + ' -e "console.log(5678);"', (code, stdout, stderr) => {
     t.is(code, 0);
-    t.truthy(stdout === '5678\n');
-    t.truthy(stderr === '');
+    t.is(stdout, '5678\n');
+    t.is(stderr, '');
     t.end();
   });
 });
@@ -174,8 +178,8 @@ test.cb('callback as 2nd argument', t => {
 test.cb('callback as end argument', t => {
   shell.exec(JSON.stringify(process.execPath) + ' -e "console.log(5566);"', { async: true }, (code2, stdout2, stderr2) => {
     t.is(code2, 0);
-    t.truthy(stdout2 === '5566\n');
-    t.truthy(stderr2 === '');
+    t.is(stdout2, '5566\n');
+    t.is(stderr2, '');
     t.end();
   });
 });
@@ -183,8 +187,8 @@ test.cb('callback as end argument', t => {
 test.cb('callback as 3rd argument (silent:true)', t => {
   shell.exec(JSON.stringify(process.execPath) + ' -e "console.log(5678);"', { silent: true }, (code3, stdout3, stderr3) => {
     t.is(code3, 0);
-    t.truthy(stdout3 === '5678\n' || stdout3 === '5678\nundefined\n');  // 'undefined' for v0.4
-    t.truthy(stderr3 === '' || stderr3 === 'undefined\n');  // 'undefined' for v0.4
+    t.is(stdout3, '5678\n');
+    t.is(stderr3, '');
     t.end();
   });
 });

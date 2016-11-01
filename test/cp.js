@@ -6,21 +6,19 @@ import utils from './utils/utils';
 
 const numLines = utils.numLines;
 const skipOnWinForEPERM = require('./utils/utils').skipOnWinForEPERM;
-
-const curDir = process.cwd();
 const oldMaxDepth = shell.config.maxdepth;
+const CWD = process.cwd();
 
 let TMP;
 
 test.beforeEach(() => {
   TMP = utils.getTempDir();
   shell.config.silent = true;
-  shell.cd(curDir);
   shell.mkdir(TMP);
 });
 
-test.afterEach(() => {
-  shell.cd(curDir);
+test.afterEach.always(() => {
+  process.chdir(CWD);
   shell.rm('-rf', TMP);
   shell.config.maxdepth = oldMaxDepth;
 });

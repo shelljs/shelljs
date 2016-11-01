@@ -4,6 +4,7 @@ import fs from 'fs';
 import utils from './utils/utils';
 
 let TMP;
+const CWD = process.cwd();
 
 test.beforeEach(() => {
   TMP = utils.getTempDir();
@@ -11,8 +12,9 @@ test.beforeEach(() => {
   shell.mkdir(TMP);
 });
 
-test.afterEach(() => {
+test.afterEach.always(() => {
   shell.rm('-rf', TMP);
+  process.chdir(CWD);
 });
 
 
@@ -140,7 +142,7 @@ test('wildcard, simple', t => {
     result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1,
     true
   );
-  t.truthy(result.indexOf('resources/ls/a_dir') === -1); // this shouldn't be there
+  t.is(result.indexOf('resources/ls/a_dir'), -1); // this shouldn't be there
   t.truthy(result.indexOf('nada') > -1);
   t.truthy(result.indexOf('b_dir') > -1);
   t.is(result.length, 7);
@@ -461,7 +463,7 @@ test('Test new ShellString-like attributes', t => {
     true
   );
   t.is(result.stdout.indexOf('a_dir') > -1, true);
-  t.true(typeof result.stdout === 'string');
+  t.is(typeof result.stdout, 'string');
   t.truthy(result.to);
   t.truthy(result.toEnd);
   result.to(`${TMP}/testingToOutput.txt`);
