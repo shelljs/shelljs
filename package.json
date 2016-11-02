@@ -24,10 +24,10 @@
   "homepage": "http://github.com/shelljs/shelljs",
   "main": "./shell.js",
   "scripts": {
-    "posttest": "npm run lint",
+    "posttest": "eslint .",
     "test": "node scripts/run-tests",
     "gendocs": "node scripts/generate-docs",
-    "lint": "eslint .",
+    "lint": "eslint . || true",
     "after-travis": "travis-check-changes",
     "changelog": "shelljs-changelog",
     "release:major": "shelljs-release major",
