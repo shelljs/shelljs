@@ -3,18 +3,17 @@ import shell from '..';
 import path from 'path';
 import utils from './utils/utils';
 
-let TMP;
 const cur = process.cwd();
 
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.silent = true;
-  shell.mkdir(TMP);
+  shell.mkdir(t.context.tmp);
 });
 
-test.afterEach.always(() => {
+test.afterEach.always(t => {
   process.chdir(cur);
-  shell.rm('-rf', TMP);
+  shell.rm('-rf', t.context.tmp);
 });
 
 
@@ -31,10 +30,10 @@ test('initial directory', t => {
 });
 
 test('after changing directory', t => {
-  shell.cd(TMP);
+  shell.cd(t.context.tmp);
   const _pwd = shell.pwd();
   t.is(_pwd.code, 0);
   t.falsy(_pwd.stderr);
   t.falsy(shell.error());
-  t.is(path.basename(_pwd.toString()), TMP);
+  t.is(path.basename(_pwd.toString()), t.context.tmp);
 });

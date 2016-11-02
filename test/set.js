@@ -2,17 +2,16 @@ import test from 'ava';
 import shell from '..';
 import utils from './utils/utils';
 
-let TMP;
 const oldConfigSilent = shell.config.silent;
 
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.silent = true;
-  shell.cp('-r', 'resources', TMP);
+  shell.cp('-r', 'resources', t.context.tmp);
 });
 
-test.afterEach.always(() => {
-  shell.rm('-rf', TMP);
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
 });
 
 const nodeVersion = process.versions.node.split('.').map(str => parseInt(str, 10));
@@ -71,10 +70,10 @@ test('set -e, set +e', t => {
 
 test('set -f', t => {
   shell.set('-f'); // disable globbing
-  shell.rm(`${TMP}/*.txt`);
+  shell.rm(`${t.context.tmp}/*.txt`);
   t.truthy(shell.error()); // file '*.txt' doesn't exist, so rm() fails
   shell.set('+f');
-  shell.rm(`${TMP}/*.txt`);
+  shell.rm(`${t.context.tmp}/*.txt`);
   t.falsy(shell.error()); // globbing works, so rm succeeds
 });
 

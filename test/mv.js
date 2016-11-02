@@ -5,18 +5,17 @@ import utils from './utils/utils';
 
 const CWD = process.cwd();
 const numLines = utils.numLines;
-let TMP;
 
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.silent = true;
-  shell.cp('-r', 'resources', TMP);
-  shell.cd(TMP);
+  shell.cp('-r', 'resources', t.context.tmp);
+  shell.cd(t.context.tmp);
 });
 
-test.afterEach.always(() => {
+test.afterEach.always(t => {
   process.chdir(CWD);
-  shell.rm('-rf', TMP);
+  shell.rm('-rf', t.context.tmp);
 });
 
 
@@ -128,13 +127,13 @@ test('can\'t use wildcard when dest is file', t => {
 //
 
 test('handles self OK', t => {
-  const TMP2 = `${TMP}-2`;
-  shell.mkdir(TMP2);
-  let result = shell.mv('*', TMP2); // has to handle self (TMP2 --> TMP2) without throwing error
+  const tmp2 = `${t.context.tmp}-2`;
+  shell.mkdir(tmp2);
+  let result = shell.mv('*', tmp2); // has to handle self (tmp2 --> tmp2) without throwing error
   t.truthy(shell.error()); // there's an error, but not fatal
-  t.truthy(fs.existsSync(`${TMP2}/file1`)); // moved OK
+  t.truthy(fs.existsSync(`${tmp2}/file1`)); // moved OK
   t.is(result.code, 1);
-  result = shell.mv(`${TMP2}/*`, '.'); // revert
+  result = shell.mv(`${tmp2}/*`, '.'); // revert
   t.truthy(fs.existsSync('file1')); // moved OK
   t.is(result.code, 0);
 });

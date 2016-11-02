@@ -4,16 +4,15 @@ import fs from 'fs';
 import utils from './utils/utils';
 
 const numLines = utils.numLines;
-let TMP;
 
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.silent = true;
-  shell.mkdir(TMP);
+  shell.mkdir(t.context.tmp);
 });
 
-test.afterEach.always(() => {
-  shell.rm('-rf', TMP);
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
 });
 
 
@@ -29,12 +28,12 @@ test('no args', t => {
 });
 
 test('dir already exists', t => {
-  const mtime = fs.statSync(TMP).mtime.toString();
-  const result = shell.mkdir(TMP); // dir already exists
+  const mtime = fs.statSync(t.context.tmp).mtime.toString();
+  const result = shell.mkdir(t.context.tmp); // dir already exists
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, `mkdir: path already exists: ${TMP}`);
-  t.is(fs.statSync(TMP).mtime.toString(), mtime); // didn't mess with dir
+  t.is(result.stderr, `mkdir: path already exists: ${t.context.tmp}`);
+  t.is(fs.statSync(t.context.tmp).mtime.toString(), mtime); // didn't mess with dir
 });
 
 test('Can\'t overwrite a broken link', t => {
@@ -80,69 +79,69 @@ test('Check for invalid permissions', t => {
 //
 
 test('basic usage', t => {
-  t.falsy(fs.existsSync(`${TMP}/t1`));
-  const result = shell.mkdir(`${TMP}/t1`);
+  t.falsy(fs.existsSync(`${t.context.tmp}/t1`));
+  const result = shell.mkdir(`${t.context.tmp}/t1`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(fs.existsSync(`${TMP}/t1`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/t1`));
 });
 
 test('multiple dirs', t => {
-  t.falsy(fs.existsSync(`${TMP}/t2`));
-  t.falsy(fs.existsSync(`${TMP}/t3`));
-  const result = shell.mkdir(`${TMP}/t2`, `${TMP}/t3`);
+  t.falsy(fs.existsSync(`${t.context.tmp}/t2`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/t3`));
+  const result = shell.mkdir(`${t.context.tmp}/t2`, `${t.context.tmp}/t3`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(fs.existsSync(`${TMP}/t2`));
-  t.truthy(fs.existsSync(`${TMP}/t3`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/t2`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/t3`));
 });
 
 test('one dir exists, the other does not', t => {
-  shell.mkdir(`${TMP}/t1`);
-  t.truthy(fs.existsSync(`${TMP}/t1`));
-  t.falsy(fs.existsSync(`${TMP}/t4`));
-  const result = shell.mkdir(`${TMP}/t1`, `${TMP}/t4`);
+  shell.mkdir(`${t.context.tmp}/t1`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/t1`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/t4`));
+  const result = shell.mkdir(`${t.context.tmp}/t1`, `${t.context.tmp}/t4`);
   t.is(result.code, 1);
   t.is(numLines(shell.error()), 1);
-  t.truthy(fs.existsSync(`${TMP}/t1`));
-  t.truthy(fs.existsSync(`${TMP}/t4`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/t1`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/t4`));
 });
 
 test('-p flag', t => {
-  t.falsy(fs.existsSync(`${TMP}/a`));
-  const result = shell.mkdir('-p', `${TMP}/a/b/c`);
+  t.falsy(fs.existsSync(`${t.context.tmp}/a`));
+  const result = shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(fs.existsSync(`${TMP}/a/b/c`));
-  shell.rm('-Rf', `${TMP}/a`); // revert
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+  shell.rm('-Rf', `${t.context.tmp}/a`); // revert
 });
 
 test('multiple dirs', t => {
-  const result = shell.mkdir('-p', `${TMP}/zzza`, `${TMP}/zzzb`, `${TMP}/zzzc`);
+  const result = shell.mkdir('-p', `${t.context.tmp}/zzza`, `${t.context.tmp}/zzzb`, `${t.context.tmp}/zzzc`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(fs.existsSync(`${TMP}/zzza`));
-  t.truthy(fs.existsSync(`${TMP}/zzzb`));
-  t.truthy(fs.existsSync(`${TMP}/zzzc`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/zzza`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/zzzb`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/zzzc`));
 });
 
 test('multiple dirs, array syntax', t => {
-  const result = shell.mkdir('-p', [`${TMP}/yyya`, `${TMP}/yyyb`, `${TMP}/yyyc`]);
+  const result = shell.mkdir('-p', [`${t.context.tmp}/yyya`, `${t.context.tmp}/yyyb`, `${t.context.tmp}/yyyc`]);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(fs.existsSync(`${TMP}/yyya`));
-  t.truthy(fs.existsSync(`${TMP}/yyyb`));
-  t.truthy(fs.existsSync(`${TMP}/yyyc`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/yyya`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/yyyb`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/yyyc`));
 });
 
 test('globbed dir', t => {
-  let result = shell.mkdir('-p', `${TMP}/mydir`);
+  let result = shell.mkdir('-p', `${t.context.tmp}/mydir`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(fs.existsSync(`${TMP}/mydir`));
-  result = shell.mkdir('-p', `${TMP}/m*ir`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/mydir`));
+  result = shell.mkdir('-p', `${t.context.tmp}/m*ir`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(fs.existsSync(`${TMP}/mydir`));
-  t.falsy(fs.existsSync(`${TMP}/m*ir`)); // doesn't create literal name
+  t.truthy(fs.existsSync(`${t.context.tmp}/mydir`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/m*ir`)); // doesn't create literal name
 });

@@ -2,16 +2,14 @@ import test from 'ava';
 import shell from '..';
 import utils from './utils/utils';
 
-let TMP;
-
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.silent = true;
-  shell.mkdir(TMP);
+  shell.mkdir(t.context.tmp);
 });
 
-test.afterEach.always(() => {
-  shell.rm('-rf', TMP);
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
 });
 
 

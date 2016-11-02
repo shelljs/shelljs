@@ -6,18 +6,17 @@ import fs from 'fs';
 import utils from './utils/utils';
 
 const cur = shell.pwd().toString();
-let TMP;
 
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.silent = true;
   process.chdir(cur);
-  shell.mkdir(TMP);
+  shell.mkdir(t.context.tmp);
 });
 
-test.afterEach.always(() => {
+test.afterEach.always(t => {
   process.chdir(cur);
-  shell.rm('-rf', TMP);
+  shell.rm('-rf', t.context.tmp);
 });
 
 //
@@ -52,10 +51,10 @@ test('no previous dir', t => {
 //
 
 test('relative path', t => {
-  const result = shell.cd(TMP);
+  const result = shell.cd(t.context.tmp);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(path.basename(process.cwd()), TMP);
+  t.is(path.basename(process.cwd()), t.context.tmp);
 });
 
 test('absolute path', t => {
@@ -74,14 +73,14 @@ test('previous directory (-)', t => {
 });
 
 test('cd + other commands', t => {
-  t.falsy(fs.existsSync(`${TMP}/file1`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/file1`));
   let result = shell.cd('resources');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  result = shell.cp('file1', `../${TMP}`);
+  result = shell.cp('file1', `../${t.context.tmp}`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  result = shell.cd(`../${TMP}`);
+  result = shell.cd(`../${t.context.tmp}`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(fs.existsSync('file1'));

@@ -3,17 +3,16 @@ import shell from '..';
 import fs from 'fs';
 import utils from './utils/utils';
 
-let TMP;
 const CWD = process.cwd();
 
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.silent = true;
-  shell.mkdir(TMP);
+  shell.mkdir(t.context.tmp);
 });
 
-test.afterEach.always(() => {
-  shell.rm('-rf', TMP);
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
   process.chdir(CWD);
 });
 
@@ -461,9 +460,9 @@ test('Test new ShellString-like attributes', t => {
   t.is(typeof result.stdout, 'string');
   t.truthy(result.to);
   t.truthy(result.toEnd);
-  result.to(`${TMP}/testingToOutput.txt`);
-  t.is(shell.cat(`${TMP}/testingToOutput.txt`).toString(), result.stdout);
-  shell.rm(`${TMP}/testingToOutput.txt`);
+  result.to(`${t.context.tmp}/testingToOutput.txt`);
+  t.is(shell.cat(`${t.context.tmp}/testingToOutput.txt`).toString(), result.stdout);
+  shell.rm(`${t.context.tmp}/testingToOutput.txt`);
 });
 
 test('No trailing newline for ls() on empty directories', t => {

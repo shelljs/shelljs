@@ -3,16 +3,14 @@ import shell from '..';
 import fs from 'fs';
 import utils from './utils/utils';
 
-let TMP;
-
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.silent = true;
-  shell.mkdir(TMP);
+  shell.mkdir(t.context.tmp);
 });
 
-test.afterEach.always(() => {
-  shell.rm('-rf', TMP);
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
 });
 
 
@@ -41,20 +39,20 @@ test('cannot write to a non-existent directory', t => {
 //
 
 test('can be chained', t => {
-  shell.ShellString('hello world').to(`${TMP}/to1`).to(`${TMP}/to2`);
-  let result = shell.cat(`${TMP}/to1`);
+  shell.ShellString('hello world').to(`${t.context.tmp}/to1`).to(`${t.context.tmp}/to2`);
+  let result = shell.cat(`${t.context.tmp}/to1`);
   t.falsy(shell.error());
   t.is(result.toString(), 'hello world');
-  result = shell.cat(`${TMP}/to2`);
+  result = shell.cat(`${t.context.tmp}/to2`);
   t.falsy(shell.error());
   t.is(result.toString(), 'hello world');
 });
 
 test('With a glob', t => {
-  shell.touch(`${TMP}/to1`);
-  shell.ShellString('goodbye').to(`${TMP}/t*1`);
-  t.falsy(fs.existsSync(`${TMP}/t*1`), 'globs are not interpreted literally');
-  const result = shell.cat(`${TMP}/to1`);
+  shell.touch(`${t.context.tmp}/to1`);
+  shell.ShellString('goodbye').to(`${t.context.tmp}/t*1`);
+  t.falsy(fs.existsSync(`${t.context.tmp}/t*1`), 'globs are not interpreted literally');
+  const result = shell.cat(`${t.context.tmp}/to1`);
   t.falsy(shell.error());
   t.is(result.toString(), 'goodbye');
 });

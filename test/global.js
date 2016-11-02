@@ -4,16 +4,14 @@ import '../global';
 import fs from 'fs';
 import utils from './utils/utils';
 
-let TMP;
-
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   config.silent = true;
-  mkdir(TMP);
+  mkdir(t.context.tmp);
 });
 
-test.afterEach.always(() => {
-  rm('-rf', TMP);
+test.afterEach.always(t => {
+  rm('-rf', t.context.tmp);
 });
 
 
@@ -33,18 +31,18 @@ test('cat', t => {
 });
 
 test('rm', t => {
-  cp('-f', 'resources/file1', `${TMP}/file1`);
-  t.truthy(fs.existsSync(`${TMP}/file1`));
-  const result = rm(`${TMP}/file1`);
+  cp('-f', 'resources/file1', `${t.context.tmp}/file1`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/file1`));
+  const result = rm(`${t.context.tmp}/file1`);
   t.falsy(error());
   t.is(result.code, 0);
-  t.falsy(fs.existsSync(`${TMP}/file1`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/file1`));
 });
 
 test('String.prototype is modified for global require', t => {
-  'foo'.to(`${TMP}/testfile.txt`);
-  t.is('foo', cat(`${TMP}/testfile.txt`).toString());
-  'bar'.toEnd(`${TMP}/testfile.txt`);
-  t.is('foobar', cat(`${TMP}/testfile.txt`).toString());
+  'foo'.to(`${t.context.tmp}/testfile.txt`);
+  t.is('foo', cat(`${t.context.tmp}/testfile.txt`).toString());
+  'bar'.toEnd(`${t.context.tmp}/testfile.txt`);
+  t.is('foobar', cat(`${t.context.tmp}/testfile.txt`).toString());
 });
 

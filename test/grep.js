@@ -3,16 +3,14 @@ import shell from '..';
 import fs from 'fs';
 import utils from './utils/utils';
 
-let TMP;
-
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.silent = true;
-  shell.cp('-r', 'resources', TMP);
+  shell.cp('-r', 'resources', t.context.tmp);
 });
 
-test.afterEach.always(() => {
-  shell.rm('-rf', TMP);
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
 });
 
 
@@ -42,8 +40,8 @@ test('no such file', t => {
 
 test('if at least one file is missing, this should be an error', t => {
   t.falsy(fs.existsSync('asdfasdf')); // sanity check
-  t.truthy(fs.existsSync(`${TMP}/file1`)); // sanity check
-  const result = shell.grep(/asdf/g, `${TMP}/file1`, 'asdfasdf');
+  t.truthy(fs.existsSync(`${t.context.tmp}/file1`)); // sanity check
+  const result = shell.grep(/asdf/g, `${t.context.tmp}/file1`, 'asdfasdf');
   t.truthy(shell.error());
   t.is(result.stderr, 'grep: no such file or directory: asdfasdf');
   t.is(result.code, 2);

@@ -4,8 +4,6 @@ import fs from 'fs';
 import crypto from 'crypto';
 import utils from './utils/utils';
 
-let TMP;
-
 function resetUtimes(f) {
   const d = new Date();
   d.setYear(2000);
@@ -13,23 +11,23 @@ function resetUtimes(f) {
   return fs.statSync(f);
 }
 
-function tmpFile(noCreate) {
+function tmpFile(t, noCreate) {
   const str = crypto.randomBytes(Math.ceil(10 / 2)).toString('hex');
-  const file = `${TMP}/${str}`;
+  const file = `${t.context.tmp}/${str}`;
   if (!noCreate) {
     fs.closeSync(fs.openSync(file, 'a'));
   }
   return file;
 }
 
-test.beforeEach(() => {
-  TMP = utils.getTempDir();
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.silent = true;
-  shell.mkdir(TMP);
+  shell.mkdir(t.context.tmp);
 });
 
-test.afterEach.always(() => {
-  shell.rm('-rf', TMP);
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
 });
 
 
@@ -50,47 +48,47 @@ test('arguments must be strings', t => {
 });
 
 test('exits without error when trying to touch a directory', t => {
-  const result = shell.touch(TMP);
+  const result = shell.touch(t.context.tmp);
   t.falsy(shell.error());
   t.is(result.code, 0);
 });
 
 test('creates new files', t => {
-  const testFile = tmpFile();
+  const testFile = tmpFile(t);
   const result = shell.touch(testFile);
   t.truthy(fs.existsSync(testFile));
   t.is(result.code, 0);
 });
 
 test('does not create a file if told not to', t => {
-  const testFile = tmpFile(true);
+  const testFile = tmpFile(t, true);
   const result = shell.touch('-c', testFile);
   t.is(result.code, 0);
   t.falsy(fs.existsSync(testFile));
 });
 
 test('handles globs correctly', t => {
-  shell.touch(`${TMP}/file.txt`);
-  shell.touch(`${TMP}/file.js`);
-  const result = shell.touch(`${TMP}/file*`);
+  shell.touch(`${t.context.tmp}/file.txt`);
+  shell.touch(`${t.context.tmp}/file.js`);
+  const result = shell.touch(`${t.context.tmp}/file*`);
   t.is(result.code, 0);
-  const files = shell.ls(`${TMP}/file*`);
-  t.truthy(files.indexOf(`${TMP}/file.txt`) > -1);
-  t.truthy(files.indexOf(`${TMP}/file.js`) > -1);
+  const files = shell.ls(`${t.context.tmp}/file*`);
+  t.truthy(files.indexOf(`${t.context.tmp}/file.txt`) > -1);
+  t.truthy(files.indexOf(`${t.context.tmp}/file.js`) > -1);
   t.is(files.length, 2);
 });
 
 test('errors if reference file is not found', t => {
-  const testFile = tmpFile();
-  const refFile = tmpFile(true);
+  const testFile = tmpFile(t);
+  const refFile = tmpFile(t, true);
   const result = shell.touch({ '-r': refFile }, testFile);
   t.is(result.code, 1);
   t.truthy(shell.error());
 });
 
 test('uses a reference file for mtime', t => {
-  const testFile = tmpFile(false);
-  const testFile2 = tmpFile();
+  const testFile = tmpFile(t);
+  const testFile2 = tmpFile(t);
   shell.touch(testFile2);
   utils.sleep(1000);
   let result = shell.touch(testFile);
@@ -118,7 +116,7 @@ test('uses a reference file for mtime', t => {
 });
 
 test('sets mtime', t => {
-  const testFile = tmpFile();
+  const testFile = tmpFile(t);
   const oldStat = resetUtimes(testFile);
   const result = shell.touch(testFile);
   t.is(result.code, 0);
@@ -128,7 +126,7 @@ test('sets mtime', t => {
 });
 
 test('does not set mtime if told not to', t => {
-  const testFile = tmpFile();
+  const testFile = tmpFile(t);
   const oldStat = resetUtimes(testFile);
   const result = shell.touch('-a', testFile);
   t.is(result.code, 0);
@@ -136,7 +134,7 @@ test('does not set mtime if told not to', t => {
 });
 
 test('does not set atime if told not to', t => {
-  const testFile = tmpFile();
+  const testFile = tmpFile(t);
   const oldStat = resetUtimes(testFile);
   const result = shell.touch('-m', testFile);
   t.is(result.code, 0);
@@ -144,8 +142,8 @@ test('does not set atime if told not to', t => {
 });
 
 test('multiple files', t => {
-  const testFile = tmpFile(true);
-  const testFile2 = tmpFile(true);
+  const testFile = tmpFile(t, true);
+  const testFile2 = tmpFile(t, true);
   shell.rm('-f', testFile, testFile2);
   const result = shell.touch(testFile, testFile2);
   t.is(result.code, 0);
@@ -154,8 +152,8 @@ test('multiple files', t => {
 });
 
 test('file array', t => {
-  const testFile = tmpFile(true);
-  const testFile2 = tmpFile(true);
+  const testFile = tmpFile(t, true);
+  const testFile2 = tmpFile(t, true);
   shell.rm('-f', testFile, testFile2);
   const result = shell.touch([testFile, testFile2]);
   t.is(result.code, 0);
