@@ -47,7 +47,7 @@ function rmdirSyncRecursive(dir, force) {
   try {
     // Retry on windows, sometimes it takes a little time before all the files in the directory are gone
     var start = Date.now();
-    while (true) {
+    for (;;) {
       try {
         result = fs.rmdirSync(dir);
         if (fs.existsSync(dir)) throw { code: 'EAGAIN' };
