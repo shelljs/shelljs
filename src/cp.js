@@ -152,6 +152,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
       }
     }
   } // for files
+  opts.depth--;
 } // cpdirSyncRecursive
 
 function cpcheckcycle(sourceDir, srcFile) {

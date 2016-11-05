@@ -451,6 +451,19 @@ shell.rm('-rf', 'tmp/*');
 shell.cp('-LPR', 'resources/cp/links/sym.lnk', 'tmp');
 assert.ok(!fs.lstatSync('tmp/sym.lnk').isSymbolicLink());
 
+// Make sure max depth doesn't limit shallow directory structures
+shell.rm('-rf', 'tmp/');
+shell.mkdir('tmp/');
+var oldMaxDepth = shell.config.maxdepth;
+shell.config.maxdepth = 3;
+shell.mkdir('tmp/foo');
+for (var k = 0; k < 5; k++) {
+  shell.mkdir('tmp/foo/tmp' + k);
+}
+shell.cp('-r', 'tmp/foo', 'tmp/bar');
+assert.equal(shell.ls('tmp/foo').stdout, shell.ls('tmp/bar').stdout);
+shell.config.maxdepth = oldMaxDepth;
+
 // Test max depth.
 shell.rm('-rf', 'tmp/');
 shell.mkdir('tmp/');
