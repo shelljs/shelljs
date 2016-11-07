@@ -51,8 +51,6 @@ assert.equal(result.toString(), shell.cat('resources/uniq/pipeSorted').toString(
 
 // Synchronous exec
 if (process.platform === 'win32') {
-  // Windows-specific
-
   // Ensure the user does not have the wrong version of FIND. I.e.,
   // require the following to return error.
   result = shell.exec('CD..&FIND . -name no');
@@ -68,7 +66,6 @@ if (process.platform === 'win32') {
     assert.equal(result, 'alphaaaaaaabeta\r\nalphbeta\r\n');
   }
 } else {
-  // unix-specific
   if (shell.which('grep').stdout) {
     result = shell.cat('resources/grep/file').exec("grep 'alpha*beta'");
     assert.ok(!shell.error());
@@ -80,8 +77,6 @@ if (process.platform === 'win32') {
 
 // Async exec
 if (process.platform === 'win32') {
-  // Windows-specified
-
   // Ensure the user does not have the wrong version of FIND. I.e.,
   // require the following to return error.
   result = shell.exec('CD..&FIND . -name no');
@@ -98,7 +93,6 @@ if (process.platform === 'win32') {
     });
   }
 } else {
-  // unix-specific
   if (shell.which('grep').stdout) {
     shell.cat('resources/grep/file').exec("grep 'alpha*beta'", function (code, stdout) {
       assert.equal(code, 0);
