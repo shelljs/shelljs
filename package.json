@@ -49,6 +49,7 @@
     "coffee-script": "^1.10.0",
     "shelljs-changelog": "^0.2.0",
     "shelljs-release": "^0.2.0",
+    "shx": "^0.2.0",
     "travis-check-changes": "^0.2.0"
   },
   "optionalDependencies": {},
