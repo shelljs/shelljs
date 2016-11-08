@@ -347,7 +347,7 @@ function wrap(cmd, fn, options) {
     } catch (e) {
       if (!state.error) {
         // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
-        e.message = 'ShellJS Internal Error: ' + e.message;
+        e.name = 'ShellJSInternalError';
         throw e;
       }
       if (config.fatal) throw e;
