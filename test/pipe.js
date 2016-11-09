@@ -49,35 +49,16 @@ result = shell.sort('resources/uniq/pipe').uniq('-c').sort('-n');
 assert.equal(shell.error(), null);
 assert.equal(result.toString(), shell.cat('resources/uniq/pipeSorted').toString());
 
-// Synchronous exec
-// TODO: add windows tests
-if (process.platform !== 'win32') {
-  // unix-specific
-  if (shell.which('grep').stdout) {
-    result = shell.cat('resources/grep/file').exec("grep 'alpha*beta'");
-    assert.equal(shell.error(), null);
-    assert.equal(result, 'alphaaaaaaabeta\nalphbeta\n');
-  } else {
-    console.error('Warning: Cannot verify piped exec');
-  }
-} else {
-  console.error('Warning: Cannot verify piped exec');
-}
+// Synchronous exec. To support Windows, the arguments must be passed
+// using double quotes because node, following win32 convention,
+// passes single quotes through to process.argv verbatim.
+result = shell.cat('resources/grep/file').exec('shx grep "alpha*beta"');
+assert.ok(!shell.error());
+assert.equal(result, 'alphaaaaaaabeta\nalphbeta\n');
 
 // Async exec
-// TODO: add windows tests
-if (process.platform !== 'win32') {
-  // unix-specific
-  if (shell.which('grep').stdout) {
-    shell.cat('resources/grep/file').exec("grep 'alpha*beta'", function (code, stdout) {
-      assert.equal(code, 0);
-      assert.equal(stdout, 'alphaaaaaaabeta\nalphbeta\n');
-      shell.exit(123);
-    });
-  } else {
-    console.error('Warning: Cannot verify piped exec');
-  }
-} else {
-  console.error('Warning: Cannot verify piped exec');
+shell.cat('resources/grep/file').exec('shx grep "alpha*beta"', function (code, stdout) {
+  assert.equal(code, 0);
+  assert.equal(stdout, 'alphaaaaaaabeta\nalphbeta\n');
   shell.exit(123);
-}
+});
