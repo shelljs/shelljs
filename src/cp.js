@@ -84,18 +84,12 @@ function copyFileSync(srcFile, destFile, options) {
 //
 // Licensed under the MIT License
 // http://www.opensource.org/licenses/mit-license.php
-function cpdirSyncRecursive(sourceDir, destDir, opts) {
+function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
   if (!opts) opts = {};
 
-  /* Ensure there is not a run away recursive copy. */
-  if (typeof opts.depth === 'undefined') {
-    opts.depth = 0;
-  }
-  if (opts.depth >= common.config.maxdepth) {
-    // Max depth has been reached, end copy.
-    return;
-  }
-  opts.depth++;
+  // Ensure there is not a run away recursive copy
+  if (currentDepth >= common.config.maxdepth) return;
+  currentDepth++;
 
   // Create the directory where all our junk is moving to; read the mode of the
   // source directory and mirror it
@@ -126,7 +120,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
     }
     if (srcFileStat.isDirectory()) {
       /* recursion this thing right on back. */
-      cpdirSyncRecursive(srcFile, destFile, opts);
+      cpdirSyncRecursive(srcFile, destFile, currentDepth, opts);
     } else if (srcFileStat.isSymbolicLink() && !opts.followsymlink) {
       symlinkFull = fs.readlinkSync(srcFile);
       try {
@@ -139,7 +133,7 @@ function cpdirSyncRecursive(sourceDir, destDir, opts) {
     } else if (srcFileStat.isSymbolicLink() && opts.followsymlink) {
       srcFileStat = fs.statSync(srcFile);
       if (srcFileStat.isDirectory()) {
-        cpdirSyncRecursive(srcFile, destFile, opts);
+        cpdirSyncRecursive(srcFile, destFile, currentDepth, opts);
       } else {
         copyFileSync(srcFile, destFile, opts);
       }
@@ -247,7 +241,7 @@ function _cp(options, sources, dest) {
 
         try {
           fs.statSync(path.dirname(dest));
-          cpdirSyncRecursive(src, newDest, { no_force: options.no_force, followsymlink: options.followsymlink });
+          cpdirSyncRecursive(src, newDest, 0, { no_force: options.no_force, followsymlink: options.followsymlink });
         } catch (e) {
           common.error("cannot create directory '" + dest + "': No such file or directory");
         }
