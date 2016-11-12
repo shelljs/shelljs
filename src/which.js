@@ -40,7 +40,7 @@ function checkPath(pathName) {
 function _which(options, cmd) {
   if (!cmd) common.error('must specify command');
 
-  var pathEnv = process.env.path || process.env.Path || process.env.PATH;
+  var pathEnv = common.getProcessEnv()[common.PATH_IDENTIFIER];
   var pathArray = splitPath(pathEnv);
   var where = null;
 
