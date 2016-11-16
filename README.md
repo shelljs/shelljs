@@ -393,6 +393,19 @@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 Reads an input string from `files` and performs a JavaScript `replace()` on the input
 using the given search regex and replacement string or function. Returns the new string after replacement.
 
+Note:
+
+Unix `sed` specifies capture groups using `\n` syntax. In ShellJS (and JavaScript, in general),
+capture groups are specified using the `$n` syntax. The following are equivalent:
+
+```javascript
+sed(/(\w+)\s(\w+)/, '$2, $1', 'file.txt');
+```
+
+```shell
+$ sed 's/\(\w+\)\s\(\w+\)/\2, \1/' file.txt
+```
+
 
 ### sort([options,] file [, file ...])
 ### sort([options,] file_array)

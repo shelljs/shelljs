@@ -25,6 +25,19 @@ common.register('sed', _sed, {
 //@
 //@ Reads an input string from `files` and performs a JavaScript `replace()` on the input
 //@ using the given search regex and replacement string or function. Returns the new string after replacement.
+//@
+//@ Note:
+//@
+//@ Unix `sed` specifies capture groups using `\n` syntax. In ShellJS (and JavaScript, in general),
+//@ capture groups are specified using the `$n` syntax. The following are equivalent:
+//@
+//@ ```javascript
+//@ sed(/(\w+)\s(\w+)/, '$2, $1', 'file.txt');
+//@ ```
+//@
+//@ ```shell
+//@ $ sed 's/\(\w+\)\s\(\w+\)/\2, \1/' file.txt
+//@ ```
 function _sed(options, regex, replacement, files) {
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe();
