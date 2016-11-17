@@ -59,42 +59,16 @@ test('Sort a file by frequency of each line', t => {
   t.is(result.toString(), shell.cat('resources/uniq/pipeSorted').toString());
 });
 
-// <<<<<<< 2c1adf89f850b509bc5a5a764d08a51754cedcf5
-// // Synchronous exec. To support Windows, the arguments must be passed
-// // using double quotes because node, following win32 convention,
-// // passes single quotes through to process.argv verbatim.
-// result = shell.cat('resources/grep/file').exec('shx grep "alpha*beta"');
-// assert.ok(!shell.error());
-// assert.equal(result, 'alphaaaaaaabeta\nalphbeta\n');
-
-// // Async exec
-// shell.cat('resources/grep/file').exec('shx grep "alpha*beta"', function (code, stdout) {
-//   assert.equal(code, 0);
-//   assert.equal(stdout, 'alphaaaaaaabeta\nalphbeta\n');
-//   shell.exit(123);
-// =======
-// TODO: add windows tests
 test('Synchronous exec', t => {
-  if (shell.which('grep').stdout) {
-    const result = shell.cat('resources/grep/file').exec("grep 'alpha*beta'");
-    t.falsy(shell.error());
-    t.is(result.toString(), 'alphaaaaaaabeta\nalphbeta\n');
-  } else {
-    console.error('Warning: Cannot verify piped exec');
-  }
+  const result = shell.cat('resources/grep/file').exec('shx grep "alpha*beta"');
+  t.falsy(shell.error());
+  t.is(result.toString(), 'alphaaaaaaabeta\nalphbeta\n');
 });
 
-// TODO: add windows tests
 test.cb('Asynchronous exec', t => {
-  if (shell.which('grep').stdout) {
-    shell.cat('resources/grep/file').exec("grep 'alpha*beta'", (code, stdout) => {
-      t.is(code, 0);
-      t.is(stdout, 'alphaaaaaaabeta\nalphbeta\n');
-      t.end();
-    });
-  } else {
-    console.error('Warning: Cannot verify piped exec');
+  shell.cat('resources/grep/file').exec('shx grep "alpha*beta"', (code, stdout) => {
+    t.is(code, 0);
+    t.is(stdout, 'alphaaaaaaabeta\nalphbeta\n');
     t.end();
-  }
-// >>>>>>> test: switch to ava framework
+  });
 });
