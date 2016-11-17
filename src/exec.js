@@ -77,14 +77,21 @@ function execSync(cmd, opts, pipe) {
       "var child = require('child_process')",
       "  , fs = require('fs');",
       'var childProcess = child.exec(' + JSON.stringify(cmd) + ', ' + optString + ', function(err) {',
-      '  fs.writeFileSync(' + JSON.stringify(codeFile) + ", err ? err.code.toString() : '0');",
+      '  var fname = ' + JSON.stringify(codeFile) + ';',
+      '  if (!err) {',
+      '    fs.writeFileSync(fname, "0");',
+      '  } else if (err.code === undefined) {',
+      '    fs.writeFileSync(fname, "1");',
+      '  } else {',
+      '    fs.writeFileSync(fname, err.code.toString());',
+      '  }',
       '});',
       'var stdoutStream = fs.createWriteStream(' + JSON.stringify(stdoutFile) + ');',
       'var stderrStream = fs.createWriteStream(' + JSON.stringify(stderrFile) + ');',
       'childProcess.stdout.pipe(stdoutStream, {end: false});',
       'childProcess.stderr.pipe(stderrStream, {end: false});',
       'childProcess.stdout.pipe(process.stdout);',
-      'childProcess.stderr.pipe(process.stderr);'
+      'childProcess.stderr.pipe(process.stderr);',
     ].join('\n') +
       (pipe ? '\nchildProcess.stdin.end(' + JSON.stringify(pipe) + ');\n' : '\n') +
       [
@@ -92,7 +99,7 @@ function execSync(cmd, opts, pipe) {
         'function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }',
         'function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }',
         "childProcess.stdout.on('end', function(){ stdoutEnded = true; tryClosingStdout(); });",
-        "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });"
+        "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });",
       ].join('\n');
 
     fs.writeFileSync(scriptFile, script);
@@ -121,8 +128,15 @@ function execSync(cmd, opts, pipe) {
       "var child = require('child_process')",
       "  , fs = require('fs');",
       'var childProcess = child.exec(' + JSON.stringify(cmd) + ', ' + optString + ', function(err) {',
-      '  fs.writeFileSync(' + JSON.stringify(codeFile) + ", err ? err.code.toString() : '0');",
-      '});'
+      '  var fname = ' + JSON.stringify(codeFile) + ';',
+      '  if (!err) {',
+      '    fs.writeFileSync(fname, "0");',
+      '  } else if (err.code === undefined) {',
+      '    fs.writeFileSync(fname, "1");',
+      '  } else {',
+      '    fs.writeFileSync(fname, err.code.toString());',
+      '  }',
+      '});',
     ].join('\n') +
       (pipe ? '\nchildProcess.stdin.end(' + JSON.stringify(pipe) + ');\n' : '\n');
 
@@ -177,7 +191,14 @@ function execAsync(cmd, opts, pipe, callback) {
 
   var c = child.exec(cmd, opts, function (err) {
     if (callback) {
-      callback(err ? err.code : 0, stdout, stderr);
+      if (!err) {
+        callback(0, stdout, stderr);
+      } else if (err.code === undefined) {
+        // See issue #536
+        callback(1, stdout, stderr);
+      } else {
+        callback(err.code, stdout, stderr);
+      }
     }
   });
 
