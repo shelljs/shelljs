@@ -395,15 +395,11 @@ using the given search regex and replacement string or function. Returns the new
 
 Note:
 
-Unix `sed` specifies capture groups using `\n` syntax. In ShellJS (and JavaScript, in general),
-capture groups are specified using the `$n` syntax. The following are equivalent:
+Like unix `sed`, ShellJS `sed` supports capture groups. Capture groups are specified
+using the `$n` syntax:
 
 ```javascript
 sed(/(\w+)\s(\w+)/, '$2, $1', 'file.txt');
-```
-
-```shell
-$ sed 's/\(\w+\)\s\(\w+\)/\2, \1/' file.txt
 ```
 
 
