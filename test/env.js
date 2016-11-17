@@ -1,19 +1,27 @@
-var shell = require('..');
+import test from 'ava';
+import shell from '..';
+import utils from './utils/utils';
 
-var assert = require('assert');
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
+  shell.config.silent = true;
+  shell.mkdir(t.context.tmp);
+});
 
-shell.config.silent = true;
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
+});
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
 
 //
 // Valids
 //
 
-assert.equal(shell.env.PATH, process.env.PATH);
+test('existing variables', t => {
+  t.is(shell.env.PATH, process.env.PATH);
+});
 
-shell.env.SHELLJS_TEST = 'hello world';
-assert.equal(shell.env.SHELLJS_TEST, process.env.SHELLJS_TEST);
-
-shell.exit(123);
+test('variables are exported', t => {
+  shell.env.SHELLJS_TEST = 'hello world';
+  t.is(shell.env.SHELLJS_TEST, process.env.SHELLJS_TEST);
+});

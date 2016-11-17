@@ -1,92 +1,103 @@
-var shell = require('..');
+import test from 'ava';
+import shell from '..';
+import path from 'path';
+import common from '../src/common';
+import fs from 'fs';
+import utils from './utils/utils';
 
-var assert = require('assert');
-var path = require('path');
-var fs = require('fs');
-var common = require('../src/common');
+const cur = shell.pwd().toString();
 
-shell.config.silent = true;
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
+  shell.config.silent = true;
+  process.chdir(cur);
+  shell.mkdir(t.context.tmp);
+});
 
-// save current dir
-var cur = shell.pwd();
-
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+test.afterEach.always(t => {
+  process.chdir(cur);
+  shell.rm('-rf', t.context.tmp);
+});
 
 //
 // Invalids
 //
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-var result = shell.cd('/asdfasdf'); // dir does not exist
-assert.ok(shell.error());
-assert.equal(result.code, 1);
-assert.equal(result.stderr, 'cd: no such file or directory: /asdfasdf');
+test('nonexistent directory', t => {
+  t.falsy(fs.existsSync('/asdfasdf'));
+  const result = shell.cd('/asdfasdf'); // dir does not exist
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'cd: no such file or directory: /asdfasdf');
+});
 
-assert.equal(fs.existsSync('resources/file1'), true); // sanity check
-result = shell.cd('resources/file1'); // file, not dir
-assert.ok(shell.error());
-assert.equal(result.code, 1);
-assert.equal(result.stderr, 'cd: not a directory: resources/file1');
+test('file not dir', t => {
+  t.truthy(fs.existsSync('resources/file1')); // sanity check
+  const result = shell.cd('resources/file1'); // file, not dir
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'cd: not a directory: resources/file1');
+});
 
-result = shell.cd('-'); // Haven't changed yet, so there is no previous directory
-assert.ok(shell.error());
-assert.equal(result.code, 1);
-assert.equal(result.stderr, 'cd: could not find previous directory');
+test('no previous dir', t => {
+  const result = shell.cd('-'); // Haven't changed yet, so there is no previous directory
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'cd: could not find previous directory');
+});
 
 //
 // Valids
 //
 
-result = shell.cd(cur);
-result = shell.cd('tmp');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(path.basename(process.cwd()), 'tmp');
+test('relative path', t => {
+  const result = shell.cd(t.context.tmp);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(path.basename(process.cwd()), t.context.tmp);
+});
 
-result = shell.cd(cur);
-result = shell.cd('/');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(process.cwd(), path.resolve('/'));
+test('absolute path', t => {
+  const result = shell.cd('/');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(process.cwd(), path.resolve('/'));
+});
 
-result = shell.cd(cur);
-result = shell.cd('/');
-result = shell.cd('-');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(process.cwd(), path.resolve(cur.toString()));
+test('previous directory (-)', t => {
+  shell.cd('/');
+  const result = shell.cd('-');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(process.cwd(), path.resolve(cur.toString()));
+});
 
-// cd + other commands
+test('cd + other commands', t => {
+  t.falsy(fs.existsSync(`${t.context.tmp}/file1`));
+  let result = shell.cd('resources');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  result = shell.cp('file1', `../${t.context.tmp}`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  result = shell.cd(`../${t.context.tmp}`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync('file1'));
+});
 
-result = shell.cd(cur);
-result = shell.rm('-f', 'tmp/*');
-assert.equal(fs.existsSync('tmp/file1'), false);
-result = shell.cd('resources');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-result = shell.cp('file1', '../tmp');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-result = shell.cd('../tmp');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(fs.existsSync('file1'), true);
+test('Tilde expansion', t => {
+  shell.cd('~');
+  t.is(process.cwd(), common.getUserHome());
+  shell.cd('..');
+  t.not(process.cwd(), common.getUserHome());
+  shell.cd('~'); // Change back to home
+  t.is(process.cwd(), common.getUserHome());
+});
 
-// Test tilde expansion
-
-result = shell.cd('~');
-assert.equal(process.cwd(), common.getUserHome());
-result = shell.cd('..');
-assert.notEqual(process.cwd(), common.getUserHome());
-result = shell.cd('~'); // Change back to home
-assert.equal(process.cwd(), common.getUserHome());
-
-// Goes to home directory if no arguments are passed
-result = shell.cd(cur);
-result = shell.cd();
-assert.ok(!shell.error());
-assert.equal(result.code, 0);
-assert.equal(process.cwd(), common.getUserHome());
-
-shell.exit(123);
+test('Goes to home directory if no arguments are passed', t => {
+  const result = shell.cd();
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(process.cwd(), common.getUserHome());
+});

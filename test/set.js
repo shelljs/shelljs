@@ -1,67 +1,79 @@
-var shell = require('..');
+import test from 'ava';
+import shell from '..';
+import utils from './utils/utils';
 
-var assert = require('assert');
+const oldConfigSilent = shell.config.silent;
 
-var oldConfigSilent = shell.config.silent;
-shell.config.silent = true;
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
+  shell.config.silent = true;
+  shell.cp('-r', 'resources', t.context.tmp);
+});
 
-shell.rm('-rf', 'tmp');
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
+});
+
+const nodeVersion = process.versions.node.split('.').map(str => parseInt(str, 10));
+const uncaughtErrorExitCode = (nodeVersion[0] === 0 && nodeVersion[1] < 11) ? 8 : 1;
 
 //
 // Valids
 //
 
-var result;
+test('initial values', t => {
+  t.false(oldConfigSilent);
+  t.false(shell.config.verbose);
+  t.false(shell.config.fatal);
+  t.false(shell.config.noglob);
+});
 
-// initial values
-assert.strictEqual(oldConfigSilent, false);
-assert.strictEqual(shell.config.verbose, false);
-assert.strictEqual(shell.config.fatal, false);
-assert.strictEqual(shell.config.noglob, false);
+test('default behavior', t => {
+  const result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); ls(\'file_doesnt_exist\'); echo(1234);"');
+  t.is(result.code, 0);
+  t.is(result.stdout, '1234\n');
+  t.is(result.stderr, 'ls: no such file or directory: file_doesnt_exist\n');
+});
 
-shell.cp('-R', 'resources/', 'tmp');
+test('set -e', t => {
+  const result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); set(\'-e\'); ls(\'file_doesnt_exist\'); echo(1234);"');
+  t.is(result.code, uncaughtErrorExitCode);
+  t.is(result.stdout, '');
+  t.truthy(result.stderr.indexOf('Error: ls: no such file or directory: file_doesnt_exist') >= 0);
+});
 
-// default behavior
-result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); ls(\'file_doesnt_exist\'); echo(1234);"');
-assert.equal(result.code, 0);
-assert.equal(result.stdout, '1234\n');
-assert.equal(result.stderr, 'ls: no such file or directory: file_doesnt_exist\n');
+test('set -v', t => {
+  const result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); set(\'-v\'); ls(\'file_doesnt_exist\'); echo(1234);"');
+  t.is(result.code, 0);
+  t.is(result.stdout, '1234\n');
+  t.is(
+    result.stderr,
+    'ls file_doesnt_exist\nls: no such file or directory: file_doesnt_exist\necho 1234\n'
+  );
+});
 
-// set -e
-result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); set(\'-e\'); ls(\'file_doesnt_exist\'); echo(1234);"');
-var nodeVersion = process.versions.node.split('.').map(function (str) { return parseInt(str, 10); });
-var uncaughtErrorExitCode = (nodeVersion[0] === 0 && nodeVersion[1] < 11) ? 8 : 1;
-assert.equal(result.code, uncaughtErrorExitCode);
-assert.equal(result.stdout, '');
-assert(result.stderr.indexOf('Error: ls: no such file or directory: file_doesnt_exist') >= 0);
+test('set -ev', t => {
+  const result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); set(\'-ev\'); ls(\'file_doesnt_exist\'); echo(1234);"');
+  t.is(result.code, uncaughtErrorExitCode);
+  t.is(result.stdout, '');
+  t.truthy(result.stderr.indexOf('Error: ls: no such file or directory: file_doesnt_exist') >= 0);
+  t.truthy(result.stderr.indexOf('ls file_doesnt_exist\n') >= 0);
+  t.is(result.stderr.indexOf('echo 1234\n'), -1);
+});
 
-// set -v
-result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); set(\'-v\'); ls(\'file_doesnt_exist\'); echo(1234);"');
-assert.equal(result.code, 0);
-assert.equal(result.stdout, '1234\n');
-assert.equal(result.stderr, 'ls file_doesnt_exist\nls: no such file or directory: file_doesnt_exist\necho 1234\n');
+test('set -e, set +e', t => {
+  const result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); set(\'-e\'); set(\'+e\'); ls(\'file_doesnt_exist\'); echo(1234);"');
+  t.is(result.code, 0);
+  t.is(result.stdout, '1234\n');
+  t.is(result.stderr, 'ls: no such file or directory: file_doesnt_exist\n');
+});
 
-// set -ev
-result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); set(\'-ev\'); ls(\'file_doesnt_exist\'); echo(1234);"');
-assert.equal(result.code, uncaughtErrorExitCode);
-assert.equal(result.stdout, '');
-assert(result.stderr.indexOf('Error: ls: no such file or directory: file_doesnt_exist') >= 0);
-assert(result.stderr.indexOf('ls file_doesnt_exist\n') >= 0);
-assert.equal(result.stderr.indexOf('echo 1234\n'), -1);
-
-// set -e, set +e
-result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); set(\'-e\'); set(\'+e\'); ls(\'file_doesnt_exist\'); echo(1234);"');
-assert.equal(result.code, 0);
-assert.equal(result.stdout, '1234\n');
-assert.equal(result.stderr, 'ls: no such file or directory: file_doesnt_exist\n');
-
-// set -f
-shell.set('-f'); // disable globbing
-shell.rm('tmp/*.txt');
-assert.ok(shell.error()); // file '*.txt' doesn't exist, so rm() fails
-shell.set('+f');
-shell.rm('tmp/*.txt');
-assert.ok(!shell.error()); // globbing works, so rm succeeds
-
-shell.exit(123);
+test('set -f', t => {
+  shell.set('-f'); // disable globbing
+  shell.rm(`${t.context.tmp}/*.txt`);
+  t.truthy(shell.error()); // file '*.txt' doesn't exist, so rm() fails
+  shell.set('+f');
+  shell.rm(`${t.context.tmp}/*.txt`);
+  t.falsy(shell.error()); // globbing works, so rm succeeds
+});
 
