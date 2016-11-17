@@ -28,15 +28,11 @@ common.register('sed', _sed, {
 //@
 //@ Note:
 //@
-//@ Unix `sed` specifies capture groups using `\n` syntax. In ShellJS (and JavaScript, in general),
-//@ capture groups are specified using the `$n` syntax. The following are equivalent:
+//@ Like unix `sed`, ShellJS `sed` supports capture groups. Capture groups are specified
+//@ using the `$n` syntax:
 //@
 //@ ```javascript
 //@ sed(/(\w+)\s(\w+)/, '$2, $1', 'file.txt');
-//@ ```
-//@
-//@ ```shell
-//@ $ sed 's/\(\w+\)\s\(\w+\)/\2, \1/' file.txt
 //@ ```
 function _sed(options, regex, replacement, files) {
   // Check if this is coming from a pipe
