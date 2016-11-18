@@ -1,8 +1,10 @@
-import test from 'ava';
-import shell from '..';
-import path from 'path';
-import common from '../src/common';
 import fs from 'fs';
+import path from 'path';
+
+import test from 'ava';
+
+import shell from '..';
+import common from '../src/common';
 import utils from './utils/utils';
 
 const cur = shell.pwd().toString();
