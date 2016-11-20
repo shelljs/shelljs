@@ -6,8 +6,6 @@ import shell from '..';
 import common from '../src/common';
 import utils from './utils/utils';
 
-const numLines = utils.numLines;
-const skipOnWinForEPERM = require('./utils/utils').skipOnWinForEPERM;
 const oldMaxDepth = shell.config.maxdepth;
 const CWD = process.cwd();
 
@@ -68,7 +66,7 @@ test('source does not exist', t => {
   const result = shell.cp('asdfasdf', t.context.tmp);
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(numLines(result.stderr), 1);
+  t.is(utils.numLines(result.stderr), 1);
   t.falsy(fs.existsSync(`${t.context.tmp}/asdfasdf`));
   t.is(result.stderr, 'cp: no such file or directory: asdfasdf');
 });
@@ -77,7 +75,7 @@ test('sources does not exist', t => {
   const result = shell.cp('asdfasdf1', 'asdfasdf2', t.context.tmp);
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(numLines(result.stderr), 2);
+  t.is(utils.numLines(result.stderr), 2);
   t.falsy(fs.existsSync(`${t.context.tmp}/asdfasdf1`));
   t.falsy(fs.existsSync(`${t.context.tmp}/asdfasdf2`));
   t.is(
@@ -559,7 +557,7 @@ test('Test max depth.', t => {
   // Check last directory to exist is below maxdepth.
   t.truthy(shell.test('-d', `${t.context.tmp}/copytestdepth${directory32deep}`));
   t.falsy(shell.test('-d', `${t.context.tmp}/copytestdepth${directory32deep}/32`));
-  skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
     if (!shell.test('-L', `${t.context.tmp}/symlinktest`)) {
       t.fail();
     }
@@ -582,7 +580,7 @@ test('Test max depth.', t => {
 });
 
 test('cp -L follows symlinks', t => {
-  skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
     shell.mkdir('-p', `${t.context.tmp}/sub`);
     shell.mkdir('-p', `${t.context.tmp}/new`);
     shell.cp('-f', 'resources/file1.txt', `${t.context.tmp}/sub/file.txt`);
@@ -605,7 +603,7 @@ test('cp -L follows symlinks', t => {
 });
 
 test('Test with recursive option and symlinks.', t => {
-  skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
     shell.mkdir('-p', `${t.context.tmp}/sub/sub1`);
     shell.cp('-f', 'resources/file1.txt', `${t.context.tmp}/sub/file.txt`);
     shell.cp('-f', 'resources/file1.txt', `${t.context.tmp}/sub/sub1/file.txt`);
