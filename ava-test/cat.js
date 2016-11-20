@@ -4,9 +4,7 @@ import test from 'ava';
 
 import shell from '..';
 
-test.beforeEach(() => {
-  shell.config.silent = true;
-});
+shell.config.silent = true;
 
 //
 // Invalids
