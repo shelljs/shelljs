@@ -25,7 +25,12 @@ function rmdirSyncRecursive(dir, force) {
   // Loop through and delete everything in the sub-tree after checking it
   for (var i = 0; i < files.length; i++) {
     var file = dir + '/' + files[i];
-    var currFile = fs.lstatSync(file);
+    try {
+      var currFile = fs.lstatSync(file);
+    } catch (e) {
+      common.error('could not get file stats (code ' + e.code + '): ' + file, { continue: true });
+      return ;
+    }
 
     if (currFile.isDirectory()) { // Recursive function back to the beginning
       rmdirSyncRecursive(file, force);
