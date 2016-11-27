@@ -29,6 +29,6 @@ function _echo(opts, messages) {
   }
 
   console.log.apply(console, messages);
-  return messages.join(' ');
+  return messages.join(' ') + '\n';
 }
 module.exports = _echo;
