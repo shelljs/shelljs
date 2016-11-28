@@ -68,7 +68,7 @@ function touchFile(opts, file) {
     fs.closeSync(fs.openSync(file, 'a'));
   } catch (e) {
     common.error('cannot create file (code ' + e.code + '): ' + file);
-    return ;
+    return;
   }
 
   //
