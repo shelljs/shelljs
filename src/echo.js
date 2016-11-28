@@ -9,12 +9,14 @@ common.register('echo', _echo, {
 //@ Available options:
 //@
 //@ + `-e`: interpret backslash escapes (default)
+//@ + `-n`: remove trailing newline from output
 //@
 //@ Examples:
 //@
 //@ ```javascript
 //@ echo('hello world');
 //@ var str = echo('hello world');
+//@ echo('-n', 'no newline at end');
 //@ ```
 //@
 //@ Prints string to stdout, and returns string with additional utility methods
@@ -23,12 +25,23 @@ function _echo(opts, messages) {
   // allow strings starting with '-', see issue #20
   messages = [].slice.call(arguments, opts ? 0 : 1);
 
-  if (messages[0] === '-e') {
-    // ignore -e
+  var option = ['-e', '-n', '-ne', '-en'].indexOf(messages[0]);
+  var output;
+
+  if (option >= 0) {
+    // ignore options
     messages.shift();
+    output = messages.join(' ');
+    if (option === 0) {
+      // add newline if -n is not passed
+      output += '\n';
+    }
+  } else {
+    output = messages.join(' ') + '\n';
   }
 
-  console.log.apply(console, messages);
-  return messages.join(' ') + '\n';
+  process.stdout.write(output);
+
+  return output;
 }
 module.exports = _echo;
