@@ -107,6 +107,15 @@ test.cb('-en option', t => {
   });
 });
 
+test.cb('-en option with escaped characters', t => {
+  const script = "require('../global.js'); echo('-en', '\\tmessage\\n');";
+  utils.runScript(script, (err, stdout) => {
+    t.falsy(err);
+    t.is(stdout, '\tmessage\n');
+    t.end();
+  });
+});
+
 test.cb('piping to a file with -n', t => {
   // see issue #476
   shell.mkdir(t.context.tmp);
