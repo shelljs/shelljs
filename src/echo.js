@@ -1,3 +1,5 @@
+var format = require('util').format;
+
 var common = require('./common');
 
 common.register('echo', _echo, {
@@ -31,13 +33,13 @@ function _echo(opts, messages) {
   if (option >= 0) {
     // ignore options
     messages.shift();
-    output = messages.join(' ');
+    output = format.apply(null, messages);
     if (option === 0) {
       // add newline if -n is not passed
       output += '\n';
     }
   } else {
-    output = messages.join(' ') + '\n';
+    output = format.apply(null, messages) + '\n';
   }
 
   process.stdout.write(output);
