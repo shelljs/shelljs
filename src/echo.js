@@ -23,18 +23,18 @@ common.register('echo', _echo, {
 //@
 //@ Prints string to stdout, and returns string with additional utility methods
 //@ like `.to()`.
-function _echo(opts, messages) {
+function _echo(opts) {
   // allow strings starting with '-', see issue #20
-  messages = [].slice.call(arguments, opts ? 0 : 1);
-
-  var option = ['-e', '-n', '-ne', '-en'].indexOf(messages[0]);
+  var messages = [].slice.call(arguments, opts ? 0 : 1);
+  var options = parseEchoOptions(opts);
   var output;
 
-  if (option >= 0) {
-    // ignore options
+  if (options) {
+    // first argument was options string,
+    // so do not print it
     messages.shift();
     output = format.apply(null, messages);
-    if (option === 0) {
+    if (!options.n) {
       // add newline if -n is not passed
       output += '\n';
     }
@@ -46,4 +46,44 @@ function _echo(opts, messages) {
 
   return output;
 }
+
+function parseEchoOptions(opts) {
+  var options = {
+    'e': true, // escapes, default
+    'n': false // no newline
+  };
+  var c;
+
+  if (typeof opts === 'string') {
+    if (opts[0] !== '-') {
+      return;
+    }
+
+    // e.g. chars = ['R', 'f']
+    var chars = opts.slice(1).split('');
+
+    for (var i = 0; i < chars.length; i += 1) {
+      c = chars[i];
+      if (c in options) {
+        options[c] = true;
+      } else {
+        return;
+      }
+    }
+  } else if (typeof opts === 'object') {
+    var keys = Object.keys(opts);
+
+    for (var j = 0; j < keys.length; j += 1) {
+      c = keys[j][1];
+      if (c in options) {
+        options[c] = true;
+      } else {
+        return;
+      }
+    }
+  }
+
+  return options;
+}
+
 module.exports = _echo;
