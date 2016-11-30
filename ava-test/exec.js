@@ -45,14 +45,14 @@ test('config.fatal and unknown command', t => {
 //
 
 test('check if stdout goes to output', t => {
-  const result = shell.exec(`${JSON.stringify(process.execPath)} -e 'console.log(1234);'`);
+  const result = shell.exec(`${JSON.stringify(process.execPath)} -e "console.log(1234);"`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, '1234\n');
 });
 
 test('check if stderr goes to output', t => {
-  const result = shell.exec(`${JSON.stringify(process.execPath)} -e 'console.error(1234);'`);
+  const result = shell.exec(`${JSON.stringify(process.execPath)} -e "console.error(1234);"`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, '');
@@ -60,7 +60,7 @@ test('check if stderr goes to output', t => {
 });
 
 test('check if stdout + stderr go to output', t => {
-  const result = shell.exec(`${JSON.stringify(process.execPath)} -e 'console.error(1234); console.log(666);'`);
+  const result = shell.exec(`${JSON.stringify(process.execPath)} -e "console.error(1234); console.log(666);"`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, '666\n');
@@ -68,7 +68,7 @@ test('check if stdout + stderr go to output', t => {
 });
 
 test('check exit code', t => {
-  const result = shell.exec(`${JSON.stringify(process.execPath)} -e 'process.exit(12);'`);
+  const result = shell.exec(`${JSON.stringify(process.execPath)} -e "process.exit(12);"`);
   t.truthy(shell.error());
   t.is(result.code, 12);
 });
@@ -159,14 +159,14 @@ test('exec returns a ShellString', t => {
 //
 
 test.cb('no callback', t => {
-  const c = shell.exec(`${JSON.stringify(process.execPath)} -e 'console.log(1234)'`, { async: true });
+  const c = shell.exec(`${JSON.stringify(process.execPath)} -e "console.log(1234)"`, { async: true });
   t.falsy(shell.error());
   t.truthy('stdout' in c, 'async exec returns child process object');
   t.end();
 });
 
 test.cb('callback as 2nd argument', t => {
-  shell.exec(`${JSON.stringify(process.execPath)} -e 'console.log(5678);'`, (code, stdout, stderr) => {
+  shell.exec(`${JSON.stringify(process.execPath)} -e "console.log(5678);"`, (code, stdout, stderr) => {
     t.is(code, 0);
     t.is(stdout, '5678\n');
     t.is(stderr, '');
@@ -175,7 +175,7 @@ test.cb('callback as 2nd argument', t => {
 });
 
 test.cb('callback as end argument', t => {
-  shell.exec(`${JSON.stringify(process.execPath)} -e 'console.log(5566);'`, { async: true }, (code, stdout, stderr) => {
+  shell.exec(`${JSON.stringify(process.execPath)} -e "console.log(5566);"`, { async: true }, (code, stdout, stderr) => {
     t.is(code, 0);
     t.is(stdout, '5566\n');
     t.is(stderr, '');
@@ -184,7 +184,7 @@ test.cb('callback as end argument', t => {
 });
 
 test.cb('callback as 3rd argument (silent:true)', t => {
-  shell.exec(`${JSON.stringify(process.execPath)} -e 'console.log(5678);'`, { silent: true }, (code, stdout, stderr) => {
+  shell.exec(`${JSON.stringify(process.execPath)} -e "console.log(5678);"`, { silent: true }, (code, stdout, stderr) => {
     t.is(code, 0);
     t.is(stdout, '5678\n');
     t.is(stderr, '');
