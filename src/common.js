@@ -135,7 +135,7 @@ exports.getUserHome = getUserHome;
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
 // Returns {'reference': 'string-value', 'bob': false} when passed two dictionaries of the form:
 //   parseOptions({'-r': 'string-value'}, {'r':'reference', 'b':'bob'});
-function parseOptions(opt, map) {
+function parseOptions(opt, map, errorOptions) {
   if (!map) error('parseOptions() internal error: no map given');
 
   // All options are false by default
@@ -165,6 +165,8 @@ function parseOptions(opt, map) {
         } else {
           options[optionName] = true;
         }
+      } else if (typeof errorOptions === 'object') {
+        error('option not recognized: ' + c, errorOptions);
       } else {
         error('option not recognized: ' + c);
       }
@@ -176,10 +178,14 @@ function parseOptions(opt, map) {
       if (c in map) {
         optionName = map[c];
         options[optionName] = opt[key]; // assign the given value
+      } else if (typeof errorOptions === 'object') {
+        error('option not recognized: ' + c, errorOptions);
       } else {
         error('option not recognized: ' + c);
       }
     });
+  } else if (typeof errorOptions === 'object') {
+    error('options must be strings or key-value pairs', errorOptions);
   } else {
     error('options must be strings or key-value pairs');
   }
