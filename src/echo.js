@@ -26,15 +26,30 @@ common.register('echo', _echo, {
 function _echo(opts) {
   // allow strings starting with '-', see issue #20
   var messages = [].slice.call(arguments, opts ? 0 : 1);
-  var options = parseEchoOptions(opts);
+  var options;
   var output;
+
+  // If the first argument starts with '-',
+  // parse it as options string.
+  // If parseOptions throws,
+  // it wasn't an options string.
+  if (opts[0] === '-') {
+    try {
+      options = common.parseOptions(opts, {
+        'e': 'escapes',
+        'n': 'no_newline'
+      }, {
+        silent: true
+      });
+    } catch (_) {}
+  }
 
   if (options) {
     // first argument was options string,
     // so do not print it
     messages.shift();
     output = format.apply(null, messages);
-    if (!options.n) {
+    if (!options.no_newline) {
       // add newline if -n is not passed
       output += '\n';
     }
@@ -45,45 +60,6 @@ function _echo(opts) {
   process.stdout.write(output);
 
   return output;
-}
-
-function parseEchoOptions(opts) {
-  var options = {
-    'e': true, // escapes, default
-    'n': false // no newline
-  };
-  var c;
-
-  if (typeof opts === 'string') {
-    if (opts[0] !== '-') {
-      return;
-    }
-
-    // e.g. chars = ['R', 'f']
-    var chars = opts.slice(1).split('');
-
-    for (var i = 0; i < chars.length; i += 1) {
-      c = chars[i];
-      if (c in options) {
-        options[c] = true;
-      } else {
-        return;
-      }
-    }
-  } else if (typeof opts === 'object') {
-    var keys = Object.keys(opts);
-
-    for (var j = 0; j < keys.length; j += 1) {
-      c = keys[j][1];
-      if (c in options) {
-        options[c] = true;
-      } else {
-        return;
-      }
-    }
-  }
-
-  return options;
 }
 
 module.exports = _echo;
