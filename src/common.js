@@ -245,7 +245,7 @@ function randomFileName() {
 exports.randomFileName = randomFileName;
 
 // objectAssign(target_obj, source_obj1 [, source_obj2 ...])
-// Polyfill for Object.assign
+// "Ponyfill" for Object.assign
 //    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
 var objectAssign = typeof Object.assign === 'function' ?
   Object.assign :
