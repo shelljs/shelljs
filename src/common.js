@@ -251,19 +251,21 @@ function randomFileName() {
 exports.randomFileName = randomFileName;
 
 // objectAssign(target_obj, source_obj1 [, source_obj2 ...])
-// Ponyfill for Object.assign
+// "Ponyfill" for Object.assign
 //    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
-function objectAssign(target) {
-  var sources = [].slice.call(arguments, 1);
-  sources.forEach(function (source) {
-    Object.keys(source).forEach(function (key) {
-      target[key] = source[key];
+var objectAssign = typeof Object.assign === 'function' ?
+  Object.assign :
+  function objectAssign(target) {
+    var sources = [].slice.call(arguments, 1);
+    sources.forEach(function (source) {
+      Object.keys(source).forEach(function (key) {
+        target[key] = source[key];
+      });
     });
-  });
 
-  return target;
-}
-exports.extend = Object.assign || objectAssign;
+    return target;
+  };
+exports.extend = objectAssign;
 
 // Common wrapper for all Unix-like commands that performs glob expansion,
 // command-logging, and other nice things
