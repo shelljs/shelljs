@@ -123,7 +123,7 @@ function _rm(options, files) {
     }
 
     // If here, path exists
-    if (stats.isFile() || stats.isSymbolicLink()) {
+    if (stats.isFile()) {
       // Do not check for file writing permissions
       if (options.force) {
         common.unlinkSync(file);
@@ -148,6 +148,11 @@ function _rm(options, files) {
     // Recursively remove existing directory
     if (stats.isDirectory() && options.recursive) {
       rmdirSyncRecursive(file, options.force);
+    }
+
+    // Path is a symbolic link
+    if (stats.isSymbolicLink()) {
+      common.unlinkSync(file);
     }
   }); // forEach(file)
   return '';
