@@ -23,6 +23,14 @@
   "license": "BSD-3-Clause",
   "homepage": "http://github.com/shelljs/shelljs",
   "main": "./shell.js",
+  "files": [
+    "global.js",
+    "make.js",
+    "plugin.js",
+    "shell.js",
+    "bin",
+    "src"
+  ],
   "scripts": {
     "posttest": "npm run lint",
     "test": "node scripts/run-tests && ava --serial ava-test/*.js",
