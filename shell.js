@@ -111,6 +111,10 @@ exports.env = process.env;
 //@include ./src/exec
 require('./src/exec');
 
+//@include ./src/kill
+var _kill = require('./src/kill');
+exports.kill = common.wrap('kill', _kill);
+
 //@include ./src/chmod
 require('./src/chmod');
 
