@@ -26,13 +26,10 @@ common.register('echo', _echo, {
 function _echo(opts) {
   // allow strings starting with '-', see issue #20
   var messages = [].slice.call(arguments, opts ? 0 : 1);
-  var options;
-  var output;
+  var options = {};
 
-  // If the first argument starts with '-',
-  // parse it as options string.
-  // If parseOptions throws,
-  // it wasn't an options string.
+  // If the first argument starts with '-', parse it as options string.
+  // If parseOptions throws, it wasn't an options string.
   if (opts[0] === '-') {
     try {
       options = common.parseOptions(opts, {
@@ -41,20 +38,15 @@ function _echo(opts) {
       }, {
         silent: true
       });
+      messages.shift();
     } catch (_) {}
   }
 
-  if (options) {
-    // first argument was options string,
-    // so do not print it
-    messages.shift();
-    output = format.apply(null, messages);
-    if (!options.no_newline) {
-      // add newline if -n is not passed
-      output += '\n';
-    }
-  } else {
-    output = format.apply(null, messages) + '\n';
+  var output = format.apply(null, messages);
+
+  // Add newline if -n is not passed.
+  if (!options.no_newline) {
+    output += '\n';
   }
 
   process.stdout.write(output);
