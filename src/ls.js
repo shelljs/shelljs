@@ -72,7 +72,7 @@ function _ls(options, paths) {
     var stat;
 
     try {
-      stat = fs.lstatSync(p);
+      stat = fs.lstatSync(p + path.sep); // Cheap hack to solve #446
     } catch (e) {
       common.error('no such file or directory: ' + p, 2, { continue: true });
       return;

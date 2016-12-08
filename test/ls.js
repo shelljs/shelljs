@@ -103,6 +103,32 @@ assert.equal(result.indexOf('.hidden_dir') > -1, true);
 assert.equal(result.length, 8);
 shell.cd('../..');
 
+// symlink, no trailing slash
+shell.cd(__dirname);
+result = shell.ls('resources/ls2');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result.indexOf('file1') > -1, true);
+assert.equal(result.indexOf('file2') > -1, true);
+assert.equal(result.indexOf('file1.js') > -1, true);
+assert.equal(result.indexOf('file2.js') > -1, true);
+assert.equal(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1, true);
+assert.equal(result.indexOf('a_dir') > -1, true);
+assert.equal(result.length, 6);
+
+// symlink, trailing slash
+shell.cd(__dirname);
+result = shell.ls('resources/ls2/');
+assert.equal(shell.error(), null);
+assert.equal(result.code, 0);
+assert.equal(result.indexOf('file1') > -1, true);
+assert.equal(result.indexOf('file2') > -1, true);
+assert.equal(result.indexOf('file1.js') > -1, true);
+assert.equal(result.indexOf('file2.js') > -1, true);
+assert.equal(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1, true);
+assert.equal(result.indexOf('a_dir') > -1, true);
+assert.equal(result.length, 6);
+
 // wildcard, very simple
 result = shell.ls('resources/cat/*');
 assert.equal(shell.error(), null);
