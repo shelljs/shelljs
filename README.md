@@ -563,12 +563,6 @@ ln('-sf', 'file', 'existing');
 Links source to dest. Use -f to force the link, should dest already exist.
 
 
-### exit(code)
-Exits the current process with the given exit code.
-
-### env['VAR_NAME']
-Object containing environment variables (both getter and setter). Shortcut to process.env.
-
 ### exec(command [, options] [, callback])
 Available options (all `false` by default):
 
@@ -676,9 +670,6 @@ set('+e'); // this undoes a "set('-e')"
 Sets global configuration variables
 
 
-## Non-Unix commands
-
-
 ### tempdir()
 
 Examples:
@@ -690,6 +681,9 @@ var tmp = tempdir(); // "/tmp" for most *nix platforms
 Searches and returns string containing a writeable, platform-dependent temporary directory.
 Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 
+
+### exit(code)
+Exits the current process with the given exit code.
 
 ### error()
 Tests if error occurred in the last command. Returns a truthy value if an
@@ -711,6 +705,10 @@ var foo = ShellString('hello world');
 Turns a regular string into a string-like object similar to what each
 command returns. This has special methods, like `.to()` and `.toEnd()`
 
+
+### env['VAR_NAME']
+Object containing environment variables (both getter and setter). Shortcut
+to process.env.
 
 ### Pipes
 
