@@ -253,7 +253,7 @@ test(
 );
 
 test('remove symbolic link to a dir', t => {
-  const result = shell.rm('-f', `${t.context.tmp}/rm/link_to_a_dir`);
+  const result = shell.rm(`${t.context.tmp}/rm/link_to_a_dir`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.falsy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
