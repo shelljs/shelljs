@@ -30,17 +30,15 @@ function _echo(opts) {
 
   // If the first argument starts with '-', parse it as options string.
   // If parseOptions throws, it wasn't an options string.
-  if (opts[0] === '-') {
-    try {
-      options = common.parseOptions(opts, {
-        'e': 'escapes',
-        'n': 'no_newline'
-      }, {
-        silent: true
-      });
-      messages.shift();
-    } catch (_) {}
-  }
+  try {
+    options = common.parseOptions(opts, {
+      'e': 'escapes',
+      'n': 'no_newline'
+    }, {
+      silent: true
+    });
+    messages.shift();
+  } catch (_) {}
 
   var output = format.apply(null, messages);
 
