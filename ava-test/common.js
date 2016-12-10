@@ -114,6 +114,12 @@ test('common.parseOptions using an object to hold options', t => {
   t.false(result.reverse);
 });
 
+test('common.parseOptions throws when passed a string not starting with "-"', t => {
+  t.throws(() => {
+    common.parseOptions('a', { '-a': 'throws' });
+  }, 'Options string must start with "-"');
+});
+
 test('Some basic tests on the ShellString type', t => {
   const result = shell.ShellString('foo');
   t.is(result.toString(), 'foo');
