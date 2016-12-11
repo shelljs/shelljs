@@ -42,7 +42,10 @@ function _echo(opts) {
     if (messages[0]) {
       messages.shift();
     }
-  } catch (_) {}
+  } catch (_) {
+    // Clear out error if an error occurred
+    common.state.error = null;
+  }
 
   var output = format.apply(null, messages);
 
