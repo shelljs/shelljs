@@ -1,4 +1,6 @@
 ava-test/resources/
+ava-test/tmp/
 test/resources/
+test/tmp/
 node_modules/
 make.js
