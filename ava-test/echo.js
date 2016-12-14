@@ -129,3 +129,9 @@ test.cb('piping to a file with -n', t => {
     t.end();
   });
 });
+
+test('stderr with unrecognized options is null', t => {
+  const ret = shell.echo('-asdf');
+  t.falsy(ret.stderr);
+  t.is(ret.stdout, '-asdf\n');
+});
