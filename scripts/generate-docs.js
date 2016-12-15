@@ -9,7 +9,15 @@ cd(__dirname + '/..');
 // Extract docs from shell.js
 var docs = grep('^//@', 'shell.js');
 
-// Now extract docs from the appropriate src/*.js files
+// Insert the docs for all the registered commands
+docs = docs.replace(/\/\/@commands\n/g, function () {
+  return require('../commands.json').map(function (commandName) {
+    var file = './src/' + commandName + '.js';
+    return grep('^//@', file) + '\n';
+  }).join('');
+});
+
+// Now extract docs from the remaining src/*.js files
 docs = docs.replace(/\/\/@include (.+)/g, function (match, path) {
   var file = path.match('.js$') ? path : path + '.js';
   return grep('^//@', file);
