@@ -130,7 +130,8 @@ test.cb('piping to a file with -n', t => {
   });
 });
 
-test('stderr with unrecognized options is null', t => {
+test('stderr with unrecognized options is empty', t => {
+  // TODO: console output here needs to be muted
   const result = shell.echo('-asdf');
   t.falsy(result.stderr);
   t.is(result.stdout, '-asdf\n');
