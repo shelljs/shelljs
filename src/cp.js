@@ -94,8 +94,7 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
   // Create the directory where all our junk is moving to; read the mode of the
   // source directory and mirror it
   try {
-    var checkDir = fs.statSync(sourceDir);
-    fs.mkdirSync(destDir, checkDir.mode);
+    fs.mkdirSync(destDir);
   } catch (e) {
     // if the directory already exists, that's okay
     if (e.code !== 'EEXIST') throw e;
@@ -146,6 +145,10 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
       }
     }
   } // for files
+
+  // finally change the mode for the newly created directory.
+  var checkDir = fs.statSync(sourceDir);
+  fs.chmod(destDir, checkDir.mode);
 } // cpdirSyncRecursive
 
 function cpcheckcycle(sourceDir, srcFile) {
