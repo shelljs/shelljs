@@ -34,7 +34,7 @@
   ],
   "scripts": {
     "posttest": "npm run lint",
-    "test": "node scripts/run-tests && ava --serial ava-test/*.js",
+    "test": "ava --serial test/*.js",
     "gendocs": "node scripts/generate-docs",
     "lint": "eslint .",
     "after-travis": "travis-check-changes",
