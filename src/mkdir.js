@@ -75,7 +75,7 @@ function _mkdir(options, dirs) {
 
     try {
       if (options.fullpath) {
-        mkdirSyncRecursive(dir);
+        mkdirSyncRecursive(path.resolve(dir));
       } else {
         fs.mkdirSync(dir, parseInt('0777', 8));
       }

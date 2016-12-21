@@ -282,3 +282,12 @@ test('remove broken symbolic link', t => {
     t.falsy(fs.existsSync(`${t.context.tmp}/rm/fake.lnk`));
   }
 });
+
+test('recursive dir removal, for non-normalized path', t => {
+  shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+  const result = shell.rm('-rf', `${t.context.tmp}/a/.././a`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(fs.existsSync(`${t.context.tmp}/a`));
+});

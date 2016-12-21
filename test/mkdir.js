@@ -147,3 +147,10 @@ test('globbed dir', t => {
   t.truthy(fs.existsSync(`${t.context.tmp}/mydir`));
   t.falsy(fs.existsSync(`${t.context.tmp}/m*ir`)); // doesn't create literal name
 });
+
+test('non-normalized paths are still ok with -p', t => {
+  const result = shell.mkdir('-p', `${t.context.tmp}/asdf/../asdf/./`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync(`${t.context.tmp}/asdf`));
+});
