@@ -19,6 +19,10 @@ common.register('exec', _exec, {
 // Node is single-threaded; callbacks and other internal state changes are done in the
 // event loop).
 function execSync(cmd, opts, pipe) {
+  if (!common.config.execPath) {
+    common.error('Unable to find a path to the node binary. Please manually set config.execPath');
+  }
+
   var tempDir = _tempDir();
   var stdoutFile = path.resolve(tempDir + '/' + common.randomFileName());
   var stderrFile = path.resolve(tempDir + '/' + common.randomFileName());
@@ -66,7 +70,7 @@ function execSync(cmd, opts, pipe) {
   if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
   if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
 
-  var execCommand = JSON.stringify(process.execPath) + ' ' + JSON.stringify(scriptFile);
+  var execCommand = JSON.stringify(common.config.execPath) + ' ' + JSON.stringify(scriptFile);
   var script;
 
   opts.cwd = path.resolve(opts.cwd);
