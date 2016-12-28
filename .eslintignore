@@ -1,6 +1,6 @@
-ava-test/resources/
-ava-test/tmp/
+.nyc_output/
+coverage/
+make.js
+node_modules/
 test/resources/
 test/tmp/
-node_modules/
-make.js

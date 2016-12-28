@@ -2,6 +2,8 @@
 npm-debug.log*
 node_modules
 tmp
+coverage/
+.nyc_output/
 
 # Linux
 *~

@@ -34,7 +34,7 @@
   ],
   "scripts": {
     "posttest": "npm run lint",
-    "test": "ava --serial test/*.js",
+    "test": "nyc --reporter=text --reporter=lcov ava --serial test/*.js",
     "gendocs": "node scripts/generate-docs",
     "lint": "eslint .",
     "after-travis": "travis-check-changes",
@@ -57,6 +57,7 @@
     "eslint": "^2.0.0",
     "eslint-config-airbnb-base": "^3.0.0",
     "eslint-plugin-import": "^1.11.1",
+    "nyc": "^10.0.0",
     "shelljs-changelog": "^0.2.0",
     "shelljs-release": "^0.2.0",
     "shx": "^0.2.0",
