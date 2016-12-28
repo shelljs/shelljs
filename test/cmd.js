@@ -1,5 +1,4 @@
 import path from 'path';
-import os from 'os';
 
 import test from 'ava';
 
@@ -86,11 +85,11 @@ test('set cwd', t => {
   const result = shell.cmd('shx', 'pwd', { cwd: '..' });
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, path.resolve('..') + os.EOL);
+  t.is(result.stdout, `${path.resolve('..')}\n`);
 });
 
 test('supports globbing by default', t => {
-  const result = shell.cmd('echo', 'resources/*.txt');
+  const result = shell.cmd('shx', 'echo', 'resources/*.txt');
   t.is(result.stdout, 'resources/a.txt resources/file1.txt resources/file2.txt\n');
   t.is(result.stderr, '');
   t.falsy(shell.error());
@@ -98,7 +97,7 @@ test('supports globbing by default', t => {
 
 test('globbing can be disabled', t => {
   shell.set('-f');
-  const result = shell.cmd('echo', 'resources/*.txt');
+  const result = shell.cmd('shx', 'echo', 'resources/*.txt');
   t.is(result.stdout, 'resources/*.txt\n');
   t.is(result.stderr, '');
   t.falsy(shell.error());
@@ -106,7 +105,7 @@ test('globbing can be disabled', t => {
 });
 
 test('cmd returns a ShellString', t => {
-  const result = shell.cmd('echo', 'foo');
+  const result = shell.cmd('shx', 'echo', 'foo');
   t.is(typeof result, 'object');
   t.truthy(result instanceof String);
   t.is(typeof result.stdout, 'string');
@@ -136,7 +135,7 @@ test('option: realtimeOutput === false', t => {
 });
 
 test('cmd works, even if it\'s piped while in silent mode', t => {
-  const result = shell.ShellString('foo bar baz').cmd('cat', { silent: true });
+  const result = shell.ShellString('foo bar baz').cmd('shx', 'cat', { silent: true });
   t.is(typeof result, 'object');
   t.truthy(result instanceof String);
   t.is(result.stdout, 'foo bar baz');
