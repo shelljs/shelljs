@@ -130,7 +130,7 @@ function _cmd() {
     // common.state.stderr = result.stderr;
     // common.state.code = result.status;
     // return stdout;
-    return new common.ShellString(result.stdout, result.stderr, result.status);
+    return new common.ShellString(result.stdout.toString(), result.stderr.toString(), result.status);
   } else {
     try {
       return cmdSync(command, cmdArgs, options, pipe);
