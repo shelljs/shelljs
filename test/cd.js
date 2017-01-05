@@ -11,7 +11,7 @@ const cur = shell.pwd().toString();
 
 test.beforeEach(t => {
   t.context.tmp = utils.getTempDir();
-  shell.config.silent = true;
+  shell.config.resetForTesting();
   process.chdir(cur);
   shell.mkdir(t.context.tmp);
 });

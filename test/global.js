@@ -8,7 +8,7 @@ import utils from './utils/utils';
 
 test.beforeEach(t => {
   t.context.tmp = utils.getTempDir();
-  config.silent = true;
+  config.resetForTesting();
   mkdir(t.context.tmp);
 });
 

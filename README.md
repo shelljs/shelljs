@@ -784,6 +784,32 @@ config.globOptions = {nodir: true};
 
 Use this value for calls to `glob.sync()` instead of the default options.
 
+### config.reset()
+
+Example:
+
+```javascript
+var shell = require('shelljs');
+// Make changes to shell.config, and do stuff...
+/* ... */
+shell.config.reset(); // reset to original state
+// Do more stuff, but with original settings
+/* ... */
+```
+
+Reset shell.config to the defaults:
+
+```javascript
+{
+  fatal: false,
+  globOptions: {},
+  maxdepth: 255,
+  noglob: false,
+  silent: false,
+  verbose: false,
+}
+```
+
 ## Team
 
 | [![Nate Fischer](https://avatars.githubusercontent.com/u/5801521?s=130)](https://github.com/nfischer) | [![Ari Porad](https://avatars1.githubusercontent.com/u/1817508?v=3&s=130)](http://github.com/ariporad) |

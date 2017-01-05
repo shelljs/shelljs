@@ -123,3 +123,30 @@ exports.config = common.config;
 //@ ```
 //@
 //@ Use this value for calls to `glob.sync()` instead of the default options.
+
+//@
+//@ ### config.reset()
+//@
+//@ Example:
+//@
+//@ ```javascript
+//@ var shell = require('shelljs');
+//@ // Make changes to shell.config, and do stuff...
+//@ /* ... */
+//@ shell.config.reset(); // reset to original state
+//@ // Do more stuff, but with original settings
+//@ /* ... */
+//@ ```
+//@
+//@ Reset shell.config to the defaults:
+//@
+//@ ```javascript
+//@ {
+//@   fatal: false,
+//@   globOptions: {},
+//@   maxdepth: 255,
+//@   noglob: false,
+//@   silent: false,
+//@   verbose: false,
+//@ }
+//@ ```
