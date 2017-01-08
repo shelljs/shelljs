@@ -12,7 +12,7 @@ function reset() {
 }
 
 test.beforeEach(() => {
-  shell.config.silent = true;
+  shell.config.resetForTesting();
   reset();
 });
 

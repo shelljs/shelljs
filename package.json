@@ -35,6 +35,7 @@
   "scripts": {
     "posttest": "npm run lint",
     "test": "nyc --reporter=text --reporter=lcov ava --serial test/*.js",
+    "test-no-coverage": "ava --serial test/*.js",
     "gendocs": "node scripts/generate-docs",
     "lint": "eslint .",
     "after-travis": "travis-check-changes",

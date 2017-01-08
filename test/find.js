@@ -5,7 +5,7 @@ import shell from '..';
 const CWD = process.cwd();
 
 test.beforeEach(() => {
-  shell.config.silent = true;
+  shell.config.resetForTesting();
   process.chdir(CWD);
 });
 

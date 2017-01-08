@@ -9,15 +9,42 @@ var shell = require('..');
 
 var shellMethods = Object.create(shell);
 
+// objectAssign(target_obj, source_obj1 [, source_obj2 ...])
+// "Ponyfill" for Object.assign
+//    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
+var objectAssign = typeof Object.assign === 'function' ?
+  Object.assign :
+  function objectAssign(target) {
+    var sources = [].slice.call(arguments, 1);
+    sources.forEach(function (source) {
+      Object.keys(source).forEach(function (key) {
+        target[key] = source[key];
+      });
+    });
+
+    return target;
+  };
+exports.extend = objectAssign;
+
 // Module globals
-var config = {
-  silent: false,
+var DEFAULT_CONFIG = {
   fatal: false,
-  verbose: false,
-  noglob: false,
   globOptions: {},
-  maxdepth: 255
+  maxdepth: 255,
+  noglob: false,
+  silent: false,
+  verbose: false,
 };
+var config = {
+  reset: function () {
+    objectAssign(this, DEFAULT_CONFIG);
+  },
+  resetForTesting: function () {
+    objectAssign(this, DEFAULT_CONFIG);
+    this.silent = true;
+  },
+};
+config.reset();
 exports.config = config;
 
 var state = {
@@ -249,23 +276,6 @@ function randomFileName() {
   return 'shelljs_' + randomHash(20);
 }
 exports.randomFileName = randomFileName;
-
-// objectAssign(target_obj, source_obj1 [, source_obj2 ...])
-// "Ponyfill" for Object.assign
-//    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
-var objectAssign = typeof Object.assign === 'function' ?
-  Object.assign :
-  function objectAssign(target) {
-    var sources = [].slice.call(arguments, 1);
-    sources.forEach(function (source) {
-      Object.keys(source).forEach(function (key) {
-        target[key] = source[key];
-      });
-    });
-
-    return target;
-  };
-exports.extend = objectAssign;
 
 // Common wrapper for all Unix-like commands that performs glob expansion,
 // command-logging, and other nice things

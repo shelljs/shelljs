@@ -36,7 +36,7 @@ function fooImplementation(options, arg) {
 }
 
 test.beforeEach(() => {
-  shell.config.silent = true;
+  shell.config.resetForTesting();
 });
 
 
