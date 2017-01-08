@@ -466,3 +466,13 @@ test('Check stderr field', t => {
   t.truthy(shell.error());
   t.is('ls: no such file or directory: /asdfasdf', result.stderr);
 });
+
+test('non-normalized paths are still ok with -R', t => {
+  const result = shell.ls('-R', 'resources/./ls/../ls');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir/b_dir') > -1);
+  t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
+  t.is(result.length, 9);
+});

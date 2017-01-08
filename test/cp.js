@@ -259,7 +259,6 @@ test(
 );
 
 test('recursive, everything exists, no force flag', t => {
-  shell.cp('-R', 'resources/cp', t.context.tmp);
   const result = shell.cp('-R', 'resources/cp', t.context.tmp);
   t.falsy(shell.error()); // crash test only
   t.falsy(result.stderr);
@@ -646,4 +645,11 @@ test('Test with recursive option and symlinks.', t => {
     t.falsy(shell.test('-L', 'foo.lnk'));
     t.falsy(shell.test('-L', 'sym.lnk'));
   });
+});
+
+test('recursive, with a non-normalized path', t => {
+  const result = shell.cp('-R', 'resources/../resources/./cp', t.context.tmp);
+  t.falsy(shell.error()); // crash test only
+  t.falsy(result.stderr);
+  t.is(result.code, 0);
 });
