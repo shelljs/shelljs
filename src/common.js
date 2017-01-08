@@ -26,7 +26,10 @@ var objectAssign = typeof Object.assign === 'function' ?
   };
 exports.extend = objectAssign;
 
-// Module globals
+// Check if we're running under electron
+var isElectron = Boolean(process.versions.electron);
+
+// Module globals (assume no execPath by default)
 var DEFAULT_CONFIG = {
   fatal: false,
   globOptions: {},
@@ -34,16 +37,22 @@ var DEFAULT_CONFIG = {
   noglob: false,
   silent: false,
   verbose: false,
+  execPath: null,
 };
+
 var config = {
   reset: function () {
     objectAssign(this, DEFAULT_CONFIG);
+    if (!isElectron) {
+      this.execPath = process.execPath;
+    }
   },
   resetForTesting: function () {
-    objectAssign(this, DEFAULT_CONFIG);
+    this.reset();
     this.silent = true;
   },
 };
+
 config.reset();
 exports.config = config;
 

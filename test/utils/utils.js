@@ -1,5 +1,7 @@
 const child = require('child_process');
 
+const common = require('../../src/common');
+
 function numLines(str) {
   return typeof str === 'string' ? (str.match(/\n/g) || []).length + 1 : 0;
 }
@@ -26,11 +28,11 @@ function skipOnWinForEPERM(action, testCase) {
 exports.skipOnWinForEPERM = skipOnWinForEPERM;
 
 function runScript(script, cb) {
-  child.execFile(process.execPath, ['-e', script], cb);
+  child.execFile(common.config.execPath, ['-e', script], cb);
 }
 exports.runScript = runScript;
 
 function sleep(time) {
-  child.execFileSync(process.execPath, ['resources/exec/slow.js', time.toString()]);
+  child.execFileSync(common.config.execPath, ['resources/exec/slow.js', time.toString()]);
 }
 exports.sleep = sleep;

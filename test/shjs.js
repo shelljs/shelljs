@@ -3,12 +3,13 @@ import path from 'path';
 import test from 'ava';
 
 import shell from '..';
+import common from '../src/common';
 
 function runWithShjs(name) {
   // prefix with 'node ' for Windows, don't prefix for unix
   const binPath = path.resolve(__dirname, '../bin/shjs');
   const execPath = process.platform === 'win32'
-    ? `${JSON.stringify(process.execPath)} `
+    ? `${JSON.stringify(common.config.execPath)} `
     : '';
   const script = path.resolve(__dirname, 'resources', 'shjs', name);
   return shell.exec(`${execPath}${binPath} ${script}`, { silent: true });
