@@ -267,8 +267,7 @@ test('remove symbolic link to a dir', t => {
   t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
 });
 
-// TODO(nfischer): fix this behavior in rm
-test.skip('rm -rf on a symbolic link to a dir deletes its contents', t => {
+test('rm -rf on a symbolic link to a dir deletes its contents', t => {
   const result = shell.rm('-rf', `${t.context.tmp}/rm/link_to_a_dir/`);
   t.falsy(shell.error());
   t.is(result.code, 0);
