@@ -60,7 +60,7 @@ var state = {
   error: null,
   errorCode: 0,
   currentCmd: 'shell.js',
-  tempDir: null
+  tempDir: null,
 };
 exports.state = state;
 
@@ -115,7 +115,7 @@ function error(msg, _code, options) {
   if (!options.continue) {
     throw {
       msg: 'earlyExit',
-      retValue: (new ShellString('', state.error, state.errorCode))
+      retValue: (new ShellString('', state.error, state.errorCode)),
     };
   }
 }

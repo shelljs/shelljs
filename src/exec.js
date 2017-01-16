@@ -34,7 +34,7 @@ function execSync(cmd, opts, pipe) {
     silent: common.config.silent,
     cwd: _pwd().toString(),
     env: process.env,
-    maxBuffer: DEFAULT_MAXBUFFER_SIZE
+    maxBuffer: DEFAULT_MAXBUFFER_SIZE,
   }, opts);
 
   var previousStdoutContent = '';
@@ -190,7 +190,7 @@ function execAsync(cmd, opts, pipe, callback) {
     silent: common.config.silent,
     cwd: _pwd().toString(),
     env: process.env,
-    maxBuffer: DEFAULT_MAXBUFFER_SIZE
+    maxBuffer: DEFAULT_MAXBUFFER_SIZE,
   }, opts);
 
   var c = child.exec(cmd, opts, function (err) {
@@ -279,7 +279,7 @@ function _exec(command, options, callback) {
 
   options = common.extend({
     silent: common.config.silent,
-    async: false
+    async: false,
   }, options);
 
   try {
