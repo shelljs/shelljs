@@ -1,28 +1,41 @@
-var shell = require('..');
+import path from 'path';
 
-var assert = require('assert'),
-    path = require('path');
+import test from 'ava';
 
-shell.config.silent = true;
+import shell from '..';
+import utils from './utils/utils';
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+const cur = process.cwd();
+
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
+  shell.config.resetForTesting();
+  shell.mkdir(t.context.tmp);
+});
+
+test.afterEach.always(t => {
+  process.chdir(cur);
+  shell.rm('-rf', t.context.tmp);
+});
+
 
 //
 // Valids
 //
 
-var _pwd = shell.pwd();
-assert.equal(shell.error(), null);
-assert.equal(_pwd.code, 0);
-assert.ok(!_pwd.stderr);
-assert.equal(_pwd, path.resolve('.'));
+test('initial directory', t => {
+  const cwd = shell.pwd();
+  t.falsy(shell.error());
+  t.is(cwd.code, 0);
+  t.falsy(cwd.stderr);
+  t.is(cwd.toString(), path.resolve('.'));
+});
 
-shell.cd('tmp');
-_pwd = shell.pwd();
-assert.equal(_pwd.code, 0);
-assert.ok(!_pwd.stderr);
-assert.equal(shell.error(), null);
-assert.equal(path.basename(_pwd.toString()), 'tmp');
-
-shell.exit(123);
+test('after changing directory', t => {
+  shell.cd(t.context.tmp);
+  const cwd = shell.pwd();
+  t.is(cwd.code, 0);
+  t.falsy(cwd.stderr);
+  t.falsy(shell.error());
+  t.is(path.basename(cwd.toString()), t.context.tmp);
+});

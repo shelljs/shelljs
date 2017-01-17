@@ -5,7 +5,7 @@ var path = require('path');
 var fs = require('fs');
 var child = require('child_process');
 
-var DEFAULT_MAXBUFFER_SIZE = 20*1024*1024;
+var DEFAULT_MAXBUFFER_SIZE = 20 * 1024 * 1024;
 
 common.register('exec', _exec, {
   unix: false,
@@ -19,11 +19,15 @@ common.register('exec', _exec, {
 // Node is single-threaded; callbacks and other internal state changes are done in the
 // event loop).
 function execSync(cmd, opts, pipe) {
-  var stdoutFile = mktemp({ dryRun: true })[0],
-      stderrFile = mktemp({ dryRun: true })[0],
-      codeFile   = mktemp({ dryRun: true })[0],
-      scriptFile = mktemp({ dryRun: true })[0],
-      sleepFile  = mktemp({ dryRun: true })[0];
+  if (!common.config.execPath) {
+    common.error('Unable to find a path to the node binary. Please manually set config.execPath');
+  }
+
+  var stdoutFile = mktemp({ dryRun: true })[0];
+  var stderrFile = mktemp({ dryRun: true })[0];
+  var codeFile = mktemp({ dryRun: true })[0];
+  var scriptFile = mktemp({ dryRun: true })[0];
+  var sleepFile = mktemp({ dryRun: true })[0];
 
   opts = common.extend({
     silent: common.config.silent,
@@ -32,29 +36,31 @@ function execSync(cmd, opts, pipe) {
     maxBuffer: DEFAULT_MAXBUFFER_SIZE
   }, opts);
 
-  var previousStdoutContent = '',
-      previousStderrContent = '';
+  var previousStdoutContent = '';
+  var previousStderrContent = '';
   // Echoes stdout and stderr changes from running process, if not silent
   function updateStream(streamFile) {
-    if (opts.silent || !fs.existsSync(streamFile))
+    if (opts.silent || !fs.existsSync(streamFile)) {
       return;
+    }
 
-    var previousStreamContent,
-        proc_stream;
+    var previousStreamContent;
+    var procStream;
     if (streamFile === stdoutFile) {
       previousStreamContent = previousStdoutContent;
-      proc_stream = process.stdout;
+      procStream = process.stdout;
     } else { // assume stderr
       previousStreamContent = previousStderrContent;
-      proc_stream = process.stderr;
+      procStream = process.stderr;
     }
 
     var streamContent = fs.readFileSync(streamFile, 'utf8');
     // No changes since last time?
-    if (streamContent.length <= previousStreamContent.length)
+    if (streamContent.length <= previousStreamContent.length) {
       return;
+    }
 
-    proc_stream.write(streamContent.substr(previousStreamContent.length));
+    procStream.write(streamContent.substr(previousStreamContent.length));
     previousStreamContent = streamContent;
   }
 
@@ -63,7 +69,7 @@ function execSync(cmd, opts, pipe) {
   if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
   if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
 
-  var execCommand = JSON.stringify(process.execPath) + ' ' + JSON.stringify(scriptFile);
+  var execCommand = JSON.stringify(common.config.execPath) + ' ' + JSON.stringify(scriptFile);
   var script;
 
   opts.cwd = path.resolve(opts.cwd);
@@ -71,25 +77,32 @@ function execSync(cmd, opts, pipe) {
 
   if (typeof child.execSync === 'function') {
     script = [
-        "var child = require('child_process')",
-        "  , fs = require('fs');",
-        "var childProcess = child.exec("+JSON.stringify(cmd)+", "+optString+", function(err) {",
-        "  fs.writeFileSync("+JSON.stringify(codeFile)+", err ? err.code.toString() : '0');",
-        "});",
-        "var stdoutStream = fs.createWriteStream("+JSON.stringify(stdoutFile)+");",
-        "var stderrStream = fs.createWriteStream("+JSON.stringify(stderrFile)+");",
-        "childProcess.stdout.pipe(stdoutStream, {end: false});",
-        "childProcess.stderr.pipe(stderrStream, {end: false});",
-        "childProcess.stdout.pipe(process.stdout);",
-        "childProcess.stderr.pipe(process.stderr);"
-      ].join('\n') +
-      (pipe ? "\nchildProcess.stdin.end("+JSON.stringify(pipe)+");\n" : '\n') +
+      "var child = require('child_process')",
+      "  , fs = require('fs');",
+      'var childProcess = child.exec(' + JSON.stringify(cmd) + ', ' + optString + ', function(err) {',
+      '  var fname = ' + JSON.stringify(codeFile) + ';',
+      '  if (!err) {',
+      '    fs.writeFileSync(fname, "0");',
+      '  } else if (err.code === undefined) {',
+      '    fs.writeFileSync(fname, "1");',
+      '  } else {',
+      '    fs.writeFileSync(fname, err.code.toString());',
+      '  }',
+      '});',
+      'var stdoutStream = fs.createWriteStream(' + JSON.stringify(stdoutFile) + ');',
+      'var stderrStream = fs.createWriteStream(' + JSON.stringify(stderrFile) + ');',
+      'childProcess.stdout.pipe(stdoutStream, {end: false});',
+      'childProcess.stderr.pipe(stderrStream, {end: false});',
+      'childProcess.stdout.pipe(process.stdout);',
+      'childProcess.stderr.pipe(process.stderr);',
+    ].join('\n') +
+      (pipe ? '\nchildProcess.stdin.end(' + JSON.stringify(pipe) + ');\n' : '\n') +
       [
-        "var stdoutEnded = false, stderrEnded = false;",
-        "function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }",
-        "function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }",
+        'var stdoutEnded = false, stderrEnded = false;',
+        'function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }',
+        'function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }',
         "childProcess.stdout.on('end', function(){ stdoutEnded = true; tryClosingStdout(); });",
-        "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });"
+        "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });",
       ].join('\n');
 
     fs.writeFileSync(scriptFile, script);
@@ -105,23 +118,30 @@ function execSync(cmd, opts, pipe) {
       child.execSync(execCommand, opts);
     } catch (e) {
       // Clean up immediately if we have an exception
-      try { common.unlinkSync(scriptFile); } catch(e) {}
-      try { common.unlinkSync(stdoutFile); } catch(e) {}
-      try { common.unlinkSync(stderrFile); } catch(e) {}
-      try { common.unlinkSync(codeFile); } catch(e) {}
+      try { common.unlinkSync(scriptFile); } catch (e2) {}
+      try { common.unlinkSync(stdoutFile); } catch (e2) {}
+      try { common.unlinkSync(stderrFile); } catch (e2) {}
+      try { common.unlinkSync(codeFile); } catch (e2) {}
       throw e;
     }
   } else {
-    cmd += ' > '+stdoutFile+' 2> '+stderrFile; // works on both win/unix
+    cmd += ' > ' + stdoutFile + ' 2> ' + stderrFile; // works on both win/unix
 
     script = [
-        "var child = require('child_process')",
-        "  , fs = require('fs');",
-        "var childProcess = child.exec("+JSON.stringify(cmd)+", "+optString+", function(err) {",
-        "  fs.writeFileSync("+JSON.stringify(codeFile)+", err ? err.code.toString() : '0');",
-        "});"
-      ].join('\n') +
-      (pipe ? "\nchildProcess.stdin.end("+JSON.stringify(pipe)+");\n" : '\n');
+      "var child = require('child_process')",
+      "  , fs = require('fs');",
+      'var childProcess = child.exec(' + JSON.stringify(cmd) + ', ' + optString + ', function(err) {',
+      '  var fname = ' + JSON.stringify(codeFile) + ';',
+      '  if (!err) {',
+      '    fs.writeFileSync(fname, "0");',
+      '  } else if (err.code === undefined) {',
+      '    fs.writeFileSync(fname, "1");',
+      '  } else {',
+      '    fs.writeFileSync(fname, err.code.toString());',
+      '  }',
+      '});',
+    ].join('\n') +
+      (pipe ? '\nchildProcess.stdin.end(' + JSON.stringify(pipe) + ');\n' : '\n');
 
     fs.writeFileSync(scriptFile, script);
 
@@ -134,7 +154,7 @@ function execSync(cmd, opts, pipe) {
     while (!fs.existsSync(codeFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
     while (!fs.existsSync(stdoutFile)) { updateStream(stdoutFile); fs.writeFileSync(sleepFile, 'a'); }
     while (!fs.existsSync(stderrFile)) { updateStream(stderrFile); fs.writeFileSync(sleepFile, 'a'); }
-    try { common.unlinkSync(sleepFile); } catch(e) {}
+    try { common.unlinkSync(sleepFile); } catch (e) {}
   }
 
   // At this point codeFile exists, but it's not necessarily flushed yet.
@@ -148,13 +168,13 @@ function execSync(cmd, opts, pipe) {
   var stderr = fs.readFileSync(stderrFile, 'utf8');
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
-  try { common.unlinkSync(scriptFile); } catch(e) {}
-  try { common.unlinkSync(stdoutFile); } catch(e) {}
-  try { common.unlinkSync(stderrFile); } catch(e) {}
-  try { common.unlinkSync(codeFile); } catch(e) {}
+  try { common.unlinkSync(scriptFile); } catch (e) {}
+  try { common.unlinkSync(stdoutFile); } catch (e) {}
+  try { common.unlinkSync(stderrFile); } catch (e) {}
+  try { common.unlinkSync(codeFile); } catch (e) {}
 
-  if (code !== 0)  {
-    common.error('', code, true);
+  if (code !== 0) {
+    common.error('', code, { continue: true });
   }
   var obj = common.ShellString(stdout, stderr, code);
   return obj;
@@ -172,24 +192,29 @@ function execAsync(cmd, opts, pipe, callback) {
     maxBuffer: DEFAULT_MAXBUFFER_SIZE
   }, opts);
 
-  var c = child.exec(cmd, opts, function(err) {
-    if (callback)
-      callback(err ? err.code : 0, stdout, stderr);
+  var c = child.exec(cmd, opts, function (err) {
+    if (callback) {
+      if (!err) {
+        callback(0, stdout, stderr);
+      } else if (err.code === undefined) {
+        // See issue #536
+        callback(1, stdout, stderr);
+      } else {
+        callback(err.code, stdout, stderr);
+      }
+    }
   });
 
-  if (pipe)
-    c.stdin.end(pipe);
+  if (pipe) c.stdin.end(pipe);
 
-  c.stdout.on('data', function(data) {
+  c.stdout.on('data', function (data) {
     stdout += data;
-    if (!opts.silent)
-      process.stdout.write(data);
+    if (!opts.silent) process.stdout.write(data);
   });
 
-  c.stderr.on('data', function(data) {
+  c.stderr.on('data', function (data) {
     stderr += data;
-    if (!opts.silent)
-      process.stderr.write(data);
+    if (!opts.silent) process.stderr.write(data);
   });
 
   return c;
@@ -235,10 +260,10 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ the current synchronous implementation uses a lot of CPU. This should be getting
 //@ fixed soon.
 function _exec(command, options, callback) {
-  if (!command)
-    common.error('must specify command');
+  options = options || {};
+  if (!command) common.error('must specify command');
 
-  var pipe = common.readFromPipe(this);
+  var pipe = common.readFromPipe();
 
   // Callback is defined instead of options.
   if (typeof options === 'function') {
@@ -257,10 +282,11 @@ function _exec(command, options, callback) {
   }, options);
 
   try {
-    if (options.async)
+    if (options.async) {
       return execAsync(command, options, pipe, callback);
-    else
+    } else {
       return execSync(command, options, pipe);
+    }
   } catch (e) {
     common.error('internal error');
   }

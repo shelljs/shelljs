@@ -15,8 +15,8 @@ function mkdirSyncRecursive(dir) {
   // Prevents some potential problems arising from malformed UNCs or
   // insufficient permissions.
   /* istanbul ignore next */
-  if(baseDir === dir) {
-    common.error("dirname() failed: [" + dir + "]");
+  if (baseDir === dir) {
+    common.error('dirname() failed: [' + dir + ']');
   }
 
   // Base dir exists, no recursion necessary
@@ -48,18 +48,19 @@ function mkdirSyncRecursive(dir) {
 //@
 //@ Creates directories.
 function _mkdir(options, dirs) {
-  if (!dirs)
-    common.error('no paths given');
+  if (!dirs) common.error('no paths given');
 
-  if (typeof dirs === 'string')
+  if (typeof dirs === 'string') {
     dirs = [].slice.call(arguments, 1);
+  }
   // if it's array leave it as it is
 
-  dirs.forEach(function(dir) {
+  dirs.forEach(function (dir) {
     try {
       fs.lstatSync(dir);
-      if (!options.fullpath)
-        common.error('path already exists: ' + dir, true);
+      if (!options.fullpath) {
+        common.error('path already exists: ' + dir, { continue: true });
+      }
       return; // skip dir
     } catch (e) {
       // do nothing
@@ -68,20 +69,22 @@ function _mkdir(options, dirs) {
     // Base dir does not exist, and no -p option given
     var baseDir = path.dirname(dir);
     if (!fs.existsSync(baseDir) && !options.fullpath) {
-      common.error('no such file or directory: ' + baseDir, true);
+      common.error('no such file or directory: ' + baseDir, { continue: true });
       return; // skip dir
     }
 
     try {
-      if (options.fullpath)
-        mkdirSyncRecursive(dir);
-      else
+      if (options.fullpath) {
+        mkdirSyncRecursive(path.resolve(dir));
+      } else {
         fs.mkdirSync(dir, parseInt('0777', 8));
+      }
     } catch (e) {
-      if (e.code === 'EACCES')
+      if (e.code === 'EACCES') {
         common.error('cannot create directory ' + dir + ': Permission denied');
-      else
+      } else {
         throw e;
+      }
     }
   });
   return '';

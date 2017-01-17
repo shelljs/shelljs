@@ -4,10 +4,9 @@
 2. `npm run gendocs`
 3. Bump version, create tags, push, and release:
   - `$ npm run <release:major|release:minor|release:patch>`
-
-    >`major` - breaking API changes
-    >`minor` - backwards-compatible features
-    >`patch` - backwards-compatible bug fixes
+  - `major` - breaking API changes
+  - `minor` - backwards-compatible features
+  - `patch` - backwards-compatible bug fixes
 4. Update CHANGELOG.md
   - `$ npm run changelog`
   - `$ git push`

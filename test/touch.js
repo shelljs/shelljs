@@ -1,136 +1,32 @@
-var shell = require('..');
-var assert = require('assert');
-var fs = require('fs');
-var crypto = require('crypto');
+import crypto from 'crypto';
+import fs from 'fs';
 
-shell.config.silent = true;
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+import test from 'ava';
 
-var oldStat;
-var testFile;
+import shell from '..';
+import utils from './utils/utils';
 
-// should handle args
-var result = shell.touch();
-assert.ok(shell.error());
-assert.equal(result.code, 1);
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
+  shell.config.resetForTesting();
+  shell.mkdir(t.context.tmp);
+});
 
-result = shell.touch(1);
-assert.ok(shell.error());
-assert.equal(result.code, 1);
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
+});
 
-// exits without error when trying to touch a directory
-result = shell.touch('tmp/');
-assert.ok(!shell.error());
-assert.equal(result.code, 0);
-result = shell.touch('tmp');
-assert.ok(!shell.error());
-assert.equal(result.code, 0);
-
-// creates new files
-var testFile = tmpFile();
-result = shell.touch(testFile);
-assert(fs.existsSync(testFile));
-
-// does not create a file if told not to
-var testFile = tmpFile(true);
-result = shell.touch('-c', testFile);
-assert.equal(result.code, 0);
-assert.ok(!fs.existsSync(testFile));
-
-// handles globs correctly
-result = shell.touch('tmp/file.txt');
-result = shell.touch('tmp/file.js');
-result = shell.touch('tmp/file*');
-assert.equal(result.code, 0);
-var files = shell.ls('tmp/file*');
-assert.ok(files.indexOf('tmp/file.txt') > -1);
-assert.ok(files.indexOf('tmp/file.js') > -1);
-assert.equal(files.length, 2);
-
-// errors if reference file is not found
-var testFile = tmpFile();
-var refFile = tmpFile(true);
-result = shell.touch({'-r': refFile}, testFile);
-assert.equal(result.code, 1);
-assert.ok(shell.error());
-
-// uses a reference file for mtime
-var testFile = tmpFile(false);
-var testFile2 = tmpFile();
-shell.touch(testFile2);
-shell.exec(JSON.stringify(process.execPath)+' resources/exec/slow.js 3000');
-result = shell.touch(testFile);
-assert.ok(!shell.error());
-assert.equal(result.code, 0);
-assert.notEqual(fs.statSync(testFile).mtime.getTime(), fs.statSync(testFile2).mtime.getTime());
-assert.notEqual(fs.statSync(testFile).atime.getTime(), fs.statSync(testFile2).atime.getTime());
-result = shell.touch({'-r': testFile2}, testFile);
-assert.ok(!shell.error());
-assert.equal(result.code, 0);
-assert.equal(fs.statSync(testFile).mtime.getTime(), fs.statSync(testFile2).mtime.getTime());
-assert.equal(fs.statSync(testFile).atime.getTime(), fs.statSync(testFile2).atime.getTime());
-
-// sets mtime
-testFile = tmpFile();
-oldStat = resetUtimes(testFile);
-result = shell.touch(testFile);
-assert.equal(result.code, 0);
-assert(oldStat.mtime < fs.statSync(testFile).mtime);
-// sets atime
-assert(oldStat.atime < fs.statSync(testFile).atime);
-
-// does not sets mtime if told not to
-testFile = tmpFile();
-oldStat = resetUtimes(testFile);
-result = shell.touch('-a', testFile);
-assert.equal(result.code, 0);
-assert.equal(oldStat.mtime.getTime(), fs.statSync(testFile).mtime.getTime());
-
-// does not sets atime if told not to
-testFile = tmpFile();
-oldStat = resetUtimes(testFile);
-result = shell.touch('-m', testFile);
-assert.equal(result.code, 0);
-assert.equal(oldStat.atime.getTime(), fs.statSync(testFile).atime.getTime());
-
-// multiple files
-testFile = tmpFile(true);
-testFile2 = tmpFile(true);
-shell.rm('-f', testFile, testFile2);
-result = shell.touch(testFile, testFile2);
-assert.equal(result.code, 0);
-assert(fs.existsSync(testFile));
-assert(fs.existsSync(testFile2));
-
-// file array
-testFile = tmpFile(true);
-testFile2 = tmpFile(true);
-shell.rm('-f', testFile, testFile2);
-result = shell.touch([testFile, testFile2]);
-assert.equal(result.code, 0);
-assert(fs.existsSync(testFile));
-assert(fs.existsSync(testFile2));
-
-// touching broken link creates a new file
-if (process.platform !== 'win32') {
-  result = shell.touch('resources/badlink');
-  assert.equal(result.code, 0);
-  assert.ok(!shell.error());
-  assert.ok(fs.existsSync('resources/not_existed_file'));
-  shell.rm('resources/not_existed_file');
-}
-
+// Helper functions
 function resetUtimes(f) {
-  var d = new Date();
+  const d = new Date();
   d.setYear(2000);
   fs.utimesSync(f, d, d);
   return fs.statSync(f);
 }
 
-function tmpFile(noCreate) {
-  var str = crypto.randomBytes(Math.ceil(10 / 2)).toString('hex');
-  var file = 'tmp/' + str;
+function tmpFile(t, noCreate) {
+  const str = crypto.randomBytes(Math.ceil(10 / 2)).toString('hex');
+  const file = `${t.context.tmp}/${str}`;
   if (!noCreate) {
     fs.closeSync(fs.openSync(file, 'a'));
   }
@@ -138,6 +34,141 @@ function tmpFile(noCreate) {
 }
 
 
-// required for the test runner
-shell.exit(123);
+//
+// Valids
+//
 
+test('should handle args', t => {
+  const result = shell.touch();
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+});
+
+test('arguments must be strings', t => {
+  const result = shell.touch(1);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+});
+
+test('exits without error when trying to touch a directory', t => {
+  const result = shell.touch(t.context.tmp);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+});
+
+test('creates new files', t => {
+  const testFile = tmpFile(t);
+  const result = shell.touch(testFile);
+  t.truthy(fs.existsSync(testFile));
+  t.is(result.code, 0);
+});
+
+test('does not create a file if told not to', t => {
+  const testFile = tmpFile(t, true);
+  const result = shell.touch('-c', testFile);
+  t.is(result.code, 0);
+  t.falsy(fs.existsSync(testFile));
+});
+
+test('handles globs correctly', t => {
+  shell.touch(`${t.context.tmp}/file.txt`);
+  shell.touch(`${t.context.tmp}/file.js`);
+  const result = shell.touch(`${t.context.tmp}/file*`);
+  t.is(result.code, 0);
+  const files = shell.ls(`${t.context.tmp}/file*`);
+  t.truthy(files.indexOf(`${t.context.tmp}/file.txt`) > -1);
+  t.truthy(files.indexOf(`${t.context.tmp}/file.js`) > -1);
+  t.is(files.length, 2);
+});
+
+test('errors if reference file is not found', t => {
+  const testFile = tmpFile(t);
+  const refFile = tmpFile(t, true);
+  const result = shell.touch({ '-r': refFile }, testFile);
+  t.is(result.code, 1);
+  t.truthy(shell.error());
+});
+
+test('uses a reference file for mtime', t => {
+  const testFile = tmpFile(t);
+  const testFile2 = tmpFile(t);
+  shell.touch(testFile2);
+  utils.sleep(1000);
+  let result = shell.touch(testFile);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.not(
+    fs.statSync(testFile).mtime.getTime(),
+    fs.statSync(testFile2).mtime.getTime()
+  );
+  t.not(
+    fs.statSync(testFile).atime.getTime(),
+    fs.statSync(testFile2).atime.getTime()
+  );
+  result = shell.touch({ '-r': testFile2 }, testFile);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(
+    fs.statSync(testFile).mtime.getTime(),
+    fs.statSync(testFile2).mtime.getTime()
+  );
+  t.is(
+    fs.statSync(testFile).atime.getTime(),
+    fs.statSync(testFile2).atime.getTime()
+  );
+});
+
+test('sets mtime and atime by default', t => {
+  const testFile = tmpFile(t);
+  const oldStat = resetUtimes(testFile);
+  const result = shell.touch(testFile);
+  t.is(result.code, 0);
+  t.truthy(oldStat.mtime < fs.statSync(testFile).mtime);
+  t.truthy(oldStat.atime < fs.statSync(testFile).atime);
+});
+
+test('does not set mtime if told not to', t => {
+  const testFile = tmpFile(t);
+  const oldStat = resetUtimes(testFile);
+  const result = shell.touch('-a', testFile);
+  t.is(result.code, 0);
+  t.is(oldStat.mtime.getTime(), fs.statSync(testFile).mtime.getTime());
+});
+
+test('does not set atime if told not to', t => {
+  const testFile = tmpFile(t);
+  const oldStat = resetUtimes(testFile);
+  const result = shell.touch('-m', testFile);
+  t.is(result.code, 0);
+  t.is(oldStat.atime.getTime(), fs.statSync(testFile).atime.getTime());
+});
+
+test('multiple files', t => {
+  const testFile = tmpFile(t, true);
+  const testFile2 = tmpFile(t, true);
+  shell.rm('-f', testFile, testFile2);
+  const result = shell.touch(testFile, testFile2);
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync(testFile));
+  t.truthy(fs.existsSync(testFile2));
+});
+
+test('file array', t => {
+  const testFile = tmpFile(t, true);
+  const testFile2 = tmpFile(t, true);
+  shell.rm('-f', testFile, testFile2);
+  const result = shell.touch([testFile, testFile2]);
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync(testFile));
+  t.truthy(fs.existsSync(testFile2));
+});
+
+test('touching broken link creates a new file', t => {
+  if (process.platform !== 'win32') {
+    const result = shell.touch('resources/badlink');
+    t.is(result.code, 0);
+    t.falsy(shell.error());
+    t.truthy(fs.existsSync('resources/not_existed_file'));
+    shell.rm('resources/not_existed_file');
+  }
+});

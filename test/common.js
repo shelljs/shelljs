@@ -1,116 +1,147 @@
-var shell = require('..');
-var common = require('../src/common');
+import test from 'ava';
 
-var assert = require('assert');
+import shell from '..';
+import common from '../src/common';
+import utils from './utils/utils';
 
 shell.config.silent = true;
-
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
 
 //
 // Invalids
 //
 
-// too few args
-assert.throws(function () {
-  common.expand();
-}, TypeError);
+test('too few args', t => {
+  t.throws(() => {
+    common.expand();
+  }, TypeError);
+});
 
-// should be a list
-assert.throws(function () {
-  common.expand("resources");
-}, TypeError);
+test('should be a list', t => {
+  t.throws(() => {
+    common.expand('resources');
+  }, TypeError);
+});
 
 //
 // Valids
 //
 
-var result;
-
-// single file, array syntax
-result = common.expand(['resources/file1.txt']);
-assert.equal(shell.error(), null);
-assert.deepEqual(result, ['resources/file1.txt']);
-
-// multiple file, glob syntax, * for file name
-result = common.expand(['resources/file*.txt']);
-assert.equal(shell.error(), null);
-assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
-
-// multiple file, glob syntax, * for directory name
-result = common.expand(['*/file*.txt']);
-assert.equal(shell.error(), null);
-assert.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
-
-// multiple file, glob syntax, ** for directory name
-result = common.expand(['**/file*.js']);
-assert.equal(shell.error(), null);
-assert.deepEqual(result.sort(), ["resources/file1.js","resources/file2.js","resources/ls/file1.js","resources/ls/file2.js"].sort());
-
-// broken links still expand
-result = common.expand(['resources/b*dlink']);
-assert.equal(shell.error(), null);
-assert.deepEqual(result, ['resources/badlink']);
-
-// common.parseOptions (normal case)
-result = common.parseOptions('-Rf', {
-  'R': 'recursive',
-  'f': 'force',
-  'r': 'reverse'
+test('single file, array syntax', t => {
+  const result = common.expand(['resources/file1.txt']);
+  t.falsy(shell.error());
+  t.deepEqual(result, ['resources/file1.txt']);
 });
-assert.ok(result.recursive === true);
-assert.ok(result.force === true);
-assert.ok(result.reverse === false);
 
-// common.parseOptions (with mutually-negating options)
-result = common.parseOptions('-f', {
-  'n': 'no_force',
-  'f': '!no_force',
-  'R': 'recursive'
+test('multiple file, glob syntax, * for file name', t => {
+  const result = common.expand(['resources/file*.txt']);
+  t.falsy(shell.error());
+  t.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 });
-assert.ok(result.recursive === false);
-assert.ok(result.no_force === false);
-assert.ok(result.force === undefined); // this key shouldn't exist
 
-// common.parseOptions (the last of the conflicting options should hold)
-var options = {
-  'n': 'no_force',
-  'f': '!no_force',
-  'R': 'recursive'
-};
-result = common.parseOptions('-fn', options);
-assert.ok(result.recursive === false);
-assert.ok(result.no_force === true);
-assert.ok(result.force === undefined); // this key shouldn't exist
-result = common.parseOptions('-nf', options);
-assert.ok(result.recursive === false);
-assert.ok(result.no_force === false);
-assert.ok(result.force === undefined); // this key shouldn't exist
-
-// common.parseOptions using an object to hold options
-result = common.parseOptions({'-v': 'some text here'}, {
-  'v': 'value',
-  'f': 'force',
-  'r': 'reverse'
+test('multiple file, glob syntax, * for directory name', t => {
+  const result = common.expand(['r*/file*.txt']);
+  t.falsy(shell.error());
+  t.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
 });
-assert.ok(result.value === 'some text here');
-assert.ok(result.force === false);
-assert.ok(result.reverse === false);
 
-// Some basic tests on the ShellString type
-result = shell.ShellString('foo');
-assert.strictEqual(result.toString(), 'foo');
-assert.equal(result.stdout, 'foo');
-assert.ok(typeof result.stderr === 'undefined');
-assert.ok(result.to);
-assert.ok(result.toEnd);
+test('multiple file, glob syntax, ** for directory name', t => {
+  const result = common.expand(['resources/**/file*.js']);
+  t.falsy(shell.error());
+  t.deepEqual(
+    result.sort(),
+    ['resources/file1.js', 'resources/file2.js', 'resources/ls/file1.js', 'resources/ls/file2.js'].sort()
+  );
+});
 
-// Commands that fail will still output error messages to stderr
-result = shell.exec(JSON.stringify(process.execPath) + ' -e "require(\'../global\'); ls(\'noexist\'); cd(\'noexist\');"');
-assert.equal(result.stdout, '');
-assert.equal(result.stderr, 'ls: no such file or directory: noexist\ncd: no such file or directory: noexist\n');
+test('broken links still expand', t => {
+  const result = common.expand(['resources/b*dlink']);
+  t.falsy(shell.error());
+  t.deepEqual(result, ['resources/badlink']);
+});
 
-shell.exit(123);
+test('common.parseOptions (normal case)', t => {
+  const result = common.parseOptions('-Rf', {
+    R: 'recursive',
+    f: 'force',
+    r: 'reverse',
+  });
 
+  t.truthy(result.recursive);
+  t.truthy(result.force);
+  t.falsy(result.reverse);
+});
 
+test('common.parseOptions (with mutually-negating options)', t => {
+  const result = common.parseOptions('-f', {
+    n: 'no_force',
+    f: '!no_force',
+    R: 'recursive',
+  });
+
+  t.falsy(result.recursive);
+  t.falsy(result.no_force);
+  t.is(result.force, undefined); // this key shouldn't exist
+});
+
+test(
+  'common.parseOptions (the last of the conflicting options should hold)',
+  t => {
+    const options = {
+      n: 'no_force',
+      f: '!no_force',
+      R: 'recursive',
+    };
+    let result = common.parseOptions('-fn', options);
+    t.false(result.recursive);
+    t.truthy(result.no_force);
+    t.is(result.force, undefined); // this key shouldn't exist
+    result = common.parseOptions('-nf', options);
+    t.false(result.recursive);
+    t.false(result.no_force);
+    t.is(result.force, undefined); // this key shouldn't exist
+  }
+);
+
+test('common.parseOptions using an object to hold options', t => {
+  const result = common.parseOptions({ '-v': 'some text here' }, {
+    v: 'value',
+    f: 'force',
+    r: 'reverse',
+  });
+
+  t.is(result.value, 'some text here');
+  t.false(result.force);
+  t.false(result.reverse);
+});
+
+test('Some basic tests on the ShellString type', t => {
+  const result = shell.ShellString('foo');
+  t.is(result.toString(), 'foo');
+  t.is(result.stdout, 'foo');
+  t.is(typeof result.stderr, 'undefined');
+  t.truthy(result.to);
+  t.truthy(result.toEnd);
+});
+
+test.cb('Commands that fail will still output error messages to stderr', t => {
+  const script = 'require(\'../global\'); ls(\'noexist\'); cd(\'noexist\');';
+  utils.runScript(script, (err, stdout, stderr) => {
+    t.is(stdout, '');
+    t.is(
+      stderr,
+      'ls: no such file or directory: noexist\ncd: no such file or directory: noexist\n'
+    );
+    t.end();
+  });
+});
+
+test('execPath value makes sense', t => {
+  // TODO(nate): change this test if we add electron support in the unit tests
+  t.is(common.config.execPath, process.execPath);
+  t.is(typeof common.config.execPath, 'string');
+});
+
+test('Changing common.config.execPath does not modify process', t => {
+  common.config.execPath = 'foo';
+  t.not(common.config.execPath, process.execPath);
+});

@@ -1,49 +1,70 @@
-var shell = require('..');
+import fs from 'fs';
 
-var assert = require('assert'),
-    fs = require('fs');
+import test from 'ava';
 
-shell.config.silent = true;
+import shell from '..';
+import utils from './utils/utils';
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
+  shell.config.resetForTesting();
+  shell.mkdir(t.context.tmp);
+});
+
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
+});
+
 
 //
 // Invalids
 //
 
-// Normal strings don't have '.toEnd()' anymore
-var str = 'hello world';
-assert.ok(typeof str.toEnd === 'undefined');
+test('Normal strings don\'t have \'.toEnd()\' anymore', t => {
+  const str = 'hello world';
+  t.is(typeof str.toEnd, 'undefined');
+});
 
-shell.ShellString('hello world').toEnd();
-assert.ok(shell.error());
+test('missing file argument', t => {
+  shell.ShellString('hello world').toEnd();
+  t.truthy(shell.error());
+});
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-assert.ok(shell.error());
 //
 // Valids
 //
 
-var result;
-assert.equal(fs.existsSync('tmp/toEnd1'), false); //Check file toEnd() creates does not already exist
-assert.equal(fs.existsSync('tmp/toEnd2'), false);
-shell.ShellString('hello ').toEnd('tmp/toEnd1');
-assert.equal(fs.existsSync('tmp/toEnd1'), true); //Check that file was created
-shell.ShellString('world').toEnd('tmp/toEnd1').toEnd('tmp/toEnd2'); //Write some more to the file
-result = shell.cat('tmp/toEnd1');
-assert.equal(shell.error(), null);
-assert.equal(result, 'hello world'); //Check that the result is what we expect
-result = shell.cat('tmp/toEnd2');
-assert.equal(shell.error(), null);
-assert.equal(result, 'world'); //Check that the result is what we expect
+test('creates a new file', t => {
+  t.falsy(fs.existsSync(`${t.context.tmp}/toEnd1`)); // Check file toEnd() creates does not already exist
+  shell.ShellString('hello ').toEnd(`${t.context.tmp}/toEnd1`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/toEnd1`)); // Check that file was created
+  const result = shell.cat(`${t.context.tmp}/toEnd1`);
+  t.is(result.toString(), 'hello ');
+});
 
-// With a glob
-shell.ShellString('good').to('tmp/toE*1');
-shell.ShellString('bye').toEnd('tmp/toE*1');
-assert.equal(fs.existsSync('tmp/toE*1'), false, 'globs are not interpreted literally');
-result = shell.cat('tmp/toEnd1');
-assert.equal(shell.error(), null);
-assert.equal(result, 'goodbye');
+test('can be chained', t => {
+  t.falsy(fs.existsSync(`${t.context.tmp}/toEnd1`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/toEnd2`));
+  shell.ShellString('hello ').toEnd(`${t.context.tmp}/toEnd1`);
+  shell.ShellString('world')
+    .toEnd(`${t.context.tmp}/toEnd1`)
+    .toEnd(`${t.context.tmp}/toEnd2`); // Write some more to the file
+  const result1 = shell.cat(`${t.context.tmp}/toEnd1`);
+  t.falsy(shell.error());
+  t.is(result1.toString(), 'hello world'); // Check that the result is what we expect
+  const result2 = shell.cat(`${t.context.tmp}/toEnd2`);
+  t.falsy(shell.error());
+  t.is(result2.toString(), 'world'); // Check that the result is what we expect
+});
 
-shell.exit(123);
+test('With a glob', t => {
+  shell.touch(`${t.context.tmp}/toEnd1`);
+  shell.ShellString('good').to(`${t.context.tmp}/toE*1`);
+  shell.ShellString('bye').toEnd(`${t.context.tmp}/toE*1`);
+  t.falsy(
+    fs.existsSync(`${t.context.tmp}/toE*1`)
+  );
+  const result = shell.cat(`${t.context.tmp}/toEnd1`);
+  t.falsy(shell.error());
+  t.is(result.toString(), 'goodbye');
+});

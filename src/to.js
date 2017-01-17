@@ -20,17 +20,17 @@ common.register('to', _to, {
 //@ ShellStrings (such as those returned by `cat`, `grep`, etc). _Like Unix
 //@ redirections, `to()` will overwrite any existing file!_
 function _to(options, file) {
-  if (!file)
-    common.error('wrong arguments');
+  if (!file) common.error('wrong arguments');
 
-  if (!fs.existsSync( path.dirname(file) ))
-      common.error('no such file or directory: ' + path.dirname(file));
+  if (!fs.existsSync(path.dirname(file))) {
+    common.error('no such file or directory: ' + path.dirname(file));
+  }
 
   try {
     fs.writeFileSync(file, this.stdout || this.toString(), 'utf8');
     return this;
-  } catch(e) {
-    common.error('could not write to file (code '+e.code+'): '+file, true);
+  } catch (e) {
+    common.error('could not write to file (code ' + e.code + '): ' + file, { continue: true });
   }
 }
 module.exports = _to;

@@ -1,6 +1,6 @@
 {
   "name": "shelljs",
-  "version": "0.7.3",
+  "version": "0.7.6",
   "description": "Portable Unix shell commands for Node.js",
   "keywords": [
     "shelljs",
@@ -13,8 +13,8 @@
     "synchronous"
   ],
   "contributors": [
-    "Ari Porad <ari@ariporad.com> (http://ariporad.com/)",
-    "Nate Fischer <ntfschr@gmail.com> (https://github.com/nfischer)"
+    "Nate Fischer <ntfschr@gmail.com> (https://github.com/nfischer)",
+    "Brandon Freitag <freitagbr@gmail.com> (https://github.com/freitagbr)"
   ],
   "repository": {
     "type": "git",
@@ -23,11 +23,21 @@
   "license": "BSD-3-Clause",
   "homepage": "http://github.com/shelljs/shelljs",
   "main": "./shell.js",
+  "files": [
+    "commands.json",
+    "global.js",
+    "make.js",
+    "plugin.js",
+    "shell.js",
+    "bin",
+    "src"
+  ],
   "scripts": {
     "posttest": "npm run lint",
-    "test": "node scripts/run-tests",
+    "test": "nyc --reporter=text --reporter=lcov ava --serial test/*.js",
+    "test-no-coverage": "ava --serial test/*.js",
     "gendocs": "node scripts/generate-docs",
-    "lint": "jshint .",
+    "lint": "eslint .",
     "after-travis": "travis-check-changes",
     "changelog": "shelljs-changelog",
     "release:major": "shelljs-release major",
@@ -43,10 +53,15 @@
     "rechoir": "^0.6.2"
   },
   "devDependencies": {
+    "ava": "^0.16.0",
     "coffee-script": "^1.10.0",
-    "jshint": "^2.9.2",
+    "eslint": "^2.0.0",
+    "eslint-config-airbnb-base": "^3.0.0",
+    "eslint-plugin-import": "^1.11.1",
+    "nyc": "^10.0.0",
     "shelljs-changelog": "^0.2.0",
     "shelljs-release": "^0.2.0",
+    "shx": "^0.2.0",
     "travis-check-changes": "^0.2.0"
   },
   "optionalDependencies": {},

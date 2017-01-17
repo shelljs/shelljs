@@ -1,109 +1,138 @@
-var shell = require('..');
+import fs from 'fs';
 
-var assert = require('assert'),
-    fs = require('fs');
+import test from 'ava';
 
-shell.config.silent = true;
+import shell from '..';
+import utils from './utils/utils';
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
+  shell.config.resetForTesting();
+  shell.cp('-r', 'resources', t.context.tmp);
+});
+
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
+});
+
 
 //
 // Invalids
 //
 
-var result;
+test('no args', t => {
+  const result = shell.grep();
+  t.truthy(shell.error());
+  t.is(result.code, 2);
+});
 
-result = shell.grep();
-assert.ok(shell.error());
-assert.equal(result.code, 2);
+test('too few args', t => {
+  const result = shell.grep(/asdf/g); // too few args
+  t.truthy(shell.error());
+  t.is(result.code, 2);
+});
 
-result = shell.grep(/asdf/g); // too few args
-assert.ok(shell.error());
-assert.equal(result.code, 2);
+test('no such file', t => {
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
+  const result = shell.grep(/asdf/g, '/asdfasdf'); // no such file
+  t.truthy(shell.error());
+  t.is(result.stderr, 'grep: no such file or directory: /asdfasdf');
+  t.is(result.code, 2);
+});
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-result = shell.grep(/asdf/g, '/asdfasdf'); // no such file
-assert.ok(shell.error());
-assert.equal(result.stderr, 'grep: no such file or directory: /asdfasdf');
-assert.equal(result.code, 2);
-
-// if at least one file is missing, this should be an error
-shell.cp('-f', 'resources/file1', 'tmp/file1');
-assert.equal(fs.existsSync('asdfasdf'), false); // sanity check
-assert.equal(fs.existsSync('tmp/file1'), true); // sanity check
-result = shell.grep(/asdf/g, 'tmp/file1', 'asdfasdf');
-assert.ok(shell.error());
-assert.equal(result.stderr, 'grep: no such file or directory: asdfasdf');
-assert.equal(result.code, 2);
+test('if at least one file is missing, this should be an error', t => {
+  t.falsy(fs.existsSync('asdfasdf')); // sanity check
+  t.truthy(fs.existsSync(`${t.context.tmp}/file1`)); // sanity check
+  const result = shell.grep(/asdf/g, `${t.context.tmp}/file1`, 'asdfasdf');
+  t.truthy(shell.error());
+  t.is(result.stderr, 'grep: no such file or directory: asdfasdf');
+  t.is(result.code, 2);
+});
 
 //
 // Valids
 //
 
-result = shell.grep('line', 'resources/a.txt');
-assert.equal(shell.error(), null);
-assert.equal(result.split('\n').length - 1, 4);
+test('basic', t => {
+  const result = shell.grep('line', 'resources/a.txt');
+  t.falsy(shell.error());
+  t.is(result.split('\n').length - 1, 4);
+});
 
-result = shell.grep('-v', 'line', 'resources/a.txt');
-assert.equal(shell.error(), null);
-assert.equal(result.split('\n').length - 1, 8);
+test('-v option', t => {
+  const result = shell.grep('-v', 'line', 'resources/a.txt');
+  t.falsy(shell.error());
+  t.is(result.split('\n').length - 1, 8);
+});
 
-result = shell.grep('line one', 'resources/a.txt');
-assert.equal(shell.error(), null);
-assert.equal(result, 'This is line one\n');
+test('matches one line', t => {
+  const result = shell.grep('line one', 'resources/a.txt');
+  t.falsy(shell.error());
+  t.is(result.toString(), 'This is line one\n');
+});
 
-// multiple files
-result = shell.grep(/test/, 'resources/file1.txt', 'resources/file2.txt');
-assert.equal(shell.error(), null);
-assert.equal(result, 'test1\ntest2\n');
+test('multiple files', t => {
+  const result = shell.grep(/test/, 'resources/file1.txt',
+    'resources/file2.txt');
+  t.falsy(shell.error());
+  t.is(result.toString(), 'test1\ntest2\n');
+});
 
-// multiple files, array syntax
-result = shell.grep(/test/, ['resources/file1.txt', 'resources/file2.txt']);
-assert.equal(shell.error(), null);
-assert.equal(result, 'test1\ntest2\n');
+test('multiple files, array syntax', t => {
+  const result = shell.grep(/test/, ['resources/file1.txt',
+    'resources/file2.txt']);
+  t.falsy(shell.error());
+  t.is(result.toString(), 'test1\ntest2\n');
+});
 
-// multiple files, glob syntax, * for file name
-result = shell.grep(/test/, 'resources/file*.txt');
-assert.equal(shell.error(), null);
-assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
+test('multiple files, glob syntax, * for file name', t => {
+  const result = shell.grep(/test/, 'resources/file*.txt');
+  t.falsy(shell.error());
+  t.truthy(result.toString(), 'test1\ntest2\n');
+});
 
-// multiple files, glob syntax, * for directory name
-result = shell.grep(/test/, '*/file*.txt');
-assert.equal(shell.error(), null);
-assert.ok(result == 'test1\ntest2\n' || result == 'test2\ntest1\n');
+test('multiple files, glob syntax, * for directory name', t => {
+  const result = shell.grep(/test/, 'r*/file*.txt');
+  t.falsy(shell.error());
+  t.is(result.toString(), 'test1\ntest2\n');
+});
 
-// multiple files, glob syntax, ** for directory name
-result = shell.grep(/test/, '**/file*.js');
-assert.equal(shell.error(), null);
-assert.equal(result, 'test\ntest\ntest\ntest\n');
+test('multiple files, double-star glob', t => {
+  const result = shell.grep(/test/, 'resources/**/file*.js');
+  t.falsy(shell.error());
+  t.is(result.toString(), 'test\ntest\ntest\ntest\n');
+});
 
-// one file, * in regex
-result = shell.grep(/alpha*beta/, 'resources/grep/file');
-assert.equal(shell.error(), null);
-assert.equal(result, 'alphaaaaaaabeta\nalphbeta\n');
+test('one file, * in regex', t => {
+  const result = shell.grep(/alpha*beta/, 'resources/grep/file');
+  t.falsy(shell.error());
+  t.is(result.toString(), 'alphaaaaaaabeta\nalphbeta\n');
+});
 
-// one file, * in string-regex
-result = shell.grep('alpha*beta', 'resources/grep/file');
-assert.equal(shell.error(), null);
-assert.equal(result, 'alphaaaaaaabeta\nalphbeta\n');
+test('one file, * in string-regex', t => {
+  const result = shell.grep('alpha*beta', 'resources/grep/file');
+  t.falsy(shell.error());
+  t.is(result.toString(), 'alphaaaaaaabeta\nalphbeta\n');
+});
 
-// one file, * in regex, make sure * is not globbed
-result = shell.grep(/l*\.js/, 'resources/grep/file');
-assert.equal(shell.error(), null);
-assert.equal(result, 'this line ends in.js\nlllllllllllllllll.js\n');
+test('one file, * in regex, make sure * is not globbed', t => {
+  const result = shell.grep(/l*\.js/, 'resources/grep/file');
+  t.falsy(shell.error());
+  t.is(result.toString(), 'this line ends in.js\nlllllllllllllllll.js\n');
+});
 
-// one file, * in string-regex, make sure * is not globbed
-result = shell.grep('l*\\.js', 'resources/grep/file');
-assert.equal(shell.error(), null);
-assert.equal(result, 'this line ends in.js\nlllllllllllllllll.js\n');
+test('one file, * in string-regex, make sure * is not globbed', t => {
+  const result = shell.grep('l*\\.js', 'resources/grep/file');
+  t.falsy(shell.error());
+  t.is(result.toString(), 'this line ends in.js\nlllllllllllllllll.js\n');
+});
 
-// -l option
-result = shell.grep('-l', 'test1', 'resources/file1', 'resources/file2', 'resources/file1.txt');
-assert.equal(shell.error(), null);
-assert.ok(result.match(/file1(\n|$)/));
-assert.ok(result.match(/file1.txt/));
-assert.ok(!result.match(/file2.txt/));
-assert.equal(result.split('\n').length - 1, 2);
-
-shell.exit(123);
+test('-l option', t => {
+  const result = shell.grep('-l', 'test1', 'resources/file1', 'resources/file2',
+    'resources/file1.txt');
+  t.falsy(shell.error());
+  t.truthy(result.match(/file1(\n|$)/));
+  t.truthy(result.match(/file1.txt/));
+  t.falsy(result.match(/file2.txt/));
+  t.is(result.split('\n').length - 1, 2);
+});

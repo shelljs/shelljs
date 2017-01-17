@@ -1,50 +1,59 @@
-var shell = require('..');
+import test from 'ava';
 
-var assert = require('assert'),
-    child = require('child_process');
+import shell from '..';
+import utils from './utils/utils';
 
 shell.config.silent = true;
-
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
 
 //
 // Valids
 //
 
-
-// From here on we use child.exec() to intercept the stdout
-
-
-// simple test with defaults
-shell.mkdir('-p', 'tmp');
-var file = 'tmp/tempscript'+Math.random()+'.js',
-    script = 'require(\'../../global.js\'); echo("-asdf", "111");'; // test '-' bug (see issue #20)
-shell.ShellString(script).to(file);
-child.exec(JSON.stringify(process.execPath)+' '+file, function(err, stdout) {
-  assert.equal(stdout, '-asdf 111\n');
-
-  // using null as an explicit argument doesn't crash the function
-  file = 'tmp/tempscript'+Math.random()+'.js';
-  script = 'require(\'../../global.js\'); echo(null);';
-  shell.ShellString(script).to(file);
-  child.exec(JSON.stringify(process.execPath)+' '+file, function(err, stdout, stderr) {
-    assert.equal(stdout, 'null\n');
-    assert.equal(stderr, '');
-
-    // simple test with silent(true)
-    shell.mkdir('-p', 'tmp');
-    var file = 'tmp/tempscript'+Math.random()+'.js',
-        script = 'require(\'../../global.js\'); config.silent=true; echo(555);';
-    shell.ShellString(script).to(file);
-    child.exec(JSON.stringify(process.execPath)+' '+file, function(err, stdout) {
-      assert.equal(stdout, '555\n');
-
-      theEnd();
-    });
+test.cb('simple test with defaults', t => {
+  const script = 'require(\'../global.js\'); echo("hello", "world");';
+  utils.runScript(script, (err, stdout, stderr) => {
+    t.falsy(err);
+    t.is(stdout, 'hello world\n');
+    t.is(stderr, '');
+    t.end();
   });
 });
 
-function theEnd() {
-  shell.exit(123);
-}
+test.cb('allow arguments to begin with a hyphen', t => {
+  // see issue #20
+  const script = 'require(\'../global.js\'); echo("-asdf", "111");';
+  utils.runScript(script, (err, stdout, stderr) => {
+    t.falsy(err);
+    t.is(stdout, '-asdf 111\n');
+    t.is(stderr, '');
+    t.end();
+  });
+});
+
+test.cb("using null as an explicit argument doesn't crash the function", t => {
+  const script = 'require(\'../global.js\'); echo(null);';
+  utils.runScript(script, (err, stdout, stderr) => {
+    t.falsy(err);
+    t.is(stdout, 'null\n');
+    t.is(stderr, '');
+    t.end();
+  });
+});
+
+test.cb('simple test with silent(true)', t => {
+  const script = 'require(\'../global.js\'); config.silent=true; echo(555);';
+  utils.runScript(script, (err, stdout) => {
+    t.falsy(err);
+    t.is(stdout, '555\n');
+    t.end();
+  });
+});
+
+test.cb('-e option', t => {
+  const script = "require('../global.js'); echo('-e', '\\tmessage');";
+  utils.runScript(script, (err, stdout) => {
+    t.falsy(err);
+    t.is(stdout, '\tmessage\n');
+    t.end();
+  });
+});

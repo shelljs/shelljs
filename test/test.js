@@ -1,90 +1,131 @@
-var shell = require('..');
-var common = require('../src/common');
+import test from 'ava';
 
-var assert = require('assert');
+import shell from '..';
+import common from '../src/common';
 
 shell.config.silent = true;
-
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
 
 //
 // Invalids
 //
 
-var result = shell.test(); // no expression given
-assert.ok(shell.error());
+test('no expression given', t => {
+  shell.test();
+  t.truthy(shell.error());
+});
 
-var result = shell.test('asdf'); // bad expression
-assert.ok(shell.error());
+test('bad expression', t => {
+  shell.test('asdf');
+  t.truthy(shell.error());
+});
 
-var result = shell.test('f', 'resources/file1'); // bad expression
-assert.ok(shell.error());
+test('bad expression #2', t => {
+  shell.test('f', 'resources/file1');
+  t.truthy(shell.error());
+});
 
-var result = shell.test('-f'); // no file
-assert.ok(shell.error());
+test('no file', t => {
+  shell.test('-f');
+  t.truthy(shell.error());
+});
 
 //
 // Valids
 //
 
-//exists
-var result = shell.test('-e', 'resources/file1');
-assert.equal(shell.error(), null);
-assert.equal(result, true);//true
 
-var result = shell.test('-e', 'resources/404');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('-e option succeeds for files', t => {
+  const result = shell.test('-e', 'resources/file1');
+  t.falsy(shell.error());
+  t.truthy(result);
+});
 
-//directory
-var result = shell.test('-d', 'resources');
-assert.equal(shell.error(), null);
-assert.equal(result, true);//true
+test('-e option fails if it does not exist', t => {
+  const result = shell.test('-e', 'resources/404');
+  t.falsy(shell.error());
+  t.falsy(result);
+});
 
-var result = shell.test('-f', 'resources');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('-d option succeeds for a directory', t => {
+  const result = shell.test('-d', 'resources');
+  t.falsy(shell.error());
+  t.truthy(result);
+});
 
-var result = shell.test('-L', 'resources');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('-f option fails for a directory', t => {
+  const result = shell.test('-f', 'resources');
+  t.falsy(shell.error());
+  t.falsy(result);
+});
 
-//file
-var result = shell.test('-d', 'resources/file1');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('-L option fails for a directory', t => {
+  const result = shell.test('-L', 'resources');
+  t.falsy(shell.error());
+  t.falsy(result);
+});
 
-var result = shell.test('-f', 'resources/file1');
-assert.equal(shell.error(), null);
-assert.equal(result, true);//true
+test('-d option fails for a file', t => {
+  const result = shell.test('-d', 'resources/file1');
+  t.falsy(shell.error());
+  t.falsy(result);
+});
 
-var result = shell.test('-L', 'resources/file1');
-assert.equal(shell.error(), null);
-assert.equal(result, false);
+test('-f option succeeds for a file', t => {
+  const result = shell.test('-f', 'resources/file1');
+  t.falsy(shell.error());
+  t.truthy(result);
+});
 
-//link
-// Windows is weird with links so skip these tests
-if (common.platform !== 'win') {
-    var result = shell.test('-d', 'resources/link');
-    assert.equal(shell.error(), null);
-    assert.equal(result, false);
+test('-L option fails for a file', t => {
+  const result = shell.test('-L', 'resources/file1');
+  t.falsy(shell.error());
+  t.falsy(result);
+});
 
-    var result = shell.test('-f', 'resources/link');
-    assert.equal(shell.error(), null);
-    assert.equal(result, true);//true
+test('test command is not globbed', t => {
+  // regression #529
+  const result = shell.test('-f', 'resources/**/*.js');
+  t.falsy(shell.error());
+  t.falsy(result);
+});
 
-    var result = shell.test('-L', 'resources/link');
-    assert.equal(shell.error(), null);
-    assert.equal(result, true);//true
+// TODO(nate): figure out a way to test links on Windows
+test('-d option fails for a link', t => {
+  if (common.platform !== 'win') {
+    const result = shell.test('-d', 'resources/link');
+    t.falsy(shell.error());
+    t.falsy(result);
+  }
+});
 
-    var result = shell.test('-L', 'resources/badlink');
-    assert.equal(shell.error(), null);
-    assert.equal(result, true);//true
+test('-f option succeeds for a link', t => {
+  if (common.platform !== 'win') {
+    const result = shell.test('-f', 'resources/link');
+    t.falsy(shell.error());
+    t.truthy(result);
+  }
+});
 
-    var result = shell.test('-L', 'resources/404');
-    assert.equal(shell.error(), null);
-    assert.equal(result, false);//false
-}
+test('-L option succeeds for a symlink', t => {
+  if (common.platform !== 'win') {
+    const result = shell.test('-L', 'resources/link');
+    t.falsy(shell.error());
+    t.truthy(result);
+  }
+});
 
-shell.exit(123);
+test('-L option works for broken symlinks', t => {
+  if (common.platform !== 'win') {
+    const result = shell.test('-L', 'resources/badlink');
+    t.falsy(shell.error());
+    t.truthy(result);
+  }
+});
+
+test('-L option fails for missing files', t => {
+  if (common.platform !== 'win') {
+    const result = shell.test('-L', 'resources/404');
+    t.falsy(shell.error());
+    t.falsy(result);
+  }
+});

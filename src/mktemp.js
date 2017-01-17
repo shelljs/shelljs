@@ -4,42 +4,43 @@ var os = require('os');
 var common = require('./common');
 var mkdir = require('./mkdir');
 var touch = require('./touch');
-var rm = require('./rm');
 var chmod = require('./chmod');
 
 var LETTERS = 'abcdefghijklmnopqrstuvwkyz1234567890'.toUpperCase().split('');
 var MAX_PATTERN_TRIES = 1000;
-var DEFAULT_TEMPLATE = path.resolve(_tempDir(), 'tmp.shelljs.XXXXXXXXXXXXXXXXXXXX');
+var DEFAULT_TEMPLATE = path.resolve(_tempDir(), 'tmp.XXXXXXXXXXXXXXXXXXXX');
+
+common.register('mktemp', mktemp, {
+  cmdOptions: {
+    d: 'directory',
+    u: 'dryRun',
+  },
+  wrapOutput: true,
+});
 
 function writeableDir(dir) {
-  if (!dir || !fs.existsSync(dir))
-    return false;
-
-  if (!fs.statSync(dir).isDirectory())
-    return false;
+  if (!dir || !fs.existsSync(dir)) return false;
+  if (!fs.statSync(dir).isDirectory()) return false;
 
   try {
-    mktemp({ dryRun: true }, path.resolve(dir, 'tmp.shelljs.XXXXXXXXXX'));
+    mktemp({ dryRun: true }, path.resolve(dir, 'tmp.XXXXXXXXXX'));
     return dir;
   } catch (e) {
     return false;
   }
 }
 
-
 // Searches and returns string containing a writeable, platform-dependent temporary directory.
 // Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 function _tempDir() {
   var state = common.state;
-  if (state.tempDir)
-    return state.tempDir; // from cache
+  if (state.tempDir) return state.tempDir; // from cache
 
   state.tempDir = writeableDir(os.tmpdir && os.tmpdir()) || // node 0.10+
-                  writeableDir(os.tmpDir && os.tmpDir()) || // node 0.8+
-                  writeableDir(process.env['TMPDIR']) ||
-                  writeableDir(process.env['TEMP']) ||
-                  writeableDir(process.env['TMP']) ||
-                  writeableDir(process.env['Wimp$ScrapDir']) || // RiscOS
+                  writeableDir(process.env.TMPDIR) ||
+                  writeableDir(process.env.TEMP) ||
+                  writeableDir(process.env.TMP) ||
+                  writeableDir(process.env.Wimp$ScrapDir) || // RiscOS
                   writeableDir('C:\\TEMP') || // Windows
                   writeableDir('C:\\TMP') || // Windows
                   writeableDir('\\TEMP') || // Windows
@@ -51,15 +52,6 @@ function _tempDir() {
 
   return state.tempDir;
 }
-
-
-common.register('mktemp', mktemp, {
-  cmdOptions: {
-    d: 'directory',
-    u: 'dryRun',
-  },
-  wrapOutput: true,
-});
 
 //@
 //@ ### mktemp([options,] [templates...])
@@ -112,6 +104,7 @@ function mktemp(options, templates) {
   }
   return ret;
 }
+
 function _fillTemplate(template) {
   // We itterate over `template` backward so that we only replace trailing X's. Once we find a non-X,
   // we break out of the loop.
@@ -126,4 +119,4 @@ function _fillTemplate(template) {
   }
   return file;
 }
-
+module.exports = mktemp;

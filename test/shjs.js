@@ -1,30 +1,55 @@
-var shell = require('..');
-var path = require('path');
-var assert = require('assert');
+import path from 'path';
 
-function runScript(name) {
-  // prefix with 'node ' for Windows, don't prefix for OSX/Linux
-  var cmd = (process.platform === 'win32' ? JSON.stringify(process.execPath)+ ' ' : '') + path.resolve(__dirname, '../bin/shjs');
-  var script = path.resolve(__dirname, 'resources', 'shjs', name);
-  return shell.exec(cmd + ' ' + script, { silent: true });
+import test from 'ava';
+
+import shell from '..';
+import common from '../src/common';
+
+function runWithShjs(name) {
+  // prefix with 'node ' for Windows, don't prefix for unix
+  const binPath = path.resolve(__dirname, '../bin/shjs');
+  const execPath = process.platform === 'win32'
+    ? `${JSON.stringify(common.config.execPath)} `
+    : '';
+  const script = path.resolve(__dirname, 'resources', 'shjs', name);
+  return shell.exec(`${execPath}${binPath} ${script}`, { silent: true });
 }
 
-// Exit Codes
-assert.equal(runScript('exit-codes.js').code, 42, 'exit code works');
-assert.equal(runScript('exit-0.js').code, 0, 'exiting 0 works');
+//
+// Valids
+//
 
-// Stdout/Stderr
-var stdioRet = runScript('stdout-stderr.js');
-assert.equal(stdioRet.stdout, 'stdout: OK!\n', 'stdout works');
-assert.equal(stdioRet.stderr, 'stderr: OK!\n', 'stderr works');
+test('Non-zero exit code', t => {
+  const result = runWithShjs('exit-codes.js');
+  t.is(result.code, 42);
+  t.is(result.stdout, '');
+  t.falsy(result.stderr);
+});
 
-// CoffeeScript
-assert.equal(runScript('coffeescript.coffee').stdout, 'CoffeeScript: OK!\n');
+test('Zero exit code', t => {
+  const result = runWithShjs('exit-0.js');
+  t.is(result.code, 0);
+  t.is(result.stdout, '');
+  t.falsy(result.stderr);
+});
 
+test('Stdout/Stderr', t => {
+  const result = runWithShjs('stdout-stderr.js');
+  t.is(result.code, 0);
+  t.is(result.stdout, 'stdout: OK!\n');
+  t.is(result.stderr, 'stderr: OK!\n');
+});
 
-// Extension detection
-var extDetectRet = runScript('a-file');
-assert.equal(extDetectRet.code, 0, 'error code works');
-assert.equal(extDetectRet.stdout, 'OK!\n', 'stdout works');
+test('CoffeeScript', t => {
+  const result = runWithShjs('coffeescript.coffee');
+  t.is(result.code, 0);
+  t.is(result.stdout, 'CoffeeScript: OK!\n');
+  t.falsy(result.stderr);
+});
 
-shell.exit(123);
+test('Extension detection', t => {
+  const result = runWithShjs('a-file');
+  t.is(result.code, 0);
+  t.is(result.stdout, 'OK!\n');
+  t.falsy(result.stderr);
+});

@@ -34,14 +34,15 @@ common.register('touch', _touch, {
 //@ A FILE argument that does not exist is created empty, unless -c is supplied.
 //@ This is a partial implementation of *[touch(1)](http://linux.die.net/man/1/touch)*.
 function _touch(opts, files) {
-  if (!files)
+  if (!files) {
     common.error('no files given');
-  else if (typeof files === 'string')
+  } else if (typeof files === 'string') {
     files = [].slice.call(arguments, 1);
-  else
+  } else {
     common.error('file arg should be a string file path or an Array of string file paths');
+  }
 
-  files.forEach(function(f) {
+  files.forEach(function (f) {
     touchFile(opts, f);
   });
   return '';

@@ -1,244 +1,293 @@
-var shell = require('..');
+import fs from 'fs';
+import path from 'path';
 
-var assert = require('assert'),
-    path = require('path'),
-    fs = require('fs');
+import test from 'ava';
 
-shell.config.silent = true;
+import shell from '..';
+import utils from './utils/utils';
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
+  shell.config.resetForTesting();
+  shell.cp('-r', 'resources', t.context.tmp);
+});
+
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
+});
+
 
 //
 // Invalids
 //
 
-var contents;
-var result;
+test('no args', t => {
+  const result = shell.rm();
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'rm: no paths given');
+});
 
-result = shell.rm();
-assert.ok(shell.error());
-assert.equal(result.code, 1);
-assert.equal(result.stderr, 'rm: no paths given');
+test('file does not exist', t => {
+  const result = shell.rm('asdfasdf');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'rm: no such file or directory: asdfasdf');
+});
 
-result = shell.rm('asdfasdf'); // file does not exist
-assert.ok(shell.error());
-assert.equal(result.code, 1);
-assert.equal(result.stderr, 'rm: no such file or directory: asdfasdf');
+test('only an option', t => {
+  const result = shell.rm('-f');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'rm: no paths given');
+});
 
-result = shell.rm('-f'); // no file
-assert.ok(shell.error());
-assert.equal(result.code, 1);
-assert.equal(result.stderr, 'rm: no paths given');
-
-result = shell.rm('-@', 'resources/file1'); // invalid option
-assert.ok(shell.error());
-assert.equal(result.code, 1);
-assert.equal(fs.existsSync('resources/file1'), true);
-assert.equal(result.stderr, 'rm: option not recognized: @');
+test('invalid option', t => {
+  const result = shell.rm('-@', 'resources/file1');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.truthy(fs.existsSync('resources/file1'));
+  t.is(result.stderr, 'rm: option not recognized: @');
+});
 
 //
 // Valids
 //
 
-// file does not exist, but -f specified
-result = shell.rm('-f', 'asdfasdf');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
+test('file does not exist, but -f specified', t => {
+  const result = shell.rm('-f', 'asdfasdf');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+});
 
-// directory does not exist, but -fr specified
-result = shell.rm('-fr', 'fake_dir/');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
+test('directory does not exist, but -fr specified', t => {
+  const result = shell.rm('-fr', 'fake_dir/');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+});
 
-// directory does not exist, but *only -f* specified
-result = shell.rm('-f', 'fake_dir/');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
+test('directory does not exist, but *only -f* specified', t => {
+  const result = shell.rm('-f', 'fake_dir/');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+});
 
-// file (in fake dir) does not exist, but -f specified
-result = shell.rm('-f', 'fake_dir/asdfasdf');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
+test('file (in fake dir) does not exist, but -f specified', t => {
+  const result = shell.rm('-f', 'fake_dir/asdfasdf');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+});
 
-// dir (in fake dir) does not exist, but -fr specified
-result = shell.rm('-fr', 'fake_dir/sub/');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
+test('dir (in fake dir) does not exist, but -fr specified', t => {
+  const result = shell.rm('-fr', 'fake_dir/sub/');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+});
 
-// simple rm
-shell.cp('-f', 'resources/file1', 'tmp/file1');
-assert.equal(fs.existsSync('tmp/file1'), true);
-result = shell.rm('tmp/file1');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(fs.existsSync('tmp/file1'), false);
+test('simple rm', t => {
+  t.truthy(fs.existsSync(`${t.context.tmp}/file1`));
+  const result = shell.rm(`${t.context.tmp}/file1`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(fs.existsSync(`${t.context.tmp}/file1`));
+});
 
-// recursive dir removal - small-caps '-r'
-shell.mkdir('-p', 'tmp/a/b/c');
-assert.equal(fs.existsSync('tmp/a/b/c'), true);
-result = shell.rm('-rf', 'tmp/a');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(fs.existsSync('tmp/a'), false);
+test('recursive dir removal: -r option', t => {
+  shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+  const result = shell.rm('-rf', `${t.context.tmp}/a`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(fs.existsSync(`${t.context.tmp}/a`));
+});
 
-// recursive dir removal - capital '-R'
-shell.mkdir('-p', 'tmp/a/b/c');
-assert.equal(fs.existsSync('tmp/a/b/c'), true);
-result = shell.rm('-Rf', 'tmp/a');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(fs.existsSync('tmp/a'), false);
+test('-R option does the same thing', t => {
+  shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+  const result = shell.rm('-Rf', `${t.context.tmp}/a`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(fs.existsSync(`${t.context.tmp}/a`));
+});
 
-// recursive dir removal - absolute path
-shell.mkdir('-p', 'tmp/a/b/c');
-assert.equal(fs.existsSync('tmp/a/b/c'), true);
-result = shell.rm('-Rf', path.resolve('./tmp/a'));
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(fs.existsSync('tmp/a'), false);
+test('recursive dir removal - absolute path', t => {
+  shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+  const result = shell.rm('-Rf', path.resolve(`./${t.context.tmp}/a`));
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(fs.existsSync(`${t.context.tmp}/a`));
+});
 
-// wildcard
-shell.cp('-f', 'resources/file*', 'tmp');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(fs.existsSync('tmp/file1'), true);
-assert.equal(fs.existsSync('tmp/file2'), true);
-assert.equal(fs.existsSync('tmp/file1.js'), true);
-assert.equal(fs.existsSync('tmp/file2.js'), true);
-result = shell.rm('tmp/file*');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(fs.existsSync('tmp/file1'), false);
-assert.equal(fs.existsSync('tmp/file2'), false);
-assert.equal(fs.existsSync('tmp/file1.js'), false);
-assert.equal(fs.existsSync('tmp/file2.js'), false);
+test('wildcard', t => {
+  const result = shell.rm(`${t.context.tmp}/file*`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(fs.existsSync(`${t.context.tmp}/file1`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/file2`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/file1.js`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/file2.js`));
+});
 
-// recursive dir removal
-shell.mkdir('-p', 'tmp/a/b/c');
-shell.mkdir('-p', 'tmp/b');
-shell.mkdir('-p', 'tmp/c');
-shell.mkdir('-p', 'tmp/.hidden');
-assert.equal(fs.existsSync('tmp/a/b/c'), true);
-assert.equal(fs.existsSync('tmp/b'), true);
-assert.equal(fs.existsSync('tmp/c'), true);
-assert.equal(fs.existsSync('tmp/.hidden'), true);
-result = shell.rm('-rf', 'tmp/*');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-contents = fs.readdirSync('tmp');
-assert.equal(contents.length, 1);
-assert.equal(contents[0], '.hidden'); // shouldn't remove hiddden if no .* given
+test('recursive dir removal', t => {
+  shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
+  shell.mkdir('-p', `${t.context.tmp}/b`);
+  shell.mkdir('-p', `${t.context.tmp}/c`);
+  shell.mkdir('-p', `${t.context.tmp}/.hidden`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/b`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/c`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/.hidden`));
+  const result = shell.rm('-rf', `${t.context.tmp}/*`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  const contents = fs.readdirSync(t.context.tmp);
+  t.is(contents.length, 1);
+  t.is(contents[0], '.hidden'); // shouldn't remove hiddden if no .* given
+});
 
-// recursive dir removal
-shell.mkdir('-p', 'tmp/a/b/c');
-shell.mkdir('-p', 'tmp/b');
-shell.mkdir('-p', 'tmp/c');
-shell.mkdir('-p', 'tmp/.hidden');
-assert.equal(fs.existsSync('tmp/a/b/c'), true);
-assert.equal(fs.existsSync('tmp/b'), true);
-assert.equal(fs.existsSync('tmp/c'), true);
-assert.equal(fs.existsSync('tmp/.hidden'), true);
-result = shell.rm('-rf', 'tmp/*', 'tmp/.*');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-contents = fs.readdirSync('tmp');
-assert.equal(contents.length, 0);
+test('recursive dir removal #2', t => {
+  shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
+  shell.mkdir('-p', `${t.context.tmp}/b`);
+  shell.mkdir('-p', `${t.context.tmp}/c`);
+  shell.mkdir('-p', `${t.context.tmp}/.hidden`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/b`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/c`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/.hidden`));
+  const result = shell.rm('-rf', `${t.context.tmp}/*`, `${t.context.tmp}/.*`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  const contents = fs.readdirSync(t.context.tmp);
+  t.is(contents.length, 0);
+});
 
-// recursive dir removal - array-syntax
-shell.mkdir('-p', 'tmp/a/b/c');
-shell.mkdir('-p', 'tmp/b');
-shell.mkdir('-p', 'tmp/c');
-shell.mkdir('-p', 'tmp/.hidden');
-assert.equal(fs.existsSync('tmp/a/b/c'), true);
-assert.equal(fs.existsSync('tmp/b'), true);
-assert.equal(fs.existsSync('tmp/c'), true);
-assert.equal(fs.existsSync('tmp/.hidden'), true);
-result = shell.rm('-rf', ['tmp/*', 'tmp/.*']);
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-contents = fs.readdirSync('tmp');
-assert.equal(contents.length, 0);
+test('recursive dir removal - array-syntax', t => {
+  shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
+  shell.mkdir('-p', `${t.context.tmp}/b`);
+  shell.mkdir('-p', `${t.context.tmp}/c`);
+  shell.mkdir('-p', `${t.context.tmp}/.hidden`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/b`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/c`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/.hidden`));
+  const result = shell.rm('-rf', [`${t.context.tmp}/*`, `${t.context.tmp}/.*`]);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  const contents = fs.readdirSync(t.context.tmp);
+  t.is(contents.length, 0);
+});
 
-// removal of a read-only file (unforced)
-shell.mkdir('-p', 'tmp/readonly');
-shell.ShellString('asdf').to('tmp/readonly/file1');
-fs.chmodSync('tmp/readonly/file1', '0444'); // -r--r--r--
-result = shell.rm('tmp/readonly/file1');
-assert.equal(fs.existsSync('tmp/readonly/file1'), true); // bash's rm always asks before removing read-only files
-                                                         // here we just assume "no"
+test('removal of a read-only file (unforced)', t => {
+  shell.mkdir('-p', `${t.context.tmp}/readonly`);
+  shell.ShellString('asdf').to(`${t.context.tmp}/readonly/file1`);
+  fs.chmodSync(`${t.context.tmp}/readonly/file1`, '0444'); // -r--r--r--
+  shell.rm(`${t.context.tmp}/readonly/file1`);
+  t.truthy(shell.error());
+  t.truthy(fs.existsSync(`${t.context.tmp}/readonly/file1`)); // bash's rm always asks before removing read-only files
+  // here we just assume "no"
+});
 
-// removal of a read-only file (forced)
-shell.mkdir('-p', 'tmp/readonly');
-shell.ShellString('asdf').to('tmp/readonly/file2');
-fs.chmodSync('tmp/readonly/file2', '0444'); // -r--r--r--
-result = shell.rm('-f', 'tmp/readonly/file2');
-assert.equal(fs.existsSync('tmp/readonly/file2'), false);
+test('removal of a read-only file (forced)', t => {
+  shell.mkdir('-p', `${t.context.tmp}/readonly`);
+  shell.ShellString('asdf').to(`${t.context.tmp}/readonly/file2`);
+  fs.chmodSync(`${t.context.tmp}/readonly/file2`, '0444'); // -r--r--r--
+  shell.rm('-f', `${t.context.tmp}/readonly/file2`);
+  t.falsy(shell.error());
+  t.falsy(fs.existsSync(`${t.context.tmp}/readonly/file2`));
+});
 
-// removal of a tree containing read-only files (unforced)
-shell.mkdir('-p', 'tmp/tree2');
-shell.ShellString('asdf').to('tmp/tree2/file1');
-shell.ShellString('asdf').to('tmp/tree2/file2');
-fs.chmodSync('tmp/tree2/file1', '0444'); // -r--r--r--
-result = shell.rm('-r', 'tmp/tree2');
-assert.equal(fs.existsSync('tmp/tree2/file1'), true);
-assert.equal(fs.existsSync('tmp/tree2/file2'), false);
+test('removal of a tree containing read-only files (unforced)', t => {
+  shell.mkdir('-p', `${t.context.tmp}/tree2`);
+  shell.ShellString('asdf').to(`${t.context.tmp}/tree2/file1`);
+  shell.ShellString('asdf').to(`${t.context.tmp}/tree2/file2`);
+  fs.chmodSync(`${t.context.tmp}/tree2/file1`, '0444'); // -r--r--r--
+  shell.rm('-r', `${t.context.tmp}/tree2`);
+  t.truthy(shell.error());
+  t.truthy(fs.existsSync(`${t.context.tmp}/tree2/file1`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/tree2/file2`));
+});
 
-// removal of a tree containing read-only files (forced)
-shell.mkdir('-p', 'tmp/tree');
-shell.ShellString('asdf').to('tmp/tree/file1');
-shell.ShellString('asdf').to('tmp/tree/file2');
-fs.chmodSync('tmp/tree/file1', '0444'); // -r--r--r--
-result = shell.rm('-rf', 'tmp/tree');
-assert.equal(fs.existsSync('tmp/tree'), false);
+test('removal of a tree containing read-only files (forced)', t => {
+  shell.mkdir('-p', `${t.context.tmp}/tree`);
+  shell.ShellString('asdf').to(`${t.context.tmp}/tree/file1`);
+  shell.ShellString('asdf').to(`${t.context.tmp}/tree/file2`);
+  fs.chmodSync(`${t.context.tmp}/tree/file1`, '0444'); // -r--r--r--
+  shell.rm('-rf', `${t.context.tmp}/tree`);
+  t.falsy(shell.error());
+  t.falsy(fs.existsSync(`${t.context.tmp}/tree`));
+});
 
-// removal of a sub-tree containing read-only and hidden files - rm('dir/*')
-shell.mkdir('-p', 'tmp/tree3');
-shell.mkdir('-p', 'tmp/tree3/subtree');
-shell.mkdir('-p', 'tmp/tree3/.hidden');
-shell.ShellString('asdf').to('tmp/tree3/subtree/file');
-shell.ShellString('asdf').to('tmp/tree3/.hidden/file');
-shell.ShellString('asdf').to('tmp/tree3/file');
-fs.chmodSync('tmp/tree3/file', '0444'); // -r--r--r--
-fs.chmodSync('tmp/tree3/subtree/file', '0444'); // -r--r--r--
-fs.chmodSync('tmp/tree3/.hidden/file', '0444'); // -r--r--r--
-result = shell.rm('-rf', 'tmp/tree3/*', 'tmp/tree3/.*'); // erase dir contents
-assert.equal(shell.ls('tmp/tree3').length, 0);
+test(
+  'removal of a sub-tree containing read-only and hidden files - glob',
+  t => {
+    shell.mkdir('-p', `${t.context.tmp}/tree3`);
+    shell.mkdir('-p', `${t.context.tmp}/tree3/subtree`);
+    shell.mkdir('-p', `${t.context.tmp}/tree3/.hidden`);
+    shell.ShellString('asdf').to(`${t.context.tmp}/tree3/subtree/file`);
+    shell.ShellString('asdf').to(`${t.context.tmp}/tree3/.hidden/file`);
+    shell.ShellString('asdf').to(`${t.context.tmp}/tree3/file`);
+    fs.chmodSync(`${t.context.tmp}/tree3/file`, '0444'); // -r--r--r--
+    fs.chmodSync(`${t.context.tmp}/tree3/subtree/file`, '0444'); // -r--r--r--
+    fs.chmodSync(`${t.context.tmp}/tree3/.hidden/file`, '0444'); // -r--r--r--
+    shell.rm('-rf', `${t.context.tmp}/tree3/*`, `${t.context.tmp}/tree3/.*`); // erase dir contents
+    t.is(shell.ls(`${t.context.tmp}/tree3`).length, 0);
+  }
+);
 
-// removal of a sub-tree containing read-only and hidden files - rm('dir')
-shell.mkdir('-p', 'tmp/tree4');
-shell.mkdir('-p', 'tmp/tree4/subtree');
-shell.mkdir('-p', 'tmp/tree4/.hidden');
-shell.ShellString('asdf').to('tmp/tree4/subtree/file');
-shell.ShellString('asdf').to('tmp/tree4/.hidden/file');
-shell.ShellString('asdf').to('tmp/tree4/file');
-fs.chmodSync('tmp/tree4/file', '0444'); // -r--r--r--
-fs.chmodSync('tmp/tree4/subtree/file', '0444'); // -r--r--r--
-fs.chmodSync('tmp/tree4/.hidden/file', '0444'); // -r--r--r--
-result = shell.rm('-rf', 'tmp/tree4'); // erase dir contents
-assert.equal(fs.existsSync('tmp/tree4'), false);
+test(
+  'removal of a sub-tree containing read-only and hidden files - without glob',
+  t => {
+    shell.mkdir('-p', `${t.context.tmp}/tree4`);
+    shell.mkdir('-p', `${t.context.tmp}/tree4/subtree`);
+    shell.mkdir('-p', `${t.context.tmp}/tree4/.hidden`);
+    shell.ShellString('asdf').to(`${t.context.tmp}/tree4/subtree/file`);
+    shell.ShellString('asdf').to(`${t.context.tmp}/tree4/.hidden/file`);
+    shell.ShellString('asdf').to(`${t.context.tmp}/tree4/file`);
+    fs.chmodSync(`${t.context.tmp}/tree4/file`, '0444'); // -r--r--r--
+    fs.chmodSync(`${t.context.tmp}/tree4/subtree/file`, '0444'); // -r--r--r--
+    fs.chmodSync(`${t.context.tmp}/tree4/.hidden/file`, '0444'); // -r--r--r--
+    shell.rm('-rf', `${t.context.tmp}/tree4`); // erase dir contents
+    t.falsy(fs.existsSync(`${t.context.tmp}/tree4`));
+  }
+);
 
-// remove symbolic link to a dir
-result = shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
-shell.cp('-R', 'resources/rm', 'tmp');
-result = shell.rm('-f', 'tmp/rm/link_to_a_dir');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(fs.existsSync('tmp/rm/link_to_a_dir'), false);
-assert.equal(fs.existsSync('tmp/rm/a_dir'), true);
+test('remove symbolic link to a dir', t => {
+  const result = shell.rm(`${t.context.tmp}/rm/link_to_a_dir`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
+});
 
-// remove broken symbolic link
-if (process.platform !== 'win32') {
-  result = shell.rm('-rf', 'tmp');
-  shell.mkdir('tmp');
-  shell.cp('-R', 'resources/rm', 'tmp');
-  assert.ok(shell.test('-L', 'tmp/rm/fake.lnk'));
-  result = shell.rm('tmp/rm/fake.lnk');
-  assert.equal(shell.error(), null);
-  assert.equal(result.code, 0);
-  assert.ok(!shell.test('-L', 'tmp/rm/fake.lnk'));
-  assert.equal(fs.existsSync('tmp/rm/fake.lnk'), false);
-}
+// TODO(nfischer): fix this behavior in rm
+test.skip('rm -rf on a symbolic link to a dir deletes its contents', t => {
+  const result = shell.rm('-rf', `${t.context.tmp}/rm/link_to_a_dir/`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
 
-shell.exit(123);
+  // Both the link and original dir should remain, but contents are deleted
+  t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/rm/a_dir/a_file`));
+});
+
+test('remove broken symbolic link', t => {
+  if (process.platform !== 'win32') {
+    t.truthy(shell.test('-L', `${t.context.tmp}/rm/fake.lnk`));
+    const result = shell.rm(`${t.context.tmp}/rm/fake.lnk`);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.falsy(shell.test('-L', `${t.context.tmp}/rm/fake.lnk`));
+    t.falsy(fs.existsSync(`${t.context.tmp}/rm/fake.lnk`));
+  }
+});
+
+test('recursive dir removal, for non-normalized path', t => {
+  shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+  const result = shell.rm('-rf', `${t.context.tmp}/a/.././a`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(fs.existsSync(`${t.context.tmp}/a`));
+});

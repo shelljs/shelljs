@@ -21,16 +21,16 @@ common.register('cat', _cat, {
 //@ containing the files if more than one file is given (a new line character is
 //@ introduced between each file).
 function _cat(options, files) {
-  var cat = common.readFromPipe(this);
+  var cat = common.readFromPipe();
 
-  if (!files && !cat)
-    common.error('no paths given');
+  if (!files && !cat) common.error('no paths given');
 
   files = [].slice.call(arguments, 1);
 
-  files.forEach(function(file) {
-    if (!fs.existsSync(file))
+  files.forEach(function (file) {
+    if (!fs.existsSync(file)) {
       common.error('no such file or directory: ' + file);
+    }
 
     cat += fs.readFileSync(file, 'utf8');
   });

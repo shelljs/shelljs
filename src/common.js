@@ -1,26 +1,59 @@
-// jshint -W053
 // Ignore warning about 'new String()'
+/* eslint no-new-wrappers: 0 */
 'use strict';
 
 var os = require('os');
 var fs = require('fs');
 var glob = require('glob');
 var shell = require('..');
-var _to = require('./to');
-var _toEnd = require('./toEnd');
 
-var DEFAULT_ERROR_CODE = 1;
 var shellMethods = Object.create(shell);
 
-// Module globals
-var config = {
-  silent: false,
+// objectAssign(target_obj, source_obj1 [, source_obj2 ...])
+// "Ponyfill" for Object.assign
+//    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
+var objectAssign = typeof Object.assign === 'function' ?
+  Object.assign :
+  function objectAssign(target) {
+    var sources = [].slice.call(arguments, 1);
+    sources.forEach(function (source) {
+      Object.keys(source).forEach(function (key) {
+        target[key] = source[key];
+      });
+    });
+
+    return target;
+  };
+exports.extend = objectAssign;
+
+// Check if we're running under electron
+var isElectron = Boolean(process.versions.electron);
+
+// Module globals (assume no execPath by default)
+var DEFAULT_CONFIG = {
   fatal: false,
-  verbose: false,
-  noglob: false,
   globOptions: {},
-  maxdepth: 255
+  maxdepth: 255,
+  noglob: false,
+  silent: false,
+  verbose: false,
+  execPath: null,
 };
+
+var config = {
+  reset: function () {
+    objectAssign(this, DEFAULT_CONFIG);
+    if (!isElectron) {
+      this.execPath = process.execPath;
+    }
+  },
+  resetForTesting: function () {
+    this.reset();
+    this.silent = true;
+  },
+};
+
+config.reset();
 exports.config = config;
 
 var state = {
@@ -40,38 +73,46 @@ exports.platform = platform;
 var pipeMethods = [];
 
 function log() {
-  if (!config.silent)
+  if (!config.silent) {
     console.error.apply(console, arguments);
+  }
 }
 exports.log = log;
 
 // Shows error message. Throws if config.fatal is true
-function error(msg, _code, _continue) {
-  if (typeof _code === 'boolean') {
-    _continue = _code;
-    _code = DEFAULT_ERROR_CODE;
+function error(msg, _code, options) {
+  // Validate input
+  if (typeof msg !== 'string') throw new Error('msg must be a string');
+
+  var DEFAULT_OPTIONS = {
+    continue: false,
+    code: 1,
+    prefix: state.currentCmd + ': ',
+    silent: false,
+  };
+
+  if (typeof _code === 'number' && typeof options === 'object') {
+    options.code = _code;
+  } else if (typeof _code === 'object') { // no 'code'
+    options = _code;
+  } else if (typeof _code === 'number') { // no 'options'
+    options = { code: _code };
+  } else if (typeof _code !== 'number') { // only 'msg'
+    options = {};
   }
-  if (typeof _code !== 'number')
-    _code = DEFAULT_ERROR_CODE;
+  options = objectAssign({}, DEFAULT_OPTIONS, options);
 
-  if (state.errorCode === 0)
-    state.errorCode = _code;
+  if (!state.errorCode) state.errorCode = options.code;
 
-  if (state.error === null)
-    state.error = '';
-  var log_entry = state.currentCmd + ': ' + msg;
-  if (state.error === '')
-    state.error = log_entry;
-  else
-    state.error += '\n' + log_entry;
+  var logEntry = options.prefix + msg;
+  state.error = state.error ? state.error + '\n' : '';
+  state.error += logEntry;
 
-  if(config.fatal)
-    throw new Error(log_entry);
+  // Throw an error, or log the entry
+  if (config.fatal) throw new Error(logEntry);
+  if (msg.length > 0 && !options.silent) log(logEntry);
 
-  if (msg.length > 0)
-    log(log_entry);
-
-  if(!_continue) {
+  if (!options.continue) {
     throw {
       msg: 'earlyExit',
       retValue: (new ShellString('', state.error, state.errorCode))
@@ -103,10 +144,6 @@ function ShellString(stdout, stderr, code) {
   }
   that.stderr = stderr;
   that.code = code;
-  that.to    = function() {wrap('to', _to, {globStart: 1}).apply(that.stdout, arguments); return that;};
-  that.toEnd = function() {wrap('toEnd', _toEnd, {globStart: 1}).apply(that.stdout, arguments); return that;};
-  // Lazily load shell
-  shell = shell || require('..');
   // A list of all commands that can appear on the right-hand side of a pipe
   // (populated by calls to common.wrap())
   pipeMethods.forEach(function (cmd) {
@@ -121,10 +158,11 @@ exports.ShellString = ShellString;
 // older versions of node
 function getUserHome() {
   var result;
-  if (os.homedir)
+  if (os.homedir) {
     result = os.homedir(); // node 3+
-  else
+  } else {
     result = process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
+  }
   return result;
 }
 exports.getUserHome = getUserHome;
@@ -133,50 +171,57 @@ exports.getUserHome = getUserHome;
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
 // Returns {'reference': 'string-value', 'bob': false} when passed two dictionaries of the form:
 //   parseOptions({'-r': 'string-value'}, {'r':'reference', 'b':'bob'});
-function parseOptions(opt, map) {
-  if (!map)
-    error('parseOptions() internal error: no map given');
+function parseOptions(opt, map, errorOptions) {
+  if (!map) error('parseOptions() internal error: no map given');
 
   // All options are false by default
   var options = {};
-  for (var letter in map) {
-    if (map[letter][0] !== '!')
+  Object.keys(map).forEach(function (letter) {
+    if (map[letter][0] !== '!') {
       options[map[letter]] = false;
-  }
+    }
+  });
 
-  if (!opt)
-    return options; // defaults
+  if (!opt) return options; // defaults
 
   var optionName;
   if (typeof opt === 'string') {
-    if (opt[0] !== '-')
+    if (opt[0] !== '-') {
       return options;
+    }
 
     // e.g. chars = ['R', 'f']
     var chars = opt.slice(1).split('');
 
-    chars.forEach(function(c) {
+    chars.forEach(function (c) {
       if (c in map) {
         optionName = map[c];
-        if (optionName[0] === '!')
+        if (optionName[0] === '!') {
           options[optionName.slice(1)] = false;
-        else
+        } else {
           options[optionName] = true;
+        }
+      } else if (typeof errorOptions === 'object') {
+        error('option not recognized: ' + c, errorOptions);
       } else {
-        error('option not recognized: '+c);
+        error('option not recognized: ' + c);
       }
     });
   } else if (typeof opt === 'object') {
-    for (var key in opt) {
+    Object.keys(opt).forEach(function (key) {
       // key is a string of the form '-r', '-d', etc.
       var c = key[1];
       if (c in map) {
         optionName = map[c];
         options[optionName] = opt[key]; // assign the given value
+      } else if (typeof errorOptions === 'object') {
+        error('option not recognized: ' + c, errorOptions);
       } else {
-        error('option not recognized: '+c);
+        error('option not recognized: ' + c);
       }
-    }
+    });
+  } else if (typeof errorOptions === 'object') {
+    error('options must be strings or key-value pairs', errorOptions);
   } else {
     error('options must be strings or key-value pairs');
   }
@@ -193,7 +238,7 @@ function expand(list) {
     throw new TypeError('must be an array');
   }
   var expanded = [];
-  list.forEach(function(listEl) {
+  list.forEach(function (listEl) {
     // Don't expand non-strings
     if (typeof listEl !== 'string') {
       expanded.push(listEl);
@@ -212,7 +257,7 @@ exports.expand = expand;
 function unlinkSync(file) {
   try {
     fs.unlinkSync(file);
-  } catch(e) {
+  } catch (e) {
     // Try to override file permission
     if (e.code === 'EPERM') {
       fs.chmodSync(file, '0666');
@@ -224,19 +269,22 @@ function unlinkSync(file) {
 }
 exports.unlinkSync = unlinkSync;
 
-// objectAssign(target_obj, source_obj1 [, source_obj2 ...])
-// Ponyfill for Object.assign
-//    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
-function objectAssign(target) {
-  var sources = [].slice.call(arguments, 1);
-  sources.forEach(function(source) {
-    for (var key in source)
-      target[key] = source[key];
-  });
+// e.g. 'shelljs_a5f185d0443ca...'
+function randomFileName() {
+  function randomHash(count) {
+    if (count === 1) {
+      return parseInt(16 * Math.random(), 10).toString(16);
+    }
+    var hash = '';
+    for (var i = 0; i < count; i++) {
+      hash += randomHash(1);
+    }
+    return hash;
+  }
 
-  return target;
+  return 'shelljs_' + randomHash(20);
 }
-exports.extend = Object.assign || objectAssign;
+exports.randomFileName = randomFileName;
 
 // Common wrapper for all Unix-like commands that performs glob expansion,
 // command-logging, and other nice things
@@ -245,7 +293,7 @@ function wrap(cmd, fn, options) {
   if (options.canReceivePipe) {
     pipeMethods.push(cmd);
   }
-  return function() {
+  return function () {
     var retValue = null;
 
     state.currentCmd = cmd;
@@ -260,6 +308,10 @@ function wrap(cmd, fn, options) {
         console.error.apply(console, [cmd].concat(args));
       }
 
+      // If this is coming from a pipe, let's set the pipedValue (otherwise, set
+      // it to the empty string)
+      state.pipedValue = (this && typeof this.stdout === 'string') ? this.stdout : '';
+
       if (options.unix === false) { // this branch is for exec()
         retValue = fn.apply(this, args);
       } else { // and this branch is for everything else
@@ -273,30 +325,29 @@ function wrap(cmd, fn, options) {
         //    `cp([file1, file2, file3], dest);`
         // equivalent to:
         //    `cp(file1, file2, file3, dest);`
-        args = args.reduce(function(accum, cur) {
+        args = args.reduce(function (accum, cur) {
           if (Array.isArray(cur)) {
             return accum.concat(cur);
-          } else {
-            accum.push(cur);
-            return accum;
           }
+          accum.push(cur);
+          return accum;
         }, []);
 
         // Convert ShellStrings (basically just String objects) to regular strings
-        args = args.map(function(arg) {
+        args = args.map(function (arg) {
           if (arg instanceof Object && arg.constructor.name === 'String') {
             return arg.toString();
-          } else
-            return arg;
+          }
+          return arg;
         });
 
         // Expand the '~' if appropriate
         var homeDir = getUserHome();
-        args = args.map(function(arg) {
-          if (typeof arg === 'string' && arg.slice(0, 2) === '~/' || arg === '~')
+        args = args.map(function (arg) {
+          if (typeof arg === 'string' && arg.slice(0, 2) === '~/' || arg === '~') {
             return arg.replace(/^~/, homeDir);
-          else
-            return arg;
+          }
+          return arg;
         });
 
         // Perform glob-expansion on all arguments after globStart, but preserve
@@ -313,9 +364,11 @@ function wrap(cmd, fn, options) {
 
           retValue = fn.apply(this, args);
         } catch (e) {
-          if (e.msg === 'earlyExit')
+          if (e.msg === 'earlyExit') {
             retValue = e.retValue;
-          else throw e; // this is probably a bug that should be thrown up the call stack
+          } else {
+            throw e; // this is probably a bug that should be thrown up the call stack
+          }
         }
       }
     } catch (e) {
@@ -325,8 +378,7 @@ function wrap(cmd, fn, options) {
         console.error(e.stack || e);
         process.exit(1);
       }
-      if (config.fatal)
-        throw e;
+      if (config.fatal) throw e;
     }
 
     if (options.wrapOutput &&
@@ -342,8 +394,8 @@ exports.wrap = wrap;
 
 // This returns all the input that is piped into the current command (or the
 // empty string, if this isn't on the right-hand side of a pipe
-function _readFromPipe(that) {
-  return typeof that.stdout === 'string' ? that.stdout : '';
+function _readFromPipe() {
+  return state.pipedValue;
 }
 exports.readFromPipe = _readFromPipe;
 
@@ -355,6 +407,7 @@ var DEFAULT_WRAP_OPTIONS = {
   pipeOnly: false,
   unix: true,
   wrapOutput: true,
+  overWrite: false,
 };
 
 // Register a new ShellJS command
@@ -362,6 +415,11 @@ function _register(name, implementation, wrapOptions) {
   wrapOptions = wrapOptions || {};
   // If an option isn't specified, use the default
   wrapOptions = objectAssign({}, DEFAULT_WRAP_OPTIONS, wrapOptions);
+
+  if (shell[name] && !wrapOptions.overWrite) {
+    throw new Error('unable to overwrite `' + name + '` command');
+  }
+
   if (wrapOptions.pipeOnly) {
     wrapOptions.canReceivePipe = true;
     shellMethods[name] = wrap(name, implementation, wrapOptions);

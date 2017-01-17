@@ -1,0 +1,6 @@
+.nyc_output/
+coverage/
+make.js
+node_modules/
+test/resources/
+test/tmp/

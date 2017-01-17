@@ -3,14 +3,15 @@
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/shelljs/shelljs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Travis](https://img.shields.io/travis/shelljs/shelljs/master.svg?style=flat-square&label=unix)](https://travis-ci.org/shelljs/shelljs)
 [![AppVeyor](https://img.shields.io/appveyor/ci/shelljs/shelljs/master.svg?style=flat-square&label=windows)](https://ci.appveyor.com/project/shelljs/shelljs/branch/master)
-[![npm (scoped)](https://img.shields.io/npm/v/shelljs.svg?style=flat-square)](https://www.npmjs.com/package/shelljs)
+[![npm version](https://img.shields.io/npm/v/shelljs.svg?style=flat-square)](https://www.npmjs.com/package/shelljs)
+[![npm downloads](https://img.shields.io/npm/dm/shelljs.svg?style=flat-square)](https://www.npmjs.com/package/shelljs)
 
 ShellJS is a portable **(Windows/Linux/OS X)** implementation of Unix shell commands on top of the
 Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping
 its familiar and powerful commands. You can also install it globally so you can run it from outside
 Node projects - say goodbye to those gnarly Bash scripts!
 
-ShellJS supports node `v0.11`, `v0.12`, `v4`, `v5`, `v6`, and all releases of iojs.
+ShellJS is proudly tested on every node release since `v0.11`!
 
 The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battled-tested in projects like:
 
@@ -155,151 +156,6 @@ For less-commonly used commands and features, please check out our [wiki
 page](https://github.com/shelljs/shelljs/wiki).
 
 
-### cd([dir])
-Changes to directory `dir` for the duration of the script. Changes to home
-directory if no argument is supplied.
-
-
-### pwd()
-Returns the current directory.
-
-
-### ls([options,] [path, ...])
-### ls([options,] path_array)
-Available options:
-
-+ `-R`: recursive
-+ `-A`: all files (include files beginning with `.`, except for `.` and `..`)
-+ `-d`: list directories themselves, not their contents
-+ `-l`: list objects representing each file, each with fields containing `ls
-        -l` output fields. See
-        [fs.Stats](https://nodejs.org/api/fs.html#fs_class_fs_stats)
-        for more info
-
-Examples:
-
-```javascript
-ls('projs/*.js');
-ls('-R', '/users/me', '/tmp');
-ls('-R', ['/users/me', '/tmp']); // same as above
-ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
-```
-
-Returns array of files in the given path, or in current directory if no path provided.
-
-
-### find(path [, path ...])
-### find(path_array)
-Examples:
-
-```javascript
-find('src', 'lib');
-find(['src', 'lib']); // same as above
-find('.').filter(function(file) { return file.match(/\.js$/); });
-```
-
-Returns array of all files (however deep) in the given paths.
-
-The main difference from `ls('-R', path)` is that the resulting file names
-include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
-
-
-### cp([options,] source [, source ...], dest)
-### cp([options,] source_array, dest)
-Available options:
-
-+ `-f`: force (default behavior)
-+ `-n`: no-clobber
-+ `-r`, `-R`: recursive
-+ `-L`: follow symlinks
-+ `-P`: don't follow symlinks
-
-Examples:
-
-```javascript
-cp('file1', 'dir1');
-cp('-R', 'path/to/dir/', '~/newCopy/');
-cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
-cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
-```
-
-Copies files.
-
-
-### rm([options,] file [, file ...])
-### rm([options,] file_array)
-Available options:
-
-+ `-f`: force
-+ `-r, -R`: recursive
-
-Examples:
-
-```javascript
-rm('-rf', '/tmp/*');
-rm('some_file.txt', 'another_file.txt');
-rm(['some_file.txt', 'another_file.txt']); // same as above
-```
-
-Removes files.
-
-
-### mv([options ,] source [, source ...], dest')
-### mv([options ,] source_array, dest')
-Available options:
-
-+ `-f`: force (default behavior)
-+ `-n`: no-clobber
-
-Examples:
-
-```javascript
-mv('-n', 'file', 'dir/');
-mv('file1', 'file2', 'dir/');
-mv(['file1', 'file2'], 'dir/'); // same as above
-```
-
-Moves files.
-
-
-### mkdir([options,] dir [, dir ...])
-### mkdir([options,] dir_array)
-Available options:
-
-+ `-p`: full path (will create intermediate dirs if necessary)
-
-Examples:
-
-```javascript
-mkdir('-p', '/tmp/a/b/c/d', '/tmp/e/f/g');
-mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
-```
-
-Creates directories.
-
-
-### test(expression)
-Available expression primaries:
-
-+ `'-b', 'path'`: true if path is a block device
-+ `'-c', 'path'`: true if path is a character device
-+ `'-d', 'path'`: true if path is a directory
-+ `'-e', 'path'`: true if path exists
-+ `'-f', 'path'`: true if path is a regular file
-+ `'-L', 'path'`: true if path is a symbolic link
-+ `'-p', 'path'`: true if path is a pipe (FIFO)
-+ `'-S', 'path'`: true if path is a socket
-
-Examples:
-
-```javascript
-if (test('-d', path)) { /* do something with dir */ };
-if (!test('-f', path)) continue; // skip if it's a regular file
-```
-
-Evaluates expression using the available primaries and returns corresponding value.
-
-
 ### cat(file [, file ...])
 ### cat(file_array)
 
@@ -316,183 +172,59 @@ containing the files if more than one file is given (a new line character is
 introduced between each file).
 
 
-### head([{'-n', \<num\>},] file [, file ...])
-### head([{'-n', \<num\>},] file_array)
+### cd([dir])
+Changes to directory `dir` for the duration of the script. Changes to home
+directory if no argument is supplied.
+
+
+### chmod(octal_mode || octal_string, file)
+### chmod(symbolic_mode, file)
+
 Available options:
 
-+ `-n <num>`: Show the first `<num>` lines of the files
++ `-v`: output a diagnostic for every file processed
++ `-c`: like verbose but report only when a change is made
++ `-R`: change files and directories recursively
 
 Examples:
 
 ```javascript
-var str = head({'-n', 1}, 'file*.txt');
-var str = head('file1', 'file2');
-var str = head(['file1', 'file2']); // same as above
+chmod(755, '/Users/brandon');
+chmod('755', '/Users/brandon'); // same as above
+chmod('u+x', '/Users/brandon');
 ```
 
-Read the start of a file.
+Alters the permissions of a file or directory by either specifying the
+absolute permissions in octal form or expressing the changes in symbols.
+This command tries to mimic the POSIX behavior as much as possible.
+Notable exceptions:
+
++ In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
+  given to the umask.
++ There is no "quiet" option since default behavior is to run silent.
 
 
-### tail([{'-n', \<num\>},] file [, file ...])
-### tail([{'-n', \<num\>},] file_array)
+### cp([options,] source [, source ...], dest)
+### cp([options,] source_array, dest)
 Available options:
 
-+ `-n <num>`: Show the last `<num>` lines of the files
++ `-f`: force (default behavior)
++ `-n`: no-clobber
++ `-u`: only copy if source is newer than dest
++ `-r`, `-R`: recursive
++ `-L`: follow symlinks
++ `-P`: don't follow symlinks
 
 Examples:
 
 ```javascript
-var str = tail({'-n', 1}, 'file*.txt');
-var str = tail('file1', 'file2');
-var str = tail(['file1', 'file2']); // same as above
+cp('file1', 'dir1');
+cp('-R', 'path/to/dir/', '~/newCopy/');
+cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
+cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 ```
 
-Read the end of a file.
-
-
-### ShellString.prototype.to(file)
-
-Examples:
-
-```javascript
-cat('input.txt').to('output.txt');
-```
-
-Analogous to the redirection operator `>` in Unix, but works with
-ShellStrings (such as those returned by `cat`, `grep`, etc). _Like Unix
-redirections, `to()` will overwrite any existing file!_
-
-
-### ShellString.prototype.toEnd(file)
-
-Examples:
-
-```javascript
-cat('input.txt').toEnd('output.txt');
-```
-
-Analogous to the redirect-and-append operator `>>` in Unix, but works with
-ShellStrings (such as those returned by `cat`, `grep`, etc).
-
-
-### sed([options,] search_regex, replacement, file [, file ...])
-### sed([options,] search_regex, replacement, file_array)
-Available options:
-
-+ `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_
-
-Examples:
-
-```javascript
-sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js');
-sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
-```
-
-Reads an input string from `files` and performs a JavaScript `replace()` on the input
-using the given search regex and replacement string or function. Returns the new string after replacement.
-
-
-### sort([options,] file [, file ...])
-### sort([options,] file_array)
-Available options:
-
-+ `-r`: Reverse the result of comparisons
-+ `-n`: Compare according to numerical value
-
-Examples:
-
-```javascript
-sort('foo.txt', 'bar.txt');
-sort('-r', 'foo.txt');
-```
-
-Return the contents of the files, sorted line-by-line. Sorting multiple
-files mixes their content, just like unix sort does.
-
-
-### uniq([options,] [input, [output]])
-Available options:
-
-+ `-i`: Ignore case while comparing
-+ `-c`: Prefix lines by the number of occurrences
-+ `-d`: Only print duplicate lines, one for each group of identical lines
-
-Examples:
-
-```javascript
-uniq('foo.txt');
-uniq('-i', 'foo.txt');
-uniq('-cd', 'foo.txt', 'bar.txt');
-```
-
-Filter adjacent matching lines from input
-
-
-### grep([options,] regex_filter, file [, file ...])
-### grep([options,] regex_filter, file_array)
-Available options:
-
-+ `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
-+ `-l`: Print only filenames of matching files
-
-Examples:
-
-```javascript
-grep('-v', 'GLOBAL_VARIABLE', '*.js');
-grep('GLOBAL_VARIABLE', '*.js');
-```
-
-Reads input string from given files and returns a string containing all lines of the
-file that match the given `regex_filter`.
-
-
-### which(command)
-
-Examples:
-
-```javascript
-var nodeExec = which('node');
-```
-
-Searches for `command` in the system's PATH. On Windows, this uses the
-`PATHEXT` variable to append the extension if it's not already executable.
-Returns string containing the absolute path to the command.
-
-
-### echo(string [, string ...])
-
-Examples:
-
-```javascript
-echo('hello world');
-var str = echo('hello world');
-```
-
-Prints string to stdout, and returns string with additional utility methods
-like `.to()`.
-
-
-### mktemp([options,] [templates...])
-
-Available Options:
-
-+ `-d`: Create a directory instead of a file.
-+ `-u`: Unsafe mode. (Delete the file before retuning). Only use if you know what you're doing.
-
-Examples:
-
-```javascript
-mktemp() // ['/tmp/tmp.shelljs.QOL1QLNZMSR0HR4S5FTS']
-mktemp('-d') // ['/tmp/tmp.shelljs.EGBZ4GVYFO4SO534F3WK']
-mktemp('/tmp/tmp.shelljs.foo.XXXXX') // ['/tmp/tmp.shelljs.foo.AQZJK']
-mktemp('-d', '/tmp/shelljs.foo.XXXXX', '/tmp/shelljs.bar.XXXXX') // ['/tmp/tmp.shelljs.foo.ZFUPD', '/tmp/tmp.shelljs/bar.I9XVF']
-```
-
-Creates a temporary file or directory in a sutible place, with a random, available name. You can optionally pass
-one or more templates, which will override the default one. Each template will have all trailing `X`'s replaced with
-a random letter, and will then be used as a path to create a temporary file/directory.
-
-*WARNING: You MUST delete the file/directory when you're done with it, otherwise it will remain there forever.*
+Copies files.
 
 
 ### pushd([options,] [dir | '-N' | '+N'])
@@ -556,27 +288,21 @@ Display the list of currently remembered directories. Returns an array of paths 
 See also: pushd, popd
 
 
-### ln([options,] source, dest)
+### echo([options,] string [, string ...])
 Available options:
 
-+ `-s`: symlink
-+ `-f`: force
++ `-e`: interpret backslash escapes (default)
 
 Examples:
 
 ```javascript
-ln('file', 'newlink');
-ln('-sf', 'file', 'existing');
+echo('hello world');
+var str = echo('hello world');
 ```
 
-Links source to dest. Use -f to force the link, should dest already exist.
+Prints string to stdout, and returns string with additional utility methods
+like `.to()`.
 
-
-### exit(code)
-Exits the current process with the given exit code.
-
-### env['VAR_NAME']
-Object containing environment variables (both getter and setter). Shortcut to process.env.
 
 ### exec(command [, options] [, callback])
 Available options (all `false` by default):
@@ -618,31 +344,311 @@ the current synchronous implementation uses a lot of CPU. This should be getting
 fixed soon.
 
 
-### chmod(octal_mode || octal_string, file)
-### chmod(symbolic_mode, file)
+### find(path [, path ...])
+### find(path_array)
+Examples:
 
+```javascript
+find('src', 'lib');
+find(['src', 'lib']); // same as above
+find('.').filter(function(file) { return file.match(/\.js$/); });
+```
+
+Returns array of all files (however deep) in the given paths.
+
+The main difference from `ls('-R', path)` is that the resulting file names
+include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
+
+
+### grep([options,] regex_filter, file [, file ...])
+### grep([options,] regex_filter, file_array)
 Available options:
 
-+ `-v`: output a diagnostic for every file processed
-+ `-c`: like verbose but report only when a change is made
-+ `-R`: change files and directories recursively
++ `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
++ `-l`: Print only filenames of matching files
 
 Examples:
 
 ```javascript
-chmod(755, '/Users/brandon');
-chmod('755', '/Users/brandon'); // same as above
-chmod('u+x', '/Users/brandon');
+grep('-v', 'GLOBAL_VARIABLE', '*.js');
+grep('GLOBAL_VARIABLE', '*.js');
 ```
 
-Alters the permissions of a file or directory by either specifying the
-absolute permissions in octal form or expressing the changes in symbols.
-This command tries to mimic the POSIX behavior as much as possible.
-Notable exceptions:
+Reads input string from given files and returns a string containing all lines of the
+file that match the given `regex_filter`.
 
-+ In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
-  given to the umask.
-+ There is no "quiet" option since default behavior is to run silent.
+
+### head([{'-n': \<num\>},] file [, file ...])
+### head([{'-n': \<num\>},] file_array)
+Available options:
+
++ `-n <num>`: Show the first `<num>` lines of the files
+
+Examples:
+
+```javascript
+var str = head({'-n': 1}, 'file*.txt');
+var str = head('file1', 'file2');
+var str = head(['file1', 'file2']); // same as above
+```
+
+Read the start of a file.
+
+
+### ln([options,] source, dest)
+Available options:
+
++ `-s`: symlink
++ `-f`: force
+
+Examples:
+
+```javascript
+ln('file', 'newlink');
+ln('-sf', 'file', 'existing');
+```
+
+Links source to dest. Use -f to force the link, should dest already exist.
+
+
+### ls([options,] [path, ...])
+### ls([options,] path_array)
+Available options:
+
++ `-R`: recursive
++ `-A`: all files (include files beginning with `.`, except for `.` and `..`)
++ `-d`: list directories themselves, not their contents
++ `-l`: list objects representing each file, each with fields containing `ls
+        -l` output fields. See
+        [fs.Stats](https://nodejs.org/api/fs.html#fs_class_fs_stats)
+        for more info
+
+Examples:
+
+```javascript
+ls('projs/*.js');
+ls('-R', '/users/me', '/tmp');
+ls('-R', ['/users/me', '/tmp']); // same as above
+ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
+```
+
+Returns array of files in the given path, or in current directory if no path provided.
+
+
+### mkdir([options,] dir [, dir ...])
+### mkdir([options,] dir_array)
+Available options:
+
++ `-p`: full path (will create intermediate dirs if necessary)
+
+Examples:
+
+```javascript
+mkdir('-p', '/tmp/a/b/c/d', '/tmp/e/f/g');
+mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
+```
+
+Creates directories.
+
+
+### mktemp([options,] [templates...])
+
+Available Options:
+
++ `-d`: Create a directory instead of a file.
++ `-u`: Dry run: Don't actually create the file, just generate the name.
+
+Examples:
+
+```javascript
+mktemp() // ['/tmp/tmp.shelljs.QOL1QLNZMSR0HR4S5FTS']
+mktemp('-d') // ['/tmp/tmp.shelljs.EGBZ4GVYFO4SO534F3WK']
+mktemp('/tmp/tmp.shelljs.foo.XXXXX') // ['/tmp/tmp.shelljs.foo.AQZJK']
+mktemp('-d', '/tmp/shelljs.foo.XXXXX', '/tmp/shelljs.bar.XXXXX') // ['/tmp/tmp.shelljs.foo.ZFUPD', '/tmp/tmp.shelljs/bar.I9XVF']
+```
+
+Creates a temporary file or directory in a suitable place, with a random, available name. You can optionally pass
+one or more templates, which will override the default one. Each template will have all trailing `X`'s replaced with
+a random character, and will then be used as a path to create a temporary file/directory.
+
+*WARNING: You MUST delete the file/directory when you're done with it, otherwise it will remain there forever.*
+
+
+### mv([options ,] source [, source ...], dest')
+### mv([options ,] source_array, dest')
+Available options:
+
++ `-f`: force (default behavior)
++ `-n`: no-clobber
+
+Examples:
+
+```javascript
+mv('-n', 'file', 'dir/');
+mv('file1', 'file2', 'dir/');
+mv(['file1', 'file2'], 'dir/'); // same as above
+```
+
+Moves files.
+
+
+### pwd()
+Returns the current directory.
+
+
+### rm([options,] file [, file ...])
+### rm([options,] file_array)
+Available options:
+
++ `-f`: force
++ `-r, -R`: recursive
+
+Examples:
+
+```javascript
+rm('-rf', '/tmp/*');
+rm('some_file.txt', 'another_file.txt');
+rm(['some_file.txt', 'another_file.txt']); // same as above
+```
+
+Removes files.
+
+
+### sed([options,] search_regex, replacement, file [, file ...])
+### sed([options,] search_regex, replacement, file_array)
+Available options:
+
++ `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_
+
+Examples:
+
+```javascript
+sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js');
+sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
+```
+
+Reads an input string from `files` and performs a JavaScript `replace()` on the input
+using the given search regex and replacement string or function. Returns the new string after replacement.
+
+Note:
+
+Like unix `sed`, ShellJS `sed` supports capture groups. Capture groups are specified
+using the `$n` syntax:
+
+```javascript
+sed(/(\w+)\s(\w+)/, '$2, $1', 'file.txt');
+```
+
+
+### set(options)
+Available options:
+
++ `+/-e`: exit upon error (`config.fatal`)
++ `+/-v`: verbose: show all commands (`config.verbose`)
++ `+/-f`: disable filename expansion (globbing)
+
+Examples:
+
+```javascript
+set('-e'); // exit upon first error
+set('+e'); // this undoes a "set('-e')"
+```
+
+Sets global configuration variables
+
+
+### sort([options,] file [, file ...])
+### sort([options,] file_array)
+Available options:
+
++ `-r`: Reverse the result of comparisons
++ `-n`: Compare according to numerical value
+
+Examples:
+
+```javascript
+sort('foo.txt', 'bar.txt');
+sort('-r', 'foo.txt');
+```
+
+Return the contents of the files, sorted line-by-line. Sorting multiple
+files mixes their content, just like unix sort does.
+
+
+### tail([{'-n': \<num\>},] file [, file ...])
+### tail([{'-n': \<num\>},] file_array)
+Available options:
+
++ `-n <num>`: Show the last `<num>` lines of the files
+
+Examples:
+
+```javascript
+var str = tail({'-n': 1}, 'file*.txt');
+var str = tail('file1', 'file2');
+var str = tail(['file1', 'file2']); // same as above
+```
+
+Read the end of a file.
+
+
+### tempdir()
+
+Examples:
+
+```javascript
+var tmp = tempdir(); // "/tmp" for most *nix platforms
+```
+
+Searches and returns string containing a writeable, platform-dependent temporary directory.
+Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
+
+
+### test(expression)
+Available expression primaries:
+
++ `'-b', 'path'`: true if path is a block device
++ `'-c', 'path'`: true if path is a character device
++ `'-d', 'path'`: true if path is a directory
++ `'-e', 'path'`: true if path exists
++ `'-f', 'path'`: true if path is a regular file
++ `'-L', 'path'`: true if path is a symbolic link
++ `'-p', 'path'`: true if path is a pipe (FIFO)
++ `'-S', 'path'`: true if path is a socket
+
+Examples:
+
+```javascript
+if (test('-d', path)) { /* do something with dir */ };
+if (!test('-f', path)) continue; // skip if it's a regular file
+```
+
+Evaluates expression using the available primaries and returns corresponding value.
+
+
+### ShellString.prototype.to(file)
+
+Examples:
+
+```javascript
+cat('input.txt').to('output.txt');
+```
+
+Analogous to the redirection operator `>` in Unix, but works with
+ShellStrings (such as those returned by `cat`, `grep`, etc). _Like Unix
+redirections, `to()` will overwrite any existing file!_
+
+
+### ShellString.prototype.toEnd(file)
+
+Examples:
+
+```javascript
+cat('input.txt').toEnd('output.txt');
+```
+
+Analogous to the redirect-and-append operator `>>` in Unix, but works with
+ShellStrings (such as those returned by `cat`, `grep`, etc).
 
 
 ### touch([options,] file [, file ...])
@@ -668,37 +674,39 @@ A FILE argument that does not exist is created empty, unless -c is supplied.
 This is a partial implementation of *[touch(1)](http://linux.die.net/man/1/touch)*.
 
 
-### set(options)
+### uniq([options,] [input, [output]])
 Available options:
 
-+ `+/-e`: exit upon error (`config.fatal`)
-+ `+/-v`: verbose: show all commands (`config.verbose`)
-+ `+/-f`: disable filename expansion (globbing)
++ `-i`: Ignore case while comparing
++ `-c`: Prefix lines by the number of occurrences
++ `-d`: Only print duplicate lines, one for each group of identical lines
 
 Examples:
 
 ```javascript
-set('-e'); // exit upon first error
-set('+e'); // this undoes a "set('-e')"
+uniq('foo.txt');
+uniq('-i', 'foo.txt');
+uniq('-cd', 'foo.txt', 'bar.txt');
 ```
 
-Sets global configuration variables
+Filter adjacent matching lines from input
 
 
-## Non-Unix commands
-
-
-### tempdir()
+### which(command)
 
 Examples:
 
 ```javascript
-var tmp = tempdir(); // "/tmp" for most *nix platforms
+var nodeExec = which('node');
 ```
 
-Searches and returns string containing a writeable, platform-dependent temporary directory.
-Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
+Searches for `command` in the system's PATH. On Windows, this uses the
+`PATHEXT` variable to append the extension if it's not already executable.
+Returns string containing the absolute path to the command.
 
+
+### exit(code)
+Exits the current process with the given exit code.
 
 ### error()
 Tests if error occurred in the last command. Returns a truthy value if an
@@ -720,6 +728,10 @@ var foo = ShellString('hello world');
 Turns a regular string into a string-like object similar to what each
 command returns. This has special methods, like `.to()` and `.toEnd()`
 
+
+### env['VAR_NAME']
+Object containing environment variables (both getter and setter). Shortcut
+to process.env.
 
 ### Pipes
 
@@ -794,6 +806,32 @@ config.globOptions = {nodir: true};
 ```
 
 Use this value for calls to `glob.sync()` instead of the default options.
+
+### config.reset()
+
+Example:
+
+```javascript
+var shell = require('shelljs');
+// Make changes to shell.config, and do stuff...
+/* ... */
+shell.config.reset(); // reset to original state
+// Do more stuff, but with original settings
+/* ... */
+```
+
+Reset shell.config to the defaults:
+
+```javascript
+{
+  fatal: false,
+  globOptions: {},
+  maxdepth: 255,
+  noglob: false,
+  silent: false,
+  verbose: false,
+}
+```
 
 ## Team
 
