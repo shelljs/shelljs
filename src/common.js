@@ -9,22 +9,7 @@ var shell = require('..');
 
 var shellMethods = Object.create(shell);
 
-// objectAssign(target_obj, source_obj1 [, source_obj2 ...])
-// "Ponyfill" for Object.assign
-//    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
-var objectAssign = typeof Object.assign === 'function' ?
-  Object.assign :
-  function objectAssign(target) {
-    var sources = [].slice.call(arguments, 1);
-    sources.forEach(function (source) {
-      Object.keys(source).forEach(function (key) {
-        target[key] = source[key];
-      });
-    });
-
-    return target;
-  };
-exports.extend = objectAssign;
+exports.extend = Object.assign;
 
 // Check if we're running under electron
 var isElectron = Boolean(process.versions.electron);
@@ -42,7 +27,7 @@ var DEFAULT_CONFIG = {
 
 var config = {
   reset: function () {
-    objectAssign(this, DEFAULT_CONFIG);
+    Object.assign(this, DEFAULT_CONFIG);
     if (!isElectron) {
       this.execPath = process.execPath;
     }
@@ -100,7 +85,7 @@ function error(msg, _code, options) {
   } else if (typeof _code !== 'number') { // only 'msg'
     options = {};
   }
-  options = objectAssign({}, DEFAULT_OPTIONS, options);
+  options = Object.assign({}, DEFAULT_OPTIONS, options);
 
   if (!state.errorCode) state.errorCode = options.code;
 
@@ -413,7 +398,7 @@ var DEFAULT_WRAP_OPTIONS = {
 function _register(name, implementation, wrapOptions) {
   wrapOptions = wrapOptions || {};
   // If an option isn't specified, use the default
-  wrapOptions = objectAssign({}, DEFAULT_WRAP_OPTIONS, wrapOptions);
+  wrapOptions = Object.assign({}, DEFAULT_WRAP_OPTIONS, wrapOptions);
 
   if (shell[name] && !wrapOptions.overWrite) {
     throw new Error('unable to overwrite `' + name + '` command');
