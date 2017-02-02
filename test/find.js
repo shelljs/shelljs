@@ -60,3 +60,9 @@ test('multiple paths - array', t => {
   t.truthy(result.indexOf('resources/find/dir2/a_dir1') > -1);
   t.is(result.length, 6);
 });
+
+test('nonexistent path', t => {
+  const result = shell.find('resources/find/nonexistent');
+  t.is(shell.error(), 'find: no such file or directory: resources/find/nonexistent');
+  t.is(result.code, 1);
+});
