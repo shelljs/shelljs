@@ -45,3 +45,10 @@ test('Windows can search with or without a .exe extension', t => {
     t.is(node.toString(), nodeExe.toString());
   }
 });
+
+test('Search all of matched binaries', t => {
+  const result = shell.which('-a', 'node');
+  t.falsy(shell.error());
+  t.truthy(result);
+  t.truthy(result.length);
+});
