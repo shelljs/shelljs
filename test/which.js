@@ -46,9 +46,15 @@ test('Windows can search with or without a .exe extension', t => {
   }
 });
 
-test('Search all of matched binaries', t => {
+test('Search all of matched binaries shoud return an array', t => {
   const result = shell.which('-a', 'node');
   t.falsy(shell.error());
   t.truthy(result);
   t.truthy(result.length);
+});
+
+test('Search all for not exist command should return an empty array', t => {
+  const notExist = '6ef25c13209cb28ae465852508cc3a8f3dcdc71bc7bcf8c38379ba38me';
+  const result = shell.which('-a', notExist);
+  t.truthy(result.length === 0)
 });
