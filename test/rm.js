@@ -298,3 +298,9 @@ test('recursive dir removal, for non-normalized path', t => {
   t.is(result.code, 0);
   t.falsy(fs.existsSync(`${t.context.tmp}/a`));
 });
+
+test('remove fifo', t => {
+  const result = shell.rm(`${t.context.tmp}/fifo`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+});
