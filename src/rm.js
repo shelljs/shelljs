@@ -141,7 +141,7 @@ function _rm(options, files) {
       } else {
         common.error('path is a directory', { continue: true });
       }
-    } else if (stats.isSymbolicLink()) {
+    } else if (stats.isSymbolicLink() || stats.isFIFO()) {
       common.unlinkSync(file);
     }
   }); // forEach(file)
