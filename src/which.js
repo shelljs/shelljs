@@ -4,6 +4,9 @@ var path = require('path');
 
 common.register('which', _which, {
   allowGlobbing: false,
+  cmdOptions: {
+    'a': 'all',
+  },
 });
 
 // XP's system default value for PATHEXT system variable, just in case it's not
@@ -42,13 +45,14 @@ function _which(options, cmd) {
 
   var pathEnv = process.env.path || process.env.Path || process.env.PATH;
   var pathArray = splitPath(pathEnv);
-  var where = null;
+  var all = options.all;
+  var where = all ? [] : null;
 
   // No relative/absolute paths provided?
   if (cmd.search(/\//) === -1) {
     // Search for command in PATH
     pathArray.forEach(function (dir) {
-      if (where) return; // already found it
+      if (!all && where) return; // already found it
 
       var attempt = path.resolve(dir, cmd);
 
@@ -65,8 +69,12 @@ function _which(options, cmd) {
         for (i = 0; i < pathExtArray.length; i++) {
           var ext = pathExtArray[i];
           if (attempt.slice(-ext.length) === ext && checkPath(attempt)) {
-            where = attempt;
-            return;
+            if (all) {
+              where.push(attempt);
+            } else {
+              where = attempt;
+              return;
+            }
           }
         }
 
@@ -75,25 +83,36 @@ function _which(options, cmd) {
         for (i = 0; i < pathExtArray.length; i++) {
           attempt = baseAttempt + pathExtArray[i];
           if (checkPath(attempt)) {
-            where = attempt;
-            return;
+            if (all) {
+              where.push(attempt);
+            } else {
+              where = attempt;
+              return;
+            }
           }
         }
       } else {
         // Assume it's Unix-like
         if (checkPath(attempt)) {
-          where = attempt;
-          return;
+          if (all) {
+            where.push(attempt);
+          } else {
+            where = attempt;
+            return;
+          }
         }
       }
     });
   }
 
+  if (all && where.length) return where;
+  if (!all && where) return where;
+
   // Command not found anywhere?
-  if (!checkPath(cmd) && !where) return null;
-
-  where = where || path.resolve(cmd);
-
+  if (checkPath(cmd)) {
+    where = path.resolve(cmd);
+    if (all) where = [where];
+  }
   return where;
 }
 module.exports = _which;

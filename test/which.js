@@ -45,3 +45,28 @@ test('Windows can search with or without a .exe extension', t => {
     t.is(node.toString(), nodeExe.toString());
   }
 });
+
+test('Searching with -a flag returns an array', t => {
+  const commandName = 'node'; // Should be an existing command
+  const result = shell.which('-a', commandName);
+  t.falsy(shell.error());
+  t.truthy(result);
+  t.not(result.length, 0);
+});
+
+test('Searching with -a flag for not existing command returns an empty array', t => {
+  const notExist = '6ef25c13209cb28ae465852508cc3a8f3dcdc71bc7bcf8c38379ba38me';
+  const result = shell.which('-a', notExist);
+  t.falsy(shell.error());
+  t.is(result.length, 0);
+});
+
+test('Searching with -a flag returns an array with first item equals to the regular search', t => {
+  const commandName = 'node'; // Should be an existing command
+  const resultForWhich = shell.which(commandName);
+  const resultForWhichA = shell.which('-a', commandName);
+  t.falsy(shell.error());
+  t.truthy(resultForWhich);
+  t.truthy(resultForWhichA);
+  t.is(resultForWhich.toString(), resultForWhichA[0].toString());
+});
