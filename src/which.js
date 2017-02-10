@@ -15,13 +15,7 @@ var XP_DEFAULT_PATHEXT = '.com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh';
 
 // Cross-platform method for splitting environment PATH variables
 function splitPath(p) {
-  if (!p) return [];
-
-  if (common.platform === 'win') {
-    return p.split(';');
-  } else {
-    return p.split(':');
-  }
+  return p ? p.split(path.delimiter) : [];
 }
 
 function checkPath(pathName) {
@@ -45,74 +39,60 @@ function _which(options, cmd) {
 
   var pathEnv = process.env.path || process.env.Path || process.env.PATH;
   var pathArray = splitPath(pathEnv);
-  var all = options.all;
-  var where = all ? [] : null;
+
+  var queryMatches = [];
 
   // No relative/absolute paths provided?
-  if (cmd.search(/\//) === -1) {
-    // Search for command in PATH
-    pathArray.forEach(function (dir) {
-      if (!all && where) return; // already found it
+  if (cmd.indexOf('/') === -1) {
+    // Assume that there are no extensions to append to queries (this is the
+    // case for unix)
+    var pathExtArray = [''];
+    if (common.platform === 'win') {
+      // In case the PATHEXT variable is somehow not set (e.g.
+      // child_process.spawn with an empty environment), use the XP default.
+      var pathExtEnv = process.env.PATHEXT || XP_DEFAULT_PATHEXT;
+      pathExtArray = splitPath(pathExtEnv.toUpperCase());
+    }
 
-      var attempt = path.resolve(dir, cmd);
+    // Search for command in PATH
+    for (var k = 0; k < pathArray.length; k++) {
+      // already found it
+      if (queryMatches.length > 0 && !options.all) break;
+
+      var attempt = path.resolve(pathArray[k], cmd);
 
       if (common.platform === 'win') {
         attempt = attempt.toUpperCase();
+      }
 
-        // In case the PATHEXT variable is somehow not set (e.g.
-        // child_process.spawn with an empty environment), use the XP default.
-        var pathExtEnv = process.env.PATHEXT || XP_DEFAULT_PATHEXT;
-        var pathExtArray = splitPath(pathExtEnv.toUpperCase());
-        var i;
-
-        // If the extension is already in PATHEXT, just return that.
-        for (i = 0; i < pathExtArray.length; i++) {
-          var ext = pathExtArray[i];
-          if (attempt.slice(-ext.length) === ext && checkPath(attempt)) {
-            if (all) {
-              where.push(attempt);
-            } else {
-              where = attempt;
-              return;
-            }
-          }
-        }
-
-        // Cycle through the PATHEXT variable
-        var baseAttempt = attempt;
-        for (i = 0; i < pathExtArray.length; i++) {
-          attempt = baseAttempt + pathExtArray[i];
-          if (checkPath(attempt)) {
-            if (all) {
-              where.push(attempt);
-            } else {
-              where = attempt;
-              return;
-            }
-          }
-        }
-      } else {
-        // Assume it's Unix-like
+      var match = attempt.match(/\.[^<>:"/\|?*.]+$/);
+      if (match && pathExtArray.indexOf(match[0]) >= 0) { // this is Windows-only
+        // The user typed a query with the file extension, like
+        // `which('node.exe')`
         if (checkPath(attempt)) {
-          if (all) {
-            where.push(attempt);
-          } else {
-            where = attempt;
-            return;
+          queryMatches.push(attempt);
+          break;
+        }
+      } else { // All-platforms
+        // Cycle through the PATHEXT array, and check each extension
+        // Note: the array is always [''] on Unix
+        for (var i = 0; i < pathExtArray.length; i++) {
+          var ext = pathExtArray[i];
+          var newAttempt = attempt + ext;
+          if (checkPath(newAttempt)) {
+            queryMatches.push(newAttempt);
+            break;
           }
         }
       }
-    });
+    }
+  } else if (checkPath(cmd)) { // a valid absolute or relative path
+    queryMatches.push(path.resolve(cmd));
   }
 
-  if (all && where.length) return where;
-  if (!all && where) return where;
-
-  // Command not found anywhere?
-  if (checkPath(cmd)) {
-    where = path.resolve(cmd);
-    if (all) where = [where];
+  if (queryMatches.length > 0) {
+    return options.all ? queryMatches : queryMatches[0];
   }
-  return where;
+  return options.all ? [] : null;
 }
 module.exports = _which;
