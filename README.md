@@ -13,7 +13,7 @@ Node projects - say goodbye to those gnarly Bash scripts!
 
 ShellJS is proudly tested on every node release since `v0.11`!
 
-The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battled-tested in projects like:
+The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battle-tested in projects like:
 
 + [PDF.js](http://github.com/mozilla/pdf.js) - Firefox's next-gen PDF reader
 + [Firebug](http://getfirebug.com/) - Firefox's infamous debugger
