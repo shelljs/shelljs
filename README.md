@@ -177,8 +177,8 @@ Changes to directory `dir` for the duration of the script. Changes to home
 directory if no argument is supplied.
 
 
-### chmod(octal_mode || octal_string, file)
-### chmod(symbolic_mode, file)
+### chmod([options,] octal_mode || octal_string, file)
+### chmod([options,] symbolic_mode, file)
 
 Available options:
 
@@ -192,6 +192,7 @@ Examples:
 chmod(755, '/Users/brandon');
 chmod('755', '/Users/brandon'); // same as above
 chmod('u+x', '/Users/brandon');
+chmod('-R', 'a-w', '/Users/brandon');
 ```
 
 Alters the permissions of a file or directory by either specifying the
