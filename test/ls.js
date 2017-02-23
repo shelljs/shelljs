@@ -58,7 +58,8 @@ test('no args provides the correct result', t => {
   t.truthy(result.indexOf('file2.js') > -1);
   t.truthy(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1);
   t.truthy(result.indexOf('a_dir') > -1);
-  t.is(result.length, 6);
+  t.truthy(result.indexOf('a_dir-link') > -1);
+  t.is(result.length, 7);
 });
 
 test('simple arg', t => {
@@ -71,7 +72,8 @@ test('simple arg', t => {
   t.truthy(result.indexOf('file2.js') > -1);
   t.truthy(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1);
   t.truthy(result.indexOf('a_dir') > -1);
-  t.is(result.length, 6);
+  t.truthy(result.indexOf('a_dir-link') > -1);
+  t.is(result.length, 7);
 });
 
 test('simple arg, with a trailing slash', t => {
@@ -84,7 +86,8 @@ test('simple arg, with a trailing slash', t => {
   t.truthy(result.indexOf('file2.js') > -1);
   t.truthy(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1);
   t.truthy(result.indexOf('a_dir') > -1);
-  t.is(result.length, 6);
+  t.truthy(result.indexOf('a_dir-link') > -1);
+  t.is(result.length, 7);
 });
 
 test('no args, -A option', t => {
@@ -98,9 +101,10 @@ test('no args, -A option', t => {
   t.truthy(result.indexOf('file2.js') > -1);
   t.truthy(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1);
   t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir-link') > -1);
   t.truthy(result.indexOf('.hidden_file') > -1);
   t.truthy(result.indexOf('.hidden_dir') > -1);
-  t.is(result.length, 8);
+  t.is(result.length, 9);
 });
 
 test('no args, deprecated -a option', t => {
@@ -114,9 +118,10 @@ test('no args, deprecated -a option', t => {
   t.truthy(result.indexOf('file2.js') > -1);
   t.truthy(result.indexOf('filename(with)[chars$]^that.must+be-escaped') > -1);
   t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir-link') > -1);
   t.truthy(result.indexOf('.hidden_file') > -1);
   t.truthy(result.indexOf('.hidden_dir') > -1);
-  t.is(result.length, 8);
+  t.is(result.length, 9);
 });
 
 test('wildcard, very simple', t => {
@@ -140,9 +145,10 @@ test('wildcard, simple', t => {
     result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1
   );
   t.is(result.indexOf('resources/ls/a_dir'), -1); // this shouldn't be there
+  t.truthy(result.indexOf('resources/ls/a_dir-link') > -1); // Just a symlink, must be there
   t.truthy(result.indexOf('nada') > -1);
   t.truthy(result.indexOf('b_dir') > -1);
-  t.is(result.length, 7);
+  t.is(result.length, 8);
 });
 
 test('wildcard, simple, with -d', t => {
@@ -157,7 +163,8 @@ test('wildcard, simple, with -d', t => {
     result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1
   );
   t.truthy(result.indexOf('resources/ls/a_dir') > -1);
-  t.is(result.length, 6);
+  t.truthy(result.indexOf('resources/ls/a_dir-link') > -1);
+  t.is(result.length, 7);
 });
 
 test('wildcard, hidden only', t => {
@@ -266,9 +273,14 @@ test('recursive, no path', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir/nada') > -1);
   t.truthy(result.indexOf('a_dir/b_dir') > -1);
   t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
-  t.is(result.length, 9);
+  t.truthy(result.indexOf('a_dir-link') > -1);
+  t.truthy(result.indexOf('a_dir-link/nada') > -1);
+  t.truthy(result.indexOf('a_dir-link/b_dir') > -1);
+  t.is(result.indexOf('a_dir-link/b_dir/z'), -1);
+  t.is(result.length, 12);
 });
 
 test('recusive, path given', t => {
@@ -276,9 +288,14 @@ test('recusive, path given', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir/nada') > -1);
   t.truthy(result.indexOf('a_dir/b_dir') > -1);
   t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
-  t.is(result.length, 9);
+  t.truthy(result.indexOf('a_dir-link') > -1);
+  t.truthy(result.indexOf('a_dir-link/nada') > -1);
+  t.truthy(result.indexOf('a_dir-link/b_dir') > -1);
+  t.is(result.indexOf('a_dir-link/b_dir/z'), -1);
+  t.is(result.length, 12);
 });
 
 test('-RA flag, path given', t => {
@@ -286,20 +303,43 @@ test('-RA flag, path given', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir/nada') > -1);
   t.truthy(result.indexOf('a_dir/b_dir') > -1);
   t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
   t.truthy(result.indexOf('a_dir/.hidden_dir/nada') > -1);
-  t.is(result.length, 14);
+  t.truthy(result.indexOf('a_dir-link') > -1);
+  t.truthy(result.indexOf('a_dir-link/nada') > -1);
+  t.truthy(result.indexOf('a_dir-link/b_dir') > -1);
+  t.is(result.indexOf('a_dir-link/b_dir/z'), -1);
+  t.is(result.indexOf('a_dir-link/.hidden_dir/nada'), -1);
+  t.is(result.length, 18);
 });
 
-test('recursive, wildcard', t => {
-  const result = shell.ls('-R', 'resources/ls');
+test('-RAL flag, path given', t => {
+  const result = shell.ls('-RAL', 'resources/ls');
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir/nada') > -1);
   t.truthy(result.indexOf('a_dir/b_dir') > -1);
   t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
-  t.is(result.length, 9);
+  t.truthy(result.indexOf('a_dir/.hidden_dir/nada') > -1);
+  t.truthy(result.indexOf('a_dir-link') > -1);
+  t.truthy(result.indexOf('a_dir-link/nada') > -1);
+  t.truthy(result.indexOf('a_dir-link/b_dir') > -1);
+  t.truthy(result.indexOf('a_dir-link/b_dir/z') > -1);
+  t.truthy(result.indexOf('a_dir-link/.hidden_dir/nada') > -1);
+  t.is(result.length, 20);
+});
+
+test('-L flag, path is symlink', t => {
+  const result = shell.ls('-L', 'resources/ls/a_dir-link');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+
+  t.truthy(result.indexOf('nada') > -1);
+  t.truthy(result.indexOf('b_dir') > -1);
+  t.is(result.length, 2);
 });
 
 test('-Rd works like -d', t => {
@@ -336,6 +376,7 @@ test('directory option, globbed arg', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.indexOf('resources/ls/a_dir') > -1);
+  t.truthy(result.indexOf('resources/ls/a_dir-link') > -1);
   t.truthy(result.indexOf('resources/ls/file1') > -1);
   t.truthy(result.indexOf('resources/ls/file1.js') > -1);
   t.truthy(result.indexOf('resources/ls/file2') > -1);
@@ -344,7 +385,7 @@ test('directory option, globbed arg', t => {
   t.truthy(
     result.indexOf('resources/ls/filename(with)[chars$]^that.must+be-escaped') > -1
   );
-  t.is(result.length, 6);
+  t.is(result.length, 7);
 });
 
 test('long option, single file', t => {
@@ -387,7 +428,7 @@ test('long option, directory', t => {
   t.is(result.code, 0);
   const idx = result.map(r => r.name).indexOf('file1');
   t.truthy(idx >= 0);
-  t.is(result.length, 6);
+  t.is(result.length, 7);
   result = result[idx];
   t.is(result.name, 'file1');
   t.is(result.nlink, 1);
@@ -406,7 +447,7 @@ test('long option, directory, recursive (and windows converts slashes)', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   const idx = result.map(r => r.name).indexOf('a_dir/b_dir');
-  t.is(result.length, 9);
+  t.is(result.length, 12);
   t.truthy(idx >= 0);
   result = result[idx];
   t.is(result.name, result.name);
@@ -472,7 +513,12 @@ test('non-normalized paths are still ok with -R', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.indexOf('a_dir') > -1);
+  t.truthy(result.indexOf('a_dir/nada') > -1);
   t.truthy(result.indexOf('a_dir/b_dir') > -1);
   t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
-  t.is(result.length, 9);
+  t.truthy(result.indexOf('a_dir-link') > -1);
+  t.truthy(result.indexOf('a_dir-link/nada') > -1);
+  t.truthy(result.indexOf('a_dir-link/b_dir') > -1);
+  t.is(result.indexOf('a_dir-link/b_dir/z'), -1);
+  t.is(result.length, 12);
 });
