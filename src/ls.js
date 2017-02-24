@@ -62,7 +62,7 @@ function _ls(options, paths) {
       relName = relName.replace(/\\/g, '/');
     }
     if (options.long) {
-      stat = stat || options.link ? fs.statSync(abs) : fs.lstatSync(abs);
+      stat = stat || (options.link ? fs.statSync(abs) : fs.lstatSync(abs));
       list.push(addLsAttributes(relName, stat));
     } else {
       // list.push(path.relative(rel || '.', file));
