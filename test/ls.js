@@ -271,7 +271,7 @@ test('recursive, no path', t => {
   t.is(result.length, 9);
 });
 
-test('recusive, path given', t => {
+test('recursive, path given', t => {
   const result = shell.ls('-R', 'resources/ls');
   t.falsy(shell.error());
   t.is(result.code, 0);
@@ -314,16 +314,6 @@ test('-L flag, path is symlink', t => {
     t.truthy(result.indexOf('a_file') > -1);
     t.is(result.length, 1);
   }
-});
-
-test('recursive, wildcard', t => {
-  const result = shell.ls('-R', 'resources/ls');
-  t.falsy(shell.error());
-  t.is(result.code, 0);
-  t.truthy(result.indexOf('a_dir') > -1);
-  t.truthy(result.indexOf('a_dir/b_dir') > -1);
-  t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
-  t.is(result.length, 9);
 });
 
 test('-Rd works like -d', t => {
