@@ -292,6 +292,30 @@ test('-RA flag, path given', t => {
   t.is(result.length, 14);
 });
 
+test('-RAL flag, path given', t => {
+  if (process.platform !== 'win32') {
+    const result = shell.ls('-RAL', 'resources/rm');
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.truthy(result.indexOf('a_dir') > -1);
+    t.truthy(result.indexOf('a_dir/a_file') > -1);
+    t.truthy(result.indexOf('link_to_a_dir') > -1);
+    t.truthy(result.indexOf('link_to_a_dir/a_file') > -1);
+    t.truthy(result.indexOf('fake.lnk') > -1);
+    t.is(result.length, 5);
+  }
+});
+
+test('-L flag, path is symlink', t => {
+  if (process.platform !== 'win32') {
+    const result = shell.ls('-L', 'resources/rm/link_to_a_dir');
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.truthy(result.indexOf('a_file') > -1);
+    t.is(result.length, 1);
+  }
+});
+
 test('recursive, wildcard', t => {
   const result = shell.ls('-R', 'resources/ls');
   t.falsy(shell.error());
