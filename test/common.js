@@ -37,6 +37,16 @@ test('parseOptions (invalid option in options object)', t => {
   });
 });
 
+test('parseOptions (without a hyphen in the string)', t => {
+  t.throws(() => {
+    common.parseOptions('f', {
+      R: 'recursive',
+      f: 'force',
+      r: 'reverse',
+    });
+  });
+});
+
 test('parseOptions (invalid type)', t => {
   t.throws(() => {
     common.parseOptions(12, {
