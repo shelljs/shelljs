@@ -4,7 +4,7 @@
   },
   "extends": "airbnb-base/legacy",
   "rules": {
-    "comma-dangle": 0,
+    "comma-dangle": [2, "always-multiline"],
     "global-require": 0,
     "vars-on-top": 0,
     "spaced-comment": [2, "always", { "markers": ["@", "@include"], "exceptions": ["@", "@commands"] }],

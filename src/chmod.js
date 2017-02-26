@@ -21,12 +21,12 @@ var PERMS = (function (base) {
     SETGID: parseInt('02000', 8),
     SETUID: parseInt('04000', 8),
 
-    TYPE_MASK: parseInt('0770000', 8)
+    TYPE_MASK: parseInt('0770000', 8),
   };
 }({
   EXEC: 1,
   WRITE: 2,
-  READ: 4
+  READ: 4,
 }));
 
 common.register('chmod', _chmod, {
@@ -73,7 +73,7 @@ function _chmod(options, mode, filePattern) {
   options = common.parseOptions(options, {
     'R': 'recursive',
     'c': 'changes',
-    'v': 'verbose'
+    'v': 'verbose',
   });
 
   filePattern = [].slice.call(arguments, 2);
