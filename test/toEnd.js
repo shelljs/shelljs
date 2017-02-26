@@ -30,6 +30,12 @@ test('missing file argument', t => {
   t.truthy(shell.error());
 });
 
+test('cannot write to a non-existent directory', t => {
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
+  shell.ShellString('hello world').toEnd('/asdfasdf/file');
+  t.truthy(shell.error());
+});
+
 //
 // Valids
 //

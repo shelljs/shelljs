@@ -6,6 +6,11 @@ import utils from './utils/utils';
 
 shell.config.silent = true;
 
+test.beforeEach(() => {
+  common.state.error = null;
+  common.state.errorCode = 0;
+});
+
 //
 // Invalids
 //
@@ -20,6 +25,26 @@ test('should be a list', t => {
   t.throws(() => {
     common.expand('resources');
   }, TypeError);
+});
+
+test('parseOptions (invalid option in options object)', t => {
+  t.throws(() => {
+    common.parseOptions({ q: 'some string value' }, {
+      R: 'recursive',
+      f: 'force',
+      r: 'reverse',
+    });
+  });
+});
+
+test('parseOptions (invalid type)', t => {
+  t.throws(() => {
+    common.parseOptions(12, {
+      R: 'recursive',
+      f: 'force',
+      r: 'reverse',
+    });
+  });
 });
 
 //
