@@ -34,7 +34,10 @@ function rmdirSyncRecursive(dir, force) {
         try {
           common.unlinkSync(file);
         } catch (e) {
-          common.error('could not remove file (code ' + e.code + '): ' + file, { continue: true });
+          /* istanbul ignore next */
+          common.error('could not remove file (code ' + e.code + '): ' + file, {
+            continue: true,
+          });
         }
       }
     }
@@ -55,6 +58,7 @@ function rmdirSyncRecursive(dir, force) {
         if (fs.existsSync(dir)) throw { code: 'EAGAIN' };
         break;
       } catch (er) {
+        /* istanbul ignore next */
         // In addition to error codes, also check if the directory still exists and loop again if true
         if (process.platform === 'win32' && (er.code === 'ENOTEMPTY' || er.code === 'EBUSY' || er.code === 'EPERM' || er.code === 'EAGAIN')) {
           if (Date.now() - start > 1000) throw er;
