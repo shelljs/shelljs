@@ -271,7 +271,7 @@ test('recursive, no path', t => {
   t.is(result.length, 9);
 });
 
-test('recusive, path given', t => {
+test('recursive, path given', t => {
   const result = shell.ls('-R', 'resources/ls');
   t.falsy(shell.error());
   t.is(result.code, 0);
@@ -292,14 +292,40 @@ test('-RA flag, path given', t => {
   t.is(result.length, 14);
 });
 
-test('recursive, wildcard', t => {
-  const result = shell.ls('-R', 'resources/ls');
+test('-RA flag, symlinks are not followed', t => {
+  const result = shell.ls('-RA', 'resources/rm');
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.indexOf('a_dir') > -1);
-  t.truthy(result.indexOf('a_dir/b_dir') > -1);
-  t.truthy(result.indexOf('a_dir/b_dir/z') > -1);
-  t.is(result.length, 9);
+  t.truthy(result.indexOf('a_dir/a_file') > -1);
+  t.truthy(result.indexOf('link_to_a_dir') > -1);
+  t.is(result.indexOf('link_to_a_dir/a_file'), -1);
+  t.truthy(result.indexOf('fake.lnk') > -1);
+  t.is(result.length, 4);
+});
+
+test('-RAL flag, follows symlinks', t => {
+  if (process.platform !== 'win32') {
+    const result = shell.ls('-RAL', 'resources/rm');
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.truthy(result.indexOf('a_dir') > -1);
+    t.truthy(result.indexOf('a_dir/a_file') > -1);
+    t.truthy(result.indexOf('link_to_a_dir') > -1);
+    t.truthy(result.indexOf('link_to_a_dir/a_file') > -1);
+    t.truthy(result.indexOf('fake.lnk') > -1);
+    t.is(result.length, 5);
+  }
+});
+
+test('-L flag, path is symlink', t => {
+  if (process.platform !== 'win32') {
+    const result = shell.ls('-L', 'resources/rm/link_to_a_dir');
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.truthy(result.indexOf('a_file') > -1);
+    t.is(result.length, 1);
+  }
 });
 
 test('-Rd works like -d', t => {

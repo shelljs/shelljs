@@ -418,6 +418,7 @@ Available options:
 
 + `-R`: recursive
 + `-A`: all files (include files beginning with `.`, except for `.` and `..`)
++ `-L`: follow symlinks
 + `-d`: list directories themselves, not their contents
 + `-l`: list objects representing each file, each with fields containing `ls
         -l` output fields. See
