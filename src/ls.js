@@ -3,7 +3,7 @@ var fs = require('fs');
 var common = require('./common');
 var glob = require('glob');
 
-var globPatternRecursive = path.sep + '**' + path.sep + '*';
+var globPatternRecursive = path.sep + '**';
 
 common.register('ls', _ls, {
   cmdOptions: {
@@ -86,7 +86,10 @@ function _ls(options, paths) {
         // use glob, because it's simple
         glob.sync(p + globPatternRecursive, { dot: options.all, follow: options.link })
           .forEach(function (item) {
-            pushFile(item, path.relative(p, item));
+            // Glob pattern returns the directory itself and needs to be filtered out.
+            if (path.relative(p, item)) {
+              pushFile(item, path.relative(p, item));
+            }
           });
       } else if (options.all) {
         // use fs.readdirSync, because it's fast
