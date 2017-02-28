@@ -12,6 +12,7 @@
   "ln",
   "ls",
   "mkdir",
+  "mktemp",
   "mv",
   "pwd",
   "rm",

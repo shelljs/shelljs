@@ -453,6 +453,29 @@ mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 Creates directories.
 
 
+### mktemp([options,] [templates...])
+
+Available Options:
+
++ `-d`: Create a directory instead of a file.
++ `-u`: Dry run: Don't actually create the file, just generate the name.
+
+Examples:
+
+```javascript
+mktemp() // ['/tmp/tmp.shelljs.QOL1QLNZMSR0HR4S5FTS']
+mktemp('-d') // ['/tmp/tmp.shelljs.EGBZ4GVYFO4SO534F3WK']
+mktemp('/tmp/tmp.shelljs.foo.XXXXX') // ['/tmp/tmp.shelljs.foo.AQZJK']
+mktemp('-d', '/tmp/shelljs.foo.XXXXX', '/tmp/shelljs.bar.XXXXX') // ['/tmp/tmp.shelljs.foo.ZFUPD', '/tmp/tmp.shelljs/bar.I9XVF']
+```
+
+Creates a temporary file or directory in a suitable place, with a random, available name. You can optionally pass
+one or more templates, which will override the default one. Each template will have all trailing `X`'s replaced with
+a random character, and will then be used as a path to create a temporary file/directory.
+
+*WARNING: You MUST delete the file/directory when you're done with it, otherwise it will remain there forever.*
+
+
 ### mv([options ,] source [, source ...], dest')
 ### mv([options ,] source_array, dest')
 Available options:

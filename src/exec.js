@@ -1,5 +1,5 @@
 var common = require('./common');
-var _tempDir = require('./tempdir');
+var mktemp = require('./mktemp');
 var _pwd = require('./pwd');
 var path = require('path');
 var fs = require('fs');
@@ -23,12 +23,11 @@ function execSync(cmd, opts, pipe) {
     common.error('Unable to find a path to the node binary. Please manually set config.execPath');
   }
 
-  var tempDir = _tempDir();
-  var stdoutFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var stderrFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var codeFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var scriptFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var sleepFile = path.resolve(tempDir + '/' + common.randomFileName());
+  var stdoutFile = mktemp({ dryRun: true })[0];
+  var stderrFile = mktemp({ dryRun: true })[0];
+  var codeFile = mktemp({ dryRun: true })[0];
+  var scriptFile = mktemp({ dryRun: true })[0];
+  var sleepFile = mktemp({ dryRun: true })[0];
 
   opts = common.extend({
     silent: common.config.silent,
