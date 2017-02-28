@@ -11,7 +11,7 @@ var docs = grep('^//@', 'shell.js');
 
 // Insert the docs for all the registered commands
 docs = docs.replace(/\/\/@commands\n/g, function () {
-  return require('../commands.json').map(function (commandName) {
+  return require('../commands').map(function (commandName) {
     var file = './src/' + commandName + '.js';
     return grep('^//@', file) + '\n';
   }).join('');

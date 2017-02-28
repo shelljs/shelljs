@@ -21,7 +21,7 @@ var common = require('./src/common');
 //@commands
 
 // Load all default commands
-require('./commands.json').forEach(function (command) {
+require('./commands').forEach(function (command) {
   require('./src/' + command);
 });
 

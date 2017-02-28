@@ -24,7 +24,7 @@
   "homepage": "http://github.com/shelljs/shelljs",
   "main": "./shell.js",
   "files": [
-    "commands.json",
+    "commands.js",
     "global.js",
     "make.js",
     "plugin.js",
