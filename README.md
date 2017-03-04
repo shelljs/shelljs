@@ -6,10 +6,11 @@
 [![npm version](https://img.shields.io/npm/v/shelljs.svg?style=flat-square)](https://www.npmjs.com/package/shelljs)
 [![npm downloads](https://img.shields.io/npm/dm/shelljs.svg?style=flat-square)](https://www.npmjs.com/package/shelljs)
 
-ShellJS is a portable **(Windows/Linux/OS X)** implementation of Unix shell commands on top of the
-Node.js API. You can use it to eliminate your shell script's dependency on Unix while still keeping
-its familiar and powerful commands. You can also install it globally so you can run it from outside
-Node projects - say goodbye to those gnarly Bash scripts!
+ShellJS is a portable **(Windows/Linux/OS X)** implementation of Unix shell
+commands on top of the Node.js API. You can use it to eliminate your shell
+script's dependency on Unix while still keeping its familiar and powerful
+commands. You can also install it globally so you can run it from outside Node
+projects - say goodbye to those gnarly Bash scripts!
 
 ShellJS is proudly tested on every node release since `v0.11`!
 
@@ -17,17 +18,17 @@ The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battle-te
 
 + [PDF.js](http://github.com/mozilla/pdf.js) - Firefox's next-gen PDF reader
 + [Firebug](http://getfirebug.com/) - Firefox's infamous debugger
-+ [JSHint](http://jshint.com) - Most popular JavaScript linter
++ [JSHint](http://jshint.com) & [ESLint](http://eslint.org/) - popular JavaScript linters
 + [Zepto](http://zeptojs.com) - jQuery-compatible JavaScript library for modern browsers
 + [Yeoman](http://yeoman.io/) - Web application stack and development tool
 + [Deployd.com](http://deployd.com) - Open source PaaS for quick API backend generation
 + And [many more](https://npmjs.org/browse/depended/shelljs).
 
-If you have feedback, suggestions, or need help, feel free to post in our [issue tracker](https://github.com/shelljs/shelljs/issues).
+If you have feedback, suggestions, or need help, feel free to post in our [issue
+tracker](https://github.com/shelljs/shelljs/issues).
 
-Think ShellJS is cool? Check out some related projects (like
-[cash](https://github.com/dthree/cash)--a javascript-based POSIX shell)
-in our [Wiki page](https://github.com/shelljs/shelljs/wiki)!
+Think ShellJS is cool? Check out some related projects in our [Wiki
+page](https://github.com/shelljs/shelljs/wiki)!
 
 Upgrading from an older version? Check out our [breaking
 changes](https://github.com/shelljs/shelljs/wiki/Breaking-Changes) page to see
@@ -63,79 +64,43 @@ Via npm:
 $ npm install [-g] shelljs
 ```
 
-If the global option `-g` is specified, the binary `shjs` will be installed. This makes it possible to
-run ShellJS scripts much like any shell script from the command line, i.e. without requiring a `node_modules` folder:
-
-```bash
-$ shjs my_script
-```
-
 ## Examples
 
-### JavaScript
-
 ```javascript
-require('shelljs/global');
+var shell = require('shelljs');
 
-if (!which('git')) {
-  echo('Sorry, this script requires git');
-  exit(1);
+if (!shell.which('git')) {
+  shell.echo('Sorry, this script requires git');
+  shell.exit(1);
 }
 
 // Copy files to release dir
-rm('-rf', 'out/Release');
-cp('-R', 'stuff/', 'out/Release');
+shell.rm('-rf', 'out/Release');
+shell.cp('-R', 'stuff/', 'out/Release');
 
 // Replace macros in each .js file
-cd('lib');
-ls('*.js').forEach(function(file) {
-  sed('-i', 'BUILD_VERSION', 'v0.1.2', file);
-  sed('-i', /^.*REMOVE_THIS_LINE.*$/, '', file);
-  sed('-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, cat('macro.js'), file);
+shell.cd('lib');
+shell.ls('*.js').forEach(function (file) {
+  shell.sed('-i', 'BUILD_VERSION', 'v0.1.2', file);
+  shell.sed('-i', /^.*REMOVE_THIS_LINE.*$/, '', file);
+  shell.sed('-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, shell.cat('macro.js'), file);
 });
-cd('..');
+shell.cd('..');
 
 // Run external tool synchronously
-if (exec('git commit -am "Auto-commit"').code !== 0) {
-  echo('Error: Git commit failed');
-  exit(1);
+if (shell.exec('git commit -am "Auto-commit"').code !== 0) {
+  shell.echo('Error: Git commit failed');
+  shell.exit(1);
 }
-```
-
-### CoffeeScript
-
-CoffeeScript is also supported automatically:
-
-```coffeescript
-require 'shelljs/global'
-
-if not which 'git'
-  echo 'Sorry, this script requires git'
-  exit 1
-
-# Copy files to release dir
-rm '-rf', 'out/Release'
-cp '-R', 'stuff/', 'out/Release'
-
-# Replace macros in each .js file
-cd 'lib'
-for file in ls '*.js'
-  sed '-i', 'BUILD_VERSION', 'v0.1.2', file
-  sed '-i', /^.*REMOVE_THIS_LINE.*$/, '', file
-  sed '-i', /.*REPLACE_LINE_WITH_MACRO.*\n/, cat('macro.js'), file
-cd '..'
-
-# Run external tool synchronously
-if (exec 'git commit -am "Auto-commit"').code != 0
-  echo 'Error: Git commit failed'
-  exit 1
 ```
 
 ## Global vs. Local
 
-The example above uses the convenience script `shelljs/global` to reduce verbosity. If polluting your global namespace is not desirable, simply require `shelljs`.
+We no longer recommend using a global-import for ShellJS (i.e.
+`require('shelljs/global')`). While still supported for convenience, this
+pollutes the global namespace, and should therefore only be used with caution.
 
-Example:
+Instead, we recommend a local import (standard for npm packages):
 
 ```javascript
 var shell = require('shelljs');
@@ -311,7 +276,7 @@ Available options (all `false` by default):
 + `async`: Asynchronous execution. If a callback is provided, it will be set to
   `true`, regardless of the passed value.
 + `silent`: Do not echo program output to console.
-+ and any option available to NodeJS's
++ and any option available to Node.js's
   [child_process.exec()](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback)
 
 Examples:
@@ -814,6 +779,6 @@ Reset shell.config to the defaults:
 
 ## Team
 
-| [![Nate Fischer](https://avatars.githubusercontent.com/u/5801521?s=130)](https://github.com/nfischer) | [![Ari Porad](https://avatars1.githubusercontent.com/u/1817508?v=3&s=130)](http://github.com/ariporad) |
+| [![Nate Fischer](https://avatars.githubusercontent.com/u/5801521?s=130)](https://github.com/nfischer) | [![Brandon Freitag](https://avatars1.githubusercontent.com/u/5988055?v=3&s=130)](http://github.com/freitagbr) |
 |:---:|:---:|
-| [Nate Fischer](https://github.com/nfischer) | [Ari Porad](http://github.com/ariporad) |
+| [Nate Fischer](https://github.com/nfischer) | [Brandon Freitag](http://github.com/freitagbr) |
