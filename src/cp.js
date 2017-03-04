@@ -267,7 +267,7 @@ function _cp(options, sources, dest) {
       if (path.relative(src, thisDest) === '') {
         // a file cannot be copied to itself, but we want to continue copying other files,
         // so save the error for later
-        identicalFiles.push([thisDest, src]);
+        identicalFiles.push("'" + thisDest + "' and '" + src + "' are the same file");
         return;
       }
 
@@ -277,11 +277,9 @@ function _cp(options, sources, dest) {
 
   if (identicalFiles.length > 0) {
     // if any of the copies were identical, print an error for each and then exit
-    identicalFiles.forEach(function (files, i) {
-      var thisDest = files[0];
-      var src = files[1];
+    identicalFiles.forEach(function (err, i) {
       var cont = i < identicalFiles.length - 1; // exit on the last file
-      common.error(thisDest + ' and ' + src + ' are identical (not copied).', { continue: cont });
+      common.error(err, { continue: cont });
     });
   }
 

@@ -693,7 +693,7 @@ test('copy file to same location', t => {
   const result = shell.cp('resources/file1', 'resources');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'cp: resources/file1 and resources/file1 are identical (not copied).');
+  t.is(result.stderr, "cp: 'resources/file1' and 'resources/file1' are the same file");
 });
 
 test('copy mutliple files to same location', t => {
@@ -702,7 +702,7 @@ test('copy mutliple files to same location', t => {
   t.is(result.code, 1);
   t.is(
     result.stderr,
-    'cp: resources/file1 and resources/file1 are identical (not copied).\n' +
-    'cp: resources/file2 and resources/file2 are identical (not copied).'
+    "cp: 'resources/file1' and 'resources/file1' are the same file\n" +
+    "cp: 'resources/file2' and 'resources/file2' are the same file"
   );
 });
