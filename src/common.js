@@ -72,6 +72,12 @@ exports.platform = platform;
 // This is populated by calls to commonl.wrap()
 var pipeMethods = [];
 
+// Reliably test if something is any sort of javascript object
+function isObject(a) {
+  return typeof a === 'object' && a !== null;
+}
+exports.isObject = isObject;
+
 function log() {
   /* istanbul ignore next */
   if (!config.silent) {
@@ -103,9 +109,9 @@ function error(msg, _code, options) {
     silent: false,
   };
 
-  if (typeof _code === 'number' && typeof options === 'object') {
+  if (typeof _code === 'number' && isObject(options)) {
     options.code = _code;
-  } else if (typeof _code === 'object') { // no 'code'
+  } else if (isObject(_code)) { // no 'code'
     options = _code;
   } else if (typeof _code === 'number') { // no 'options'
     options = { code: _code };
@@ -185,11 +191,11 @@ exports.getUserHome = getUserHome;
 //   parseOptions({'-r': 'string-value'}, {'r':'reference', 'b':'bob'});
 function parseOptions(opt, map, errorOptions) {
   // Validate input
-  if (typeof opt !== 'string' && !(opt instanceof Object)) {
+  if (typeof opt !== 'string' && !isObject(opt)) {
     throw new Error('options must be strings or key-value pairs');
-  } else if (!(map instanceof Object)) {
+  } else if (!isObject(map)) {
     throw new Error('parseOptions() internal error: map must be an object');
-  } else if (errorOptions && !(errorOptions instanceof Object)) {
+  } else if (errorOptions && !isObject(errorOptions)) {
     throw new Error('parseOptions() internal error: errorOptions must be object');
   }
 
@@ -224,7 +230,7 @@ function parseOptions(opt, map, errorOptions) {
         error('option not recognized: ' + c, errorOptions || {});
       }
     });
-  } else { // opt instanceof Option
+  } else { // opt is an Object
     Object.keys(opt).forEach(function (key) {
       // key is a string of the form '-r', '-d', etc.
       var c = key[1];
@@ -327,7 +333,7 @@ function wrap(cmd, fn, options) {
       if (options.unix === false) { // this branch is for exec()
         retValue = fn.apply(this, args);
       } else { // and this branch is for everything else
-        if (args[0] instanceof Object && args[0].constructor.name === 'Object') {
+        if (isObject(args[0]) && args[0].constructor.name === 'Object') {
           // a no-op, allowing the syntax `touch({'-r': file}, ...)`
         } else if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-') {
           args.unshift(''); // only add dummy option if '-option' not already present
@@ -347,7 +353,7 @@ function wrap(cmd, fn, options) {
 
         // Convert ShellStrings (basically just String objects) to regular strings
         args = args.map(function (arg) {
-          if (arg instanceof Object && arg.constructor.name === 'String') {
+          if (isObject(arg) && arg.constructor.name === 'String') {
             return arg.toString();
           }
           return arg;
@@ -370,7 +376,7 @@ function wrap(cmd, fn, options) {
 
         try {
           // parse options if options are provided
-          if (typeof options.cmdOptions === 'object') {
+          if (isObject(options.cmdOptions)) {
             args[0] = parseOptions(args[0], options.cmdOptions);
           }
 
