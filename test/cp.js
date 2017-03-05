@@ -71,7 +71,7 @@ test('source does not exist', t => {
   t.is(result.stderr, 'cp: no such file or directory: asdfasdf');
 });
 
-test('sources does not exist', t => {
+test('multiple sources do not exist', t => {
   const result = shell.cp('asdfasdf1', 'asdfasdf2', t.context.tmp);
   t.truthy(shell.error());
   t.is(result.code, 1);
@@ -110,6 +110,32 @@ test('dest already exists', t => {
   t.is(result.code, 0);
   t.is(result.stderr, '');
   t.is(shell.cat('resources/file2').toString(), oldContents);
+});
+
+test('-nR does not overwrite an existing file at the destination', t => {
+  // Create tmp/new/cp/a
+  const dest = `${t.context.tmp}/new/cp`;
+  shell.mkdir('-p', dest);
+  const oldContents = 'original content';
+  shell.ShellString(oldContents).to(`${dest}/a`);
+
+  // Attempt to overwrite /tmp/new/cp/ with resources/cp/
+  const result = shell.cp('-nR', 'resources/cp/', `${t.context.tmp}/new/`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(result.stderr);
+  t.is(shell.cat(`${dest}/a`).toString(), oldContents);
+});
+
+test('-n does not overwrite an existing file if the destination is a directory', t => {
+  const oldContents = 'original content';
+  shell.cp('resources/file1', `${t.context.tmp}`);
+  new common.ShellString(oldContents).to(`${t.context.tmp}/file1`);
+  const result = shell.cp('-n', 'resources/file1', `${t.context.tmp}`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(result.stderr);
+  t.is(shell.cat(`${t.context.tmp}/file1`).toString(), oldContents);
 });
 
 test('-f by default', t => {
@@ -213,6 +239,15 @@ test('recursive, with regular files', t => {
   t.is(result.code, 0);
   t.truthy(fs.existsSync(`${t.context.tmp}/file1`));
   t.truthy(fs.existsSync(`${t.context.tmp}/file2`));
+});
+
+test('omit directory if missing recursive flag', t => {
+  const result = shell.cp('resources/cp', t.context.tmp);
+  t.is(shell.error(), "cp: omitting directory 'resources/cp'");
+  t.is(result.stderr, "cp: omitting directory 'resources/cp'");
+  t.is(result.code, 1);
+  t.falsy(fs.existsSync(`${t.context.tmp}/file1`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/file2`));
 });
 
 test('recursive, nothing exists', t => {
