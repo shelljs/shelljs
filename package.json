@@ -40,6 +40,7 @@
     "lint": "eslint .",
     "after-travis": "travis-check-changes",
     "changelog": "shelljs-changelog",
+    "codecov": "codecov",
     "release:major": "shelljs-release major",
     "release:minor": "shelljs-release minor",
     "release:patch": "shelljs-release patch"
