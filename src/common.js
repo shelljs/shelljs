@@ -184,23 +184,29 @@ exports.getUserHome = getUserHome;
 // Returns {'reference': 'string-value', 'bob': false} when passed two dictionaries of the form:
 //   parseOptions({'-r': 'string-value'}, {'r':'reference', 'b':'bob'});
 function parseOptions(opt, map, errorOptions) {
-  if (!map) error('parseOptions() internal error: no map given');
+  // Validate input
+  if (typeof opt !== 'string' && !(opt instanceof Object)) {
+    error('options must be strings or key-value pairs');
+  } else if (!(map instanceof Object)) {
+    error('parseOptions() internal error: map must be an object');
+  } else if (errorOptions && !(errorOptions instanceof Object)) {
+    error('parseOptions() internal error: errorOptions must be object');
+  }
 
   // All options are false by default
   var options = {};
   Object.keys(map).forEach(function (letter) {
-    if (map[letter][0] !== '!') {
-      options[map[letter]] = false;
+    var optName = map[letter];
+    if (optName[0] !== '!') {
+      options[optName] = false;
     }
   });
 
-  if (!opt) return options; // defaults
-  var hasErrorOpts = typeof errorOptions === 'object';
+  if (opt === '') return options; // defaults
 
-  var optionName;
   if (typeof opt === 'string') {
     if (opt[0] !== '-') {
-      error("Must start the options string with a '-'");
+      error("Options string must start with a '-'", errorOptions || {});
     }
 
     // e.g. chars = ['R', 'f']
@@ -208,35 +214,27 @@ function parseOptions(opt, map, errorOptions) {
 
     chars.forEach(function (c) {
       if (c in map) {
-        optionName = map[c];
+        var optionName = map[c];
         if (optionName[0] === '!') {
           options[optionName.slice(1)] = false;
         } else {
           options[optionName] = true;
         }
       } else {
-        error('option not recognized: ' + c, hasErrorOpts
-          ? errorOptions
-          : undefined);
+        error('option not recognized: ' + c, errorOptions || {});
       }
     });
-  } else if (typeof opt === 'object') {
+  } else { // opt instanceof Option
     Object.keys(opt).forEach(function (key) {
       // key is a string of the form '-r', '-d', etc.
       var c = key[1];
       if (c in map) {
-        optionName = map[c];
+        var optionName = map[c];
         options[optionName] = opt[key]; // assign the given value
       } else {
-        error('option not recognized: ' + c, hasErrorOpts
-          ? errorOptions
-          : undefined);
+        error('option not recognized: ' + c, errorOptions || {});
       }
     });
-  } else {
-    error('options must be strings or key-value pairs', hasErrorOpts
-        ? errorOptions
-        : undefined);
   }
   return options;
 }

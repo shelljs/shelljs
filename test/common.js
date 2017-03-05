@@ -40,9 +40,45 @@ test('parseOptions (invalid option in options object)', t => {
 test('parseOptions (without a hyphen in the string)', t => {
   t.throws(() => {
     common.parseOptions('f', {
-      R: 'recursive',
       f: 'force',
-      r: 'reverse',
+    });
+  });
+});
+
+test('parseOptions (opt is not a string/object)', t => {
+  t.throws(() => {
+    common.parseOptions(1, {
+      f: 'force',
+    });
+  });
+});
+
+test('parseOptions (map is not an object)', t => {
+  t.throws(() => {
+    common.parseOptions('-f', 27);
+  });
+});
+
+test('parseOptions (errorOptions is not an object)', t => {
+  t.throws(() => {
+    common.parseOptions('-f', {
+      f: 'force',
+    }, 'not a valid errorOptions');
+  });
+});
+
+test('parseOptions (unrecognized string option)', t => {
+  t.throws(() => {
+    common.parseOptions('-z', {
+      f: 'force',
+    });
+  });
+});
+
+test('parseOptions (unrecognized option in Object)', t => {
+  t.throws(() => {
+    common.parseOptions({ '-c': 7 }, {
+      f: 'force',
     });
   });
 });
