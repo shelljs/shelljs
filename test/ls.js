@@ -382,8 +382,10 @@ test('long option, single file', t => {
   t.is(result.nlink, 1);
   t.is(result.size, 5);
   t.truthy(result.mode); // check that these keys exist
-  t.truthy(process.platform === 'win32' || result.uid); // only on unix
-  t.truthy(process.platform === 'win32' || result.gid); // only on unix
+  if (process.platform !== 'win32') {
+    t.truthy(result.uid);
+    t.truthy(result.gid);
+  }
   t.truthy(result.mtime); // check that these keys exist
   t.truthy(result.atime); // check that these keys exist
   t.truthy(result.ctime); // check that these keys exist
@@ -399,8 +401,10 @@ test('long option, glob files', t => {
   t.is(result.nlink, 1);
   t.is(result.size, 5);
   t.truthy(result.mode); // check that these keys exist
-  t.truthy(process.platform === 'win32' || result.uid); // only on unix
-  t.truthy(process.platform === 'win32' || result.gid); // only on unix
+  if (process.platform !== 'win32') {
+    t.truthy(result.uid);
+    t.truthy(result.gid);
+  }
   t.truthy(result.mtime); // check that these keys exist
   t.truthy(result.atime); // check that these keys exist
   t.truthy(result.ctime); // check that these keys exist
@@ -419,8 +423,10 @@ test('long option, directory', t => {
   t.is(result.nlink, 1);
   t.is(result.size, 5);
   t.truthy(result.mode); // check that these keys exist
-  t.truthy(process.platform === 'win32' || result.uid); // only on unix
-  t.truthy(process.platform === 'win32' || result.gid); // only on unix
+  if (process.platform !== 'win32') {
+    t.truthy(result.uid);
+    t.truthy(result.gid);
+  }
   t.truthy(result.mtime); // check that these keys exist
   t.truthy(result.atime); // check that these keys exist
   t.truthy(result.ctime); // check that these keys exist
@@ -437,11 +443,13 @@ test('long option, directory, recursive (and windows converts slashes)', t => {
   result = result[idx];
   t.is(result.name, result.name);
   t.truthy(fs.statSync('resources/ls/a_dir/b_dir').isDirectory());
-  t.truthy(typeof result.nlink === 'number'); // This can vary between the local machine and travis
-  t.truthy(typeof result.size === 'number'); // This can vary between different file systems
+  t.is(typeof result.nlink, 'number'); // This can vary between the local machine and travis
+  t.is(typeof result.size, 'number'); // This can vary between different file systems
   t.truthy(result.mode); // check that these keys exist
-  t.truthy(process.platform === 'win32' || result.uid); // only on unix
-  t.truthy(process.platform === 'win32' || result.gid); // only on unix
+  if (process.platform !== 'win32') {
+    t.truthy(result.uid);
+    t.truthy(result.gid);
+  }
   t.truthy(result.mtime); // check that these keys exist
   t.truthy(result.atime); // check that these keys exist
   t.truthy(result.ctime); // check that these keys exist

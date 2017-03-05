@@ -22,7 +22,7 @@ test.afterEach.always(t => {
 
 test('Normal strings don\'t have \'.to()\' anymore', t => {
   const str = 'hello world';
-  t.is(typeof str.to, 'undefined');
+  t.is(str.to, undefined);
 });
 
 test('no file argument', t => {
