@@ -118,7 +118,7 @@ test('Some basic tests on the ShellString type', t => {
   const result = shell.ShellString('foo');
   t.is(result.toString(), 'foo');
   t.is(result.stdout, 'foo');
-  t.is(typeof result.stderr, 'undefined');
+  t.is(result.stderr, undefined);
   t.truthy(result.to);
   t.truthy(result.toEnd);
 });
