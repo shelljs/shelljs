@@ -83,6 +83,7 @@ function _mkdir(options, dirs) {
       if (e.code === 'EACCES') {
         common.error('cannot create directory ' + dir + ': Permission denied');
       } else {
+        /* istanbul ignore next */
         throw e;
       }
     }

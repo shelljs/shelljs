@@ -54,12 +54,14 @@ function copyFileSync(srcFile, destFile, options) {
     try {
       fdr = fs.openSync(srcFile, 'r');
     } catch (e) {
+      /* istanbul ignore next */
       common.error('copyFileSync: could not read src file (' + srcFile + ')');
     }
 
     try {
       fdw = fs.openSync(destFile, 'w');
     } catch (e) {
+      /* istanbul ignore next */
       common.error('copyFileSync: could not write to dest file (code=' + e.code + '):' + destFile);
     }
 
@@ -243,6 +245,7 @@ function _cp(options, sources, dest) {
           fs.statSync(path.dirname(dest));
           cpdirSyncRecursive(src, newDest, 0, { no_force: options.no_force, followsymlink: options.followsymlink });
         } catch (e) {
+          /* istanbul ignore next */
           common.error("cannot create directory '" + dest + "': No such file or directory");
         }
       }

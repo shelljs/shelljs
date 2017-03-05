@@ -73,6 +73,7 @@ exports.platform = platform;
 var pipeMethods = [];
 
 function log() {
+  /* istanbul ignore next */
   if (!config.silent) {
     console.error.apply(console, arguments);
   }
@@ -259,6 +260,7 @@ function unlinkSync(file) {
     fs.unlinkSync(file);
   } catch (e) {
     // Try to override file permission
+    /* istanbul ignore next */
     if (e.code === 'EPERM') {
       fs.chmodSync(file, '0666');
       fs.unlinkSync(file);
@@ -364,6 +366,7 @@ function wrap(cmd, fn, options) {
 
           retValue = fn.apply(this, args);
         } catch (e) {
+          /* istanbul ignore else */
           if (e.msg === 'earlyExit') {
             retValue = e.retValue;
           } else {
@@ -372,6 +375,7 @@ function wrap(cmd, fn, options) {
         }
       }
     } catch (e) {
+      /* istanbul ignore next */
       if (!state.error) {
         // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
         console.error('ShellJS: internal error');
