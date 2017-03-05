@@ -186,11 +186,11 @@ exports.getUserHome = getUserHome;
 function parseOptions(opt, map, errorOptions) {
   // Validate input
   if (typeof opt !== 'string' && !(opt instanceof Object)) {
-    error('options must be strings or key-value pairs');
+    throw new Error('options must be strings or key-value pairs');
   } else if (!(map instanceof Object)) {
-    error('parseOptions() internal error: map must be an object');
+    throw new Error('parseOptions() internal error: map must be an object');
   } else if (errorOptions && !(errorOptions instanceof Object)) {
-    error('parseOptions() internal error: errorOptions must be object');
+    throw new Error('parseOptions() internal error: errorOptions must be object');
   }
 
   // All options are false by default
