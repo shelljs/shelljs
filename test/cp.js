@@ -689,7 +689,14 @@ test('recursive, with a non-normalized path', t => {
   t.is(result.code, 0);
 });
 
-test('copy file to same location', t => {
+test('copy file to same path', t => {
+  const result = shell.cp('resources/file1', 'resources/file1');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, "cp: 'resources/file1' and 'resources/file1' are the same file");
+});
+
+test('copy file to same directory', t => {
   const result = shell.cp('resources/file1', 'resources');
   t.truthy(shell.error());
   t.is(result.code, 1);
