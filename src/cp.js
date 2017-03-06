@@ -213,7 +213,6 @@ function _cp(options, sources, dest) {
 
   var destExists = fs.existsSync(dest);
   var destStat = destExists && fs.statSync(dest);
-  var identicalFiles = [];
 
   // Dest is not existing dir, but multiple sources given
   if ((!destExists || !destStat.isDirectory()) && sources.length > 1) {
@@ -265,23 +264,14 @@ function _cp(options, sources, dest) {
       }
 
       if (path.relative(src, thisDest) === '') {
-        // a file cannot be copied to itself, but we want to continue copying other files,
-        // so save the error for later
-        identicalFiles.push("'" + thisDest + "' and '" + src + "' are the same file");
+        // a file cannot be copied to itself, but we want to continue copying other files
+        common.error("'" + thisDest + "' and '" + src + "' are the same file", { continue: true });
         return;
       }
 
       copyFileSync(src, thisDest, options);
     }
   }); // forEach(src)
-
-  if (identicalFiles.length > 0) {
-    // if any of the copies were identical, print an error for each and then exit
-    identicalFiles.forEach(function (err, i) {
-      var cont = i < identicalFiles.length - 1; // exit on the last file
-      common.error(err, { continue: cont });
-    });
-  }
 
   return new common.ShellString('', common.state.error, common.state.errorCode);
 }
