@@ -96,8 +96,7 @@ test('-n option with a directory as the destination', t => {
   const result = shell.mv('-n', 'file1', 'cp');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  // TODO(nate): make this an equals comparison once issue #681 is resolved
-  t.regex(result.stderr, /mv: dest file already exists: cp.file1/);
+  t.is(result.stderr, 'mv: dest file already exists: cp/file1');
 });
 
 test('-f is the default behavior', t => {
