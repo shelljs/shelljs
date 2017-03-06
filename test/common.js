@@ -47,10 +47,50 @@ test('parseOptions (invalid type)', t => {
   });
 });
 
+test('convertErrorOutput: no args', t => {
+  t.throws(() => {
+    common.convertErrorOutput();
+  }, TypeError);
+});
+
+test('convertErrorOutput: input must be a vanilla string', t => {
+  t.throws(() => {
+    common.convertErrorOutput(3);
+  }, TypeError);
+
+  t.throws(() => {
+    common.convertErrorOutput({});
+  }, TypeError);
+});
+
 //
 // Valids
 //
 
+//
+// common.convertErrorOutput()
+//
+test('convertErrorOutput: nothing to convert', t => {
+  const input = 'hello world';
+  const result = common.convertErrorOutput(input);
+  t.is(result, input);
+});
+
+test('convertErrorOutput: does not change forward slash', t => {
+  const input = 'dir/sub/file.txt';
+  const result = common.convertErrorOutput(input);
+  t.is(result, input);
+});
+
+test('convertErrorOutput: changes backslashes to forward slashes', t => {
+  const input = 'dir\\sub\\file.txt';
+  const result = common.convertErrorOutput(input);
+  t.is(result, 'dir/sub/file.txt');
+});
+
+//
+// common.expand()
+//
 test('single file, array syntax', t => {
   const result = common.expand(['resources/file1.txt']);
   t.falsy(shell.error());

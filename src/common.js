@@ -80,6 +80,17 @@ function log() {
 }
 exports.log = log;
 
+// Converts strings to be equivalent across all platforms. Primarily responsible
+// for making sure we use '/' instead of '\' as path separators, but this may be
+// expanded in the future if necessary
+function convertErrorOutput(msg) {
+  if (typeof msg !== 'string') {
+    throw new TypeError('input must be a string');
+  }
+  return msg.replace(/\\/g, '/');
+}
+exports.convertErrorOutput = convertErrorOutput;
+
 // Shows error message. Throws if config.fatal is true
 function error(msg, _code, options) {
   // Validate input
@@ -105,7 +116,7 @@ function error(msg, _code, options) {
 
   if (!state.errorCode) state.errorCode = options.code;
 
-  var logEntry = options.prefix + msg;
+  var logEntry = convertErrorOutput(options.prefix + msg);
   state.error = state.error ? state.error + '\n' : '';
   state.error += logEntry;
 

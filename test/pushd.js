@@ -273,7 +273,8 @@ test('Push invalid directory', t => {
   shell.pushd('does/not/exist');
   t.is(
     shell.error(),
-    'pushd: no such file or directory: ' + path.resolve('.', 'does/not/exist')
+    `pushd: no such file or directory: ${path.resolve('.', 'does/not/exist')
+      .replace(/\\/g, '/')}`
   );
   t.is(process.cwd(), oldCwd);
 });
