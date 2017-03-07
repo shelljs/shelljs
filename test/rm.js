@@ -300,7 +300,10 @@ test('recursive dir removal, for non-normalized path', t => {
 });
 
 test('remove fifo', t => {
-  const result = shell.rm(`${t.context.tmp}/fifo`);
-  t.falsy(shell.error());
-  t.is(result.code, 0);
+  if (process.platform !== 'win32') {
+    const fifo = utils.mkfifo(t.context.tmp);
+    const result = shell.rm(fifo);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+  }
 });

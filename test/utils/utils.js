@@ -36,3 +36,13 @@ function sleep(time) {
   child.execFileSync(common.config.execPath, ['resources/exec/slow.js', time.toString()]);
 }
 exports.sleep = sleep;
+
+function mkfifo(dir) {
+  if (process.platform !== 'win32') {
+    const fifo = `${dir}/fifo`;
+    child.execFileSync('mkfifo', [fifo]);
+    return fifo;
+  }
+  return null;
+}
+exports.mkfifo = mkfifo;
