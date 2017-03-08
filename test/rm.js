@@ -150,7 +150,7 @@ test('recursive dir removal', t => {
   t.is(result.code, 0);
   const contents = fs.readdirSync(t.context.tmp);
   t.is(contents.length, 1);
-  t.is(contents[0], '.hidden'); // shouldn't remove hiddden if no .* given
+  t.is(contents[0], '.hidden'); // shouldn't remove hidden if no .* given
 });
 
 test('recursive dir removal #2', t => {
