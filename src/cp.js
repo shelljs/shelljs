@@ -263,9 +263,16 @@ function _cp(options, sources, dest) {
         return; // skip file
       }
 
+      if (path.relative(src, thisDest) === '') {
+        // a file cannot be copied to itself, but we want to continue copying other files
+        common.error("'" + thisDest + "' and '" + src + "' are the same file", { continue: true });
+        return;
+      }
+
       copyFileSync(src, thisDest, options);
     }
   }); // forEach(src)
+
   return new common.ShellString('', common.state.error, common.state.errorCode);
 }
 module.exports = _cp;
