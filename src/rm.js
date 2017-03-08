@@ -45,7 +45,7 @@ function rmdirSyncRecursive(dir, force, fromSymlink) {
   }
 
   // if was directory was referenced through a symbolic link,
-  // do not remove the directory itself
+  // the contents should be removed, but not the directory itself
   if (fromSymlink) return;
 
   // Now that we know everything in the sub-tree has been deleted, we can delete the main directory.
@@ -119,7 +119,7 @@ function handleSymbolicLink(file, options) {
   try {
     stats = fs.statSync(file);
   } catch (e) {
-    // symlink is bad, so just remove it
+    // symlink is broken, so remove the symlink itself
     common.unlinkSync(file);
     return;
   }
