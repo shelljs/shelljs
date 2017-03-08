@@ -1,6 +1,5 @@
 var common = require('./common');
 var fs = require('fs');
-var path = require('path');
 
 common.register('rm', _rm, {
   cmdOptions: {
@@ -131,11 +130,8 @@ function handleSymbolicLink(file, options) {
       // trailing separator, so remove the contents, not the link
       if (options.recursive) {
         // -r was passed, so directory can be removed
-        var link = file.slice(0, -1); // remove the '/' character for readlinkSync
-        var dir = fs.readlinkSync(link);
-        var dirpath = path.resolve(path.dirname(link), dir);
         var fromSymlink = true;
-        rmdirSyncRecursive(dirpath, options.force, fromSymlink);
+        rmdirSyncRecursive(file, options.force, fromSymlink);
       } else {
         common.error('path is a directory', { continue: true });
       }
