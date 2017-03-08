@@ -39,7 +39,7 @@ exports.sleep = sleep;
 
 function mkfifo(dir) {
   if (process.platform !== 'win32') {
-    const fifo = `${dir}/fifo`;
+    const fifo = dir + 'fifo';
     child.execFileSync('mkfifo', [fifo]);
     return fifo;
   }
