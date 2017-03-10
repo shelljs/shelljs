@@ -30,7 +30,7 @@ function _find(options, paths) {
   var list = [];
 
   function pushFile(file) {
-    if (common.platform === 'win') {
+    if (process.platform === 'win32') {
       file = file.replace(/\\/g, '/');
     }
     list.push(file);

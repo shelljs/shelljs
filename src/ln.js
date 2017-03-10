@@ -43,7 +43,7 @@ function _ln(options, source, dest) {
   }
 
   if (options.symlink) {
-    var isWindows = common.platform === 'win';
+    var isWindows = process.platform === 'win32';
     var linkType = isWindows ? 'file' : null;
     var resolvedSourcePath = isAbsolute ? sourcePath : path.resolve(process.cwd(), path.dirname(dest), source);
     if (!fs.existsSync(resolvedSourcePath)) {

@@ -66,9 +66,6 @@ exports.state = state;
 
 delete process.env.OLDPWD; // initially, there's no previous directory
 
-var platform = os.type().match(/^Win/) ? 'win' : 'unix';
-exports.platform = platform;
-
 // This is populated by calls to commonl.wrap()
 var pipeMethods = [];
 

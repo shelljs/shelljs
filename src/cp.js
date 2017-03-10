@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
-var os = require('os');
 
 common.register('cp', _cp, {
   cmdOptions: {
@@ -24,6 +23,8 @@ function copyFileSync(srcFile, destFile, options) {
     common.error('copyFileSync: no such file or directory: ' + srcFile);
   }
 
+  var isWindows = process.platform === 'win32';
+
   // Check the mtimes of the files if the '-u' flag is provided
   try {
     if (options.update && fs.statSync(srcFile).mtime < fs.statSync(destFile).mtime) {
@@ -42,7 +43,7 @@ function copyFileSync(srcFile, destFile, options) {
     }
 
     var symlinkFull = fs.readlinkSync(srcFile);
-    fs.symlinkSync(symlinkFull, destFile, os.platform() === 'win32' ? 'junction' : null);
+    fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
   } else {
     var BUF_LENGTH = 64 * 1024;
     var buf = new Buffer(BUF_LENGTH);
@@ -93,6 +94,8 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
   if (currentDepth >= common.config.maxdepth) return;
   currentDepth++;
 
+  var isWindows = process.platform === 'win32';
+
   // Create the directory where all our junk is moving to; read the mode of the
   // source directory and mirror it
   try {
@@ -116,7 +119,7 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
         // Cycle link found.
         console.error('Cycle link found.');
         symlinkFull = fs.readlinkSync(srcFile);
-        fs.symlinkSync(symlinkFull, destFile, os.platform() === 'win32' ? 'junction' : null);
+        fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
         continue;
       }
     }
@@ -131,7 +134,7 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
       } catch (e) {
         // it doesn't exist, so no work needs to be done
       }
-      fs.symlinkSync(symlinkFull, destFile, os.platform() === 'win32' ? 'junction' : null);
+      fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
     } else if (srcFileStat.isSymbolicLink() && opts.followsymlink) {
       srcFileStat = fs.statSync(srcFile);
       if (srcFileStat.isDirectory()) {
