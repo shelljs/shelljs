@@ -75,7 +75,7 @@ function _sort(options, files) {
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
-    lines = lines.concat(contents.trimRight().split(/\r*\n/));
+    lines = lines.concat(contents.trimRight().split('\n'));
   });
 
   var sorted;

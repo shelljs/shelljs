@@ -47,7 +47,7 @@ function _grep(options, regex, files) {
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
-    var lines = contents.split(/\r*\n/);
+    var lines = contents.split('\n');
     if (options.nameOnly) {
       if (contents.match(regex)) {
         grep.push(file);
