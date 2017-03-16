@@ -733,6 +733,7 @@ Example:
 config.verbose = true; // or set('-v');
 cd('dir/');
 ls('subdir/');
+exec('echo hello');
 ```
 
 Will print each command as follows:
@@ -740,6 +741,7 @@ Will print each command as follows:
 ```
 cd dir/
 ls subdir/
+exec echo hello
 ```
 
 ### config.globOptions
