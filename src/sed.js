@@ -69,7 +69,7 @@ function _sed(options, regex, replacement, files) {
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
-    var lines = contents.split(/\r*\n/);
+    var lines = contents.split('\n');
     var result = lines.map(function (line) {
       return line.replace(regex, replacement);
     }).join('\n');
