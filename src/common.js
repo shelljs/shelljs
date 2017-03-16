@@ -156,6 +156,8 @@ exports.getUserHome = getUserHome;
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
 // Returns {'reference': 'string-value', 'bob': false} when passed two dictionaries of the form:
 //   parseOptions({'-r': 'string-value'}, {'r':'reference', 'b':'bob'});
+// Throws an error when passed a string that does not start with '-':
+//   parseOptions('a', {'a':'alice'}); // throws
 function parseOptions(opt, map, errorOptions) {
   if (!map) error('parseOptions() internal error: no map given');
 
@@ -172,7 +174,7 @@ function parseOptions(opt, map, errorOptions) {
   var optionName;
   if (typeof opt === 'string') {
     if (opt[0] !== '-') {
-      return options;
+      throw new Error('Options string must start with "-"');
     }
 
     // e.g. chars = ['R', 'f']
