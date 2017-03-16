@@ -9,15 +9,36 @@ var shell = require('..');
 
 var shellMethods = Object.create(shell);
 
-// Module globals
-var config = {
-  silent: false,
+exports.extend = Object.assign;
+
+// Check if we're running under electron
+var isElectron = Boolean(process.versions.electron);
+
+// Module globals (assume no execPath by default)
+var DEFAULT_CONFIG = {
   fatal: false,
-  verbose: false,
-  noglob: false,
   globOptions: {},
-  maxdepth: 255
+  maxdepth: 255,
+  noglob: false,
+  silent: false,
+  verbose: false,
+  execPath: null,
 };
+
+var config = {
+  reset: function () {
+    Object.assign(this, DEFAULT_CONFIG);
+    if (!isElectron) {
+      this.execPath = process.execPath;
+    }
+  },
+  resetForTesting: function () {
+    this.reset();
+    this.silent = true;
+  },
+};
+
+config.reset();
 exports.config = config;
 
 var state = {
@@ -64,7 +85,7 @@ function error(msg, _code, options) {
   } else if (typeof _code !== 'number') { // only 'msg'
     options = {};
   }
-  options = objectAssign({}, DEFAULT_OPTIONS, options);
+  options = Object.assign({}, DEFAULT_OPTIONS, options);
 
   if (!state.errorCode) state.errorCode = options.code;
 
@@ -252,23 +273,6 @@ function randomFileName() {
 }
 exports.randomFileName = randomFileName;
 
-// objectAssign(target_obj, source_obj1 [, source_obj2 ...])
-// "Ponyfill" for Object.assign
-//    objectAssign({A:1}, {b:2}, {c:3}) returns {A:1, b:2, c:3}
-var objectAssign = typeof Object.assign === 'function' ?
-  Object.assign :
-  function objectAssign(target) {
-    var sources = [].slice.call(arguments, 1);
-    sources.forEach(function (source) {
-      Object.keys(source).forEach(function (key) {
-        target[key] = source[key];
-      });
-    });
-
-    return target;
-  };
-exports.extend = objectAssign;
-
 // Common wrapper for all Unix-like commands that performs glob expansion,
 // command-logging, and other nice things
 function wrap(cmd, fn, options) {
@@ -357,9 +361,8 @@ function wrap(cmd, fn, options) {
     } catch (e) {
       if (!state.error) {
         // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
-        console.error('ShellJS: internal error');
-        console.error(e.stack || e);
-        process.exit(1);
+        e.name = 'ShellJSInternalError';
+        throw e;
       }
       if (config.fatal) throw e;
     }
@@ -397,7 +400,7 @@ var DEFAULT_WRAP_OPTIONS = {
 function _register(name, implementation, wrapOptions) {
   wrapOptions = wrapOptions || {};
   // If an option isn't specified, use the default
-  wrapOptions = objectAssign({}, DEFAULT_WRAP_OPTIONS, wrapOptions);
+  wrapOptions = Object.assign({}, DEFAULT_WRAP_OPTIONS, wrapOptions);
 
   if (shell[name] && !wrapOptions.overWrite) {
     throw new Error('unable to overwrite `' + name + '` command');

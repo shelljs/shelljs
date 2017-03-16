@@ -1,94 +1,99 @@
-var shell = require('..');
+import fs from 'fs';
 
-var assert = require('assert');
-var fs = require('fs');
+import test from 'ava';
+
+import shell from '..';
 
 shell.config.silent = true;
 
-shell.rm('-rf', 'tmp');
-shell.mkdir('tmp');
-
-var result;
-
-var doubleSorted = shell.cat('resources/sort/sorted')
+const doubleSorted = shell.cat('resources/sort/sorted')
                         .trimRight()
                         .split('\n')
-                        .reduce(function (prev, cur) {
-                          return prev.concat([cur, cur]);
-                        }, [])
+                        .reduce((prev, cur) => prev.concat([cur, cur]), [])
                         .join('\n') + '\n';
+
 
 //
 // Invalids
 //
 
-result = shell.sort();
-assert.ok(shell.error());
-assert.ok(result.code);
+test('no args', t => {
+  const result = shell.sort();
+  t.truthy(shell.error());
+  t.truthy(result.code);
+});
 
-assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
-result = shell.sort('/adsfasdf'); // file does not exist
-assert.ok(shell.error());
-assert.ok(result.code);
+test('file does not exist', t => {
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
+  const result = shell.sort('/adsfasdf');
+  t.truthy(shell.error());
+  t.truthy(result.code);
+});
 
 //
 // Valids
 //
 
-// simple
-result = shell.sort('resources/sort/file1');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result + '', shell.cat('resources/sort/sorted'));
+test('simple', t => {
+  const result = shell.sort('resources/sort/file1');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), shell.cat('resources/sort/sorted').toString());
+});
 
-// simple
-result = shell.sort('resources/sort/file2');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result + '', shell.cat('resources/sort/sorted'));
+test('simple #2', t => {
+  const result = shell.sort('resources/sort/file2');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), shell.cat('resources/sort/sorted').toString());
+});
 
-// multiple files
-result = shell.sort('resources/sort/file2', 'resources/sort/file1');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result + '', doubleSorted);
+test('multiple files', t => {
+  const result = shell.sort('resources/sort/file2', 'resources/sort/file1');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), doubleSorted);
+});
 
-// multiple files, array syntax
-result = shell.sort(['resources/sort/file2', 'resources/sort/file1']);
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result + '', doubleSorted);
+test('multiple files, array syntax', t => {
+  const result = shell.sort(['resources/sort/file2', 'resources/sort/file1']);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), doubleSorted);
+});
 
-// Globbed file
-result = shell.sort('resources/sort/file?');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result + '', doubleSorted);
+test('Globbed file', t => {
+  const result = shell.sort('resources/sort/file?');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), doubleSorted);
+});
 
-// With '-n' option
-result = shell.sort('-n', 'resources/sort/file2');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result + '', shell.cat('resources/sort/sortedDashN'));
+test('With \'-n\' option', t => {
+  const result = shell.sort('-n', 'resources/sort/file2');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), shell.cat('resources/sort/sortedDashN').toString());
+});
 
-// With '-r' option
-result = shell.sort('-r', 'resources/sort/file2');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result + '', shell.cat('resources/sort/sorted')
-                          .trimRight()
-                          .split('\n')
-                          .reverse()
-                          .join('\n') + '\n');
+test('With \'-r\' option', t => {
+  const result = shell.sort('-r', 'resources/sort/file2');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), shell.cat('resources/sort/sorted')
+    .trimRight()
+    .split('\n')
+    .reverse()
+    .join('\n') + '\n');
+});
 
-// With '-rn' option
-result = shell.sort('-rn', 'resources/sort/file2');
-assert.equal(shell.error(), null);
-assert.equal(result.code, 0);
-assert.equal(result + '', shell.cat('resources/sort/sortedDashN')
-                          .trimRight()
-                          .split('\n')
-                          .reverse()
-                          .join('\n') + '\n');
-
-shell.exit(123);
+test('With \'-rn\' option', t => {
+  const result = shell.sort('-rn', 'resources/sort/file2');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), shell.cat('resources/sort/sortedDashN')
+    .trimRight()
+    .split('\n')
+    .reverse()
+    .join('\n') + '\n');
+});

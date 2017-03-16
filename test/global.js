@@ -1,40 +1,50 @@
-/* globals cat, config, cp, env, error, exit, mkdir, rm */
+/* globals cat, config, cp, env, error, mkdir, rm */
+import fs from 'fs';
 
-require('../global');
+import test from 'ava';
 
-var assert = require('assert');
-var fs = require('fs');
+import '../global';
+import utils from './utils/utils';
 
-config.silent = true;
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
+  config.resetForTesting();
+  mkdir(t.context.tmp);
+});
 
-rm('-rf', 'tmp');
-mkdir('tmp');
+test.afterEach.always(t => {
+  rm('-rf', t.context.tmp);
+});
+
 
 //
 // Valids
 //
 
-assert.equal(process.env, env);
+test('env is exported', t => {
+  t.is(process.env, env);
+});
 
-// cat
-var result = cat('resources/cat/file1');
-assert.equal(error(), null);
-assert.equal(result.code, 0);
-assert.equal(result, 'test1\n');
+test('cat', t => {
+  const result = cat('resources/cat/file1');
+  t.falsy(error());
+  t.is(result.code, 0);
+  t.is(result.toString(), 'test1\n');
+});
 
-// rm
-cp('-f', 'resources/file1', 'tmp/file1');
-assert.equal(fs.existsSync('tmp/file1'), true);
-result = rm('tmp/file1');
-assert.equal(error(), null);
-assert.equal(result.code, 0);
-assert.equal(fs.existsSync('tmp/file1'), false);
+test('rm', t => {
+  cp('-f', 'resources/file1', `${t.context.tmp}/file1`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/file1`));
+  const result = rm(`${t.context.tmp}/file1`);
+  t.falsy(error());
+  t.is(result.code, 0);
+  t.falsy(fs.existsSync(`${t.context.tmp}/file1`));
+});
 
-// String.prototype is modified for global require
-'foo'.to('tmp/testfile.txt');
-assert.equal('foo', cat('tmp/testfile.txt'));
-'bar'.toEnd('tmp/testfile.txt');
-assert.equal('foobar', cat('tmp/testfile.txt'));
-
-exit(123);
+test('String.prototype is modified for global require', t => {
+  'foo'.to(`${t.context.tmp}/testfile.txt`);
+  t.is('foo', cat(`${t.context.tmp}/testfile.txt`).toString());
+  'bar'.toEnd(`${t.context.tmp}/testfile.txt`);
+  t.is('foobar', cat(`${t.context.tmp}/testfile.txt`).toString());
+});
 

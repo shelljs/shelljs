@@ -123,31 +123,22 @@ function _rm(options, files) {
     }
 
     // If here, path exists
-    if (stats.isFile() || stats.isSymbolicLink()) {
-      // Do not check for file writing permissions
-      if (options.force) {
-        common.unlinkSync(file);
-        return;
-      }
-
-      if (isWriteable(file)) {
+    if (stats.isFile()) {
+      if (options.force || isWriteable(file)) {
+        // -f was passed, or file is writable, so it can be removed
         common.unlinkSync(file);
       } else {
         common.error('permission denied: ' + file, { continue: true });
       }
-
-      return;
-    } // simple file
-
-    // Path is an existing directory, but no -r flag given
-    if (stats.isDirectory() && !options.recursive) {
-      common.error('path is a directory', { continue: true });
-      return; // skip path
-    }
-
-    // Recursively remove existing directory
-    if (stats.isDirectory() && options.recursive) {
-      rmdirSyncRecursive(file, options.force);
+    } else if (stats.isDirectory()) {
+      if (options.recursive) {
+        // -r was passed, so directory can be removed
+        rmdirSyncRecursive(file, options.force);
+      } else {
+        common.error('path is a directory', { continue: true });
+      }
+    } else if (stats.isSymbolicLink()) {
+      common.unlinkSync(file);
     }
   }); // forEach(file)
   return '';

@@ -7,7 +7,7 @@
     "comma-dangle": 0,
     "global-require": 0,
     "vars-on-top": 0,
-    "spaced-comment": [2, "always", { "markers": ["@", "@include"], "exceptions": ["@"] }],
+    "spaced-comment": [2, "always", { "markers": ["@", "@include"], "exceptions": ["@", "@commands"] }],
     "no-param-reassign": 0,
     "no-console": 0,
     "curly": [2, "multi-line"],

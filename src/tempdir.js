@@ -40,7 +40,6 @@ function _tempDir() {
   if (state.tempDir) return state.tempDir; // from cache
 
   state.tempDir = writeableDir(os.tmpdir && os.tmpdir()) || // node 0.10+
-                  writeableDir(os.tmpDir && os.tmpDir()) || // node 0.8+
                   writeableDir(process.env.TMPDIR) ||
                   writeableDir(process.env.TEMP) ||
                   writeableDir(process.env.TMP) ||
