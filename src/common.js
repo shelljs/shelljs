@@ -172,6 +172,8 @@ exports.getUserHome = getUserHome;
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
 // Returns {'reference': 'string-value', 'bob': false} when passed two dictionaries of the form:
 //   parseOptions({'-r': 'string-value'}, {'r':'reference', 'b':'bob'});
+// Throws an error when passed a string that does not start with '-':
+//   parseOptions('a', {'a':'alice'}); // throws
 function parseOptions(opt, map, errorOptions) {
   // Validate input
   if (typeof opt !== 'string' && !isObject(opt)) {
