@@ -259,12 +259,14 @@ See also: pushd, popd
 Available options:
 
 + `-e`: interpret backslash escapes (default)
++ `-n`: remove trailing newline from output
 
 Examples:
 
 ```javascript
 echo('hello world');
 var str = echo('hello world');
+echo('-n', 'no newline at end');
 ```
 
 Prints string to stdout, and returns string with additional utility methods
