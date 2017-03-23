@@ -732,7 +732,7 @@ Example:
 ```javascript
 config.verbose = true; // or set('-v');
 cd('dir/');
-ls('subdir/');
+rm('-rf', 'foo.txt', 'bar.txt');
 exec('echo hello');
 ```
 
@@ -740,7 +740,7 @@ Will print each command as follows:
 
 ```
 cd dir/
-ls subdir/
+rm -rf foo.txt bar.txt
 exec echo hello
 ```
 
