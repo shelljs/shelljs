@@ -33,7 +33,7 @@ function execSync(cmd, opts, pipe) {
     silent: common.config.silent,
     cwd: _pwd().toString(),
     env: process.env,
-    maxBuffer: DEFAULT_MAXBUFFER_SIZE
+    maxBuffer: DEFAULT_MAXBUFFER_SIZE,
   }, opts);
 
   if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
@@ -128,7 +128,7 @@ function execAsync(cmd, opts, pipe, callback) {
     silent: common.config.silent,
     cwd: _pwd().toString(),
     env: process.env,
-    maxBuffer: DEFAULT_MAXBUFFER_SIZE
+    maxBuffer: DEFAULT_MAXBUFFER_SIZE,
   }, opts);
 
   var c = child.exec(cmd, opts, function (err) {
@@ -166,7 +166,7 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ + `async`: Asynchronous execution. If a callback is provided, it will be set to
 //@   `true`, regardless of the passed value.
 //@ + `silent`: Do not echo program output to console.
-//@ + and any option available to NodeJS's
+//@ + and any option available to Node.js's
 //@   [child_process.exec()](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback)
 //@
 //@ Examples:
@@ -217,7 +217,7 @@ function _exec(command, options, callback) {
 
   options = common.extend({
     silent: common.config.silent,
-    async: false
+    async: false,
   }, options);
 
   try {

@@ -24,6 +24,8 @@ script:
   # make sure when the docs are generated nothing changes (a.k.a. the docs have already been generated)
   - npm run gendocs
   - npm run after-travis "Make sure to generate docs!"
+after_success:
+  - codecov
 
 # Gitter
 notifications:

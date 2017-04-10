@@ -9,8 +9,8 @@ shell.config.silent = true;
 //
 
 test('commands like `rm` cannot be on the right side of pipes', t => {
-  t.is(typeof shell.ls('.').rm, 'undefined');
-  t.is(typeof shell.cat('resources/file1.txt').rm, 'undefined');
+  t.is(shell.ls('.').rm, undefined);
+  t.is(shell.cat('resources/file1.txt').rm, undefined);
 });
 
 //

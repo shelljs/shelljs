@@ -91,6 +91,14 @@ test('-n is no-force/no-clobber', t => {
   t.is(result.stderr, 'mv: dest file already exists: file2');
 });
 
+test('-n option with a directory as the destination', t => {
+  shell.cp('file1', 'cp'); // copy it so we're sure it's already there
+  const result = shell.mv('-n', 'file1', 'cp');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'mv: dest file already exists: cp/file1');
+});
+
 test('-f is the default behavior', t => {
   const result = shell.mv('file1', 'file2'); // dest already exists (but that's ok)
   t.falsy(shell.error());
@@ -153,19 +161,13 @@ test('one source', t => {
 });
 
 test('two sources', t => {
-  shell.rm('-rf', 't');
-  shell.mkdir('-p', 't');
-  let result = shell.mv('file1', 'file2', 't');
+  const result = shell.mv('file1', 'file2', 'cp');
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.falsy(fs.existsSync('file1'));
   t.falsy(fs.existsSync('file2'));
-  t.truthy(fs.existsSync('t/file1'));
-  t.truthy(fs.existsSync('t/file2'));
-  result = shell.mv('t/*', '.'); // revert
-  t.is(result.code, 0);
-  t.truthy(fs.existsSync('file1'));
-  t.truthy(fs.existsSync('file2'));
+  t.truthy(fs.existsSync('cp/file1'));
+  t.truthy(fs.existsSync('cp/file2'));
 });
 
 test('two sources, array style', t => {

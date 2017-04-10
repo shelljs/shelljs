@@ -45,7 +45,7 @@ var state = {
   error: null,
   errorCode: 0,
   currentCmd: 'shell.js',
-  tempDir: null
+  tempDir: null,
 };
 exports.state = state;
 
@@ -57,12 +57,30 @@ exports.platform = platform;
 // This is populated by calls to commonl.wrap()
 var pipeMethods = [];
 
+// Reliably test if something is any sort of javascript object
+function isObject(a) {
+  return typeof a === 'object' && a !== null;
+}
+exports.isObject = isObject;
+
 function log() {
+  /* istanbul ignore next */
   if (!config.silent) {
     console.error.apply(console, arguments);
   }
 }
 exports.log = log;
+
+// Converts strings to be equivalent across all platforms. Primarily responsible
+// for making sure we use '/' instead of '\' as path separators, but this may be
+// expanded in the future if necessary
+function convertErrorOutput(msg) {
+  if (typeof msg !== 'string') {
+    throw new TypeError('input must be a string');
+  }
+  return msg.replace(/\\/g, '/');
+}
+exports.convertErrorOutput = convertErrorOutput;
 
 // Shows error message. Throws if config.fatal is true
 function error(msg, _code, options) {
@@ -76,9 +94,9 @@ function error(msg, _code, options) {
     silent: false,
   };
 
-  if (typeof _code === 'number' && typeof options === 'object') {
+  if (typeof _code === 'number' && isObject(options)) {
     options.code = _code;
-  } else if (typeof _code === 'object') { // no 'code'
+  } else if (isObject(_code)) { // no 'code'
     options = _code;
   } else if (typeof _code === 'number') { // no 'options'
     options = { code: _code };
@@ -89,7 +107,7 @@ function error(msg, _code, options) {
 
   if (!state.errorCode) state.errorCode = options.code;
 
-  var logEntry = options.prefix + msg;
+  var logEntry = convertErrorOutput(options.prefix + msg);
   state.error = state.error ? state.error + '\n' : '';
   state.error += logEntry;
 
@@ -100,7 +118,7 @@ function error(msg, _code, options) {
   if (!options.continue) {
     throw {
       msg: 'earlyExit',
-      retValue: (new ShellString('', state.error, state.errorCode))
+      retValue: (new ShellString('', state.error, state.errorCode)),
     };
   }
 }
@@ -159,22 +177,29 @@ exports.getUserHome = getUserHome;
 // Throws an error when passed a string that does not start with '-':
 //   parseOptions('a', {'a':'alice'}); // throws
 function parseOptions(opt, map, errorOptions) {
-  if (!map) error('parseOptions() internal error: no map given');
+  // Validate input
+  if (typeof opt !== 'string' && !isObject(opt)) {
+    throw new Error('options must be strings or key-value pairs');
+  } else if (!isObject(map)) {
+    throw new Error('parseOptions() internal error: map must be an object');
+  } else if (errorOptions && !isObject(errorOptions)) {
+    throw new Error('parseOptions() internal error: errorOptions must be object');
+  }
 
   // All options are false by default
   var options = {};
   Object.keys(map).forEach(function (letter) {
-    if (map[letter][0] !== '!') {
-      options[map[letter]] = false;
+    var optName = map[letter];
+    if (optName[0] !== '!') {
+      options[optName] = false;
     }
   });
 
-  if (!opt) return options; // defaults
+  if (opt === '') return options; // defaults
 
-  var optionName;
   if (typeof opt === 'string') {
     if (opt[0] !== '-') {
-      throw new Error('Options string must start with "-"');
+      error("Options string must start with a '-'", errorOptions || {});
     }
 
     // e.g. chars = ['R', 'f']
@@ -182,35 +207,27 @@ function parseOptions(opt, map, errorOptions) {
 
     chars.forEach(function (c) {
       if (c in map) {
-        optionName = map[c];
+        var optionName = map[c];
         if (optionName[0] === '!') {
           options[optionName.slice(1)] = false;
         } else {
           options[optionName] = true;
         }
-      } else if (typeof errorOptions === 'object') {
-        error('option not recognized: ' + c, errorOptions);
       } else {
-        error('option not recognized: ' + c);
+        error('option not recognized: ' + c, errorOptions || {});
       }
     });
-  } else if (typeof opt === 'object') {
+  } else { // opt is an Object
     Object.keys(opt).forEach(function (key) {
       // key is a string of the form '-r', '-d', etc.
       var c = key[1];
       if (c in map) {
-        optionName = map[c];
+        var optionName = map[c];
         options[optionName] = opt[key]; // assign the given value
-      } else if (typeof errorOptions === 'object') {
-        error('option not recognized: ' + c, errorOptions);
       } else {
-        error('option not recognized: ' + c);
+        error('option not recognized: ' + c, errorOptions || {});
       }
     });
-  } else if (typeof errorOptions === 'object') {
-    error('options must be strings or key-value pairs', errorOptions);
-  } else {
-    error('options must be strings or key-value pairs');
   }
   return options;
 }
@@ -246,6 +263,7 @@ function unlinkSync(file) {
     fs.unlinkSync(file);
   } catch (e) {
     // Try to override file permission
+    /* istanbul ignore next */
     if (e.code === 'EPERM') {
       fs.chmodSync(file, '0666');
       fs.unlinkSync(file);
@@ -302,7 +320,7 @@ function wrap(cmd, fn, options) {
       if (options.unix === false) { // this branch is for exec()
         retValue = fn.apply(this, args);
       } else { // and this branch is for everything else
-        if (args[0] instanceof Object && args[0].constructor.name === 'Object') {
+        if (isObject(args[0]) && args[0].constructor.name === 'Object') {
           // a no-op, allowing the syntax `touch({'-r': file}, ...)`
         } else if (args.length === 0 || typeof args[0] !== 'string' || args[0].length <= 1 || args[0][0] !== '-') {
           args.unshift(''); // only add dummy option if '-option' not already present
@@ -322,7 +340,7 @@ function wrap(cmd, fn, options) {
 
         // Convert ShellStrings (basically just String objects) to regular strings
         args = args.map(function (arg) {
-          if (arg instanceof Object && arg.constructor.name === 'String') {
+          if (isObject(arg) && arg.constructor.name === 'String') {
             return arg.toString();
           }
           return arg;
@@ -345,12 +363,13 @@ function wrap(cmd, fn, options) {
 
         try {
           // parse options if options are provided
-          if (typeof options.cmdOptions === 'object') {
+          if (isObject(options.cmdOptions)) {
             args[0] = parseOptions(args[0], options.cmdOptions);
           }
 
           retValue = fn.apply(this, args);
         } catch (e) {
+          /* istanbul ignore else */
           if (e.msg === 'earlyExit') {
             retValue = e.retValue;
           } else {
@@ -359,6 +378,7 @@ function wrap(cmd, fn, options) {
         }
       }
     } catch (e) {
+      /* istanbul ignore next */
       if (!state.error) {
         // If state.error hasn't been set it's an error thrown by Node, not us - probably a bug...
         e.name = 'ShellJSInternalError';

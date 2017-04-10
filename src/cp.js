@@ -54,12 +54,14 @@ function copyFileSync(srcFile, destFile, options) {
     try {
       fdr = fs.openSync(srcFile, 'r');
     } catch (e) {
+      /* istanbul ignore next */
       common.error('copyFileSync: could not read src file (' + srcFile + ')');
     }
 
     try {
       fdw = fs.openSync(destFile, 'w');
     } catch (e) {
+      /* istanbul ignore next */
       common.error('copyFileSync: could not write to dest file (code=' + e.code + '):' + destFile);
     }
 
@@ -243,6 +245,7 @@ function _cp(options, sources, dest) {
           fs.statSync(path.dirname(dest));
           cpdirSyncRecursive(src, newDest, 0, { no_force: options.no_force, followsymlink: options.followsymlink });
         } catch (e) {
+          /* istanbul ignore next */
           common.error("cannot create directory '" + dest + "': No such file or directory");
         }
       }
@@ -260,9 +263,16 @@ function _cp(options, sources, dest) {
         return; // skip file
       }
 
+      if (path.relative(src, thisDest) === '') {
+        // a file cannot be copied to itself, but we want to continue copying other files
+        common.error("'" + thisDest + "' and '" + src + "' are the same file", { continue: true });
+        return;
+      }
+
       copyFileSync(src, thisDest, options);
     }
   }); // forEach(src)
+
   return new common.ShellString('', common.state.error, common.state.errorCode);
 }
 module.exports = _cp;

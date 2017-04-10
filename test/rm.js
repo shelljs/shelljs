@@ -35,6 +35,13 @@ test('file does not exist', t => {
   t.is(result.stderr, 'rm: no such file or directory: asdfasdf');
 });
 
+test('cannot delete a directoy without recursive flag', t => {
+  const result = shell.rm(`${t.context.tmp}/rm`);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'rm: path is a directory');
+});
+
 test('only an option', t => {
   const result = shell.rm('-f');
   t.truthy(shell.error());
@@ -290,4 +297,13 @@ test('recursive dir removal, for non-normalized path', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.falsy(fs.existsSync(`${t.context.tmp}/a`));
+});
+
+test('remove fifo', t => {
+  if (process.platform !== 'win32') {
+    const fifo = utils.mkfifo(t.context.tmp);
+    const result = shell.rm(fifo);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+  }
 });

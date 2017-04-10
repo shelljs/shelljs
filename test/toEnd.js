@@ -22,11 +22,17 @@ test.afterEach.always(t => {
 
 test('Normal strings don\'t have \'.toEnd()\' anymore', t => {
   const str = 'hello world';
-  t.is(typeof str.toEnd, 'undefined');
+  t.is(str.toEnd, undefined);
 });
 
 test('missing file argument', t => {
   shell.ShellString('hello world').toEnd();
+  t.truthy(shell.error());
+});
+
+test('cannot write to a non-existent directory', t => {
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
+  shell.ShellString('hello world').toEnd('/asdfasdf/file');
   t.truthy(shell.error());
 });
 

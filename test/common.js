@@ -6,6 +6,11 @@ import utils from './utils/utils';
 
 shell.config.silent = true;
 
+test.beforeEach(() => {
+  common.state.error = null;
+  common.state.errorCode = 0;
+});
+
 //
 // Invalids
 //
@@ -22,10 +27,116 @@ test('should be a list', t => {
   }, TypeError);
 });
 
+test('parseOptions (invalid option in options object)', t => {
+  t.throws(() => {
+    common.parseOptions({ q: 'some string value' }, {
+      R: 'recursive',
+      f: 'force',
+      r: 'reverse',
+    });
+  });
+});
+
+test('parseOptions (without a hyphen in the string)', t => {
+  t.throws(() => {
+    common.parseOptions('f', {
+      f: 'force',
+    });
+  });
+});
+
+test('parseOptions (opt is not a string/object)', t => {
+  t.throws(() => {
+    common.parseOptions(1, {
+      f: 'force',
+    });
+  });
+});
+
+test('parseOptions (map is not an object)', t => {
+  t.throws(() => {
+    common.parseOptions('-f', 27);
+  });
+});
+
+test('parseOptions (errorOptions is not an object)', t => {
+  t.throws(() => {
+    common.parseOptions('-f', {
+      f: 'force',
+    }, 'not a valid errorOptions');
+  });
+});
+
+test('parseOptions (unrecognized string option)', t => {
+  t.throws(() => {
+    common.parseOptions('-z', {
+      f: 'force',
+    });
+  });
+});
+
+test('parseOptions (unrecognized option in Object)', t => {
+  t.throws(() => {
+    common.parseOptions({ '-c': 7 }, {
+      f: 'force',
+    });
+  });
+});
+
+test('parseOptions (invalid type)', t => {
+  t.throws(() => {
+    common.parseOptions(12, {
+      R: 'recursive',
+      f: 'force',
+      r: 'reverse',
+    });
+  });
+});
+
+test('convertErrorOutput: no args', t => {
+  t.throws(() => {
+    common.convertErrorOutput();
+  }, TypeError);
+});
+
+test('convertErrorOutput: input must be a vanilla string', t => {
+  t.throws(() => {
+    common.convertErrorOutput(3);
+  }, TypeError);
+
+  t.throws(() => {
+    common.convertErrorOutput({});
+  }, TypeError);
+});
+
 //
 // Valids
 //
 
+//
+// common.convertErrorOutput()
+//
+test('convertErrorOutput: nothing to convert', t => {
+  const input = 'hello world';
+  const result = common.convertErrorOutput(input);
+  t.is(result, input);
+});
+
+test('convertErrorOutput: does not change forward slash', t => {
+  const input = 'dir/sub/file.txt';
+  const result = common.convertErrorOutput(input);
+  t.is(result, input);
+});
+
+test('convertErrorOutput: changes backslashes to forward slashes', t => {
+  const input = 'dir\\sub\\file.txt';
+  const result = common.convertErrorOutput(input);
+  t.is(result, 'dir/sub/file.txt');
+});
+
+//
+// common.expand()
+//
 test('single file, array syntax', t => {
   const result = common.expand(['resources/file1.txt']);
   t.falsy(shell.error());
@@ -124,7 +235,7 @@ test('Some basic tests on the ShellString type', t => {
   const result = shell.ShellString('foo');
   t.is(result.toString(), 'foo');
   t.is(result.stdout, 'foo');
-  t.is(typeof result.stderr, 'undefined');
+  t.is(result.stderr, undefined);
   t.truthy(result.to);
   t.truthy(result.toEnd);
 });
