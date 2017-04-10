@@ -199,7 +199,7 @@ function parseOptions(opt, map, errorOptions) {
 
   if (typeof opt === 'string') {
     if (opt[0] !== '-') {
-      error("Options string must start with a '-'", errorOptions || {});
+      throw new Error("Options string must start with a '-'");
     }
 
     // e.g. chars = ['R', 'f']
