@@ -405,7 +405,7 @@ test('recursive, with trailing slash, does the exact same', t => {
 test(
   'On Windows, permission bits are quite different so skip those tests for now',
   t => {
-    if (common.platform !== 'win') {
+    if (process.platform !== 'win32') {
       // preserve mode bits
       const execBit = parseInt('001', 8);
       t.is(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
