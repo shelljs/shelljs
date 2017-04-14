@@ -268,14 +268,16 @@ test('remove symbolic link to a dir', t => {
 });
 
 test('rm -rf on a symbolic link to a dir deletes its contents', t => {
-  const result = shell.rm('-rf', `${t.context.tmp}/rm/link_to_a_dir/`);
-  t.falsy(shell.error());
-  t.is(result.code, 0);
+  if (process.platform !== 'win32') {
+    const result = shell.rm('-rf', `${t.context.tmp}/rm/link_to_a_dir/`);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
 
-  // Both the link and original dir should remain, but contents are deleted
-  t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
-  t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
-  t.falsy(fs.existsSync(`${t.context.tmp}/rm/a_dir/a_file`));
+    // Both the link and original dir should remain, but contents are deleted
+    t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
+    t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
+    t.falsy(fs.existsSync(`${t.context.tmp}/rm/a_dir/a_file`));
+  }
 });
 
 test('remove broken symbolic link', t => {
