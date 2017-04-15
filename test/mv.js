@@ -209,7 +209,7 @@ test('dest exists, but -f given', t => {
 
 test('should not overwrite recently created files', t => {
   shell.mkdir('-p', 't');
-  let result = shell.mv('file1', 'cp/file1', 't/');
+  const result = shell.mv('file1', 'cp/file1', 't/');
   t.truthy(shell.error());
   t.is(result.code, 1);
 
@@ -219,23 +219,17 @@ test('should not overwrite recently created files', t => {
     result.stderr,
     "mv: will not overwrite just-created 't/file1' with 'cp/file1'"
   );
-
-  result = shell.mv('t/file1', 'file1'); // revert
-  t.truthy(fs.existsSync('file1'));
   t.truthy(fs.existsSync('cp/file1'));
 });
 
 
 test('should not overwrite recently created files (not give error no-force mode)', t => {
   shell.mkdir('-p', 't');
-  let result = shell.mv('-n', 'file1', 'cp/file1', 't/');
+  const result = shell.mv('-n', 'file1', 'cp/file1', 't/');
   t.falsy(shell.error());
   t.is(result.code, 0);
 
-  // Ensure First file is copied
+  // Ensure First file is moved
   t.is(shell.cat('t/file1').toString(), 'test1');
-
-  result = shell.mv('t/file1', 'file1'); // revert
-  t.truthy(fs.existsSync('file1'));
   t.truthy(fs.existsSync('cp/file1'));
 });
