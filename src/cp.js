@@ -153,6 +153,14 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
   } // for files
 } // cpdirSyncRecursive
 
+// Checks if cureent file was created recently
+function checkRecentCreated(sources, index) {
+  var lookedSource = sources[index];
+  return sources.slice(0, index).some(function (src) {
+    return path.basename(src) === path.basename(lookedSource);
+  });
+}
+
 function cpcheckcycle(sourceDir, srcFile) {
   var srcFileStat = fs.lstatSync(srcFile);
   if (srcFileStat.isSymbolicLink()) {
@@ -227,7 +235,7 @@ function _cp(options, sources, dest) {
     return new common.ShellString('', '', 0);
   }
 
-  sources.forEach(function (src) {
+  sources.forEach(function (src, srcIndex) {
     if (!fs.existsSync(src)) {
       common.error('no such file or directory: ' + src, { continue: true });
       return; // skip file
@@ -262,7 +270,16 @@ function _cp(options, sources, dest) {
         thisDest = path.normalize(dest + '/' + path.basename(src));
       }
 
-      if (fs.existsSync(thisDest) && options.no_force) {
+      var thisDestExists = fs.existsSync(thisDest);
+      if (thisDestExists && checkRecentCreated(sources, srcIndex)) {
+        // cannot overwrite file created recently in current execution, but we want to continue copying other files
+        if (!options.no_force) {
+          common.error("will not overwrite just-created '" + thisDest + "' with '" + src + "'", { continue: true });
+        }
+        return;
+      }
+
+      if (thisDestExists && options.no_force) {
         return; // skip file
       }
 

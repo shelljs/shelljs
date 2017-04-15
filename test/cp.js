@@ -712,3 +712,39 @@ test('copy mutliple files to same location', t => {
     "cp: 'resources/file2' and 'resources/file2' are the same file"
   );
 });
+
+test('should not overwrite recently created files', t => {
+  const result = shell.cp('resources/file1', 'resources/cp/file1', t.context.tmp);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+
+  // Ensure First file is copied
+  t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
+  t.is(
+    result.stderr,
+    `cp: will not overwrite just-created '${t.context.tmp}/file1' with 'resources/cp/file1'`
+  );
+});
+
+
+test('should not overwrite recently created files (in recursive Mode)', t => {
+  const result = shell.cp('-R', 'resources/file1', 'resources/cp/file1', t.context.tmp);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+
+  // Ensure First file is copied
+  t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
+  t.is(
+    result.stderr,
+    `cp: will not overwrite just-created '${t.context.tmp}/file1' with 'resources/cp/file1'`
+  );
+});
+
+test('should not overwrite recently created files (not give error no-force mode)', t => {
+  const result = shell.cp('-n', 'resources/file1', 'resources/cp/file1', t.context.tmp);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+
+  // Ensure First file is copied
+  t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
+});
