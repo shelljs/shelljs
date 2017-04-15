@@ -5,15 +5,14 @@ import util from 'util';
 import test from 'ava';
 
 import shell from '..';
-import common from '../src/common';
 
 const CWD = process.cwd();
-const ORIG_EXEC_PATH = common.config.execPath;
+const ORIG_EXEC_PATH = shell.config.execPath;
 shell.config.silent = true;
 
 test.afterEach.always(() => {
   process.chdir(CWD);
-  common.config.execPath = ORIG_EXEC_PATH;
+  shell.config.execPath = ORIG_EXEC_PATH;
 });
 
 //
@@ -40,7 +39,7 @@ test('config.fatal and unknown command', t => {
 });
 
 test('exec exits gracefully if we cannot find the execPath', t => {
-  common.config.execPath = null;
+  shell.config.execPath = null;
   shell.exec('echo foo');
   t.regex(
     shell.error(),
@@ -57,14 +56,14 @@ test('exec exits gracefully if we cannot find the execPath', t => {
 //
 
 test('check if stdout goes to output', t => {
-  const result = shell.exec(`${JSON.stringify(common.config.execPath)} -e "console.log(1234);"`);
+  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(1234);"`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, '1234\n');
 });
 
 test('check if stderr goes to output', t => {
-  const result = shell.exec(`${JSON.stringify(common.config.execPath)} -e "console.error(1234);"`);
+  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.error(1234);"`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, '');
@@ -72,7 +71,7 @@ test('check if stderr goes to output', t => {
 });
 
 test('check if stdout + stderr go to output', t => {
-  const result = shell.exec(`${JSON.stringify(common.config.execPath)} -e "console.error(1234); console.log(666);"`);
+  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.error(1234); console.log(666);"`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, '666\n');
@@ -80,21 +79,21 @@ test('check if stdout + stderr go to output', t => {
 });
 
 test('check exit code', t => {
-  const result = shell.exec(`${JSON.stringify(common.config.execPath)} -e "process.exit(12);"`);
+  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} -e "process.exit(12);"`);
   t.truthy(shell.error());
   t.is(result.code, 12);
 });
 
 test('interaction with cd', t => {
   shell.cd('resources/external');
-  const result = shell.exec(`${JSON.stringify(common.config.execPath)} node_script.js`);
+  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} node_script.js`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, 'node_script_1234\n');
 });
 
 test('check quotes escaping', t => {
-  const result = shell.exec(util.format(JSON.stringify(common.config.execPath) + ' -e "console.log(%s);"', "\\\"\\'+\\'_\\'+\\'\\\""));
+  const result = shell.exec(util.format(JSON.stringify(shell.config.execPath) + ' -e "console.log(%s);"', "\\\"\\'+\\'_\\'+\\'\\\""));
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, "'+'_'+'\n");
@@ -120,12 +119,12 @@ test('set maxBuffer (very small)', t => {
 });
 
 test('set timeout option', t => {
-  const result = shell.exec(`${JSON.stringify(common.config.execPath)} resources/exec/slow.js 100`); // default timeout is ok
+  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} resources/exec/slow.js 100`); // default timeout is ok
   t.falsy(shell.error());
   t.is(result.code, 0);
   if (process.version >= 'v0.11') {
     // this option doesn't work on v0.10
-    shell.exec(`${JSON.stringify(common.config.execPath)} resources/exec/slow.js 100`, { timeout: 10 }); // times out
+    shell.exec(`${JSON.stringify(shell.config.execPath)} resources/exec/slow.js 100`, { timeout: 10 }); // times out
 
     t.truthy(shell.error());
   }
@@ -171,14 +170,14 @@ test('exec returns a ShellString', t => {
 //
 
 test.cb('no callback', t => {
-  const c = shell.exec(`${JSON.stringify(common.config.execPath)} -e "console.log(1234)"`, { async: true });
+  const c = shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(1234)"`, { async: true });
   t.falsy(shell.error());
   t.truthy('stdout' in c, 'async exec returns child process object');
   t.end();
 });
 
 test.cb('callback as 2nd argument', t => {
-  shell.exec(`${JSON.stringify(common.config.execPath)} -e "console.log(5678);"`, (code, stdout, stderr) => {
+  shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(5678);"`, (code, stdout, stderr) => {
     t.is(code, 0);
     t.is(stdout, '5678\n');
     t.is(stderr, '');
@@ -187,7 +186,7 @@ test.cb('callback as 2nd argument', t => {
 });
 
 test.cb('callback as end argument', t => {
-  shell.exec(`${JSON.stringify(common.config.execPath)} -e "console.log(5566);"`, { async: true }, (code, stdout, stderr) => {
+  shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(5566);"`, { async: true }, (code, stdout, stderr) => {
     t.is(code, 0);
     t.is(stdout, '5566\n');
     t.is(stderr, '');
@@ -196,7 +195,7 @@ test.cb('callback as end argument', t => {
 });
 
 test.cb('callback as 3rd argument (silent:true)', t => {
-  shell.exec(`${JSON.stringify(common.config.execPath)} -e "console.log(5678);"`, { silent: true }, (code, stdout, stderr) => {
+  shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(5678);"`, { silent: true }, (code, stdout, stderr) => {
     t.is(code, 0);
     t.is(stdout, '5678\n');
     t.is(stderr, '');
