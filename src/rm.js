@@ -17,7 +17,7 @@ common.register('rm', _rm, {
 //
 // Licensed under the MIT License
 // http://www.opensource.org/licenses/mit-license.php
-function rmdirSyncRecursive(dir, force) {
+function rmdirSyncRecursive(dir, force, fromSymlink) {
   var files;
 
   files = fs.readdirSync(dir);
@@ -42,6 +42,10 @@ function rmdirSyncRecursive(dir, force) {
       }
     }
   }
+
+  // if was directory was referenced through a symbolic link,
+  // the contents should be removed, but not the directory itself
+  if (fromSymlink) return;
 
   // Now that we know everything in the sub-tree has been deleted, we can delete the main directory.
   // Huzzah for the shopkeep.
@@ -91,6 +95,57 @@ function isWriteable(file) {
   return writePermission;
 }
 
+function handleFile(file, options) {
+  if (options.force || isWriteable(file)) {
+    // -f was passed, or file is writable, so it can be removed
+    common.unlinkSync(file);
+  } else {
+    common.error('permission denied: ' + file, { continue: true });
+  }
+}
+
+function handleDirectory(file, options) {
+  if (options.recursive) {
+    // -r was passed, so directory can be removed
+    rmdirSyncRecursive(file, options.force);
+  } else {
+    common.error('path is a directory', { continue: true });
+  }
+}
+
+function handleSymbolicLink(file, options) {
+  var stats;
+  try {
+    stats = fs.statSync(file);
+  } catch (e) {
+    // symlink is broken, so remove the symlink itself
+    common.unlinkSync(file);
+    return;
+  }
+
+  if (stats.isFile()) {
+    common.unlinkSync(file);
+  } else if (stats.isDirectory()) {
+    if (file[file.length - 1] === '/') {
+      // trailing separator, so remove the contents, not the link
+      if (options.recursive) {
+        // -r was passed, so directory can be removed
+        var fromSymlink = true;
+        rmdirSyncRecursive(file, options.force, fromSymlink);
+      } else {
+        common.error('path is a directory', { continue: true });
+      }
+    } else {
+      // no trailing separator, so remove the link
+      common.unlinkSync(file);
+    }
+  }
+}
+
+function handleFIFO(file) {
+  common.unlinkSync(file);
+}
+
 //@
 //@ ### rm([options,] file [, file ...])
 //@ ### rm([options,] file_array)
@@ -115,9 +170,12 @@ function _rm(options, files) {
   files = [].slice.call(arguments, 1);
 
   files.forEach(function (file) {
-    var stats;
+    var lstats;
     try {
-      stats = fs.lstatSync(file); // test for existence
+      var filepath = (file[file.length - 1] === '/')
+        ? file.slice(0, -1) // remove the '/' so lstatSync can detect symlinks
+        : file;
+      lstats = fs.lstatSync(filepath); // test for existence
     } catch (e) {
       // Path does not exist, no force flag given
       if (!options.force) {
@@ -127,22 +185,14 @@ function _rm(options, files) {
     }
 
     // If here, path exists
-    if (stats.isFile()) {
-      if (options.force || isWriteable(file)) {
-        // -f was passed, or file is writable, so it can be removed
-        common.unlinkSync(file);
-      } else {
-        common.error('permission denied: ' + file, { continue: true });
-      }
-    } else if (stats.isDirectory()) {
-      if (options.recursive) {
-        // -r was passed, so directory can be removed
-        rmdirSyncRecursive(file, options.force);
-      } else {
-        common.error('path is a directory', { continue: true });
-      }
-    } else if (stats.isSymbolicLink() || stats.isFIFO()) {
-      common.unlinkSync(file);
+    if (lstats.isFile()) {
+      handleFile(file, options);
+    } else if (lstats.isDirectory()) {
+      handleDirectory(file, options);
+    } else if (lstats.isSymbolicLink()) {
+      handleSymbolicLink(file, options);
+    } else if (lstats.isFIFO()) {
+      handleFIFO(file);
     }
   }); // forEach(file)
   return '';
