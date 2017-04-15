@@ -334,6 +334,8 @@ Available options:
 + `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
 + `-l`: Print only filenames of matching files
 
+This DOES NOT include files beginning with `.` (ref #79)
+
 Examples:
 
 ```javascript
