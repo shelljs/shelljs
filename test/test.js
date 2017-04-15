@@ -1,7 +1,6 @@
 import test from 'ava';
 
 import shell from '..';
-import common from '../src/common';
 
 shell.config.silent = true;
 
@@ -91,7 +90,7 @@ test('test command is not globbed', t => {
 
 // TODO(nate): figure out a way to test links on Windows
 test('-d option fails for a link', t => {
-  if (common.platform !== 'win') {
+  if (process.platform !== 'win32') {
     const result = shell.test('-d', 'resources/link');
     t.falsy(shell.error());
     t.falsy(result);
@@ -99,7 +98,7 @@ test('-d option fails for a link', t => {
 });
 
 test('-f option succeeds for a link', t => {
-  if (common.platform !== 'win') {
+  if (process.platform !== 'win32') {
     const result = shell.test('-f', 'resources/link');
     t.falsy(shell.error());
     t.truthy(result);
@@ -107,7 +106,7 @@ test('-f option succeeds for a link', t => {
 });
 
 test('-L option succeeds for a symlink', t => {
-  if (common.platform !== 'win') {
+  if (process.platform !== 'win32') {
     const result = shell.test('-L', 'resources/link');
     t.falsy(shell.error());
     t.truthy(result);
@@ -115,7 +114,7 @@ test('-L option succeeds for a symlink', t => {
 });
 
 test('-L option works for broken symlinks', t => {
-  if (common.platform !== 'win') {
+  if (process.platform !== 'win32') {
     const result = shell.test('-L', 'resources/badlink');
     t.falsy(shell.error());
     t.truthy(result);
@@ -123,7 +122,7 @@ test('-L option works for broken symlinks', t => {
 });
 
 test('-L option fails for missing files', t => {
-  if (common.platform !== 'win') {
+  if (process.platform !== 'win32') {
     const result = shell.test('-L', 'resources/404');
     t.falsy(shell.error());
     t.falsy(result);

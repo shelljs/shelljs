@@ -37,6 +37,7 @@ function checkPath(pathName) {
 function _which(options, cmd) {
   if (!cmd) common.error('must specify command');
 
+  var isWindows = process.platform === 'win32';
   var pathEnv = process.env.path || process.env.Path || process.env.PATH;
   var pathArray = splitPath(pathEnv);
 
@@ -47,7 +48,7 @@ function _which(options, cmd) {
     // Assume that there are no extensions to append to queries (this is the
     // case for unix)
     var pathExtArray = [''];
-    if (common.platform === 'win') {
+    if (isWindows) {
       // In case the PATHEXT variable is somehow not set (e.g.
       // child_process.spawn with an empty environment), use the XP default.
       var pathExtEnv = process.env.PATHEXT || XP_DEFAULT_PATHEXT;
@@ -61,7 +62,7 @@ function _which(options, cmd) {
 
       var attempt = path.resolve(pathArray[k], cmd);
 
-      if (common.platform === 'win') {
+      if (isWindows) {
         attempt = attempt.toUpperCase();
       }
 
