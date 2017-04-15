@@ -68,7 +68,6 @@
   },
   "optionalDependencies": {},
   "engines": {
-    "node": ">=0.11.0",
-    "iojs": "*"
+    "node": ">=4"
   }
 }

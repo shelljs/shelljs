@@ -13,7 +13,7 @@ script's dependency on Unix while still keeping its familiar and powerful
 commands. You can also install it globally so you can run it from outside Node
 projects - say goodbye to those gnarly Bash scripts!
 
-ShellJS is proudly tested on every node release since `v0.11`!
+ShellJS is proudly tested on every node release since `v4`!
 
 The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battle-tested in projects like:
 
@@ -259,12 +259,14 @@ See also: pushd, popd
 Available options:
 
 + `-e`: interpret backslash escapes (default)
++ `-n`: remove trailing newline from output
 
 Examples:
 
 ```javascript
 echo('hello world');
 var str = echo('hello world');
+echo('-n', 'no newline at end');
 ```
 
 Prints string to stdout, and returns string with additional utility methods

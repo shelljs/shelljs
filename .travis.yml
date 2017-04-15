@@ -1,11 +1,6 @@
 language: c++
 sudo: false
 env:
-  - NODE_VERSION="0.11"
-  - NODE_VERSION="0.12"
-  - NODE_VERSION="iojs-v1"
-  - NODE_VERSION="iojs-v2"
-  - NODE_VERSION="iojs-v3"
   - NODE_VERSION="4"
   - NODE_VERSION="5"
   - NODE_VERSION="6"

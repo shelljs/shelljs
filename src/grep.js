@@ -47,12 +47,12 @@ function _grep(options, regex, files) {
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
-    var lines = contents.split(/\r*\n/);
     if (options.nameOnly) {
       if (contents.match(regex)) {
         grep.push(file);
       }
     } else {
+      var lines = contents.split('\n');
       lines.forEach(function (line) {
         var matched = line.match(regex);
         if ((options.inverse && !matched) || (!options.inverse && matched)) {

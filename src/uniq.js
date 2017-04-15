@@ -44,7 +44,7 @@ function _uniq(options, input, output) {
 
   var lines = (input ? fs.readFileSync(input, 'utf8') : pipe).
               trimRight().
-              split(/\r*\n/);
+              split('\n');
 
   var compare = function (a, b) {
     return options.ignoreCase ?

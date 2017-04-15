@@ -67,19 +67,17 @@ function _sort(options, files) {
     files.unshift('-');
   }
 
-  var lines = [];
-  files.forEach(function (file) {
+  var lines = files.reduce(function (accum, file) {
     if (!fs.existsSync(file) && file !== '-') {
       // exit upon any sort of error
       common.error('no such file or directory: ' + file);
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
-    lines = lines.concat(contents.trimRight().split(/\r*\n/));
-  });
+    return accum.concat(contents.trimRight().split('\n'));
+  }, []);
 
-  var sorted;
-  sorted = lines.sort(options.numerical ? numericalCmp : unixCmp);
+  var sorted = lines.sort(options.numerical ? numericalCmp : unixCmp);
 
   if (options.reverse) {
     sorted = sorted.reverse();
