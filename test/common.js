@@ -248,11 +248,11 @@ test.cb('Commands that fail will still output error messages to stderr', t => {
 
 test('execPath value makes sense', t => {
   // TODO(nate): change this test if we add electron support in the unit tests
-  t.is(common.config.execPath, process.execPath);
-  t.is(typeof common.config.execPath, 'string');
+  t.is(shell.config.execPath, process.execPath);
+  t.is(typeof shell.config.execPath, 'string');
 });
 
-test('Changing common.config.execPath does not modify process', t => {
-  common.config.execPath = 'foo';
-  t.not(common.config.execPath, process.execPath);
+test('Changing shell.config.execPath does not modify process', t => {
+  shell.config.execPath = 'foo';
+  t.not(shell.config.execPath, process.execPath);
 });

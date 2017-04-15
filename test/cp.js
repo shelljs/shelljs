@@ -3,7 +3,6 @@ import fs from 'fs';
 import test from 'ava';
 
 import shell from '..';
-import common from '../src/common';
 import utils from './utils/utils';
 
 const oldMaxDepth = shell.config.maxdepth;
@@ -130,7 +129,7 @@ test('-nR does not overwrite an existing file at the destination', t => {
 test('-n does not overwrite an existing file if the destination is a directory', t => {
   const oldContents = 'original content';
   shell.cp('resources/file1', `${t.context.tmp}`);
-  new common.ShellString(oldContents).to(`${t.context.tmp}/file1`);
+  new shell.ShellString(oldContents).to(`${t.context.tmp}/file1`);
   const result = shell.cp('-n', 'resources/file1', `${t.context.tmp}`);
   t.falsy(shell.error());
   t.is(result.code, 0);
