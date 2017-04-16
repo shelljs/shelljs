@@ -274,7 +274,7 @@ function _exec(command, options, callback) {
 
   // Callback is defined with options.
   if (typeof options === 'object' && typeof callback === 'function') {
-    options.async = true;
+    options.async = options.async || true;
   }
 
   options = common.extend({
