@@ -98,6 +98,13 @@ test('too many sources #2', t => {
   t.is(result.stderr, 'cp: dest is not a directory (too many sources)');
 });
 
+test('empty string source', t => {
+  const result = shell.cp('', 'dest');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, "cp: no such file or directory: ''");
+});
+
 //
 // Valids
 //
