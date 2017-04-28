@@ -267,7 +267,7 @@ function expand(list) {
 }
 exports.expand = expand;
 
-// Normalizes so Buffer creation, using Buffer.alloc if possible.
+// Normalizes Buffer creation, using Buffer.alloc if possible.
 // Also provides a good default buffer length for most use cases.
 var buffer = typeof Buffer.alloc === 'function' ?
   function (len) {
