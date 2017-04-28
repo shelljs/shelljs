@@ -170,6 +170,24 @@ test('broken links still expand', t => {
   t.deepEqual(result, ['resources/badlink']);
 });
 
+test('empty array', t => {
+  const result = common.expand([]);
+  t.falsy(shell.error());
+  t.deepEqual(result, []);
+});
+
+test('empty string', t => {
+  const result = common.expand(['']);
+  t.falsy(shell.error());
+  t.deepEqual(result, ['']);
+});
+
+test('non-string', t => {
+  const result = common.expand([5]);
+  t.falsy(shell.error());
+  t.deepEqual(result, [5]);
+});
+
 test('common.parseOptions (normal case)', t => {
   const result = common.parseOptions('-Rf', {
     R: 'recursive',
