@@ -1,4 +1,5 @@
-/* eslint-disable prefer-rest-params */
+/* eslint-disable prefer-rest-params, strict */
+'use strict';
 
 let stdoutValue = '';
 let stderrValue = '';
