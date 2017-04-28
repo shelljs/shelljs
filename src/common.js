@@ -38,6 +38,7 @@ var DEFAULT_CONFIG = {
   silent: false,
   verbose: false,
   execPath: null,
+  bufLength: 64 * 1024, // 64KB
 };
 
 var config = {
@@ -265,6 +266,17 @@ function expand(list) {
   return expanded;
 }
 exports.expand = expand;
+
+// Normalizes so Buffer creation, using Buffer.alloc if possible.
+// Also provides a good default buffer length for most use cases.
+var buffer = typeof Buffer.alloc === 'function' ?
+  function (len) {
+    return Buffer.alloc(len || config.bufLength);
+  } :
+  function (len) {
+    return new Buffer(len || config.bufLength);
+  };
+exports.buffer = buffer;
 
 // Normalizes _unlinkSync() across platforms to match Unix behavior, i.e.
 // file can be unlinked even if it's read-only, see https://github.com/joyent/node/issues/3006
