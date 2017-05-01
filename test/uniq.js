@@ -18,9 +18,32 @@ test('no args', t => {
 
 test('file does not exist', t => {
   t.falsy(fs.existsSync('/asdfasdf')); // sanity check
-  const result = shell.sort('/adsfasdf');
+  const result = shell.uniq('/asdfasdf');
   t.truthy(shell.error());
   t.truthy(result.code);
+});
+
+test('directory', t => {
+  t.truthy(fs.statSync('resources/').isDirectory()); // sanity check
+  const result = shell.uniq('resources/');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, "uniq: error reading 'resources/'");
+});
+
+test('output directory', t => {
+  t.truthy(fs.statSync('resources/').isDirectory()); // sanity check
+  const result = shell.uniq('resources/file1.txt', 'resources/');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'uniq: resources/: Is a directory');
+});
+
+test('file does not exist with output directory', t => {
+  t.falsy(fs.existsSync('/asdfasdf')); // sanity check
+  const result = shell.uniq('/asdfasdf', 'resources/');
+  t.is(result.code, 1);
+  t.truthy(shell.error());
 });
 
 //
