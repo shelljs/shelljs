@@ -72,6 +72,11 @@ function _sort(options, files) {
     if (!fs.existsSync(file) && file !== '-') {
       // exit upon any sort of error
       common.error('no such file or directory: ' + file);
+    } else if (fs.statSync(file).isDirectory()) {
+      common.error('read failed: ' + file + ': Is a directory', {
+        continue: true,
+      });
+      return;
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');

@@ -25,9 +25,17 @@ test('no args', t => {
 
 test('file does not exist', t => {
   t.falsy(fs.existsSync('/asdfasdf')); // sanity check
-  const result = shell.sort('/adsfasdf');
+  const result = shell.sort('/asdfasdf');
   t.truthy(shell.error());
   t.truthy(result.code);
+});
+
+test('directory', t => {
+  t.truthy(fs.statSync('resources/').isDirectory()); // sanity check
+  const result = shell.sort('resources/');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'sort: read failed: resources/: Is a directory');
 });
 
 //
