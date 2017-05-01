@@ -18,9 +18,18 @@ test('no args', t => {
 
 test('file does not exist', t => {
   t.falsy(fs.existsSync('/asdfasdf')); // sanity check
-  const result = shell.head('/adsfasdf'); // file does not exist
+  const result = shell.head('/asdfasdf'); // file does not exist
   t.truthy(shell.error());
   t.is(result.code, 1);
+  t.is(result.stderr, 'head: no such file or directory: /asdfasdf');
+});
+
+test('directory', t => {
+  t.truthy(fs.statSync('resources/').isDirectory()); // sanity check
+  const result = shell.head('resources/');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, "head: error reading 'resources/': Is a directory");
 });
 
 //
