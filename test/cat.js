@@ -25,6 +25,13 @@ test('nonexistent file', t => {
   t.is(result.stderr, 'cat: no such file or directory: /asdfasdf');
 });
 
+test('directory', t => {
+  const result = shell.cat('resources/cat');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'cat: resources/cat: Is a directory');
+});
+
 //
 // Valids
 //
