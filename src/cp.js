@@ -45,9 +45,9 @@ function copyFileSync(srcFile, destFile, options) {
     var symlinkFull = fs.readlinkSync(srcFile);
     fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
   } else {
-    var BUF_LENGTH = 64 * 1024;
-    var buf = new Buffer(BUF_LENGTH);
-    var bytesRead = BUF_LENGTH;
+    var buf = common.buffer();
+    var bufLength = buf.length;
+    var bytesRead = bufLength;
     var pos = 0;
     var fdr = null;
     var fdw = null;
@@ -66,8 +66,8 @@ function copyFileSync(srcFile, destFile, options) {
       common.error('copyFileSync: could not write to dest file (code=' + e.code + '):' + destFile);
     }
 
-    while (bytesRead === BUF_LENGTH) {
-      bytesRead = fs.readSync(fdr, buf, 0, BUF_LENGTH, pos);
+    while (bytesRead === bufLength) {
+      bytesRead = fs.readSync(fdr, buf, 0, bufLength, pos);
       fs.writeSync(fdw, buf, 0, bytesRead);
       pos += bytesRead;
     }

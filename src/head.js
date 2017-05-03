@@ -10,9 +10,9 @@ common.register('head', _head, {
 
 // This reads n or more lines, or the entire file, whichever is less.
 function readSomeLines(file, numLines) {
-  var BUF_LENGTH = 64 * 1024;
-  var buf = new Buffer(BUF_LENGTH);
-  var bytesRead = BUF_LENGTH;
+  var buf = common.buffer();
+  var bufLength = buf.length;
+  var bytesRead = bufLength;
   var pos = 0;
   var fdr = null;
 
@@ -24,8 +24,8 @@ function readSomeLines(file, numLines) {
 
   var numLinesRead = 0;
   var ret = '';
-  while (bytesRead === BUF_LENGTH && numLinesRead < numLines) {
-    bytesRead = fs.readSync(fdr, buf, 0, BUF_LENGTH, pos);
+  while (bytesRead === bufLength && numLinesRead < numLines) {
+    bytesRead = fs.readSync(fdr, buf, 0, bufLength, pos);
     var bufStr = buf.toString('utf8', 0, bytesRead);
     numLinesRead += bufStr.split('\n').length - 1;
     ret += bufStr;

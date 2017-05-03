@@ -188,6 +188,32 @@ test('non-string', t => {
   t.deepEqual(result, [5]);
 });
 
+//
+// common.buffer()
+//
+test('common.buffer returns buffer', t => {
+  const buf = common.buffer();
+  t.falsy(shell.error());
+  t.truthy(buf instanceof Buffer);
+  t.is(buf.length, 64 * 1024);
+});
+
+test('common.buffer with explicit length', t => {
+  const buf = common.buffer(20);
+  t.falsy(shell.error());
+  t.truthy(buf instanceof Buffer);
+  t.is(buf.length, 20);
+});
+
+test('common.buffer with different config.bufLength', t => {
+  common.config.bufLength = 20;
+  const buf = common.buffer();
+  t.falsy(shell.error());
+  t.truthy(buf instanceof Buffer);
+  t.is(buf.length, 20);
+  common.config.reset();
+});
+
 test('common.parseOptions (normal case)', t => {
   const result = common.parseOptions('-Rf', {
     R: 'recursive',
