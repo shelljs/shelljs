@@ -237,6 +237,7 @@ function _cp(options, sources, dest) {
 
   sources.forEach(function (src, srcIndex) {
     if (!fs.existsSync(src)) {
+      if (src === '') src = "''"; // if src was empty string, display empty string
       common.error('no such file or directory: ' + src, { continue: true });
       return; // skip file
     }

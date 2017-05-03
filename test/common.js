@@ -170,6 +170,27 @@ test('broken links still expand', t => {
   t.deepEqual(result, ['resources/badlink']);
 });
 
+test('empty array', t => {
+  const result = common.expand([]);
+  t.falsy(shell.error());
+  t.deepEqual(result, []);
+});
+
+test('empty string', t => {
+  const result = common.expand(['']);
+  t.falsy(shell.error());
+  t.deepEqual(result, ['']);
+});
+
+test('non-string', t => {
+  const result = common.expand([5]);
+  t.falsy(shell.error());
+  t.deepEqual(result, [5]);
+});
+
+//
+// common.buffer()
+//
 test('common.buffer returns buffer', t => {
   const buf = common.buffer();
   t.falsy(shell.error());

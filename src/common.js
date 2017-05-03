@@ -258,9 +258,16 @@ function expand(list) {
     if (typeof listEl !== 'string') {
       expanded.push(listEl);
     } else {
-      var ret = glob.sync(listEl, config.globOptions);
-      // if glob fails, interpret the string literally
-      expanded = expanded.concat(ret.length > 0 ? ret : [listEl]);
+      var ret;
+      try {
+        ret = glob.sync(listEl, config.globOptions);
+        // if nothing matched, interpret the string literally
+        ret = ret.length > 0 ? ret : [listEl];
+      } catch (e) {
+        // if glob fails, interpret the string literally
+        ret = [listEl];
+      }
+      expanded = expanded.concat(ret);
     }
   });
   return expanded;
