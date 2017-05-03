@@ -1,73 +1,29 @@
-/* eslint-disable prefer-rest-params, strict */
-'use strict';
-
-let stdoutValue = '';
-let stderrValue = '';
-let stdinValue = null;
-
-const oldConsoleLog = console.log;
-const oldConsoleError = console.error;
-const oldStdoutWrite = process.stdout.write;
-const oldProcessExit = process.exit;
-
-function consoleLog() {                // mock console.log
-  const msgs = [].slice.call(arguments);
-  stdoutValue += msgs.join(' ') + '\n';
+function Mocks() {
+  this._stdout = '';
+  this._stderr = '';
+  this.oldStdoutWrite = process.stdout.write;
+  this.oldStderrWrite = process.stderr.write;
+  process.stdout.write = function stdoutWrite(val) {
+    this._stdout += val;
+    return true;
+  }.bind(this);
+  process.stderr.write = function stderrWrite(val) {
+    this._stderr += val;
+    return true;
+  }.bind(this);
 }
 
-function consoleError() {              // mock console.error
-  const msgs = [].slice.call(arguments);
-  stderrValue += msgs.join(' ') + '\n';
-}
+Mocks.prototype.stdout = function stdout() {
+  return this._stdout;
+};
 
-function stdoutWrite(msg) {            // mock process.stdout.write
-  stdoutValue += msg;
-  return true;
-}
+Mocks.prototype.stderr = function stderr() {
+  return this._stderr;
+};
 
-function processExit(retCode) {        // mock process.exit
-  const e = new Error('process.exit was called');
-  e.code = retCode || 0;
-  throw e;
-}
+Mocks.prototype.restore = function restore() {
+  process.stdout.write = this.oldStdoutWrite;
+  process.stderr.write = this.oldStderrWrite;
+};
 
-function resetValues() {
-  stdoutValue = '';
-  stderrValue = '';
-}
-
-function stdout() {
-  return stdoutValue;
-}
-exports.stdout = stdout;
-
-function stderr() {
-  return stderrValue;
-}
-exports.stderr = stderr;
-
-function stdin(val) {
-  // If called with no arg, return the mocked stdin. Otherwise set stdin to that
-  // arg
-  if (val === undefined) return stdinValue;
-  stdinValue = val;
-  return null;
-}
-exports.stdin = stdin;
-
-function init() {
-  resetValues();
-  console.log = consoleLog;
-  console.error = consoleError;
-  process.stdout.write = stdoutWrite;
-  process.exit = processExit;
-}
-exports.init = init;
-
-function restore() {
-  console.log = oldConsoleLog;
-  console.error = oldConsoleError;
-  process.stdout.write = oldStdoutWrite;
-  process.exit = oldProcessExit;
-}
-exports.restore = restore;
+module.exports = Mocks;
