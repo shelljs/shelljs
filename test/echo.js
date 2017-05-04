@@ -51,17 +51,6 @@ test("using null as an explicit argument doesn't crash the function", t => {
   t.is(stderr, '');
 });
 
-test.skip('simple test with silent(true)', t => {
-  // already using shell.config.silent = true
-  const result = shell.echo(555);
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
-  t.falsy(shell.error());
-  t.is(result.code, 0);
-  t.is(stdout, '555\n');
-  t.is(stderr, '');
-});
-
 test('-e option', t => {
   const result = shell.echo('-e', '\tmessage');
   const stdout = mocks.stdout();
