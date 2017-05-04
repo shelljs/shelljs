@@ -1,29 +1,42 @@
-function Mocks() {
-  this._stdout = '';
-  this._stderr = '';
-  this.oldStdoutWrite = process.stdout.write;
-  this.oldStderrWrite = process.stderr.write;
-  process.stdout.write = function stdoutWrite(val) {
-    this._stdout += val;
-    return true;
-  }.bind(this);
-  process.stderr.write = function stderrWrite(val) {
-    this._stderr += val;
-    return true;
-  }.bind(this);
+const _processStdoutWrite = process.stdout.write;
+const _processStderrWrite = process.stderr.write;
+const _stdout = [];
+const _stderr = [];
+
+function addToString(str, val) {
+  if (Buffer.isBuffer(val)) {
+    return str + val.toString();
+  }
+  return str + val;
 }
 
-Mocks.prototype.stdout = function stdout() {
-  return this._stdout;
+function joinData(data) {
+  return data.reduce(addToString, '');
+}
+
+function wrapWrite(target) {
+  return function write(val) {
+    target.push(val);
+    return true;
+  };
+}
+
+exports.stdout = function stdout() {
+  return joinData(_stdout);
 };
 
-Mocks.prototype.stderr = function stderr() {
-  return this._stderr;
+exports.stderr = function stderr() {
+  return joinData(_stderr);
 };
 
-Mocks.prototype.restore = function restore() {
-  process.stdout.write = this.oldStdoutWrite;
-  process.stderr.write = this.oldStderrWrite;
+exports.init = function init() {
+  process.stdout.write = wrapWrite(_stdout);
+  process.stderr.write = wrapWrite(_stderr);
 };
 
-module.exports = Mocks;
+exports.restore = function restore() {
+  process.stdout.write = _processStdoutWrite;
+  process.stderr.write = _processStderrWrite;
+  _stdout.splice(0);
+  _stderr.splice(0);
+};
