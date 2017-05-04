@@ -1,8 +1,3 @@
-const _processStdoutWrite = process.stdout.write;
-const _processStderrWrite = process.stderr.write;
-const _stdout = [];
-const _stderr = [];
-
 function addToString(str, val) {
   if (Buffer.isBuffer(val)) {
     return str + val.toString();
@@ -21,6 +16,13 @@ function wrapWrite(target) {
   };
 }
 
+const _processStdoutWrite = process.stdout.write;
+const _processStderrWrite = process.stderr.write;
+const _stdout = [];
+const _stderr = [];
+const _stdoutWrite = wrapWrite(_stdout);
+const _stderrWrite = wrapWrite(_stderr);
+
 exports.stdout = function stdout() {
   return joinData(_stdout);
 };
@@ -30,8 +32,8 @@ exports.stderr = function stderr() {
 };
 
 exports.init = function init() {
-  process.stdout.write = wrapWrite(_stdout);
-  process.stderr.write = wrapWrite(_stderr);
+  process.stdout.write = _stdoutWrite;
+  process.stderr.write = _stderrWrite;
 };
 
 exports.restore = function restore() {
