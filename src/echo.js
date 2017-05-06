@@ -33,9 +33,9 @@ function _echo(opts) {
   try {
     options = common.parseOptions(messages[0], {
       'e': 'escapes',
-      'n': 'no_newline'
+      'n': 'no_newline',
     }, {
-      silent: true
+      silent: true,
     });
 
     // Allow null to be echoed

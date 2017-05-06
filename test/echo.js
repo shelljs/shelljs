@@ -2,137 +2,150 @@ import test from 'ava';
 
 import shell from '..';
 import utils from './utils/utils';
+import mocks from './utils/mocks';
 
 shell.config.silent = true;
 
 test.beforeEach(t => {
   t.context.tmp = utils.getTempDir();
+  mocks.init();
 });
 
 test.afterEach.always(t => {
   shell.rm('-rf', t.context.tmp);
+  mocks.restore();
 });
 
 //
 // Valids
 //
 
-test.cb('simple test with defaults', t => {
-  const script = 'require(\'../global.js\'); echo("hello", "world");';
-  utils.runScript(script, (err, stdout, stderr) => {
-    t.falsy(err);
-    t.is(stdout, 'hello world\n');
-    t.is(stderr, '');
-    t.end();
-  });
+test('simple test with defaults', t => {
+  const result = shell.echo('hello', 'world');
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(stdout, 'hello world\n');
+  t.is(stderr, '');
 });
 
-test.cb('allow arguments to begin with a hyphen', t => {
+test('allow arguments to begin with a hyphen', t => {
   // see issue #20
-  const script = 'require(\'../global.js\'); echo("-asdf", "111");';
-  utils.runScript(script, (err, stdout, stderr) => {
-    t.falsy(err);
-    t.is(stdout, '-asdf 111\n');
-    t.is(stderr, '');
-    t.end();
-  });
+  const result = shell.echo('-asdf', '111');
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(result.code, 1);
+  t.is(stdout, '-asdf 111\n');
+  t.is(stderr, '');
 });
 
-test.cb("using null as an explicit argument doesn't crash the function", t => {
-  const script = 'require(\'../global.js\'); echo(null);';
-  utils.runScript(script, (err, stdout, stderr) => {
-    t.falsy(err);
-    t.is(stdout, 'null\n');
-    t.is(stderr, '');
-    t.end();
-  });
+test("using null as an explicit argument doesn't crash the function", t => {
+  const result = shell.echo(null);
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(stdout, 'null\n');
+  t.is(stderr, '');
 });
 
-test.cb('simple test with silent(true)', t => {
-  const script = 'require(\'../global.js\'); config.silent=true; echo(555);';
-  utils.runScript(script, (err, stdout) => {
-    t.falsy(err);
-    t.is(stdout, '555\n');
-    t.end();
-  });
+test('-e option', t => {
+  const result = shell.echo('-e', '\tmessage');
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(stdout, '\tmessage\n');
+  t.is(stderr, '');
 });
 
-test.cb('-e option', t => {
-  const script = "require('../global.js'); echo('-e', '\\tmessage');";
-  utils.runScript(script, (err, stdout) => {
-    t.falsy(err);
-    t.is(stdout, '\tmessage\n');
-    t.end();
-  });
-});
-
-test.cb('piping to a file', t => {
+test('piping to a file', t => {
   // see issue #476
   shell.mkdir(t.context.tmp);
   const tmp = `${t.context.tmp}/echo.txt`;
-  const script = `require('../global.js'); echo('A').toEnd('${tmp}'); echo('B').toEnd('${tmp}');`;
-  utils.runScript(script, (err, stdout) => {
-    const result = shell.cat(tmp);
-    t.falsy(err);
-    t.is(stdout, 'A\nB\n');
-    t.is(result.toString(), 'A\nB\n');
-    t.end();
-  });
+  const resultA = shell.echo('A').toEnd(tmp);
+  t.falsy(shell.error());
+  t.is(resultA.code, 0);
+  const resultB = shell.echo('B').toEnd(tmp);
+  t.falsy(shell.error());
+  t.is(resultB.code, 0);
+  const result = shell.cat(tmp);
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(stdout, 'A\nB\n');
+  t.is(stderr, '');
+  t.is(result.toString(), 'A\nB\n');
 });
 
-test.cb('-n option', t => {
-  const script = "require('../global.js'); echo('-n', 'message');";
-  utils.runScript(script, (err, stdout) => {
-    t.falsy(err);
-    t.is(stdout, 'message');
-    t.end();
-  });
+test('-n option', t => {
+  const result = shell.echo('-n', 'message');
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(stdout, 'message');
+  t.is(stderr, '');
 });
 
-test.cb('-ne option', t => {
-  const script = "require('../global.js'); echo('-ne', 'message');";
-  utils.runScript(script, (err, stdout) => {
-    t.falsy(err);
-    t.is(stdout, 'message');
-    t.end();
-  });
+test('-ne option', t => {
+  const result = shell.echo('-ne', 'message');
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(stdout, 'message');
+  t.is(stderr, '');
 });
 
-test.cb('-en option', t => {
-  const script = "require('../global.js'); echo('-en', 'message');";
-  utils.runScript(script, (err, stdout) => {
-    t.falsy(err);
-    t.is(stdout, 'message');
-    t.end();
-  });
+test('-en option', t => {
+  const result = shell.echo('-en', 'message');
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(stdout, 'message');
+  t.is(stderr, '');
 });
 
-test.cb('-en option with escaped characters', t => {
-  const script = "require('../global.js'); echo('-en', '\\tmessage\\n');";
-  utils.runScript(script, (err, stdout) => {
-    t.falsy(err);
-    t.is(stdout, '\tmessage\n');
-    t.end();
-  });
+test('-en option with escaped characters', t => {
+  const result = shell.echo('-en', '\tmessage\n');
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(stdout, '\tmessage\n');
+  t.is(stderr, '');
 });
 
-test.cb('piping to a file with -n', t => {
+test('piping to a file with -n', t => {
   // see issue #476
   shell.mkdir(t.context.tmp);
   const tmp = `${t.context.tmp}/echo.txt`;
-  const script = `require('../global.js'); echo('-n', 'A').toEnd('${tmp}'); echo('-n', 'B').toEnd('${tmp}');`;
-  utils.runScript(script, (err, stdout) => {
-    const result = shell.cat(tmp);
-    t.falsy(err);
-    t.is(stdout, 'AB');
-    t.is(result.toString(), 'AB');
-    t.end();
-  });
+  const resultA = shell.echo('-n', 'A').toEnd(tmp);
+  t.falsy(shell.error());
+  t.is(resultA.code, 0);
+  const resultB = shell.echo('-n', 'B').toEnd(tmp);
+  t.falsy(shell.error());
+  t.is(resultB.code, 0);
+  const result = shell.cat(tmp);
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(stdout, 'AB');
+  t.is(stderr, '');
+  t.is(result.toString(), 'AB');
 });
 
 test('stderr with unrecognized options is empty', t => {
-  // TODO: console output here needs to be muted
   const result = shell.echo('-asdf');
+  const stdout = mocks.stdout();
+  const stderr = mocks.stderr();
+  t.falsy(shell.error());
+  t.is(result.code, 1);
   t.falsy(result.stderr);
-  t.is(result.stdout, '-asdf\n');
+  t.is(stdout, '-asdf\n');
+  t.is(stderr, '');
 });
