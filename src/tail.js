@@ -46,9 +46,16 @@ function _tail(options, files) {
 
   var shouldAppendNewline = false;
   files.forEach(function (file) {
-    if (!fs.existsSync(file) && file !== '-') {
-      common.error('no such file or directory: ' + file, { continue: true });
-      return;
+    if (file !== '-') {
+      if (!fs.existsSync(file)) {
+        common.error('no such file or directory: ' + file, { continue: true });
+        return;
+      } else if (fs.statSync(file).isDirectory()) {
+        common.error("error reading '" + file + "': Is a directory", {
+          continue: true,
+        });
+        return;
+      }
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');

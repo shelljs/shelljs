@@ -40,7 +40,18 @@ function _uniq(options, input, output) {
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe();
 
-  if (!input && !pipe) common.error('no input given');
+  if (!pipe) {
+    if (!input) common.error('no input given');
+
+    if (!fs.existsSync(input)) {
+      common.error(input + ': No such file or directory');
+    } else if (fs.statSync(input).isDirectory()) {
+      common.error("error reading '" + input + "'");
+    }
+  }
+  if (output && fs.existsSync(output) && fs.statSync(output).isDirectory()) {
+    common.error(output + ': Is a directory');
+  }
 
   var lines = (input ? fs.readFileSync(input, 'utf8') : pipe).
               trimRight().
