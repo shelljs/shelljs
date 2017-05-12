@@ -65,6 +65,22 @@ Via npm:
 $ npm install [-g] shelljs
 ```
 
+If you'd like to run ShellJS commands (instead of scripts) from the command line, use the `shx` CLI.
+
+```bash
+$ shx echo "awesome!"
+``` 
+
+This is really useful for cross platform commands in `package.json` and does not require a global install.
+
+```json
+{
+  "scripts": {
+    "clean": "shx rm -rf ./dist"
+  }
+}
+```
+
 ## Examples
 
 ```javascript
