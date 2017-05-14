@@ -55,6 +55,34 @@ test('root path does not exist', t => {
   t.falsy(fs.existsSync('/asdfasdf/foobar'));
 });
 
+test('try to overwrite file', t => {
+  t.truthy(fs.statSync('resources/file1').isFile());
+  const result = shell.mkdir('resources/file1');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'mkdir: path already exists: resources/file1');
+  t.truthy(fs.statSync('resources/file1').isFile());
+});
+
+test('try to overwrite file, with -p', t => {
+  t.truthy(fs.statSync('resources/file1').isFile());
+  const result = shell.mkdir('-p', 'resources/file1');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'mkdir: cannot create directory resources/file1: File exists');
+  t.truthy(fs.statSync('resources/file1').isFile());
+});
+
+test('try to make a subdirectory of a file', t => {
+  t.truthy(fs.statSync('resources/file1').isFile());
+  const result = shell.mkdir('resources/file1/subdir');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'mkdir: cannot create directory resources/file1/subdir: Not a directory');
+  t.truthy(fs.statSync('resources/file1').isFile());
+  t.falsy(fs.existsSync('resources/file1/subdir'));
+});
+
 test('Check for invalid permissions', t => {
   if (process.platform !== 'win32') {
     // This test case only works on unix, but should work on Windows as well
