@@ -85,7 +85,7 @@ function _mkdir(options, dirs) {
       var reason;
       if (e.code === 'EACCES') {
         reason = 'Permission denied';
-      } else if (e.code === 'ENOTDIR') {
+      } else if (e.code === 'ENOTDIR' || e.code === 'ENOENT') {
         reason = 'Not a directory';
       } else {
         /* istanbul ignore next */
