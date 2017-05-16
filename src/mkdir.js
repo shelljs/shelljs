@@ -57,9 +57,11 @@ function _mkdir(options, dirs) {
 
   dirs.forEach(function (dir) {
     try {
-      fs.lstatSync(dir);
+      var stat = fs.lstatSync(dir);
       if (!options.fullpath) {
         common.error('path already exists: ' + dir, { continue: true });
+      } else if (stat.isFile()) {
+        common.error('cannot create directory ' + dir + ': File exists', { continue: true });
       }
       return; // skip dir
     } catch (e) {
@@ -80,12 +82,16 @@ function _mkdir(options, dirs) {
         fs.mkdirSync(dir, parseInt('0777', 8));
       }
     } catch (e) {
+      var reason;
       if (e.code === 'EACCES') {
-        common.error('cannot create directory ' + dir + ': Permission denied');
+        reason = 'Permission denied';
+      } else if (e.code === 'ENOTDIR' || e.code === 'ENOENT') {
+        reason = 'Not a directory';
       } else {
         /* istanbul ignore next */
         throw e;
       }
+      common.error('cannot create directory ' + dir + ': ' + reason, { continue: true });
     }
   });
   return '';
