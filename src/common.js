@@ -4,6 +4,7 @@
 
 var os = require('os');
 var fs = require('fs');
+var util = require('util');
 var glob = require('glob');
 var shell = require('..');
 
@@ -157,6 +158,8 @@ function ShellString(stdout, stderr, code) {
 
 exports.ShellString = ShellString;
 
+// DEPRECATED: Use os.homedir instead
+//
 // Return the home directory in a platform-agnostic way, with consideration for
 // older versions of node
 function getUserHome() {
@@ -168,7 +171,10 @@ function getUserHome() {
   }
   return result;
 }
-exports.getUserHome = getUserHome;
+exports.getUserHome = util.deprecate(
+  getUserHome,
+  'shelljs.common.getUserHome: Use os.homedir instead'
+);
 
 // Returns {'alice': true, 'bob': false} when passed a string and dictionary as follows:
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
@@ -347,7 +353,7 @@ function wrap(cmd, fn, options) {
         });
 
         // Expand the '~' if appropriate
-        var homeDir = getUserHome();
+        var homeDir = os.homedir();
         args = args.map(function (arg) {
           if (typeof arg === 'string' && arg.slice(0, 2) === '~/' || arg === '~') {
             return arg.replace(/^~/, homeDir);
