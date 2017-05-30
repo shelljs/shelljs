@@ -64,7 +64,12 @@ function touchFile(opts, file) {
 
   // open the file and then close it. this will create it if it doesn't exist but will
   // not truncate the file
-  fs.closeSync(fs.openSync(file, 'a'));
+  try {
+    fs.closeSync(fs.openSync(file, 'a'));
+  } catch (e) {
+    common.error('cannot create file (code ' + e.code + '): ' + file);
+    return;
+  }
 
   //
   // Set timestamps

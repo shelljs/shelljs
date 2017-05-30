@@ -208,7 +208,11 @@ function _chmod(options, mode, filePattern) {
         newPerms |= (PERMS.SETUID + PERMS.SETGID) & perms;
       }
 
-      fs.chmodSync(file, newPerms);
+      try {
+        fs.chmodSync(file, newPerms);
+      } catch (e) {
+        common.error('can not change permission on ' + file);
+      }
     }
   });
   return '';
