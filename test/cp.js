@@ -772,3 +772,24 @@ test('should not attempt to copy fifos', t => {
   t.is(shell.cat(`${t.context.tmp}/cp/file1`).toString(), 'test1');
   t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
 });
+
+test('should not attempt to copy fifos via symlinks', t => {
+  shell.mkdir(`${t.context.tmp}/dir`);
+  try {
+    shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`);
+  } catch (e) {
+    console.warn('Exception trying to create fifo. Skipping fifo copy test.');
+    return;
+  }
+  shell.cp('resources/file1', `${t.context.tmp}/dir`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/dir/fifo`));
+  shell.pushd(`${t.context.tmp}/dir`);
+  fs.symlinkSync('fifo', 'symFifo');
+  shell.popd();
+  const result = shell.cp('-rL', `${t.context.tmp}/dir`, `${t.context.tmp}/cp`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(shell.cat(`${t.context.tmp}/cp/file1`).toString(), 'test1');
+  t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/cp/symFifo`));
+});

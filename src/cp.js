@@ -46,7 +46,9 @@ function copyFileSync(srcFile, destFile, options) {
 
     var symlinkFull = fs.readlinkSync(srcFile);
     fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
-  } else if (srcFileStat.isSymbolicLink() || srcFileStat.isFile() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice()) {
+  } else if (srcFileStat.isSymbolicLink()) {
+    copyFileSync(fs.realpathSync(srcFile), destFile);
+  } else if (srcFileStat.isFile() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice()) {
     var buf = common.buffer();
     var bufLength = buf.length;
     var bytesRead = bufLength;
