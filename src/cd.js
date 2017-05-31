@@ -1,4 +1,5 @@
 var fs = require('fs');
+var os = require('os');
 var common = require('./common');
 
 common.register('cd', _cd, {});
@@ -8,7 +9,7 @@ common.register('cd', _cd, {});
 //@ Changes to directory `dir` for the duration of the script. Changes to home
 //@ directory if no argument is supplied.
 function _cd(options, dir) {
-  if (!dir) dir = common.getUserHome();
+  if (!dir) dir = os.homedir();
 
   if (dir === '-') {
     if (!process.env.OLDPWD) {

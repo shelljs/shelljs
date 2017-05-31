@@ -157,19 +157,6 @@ function ShellString(stdout, stderr, code) {
 
 exports.ShellString = ShellString;
 
-// Return the home directory in a platform-agnostic way, with consideration for
-// older versions of node
-function getUserHome() {
-  var result;
-  if (os.homedir) {
-    result = os.homedir(); // node 3+
-  } else {
-    result = process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
-  }
-  return result;
-}
-exports.getUserHome = getUserHome;
-
 // Returns {'alice': true, 'bob': false} when passed a string and dictionary as follows:
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
 // Returns {'reference': 'string-value', 'bob': false} when passed two dictionaries of the form:
@@ -347,7 +334,7 @@ function wrap(cmd, fn, options) {
         });
 
         // Expand the '~' if appropriate
-        var homeDir = getUserHome();
+        var homeDir = os.homedir();
         args = args.map(function (arg) {
           if (typeof arg === 'string' && arg.slice(0, 2) === '~/' || arg === '~') {
             return arg.replace(/^~/, homeDir);

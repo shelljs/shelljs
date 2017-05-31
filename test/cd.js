@@ -1,10 +1,10 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 import test from 'ava';
 
 import shell from '..';
-import common from '../src/common';
 import utils from './utils/utils';
 
 const cur = shell.pwd().toString();
@@ -90,16 +90,16 @@ test('cd + other commands', t => {
 
 test('Tilde expansion', t => {
   shell.cd('~');
-  t.is(process.cwd(), common.getUserHome());
+  t.is(process.cwd(), os.homedir());
   shell.cd('..');
-  t.not(process.cwd(), common.getUserHome());
+  t.not(process.cwd(), os.homedir());
   shell.cd('~'); // Change back to home
-  t.is(process.cwd(), common.getUserHome());
+  t.is(process.cwd(), os.homedir());
 });
 
 test('Goes to home directory if no arguments are passed', t => {
   const result = shell.cd();
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(process.cwd(), common.getUserHome());
+  t.is(process.cwd(), os.homedir());
 });
