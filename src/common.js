@@ -4,7 +4,6 @@
 
 var os = require('os');
 var fs = require('fs');
-var util = require('util');
 var glob = require('glob');
 var shell = require('..');
 
@@ -157,24 +156,6 @@ function ShellString(stdout, stderr, code) {
 }
 
 exports.ShellString = ShellString;
-
-// DEPRECATED: Use os.homedir instead
-//
-// Return the home directory in a platform-agnostic way, with consideration for
-// older versions of node
-function getUserHome() {
-  var result;
-  if (os.homedir) {
-    result = os.homedir(); // node 3+
-  } else {
-    result = process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
-  }
-  return result;
-}
-exports.getUserHome = util.deprecate(
-  getUserHome,
-  'shelljs.common.getUserHome: Use os.homedir instead'
-);
 
 // Returns {'alice': true, 'bob': false} when passed a string and dictionary as follows:
 //   parseOptions('-a', {'a':'alice', 'b':'bob'});
