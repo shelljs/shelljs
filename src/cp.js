@@ -50,7 +50,7 @@ function copyFileSync(srcFile, destFile, options) {
     var buf = common.buffer();
     var bufLength = buf.length;
     var bytesRead = bufLength;
-    var pos = -1;
+    var pos = 0;
     var fdr = null;
     var fdw = null;
 
@@ -69,7 +69,7 @@ function copyFileSync(srcFile, destFile, options) {
     }
 
     while (bytesRead === bufLength) {
-      bytesRead = fs.readSync(fdr, buf, 0, bufLength, pos);
+      bytesRead = fs.readSync(fdr, buf, 0, bufLength, pos || -1);
       fs.writeSync(fdw, buf, 0, bytesRead);
       pos += bytesRead;
     }
