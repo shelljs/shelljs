@@ -756,7 +756,7 @@ test('should not overwrite recently created files (not give error no-force mode)
   t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
 });
 
-test('should not attempt to copy fifos', t => {
+test('should not attempt to copy fifos in directories', t => {
   shell.mkdir(`${t.context.tmp}/dir`);
   try {
     shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`);
@@ -773,7 +773,7 @@ test('should not attempt to copy fifos', t => {
   t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
 });
 
-test('should not attempt to copy fifos via symlinks', t => {
+test('should not attempt to copy fifos via symlinks in directories', t => {
   shell.mkdir(`${t.context.tmp}/dir`);
   try {
     shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`);
@@ -792,4 +792,39 @@ test('should not attempt to copy fifos via symlinks', t => {
   t.is(shell.cat(`${t.context.tmp}/cp/file1`).toString(), 'test1');
   t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
   t.falsy(fs.existsSync(`${t.context.tmp}/cp/symFifo`));
+});
+
+test('should copy fifos directly', t => {
+  try {
+    shell.exec(`mkfifo ${t.context.tmp}/fifo`);
+    shell.exec(`echo -n test1 > ${t.context.tmp}/fifo`, { async: true });
+  } catch (e) {
+    console.warn('Exception trying to create fifo. Skipping fifo copy test.');
+    return;
+  }
+  t.truthy(fs.existsSync(`${t.context.tmp}/fifo`));
+  const result = shell.cp(`${t.context.tmp}/fifo`, `${t.context.tmp}/newFifo`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(shell.cat(`${t.context.tmp}/newFifo`).toString(), 'test1');
+  t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
+});
+
+test('should copy fifos directly via symlinks', t => {
+  try {
+    shell.exec(`mkfifo ${t.context.tmp}/fifo`);
+    shell.exec(`echo -n test1 > ${t.context.tmp}/fifo`, { async: true });
+  } catch (e) {
+    console.warn('Exception trying to create fifo. Skipping fifo copy test.');
+    return;
+  }
+  shell.pushd(t.context.tmp);
+  fs.symlinkSync('fifo', 'symFifo');
+  shell.popd();
+  t.truthy(fs.existsSync(`${t.context.tmp}/symFifo`));
+  const result = shell.cp(`${t.context.tmp}/symFifo`, `${t.context.tmp}/newFifo`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(shell.cat(`${t.context.tmp}/newFifo`).toString(), 'test1');
+  t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
 });

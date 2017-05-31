@@ -46,13 +46,11 @@ function copyFileSync(srcFile, destFile, options) {
 
     var symlinkFull = fs.readlinkSync(srcFile);
     fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
-  } else if (srcFileStat.isSymbolicLink()) {
-    copyFileSync(fs.realpathSync(srcFile), destFile);
-  } else if (srcFileStat.isFile() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice()) {
+  } else {
     var buf = common.buffer();
     var bufLength = buf.length;
     var bytesRead = bufLength;
-    var pos = 0;
+    var pos = -1;
     var fdr = null;
     var fdw = null;
 
@@ -80,8 +78,6 @@ function copyFileSync(srcFile, destFile, options) {
     fs.closeSync(fdw);
 
     fs.chmodSync(destFile, fs.statSync(srcFile).mode);
-  } else {
-    common.log('copyFileSync: skipping non-file (' + srcFile + ')');
   }
 }
 
@@ -145,16 +141,20 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
       srcFileStat = fs.statSync(srcFile);
       if (srcFileStat.isDirectory()) {
         cpdirSyncRecursive(srcFile, destFile, currentDepth, opts);
-      } else {
+      } else if (srcFileStat.isFile() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice()) {
         copyFileSync(srcFile, destFile, opts);
+      } else {
+        common.log('copyFileSync: skipping non-file (' + srcFile + ')');
       }
-    } else {
+    } else if (srcFileStat.isFile() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice()) {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && opts.no_force) {
         common.log('skipping existing file: ' + files[i]);
       } else {
         copyFileSync(srcFile, destFile, opts);
       }
+    } else {
+      common.log('copyFileSync: skipping non-file (' + srcFile + ')');
     }
   } // for files
 } // cpdirSyncRecursive
