@@ -34,7 +34,9 @@ function copyFileSync(srcFile, destFile, options) {
     // If we're here, destFile probably doesn't exist, so just do a normal copy
   }
 
-  if (fs.lstatSync(srcFile).isSymbolicLink() && !options.followsymlink) {
+  var srcFileStat = fs.lstatSync(srcFile);
+
+  if (srcFileStat.isSymbolicLink() && !options.followsymlink) {
     try {
       fs.lstatSync(destFile);
       common.unlinkSync(destFile); // re-link it
@@ -44,7 +46,7 @@ function copyFileSync(srcFile, destFile, options) {
 
     var symlinkFull = fs.readlinkSync(srcFile);
     fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
-  } else {
+  } else if (srcFileStat.isSymbolicLink() || srcFileStat.isFile() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice()) {
     var buf = common.buffer();
     var bufLength = buf.length;
     var bytesRead = bufLength;
@@ -76,6 +78,8 @@ function copyFileSync(srcFile, destFile, options) {
     fs.closeSync(fdw);
 
     fs.chmodSync(destFile, fs.statSync(srcFile).mode);
+  } else {
+    common.log('copyFileSync: skipping non-file (' + srcFile + ')');
   }
 }
 

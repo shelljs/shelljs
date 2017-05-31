@@ -755,3 +755,20 @@ test('should not overwrite recently created files (not give error no-force mode)
   // Ensure First file is copied
   t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
 });
+
+test('should not attempt to copy fifos', t => {
+  shell.mkdir(`${t.context.tmp}/dir`);
+  try {
+    shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`);
+  } catch (e) {
+    console.warn('Exception trying to create fifo. Skipping fifo copy test.');
+    return;
+  }
+  shell.cp('resources/file1', `${t.context.tmp}/dir`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/dir/fifo`));
+  const result = shell.cp('-r', `${t.context.tmp}/dir`, `${t.context.tmp}/cp`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(shell.cat(`${t.context.tmp}/cp/file1`).toString(), 'test1');
+  t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
+});
