@@ -797,7 +797,7 @@ test('should not attempt to copy fifos via symlinks in directories', t => {
 test('should copy fifos directly', t => {
   try {
     shell.exec(`mkfifo ${t.context.tmp}/fifo`);
-    shell.exec(`echo -n test1 > ${t.context.tmp}/fifo`, { async: true });
+    shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
   } catch (e) {
     console.warn('Exception trying to create fifo. Skipping fifo copy test.');
     return;
@@ -813,7 +813,7 @@ test('should copy fifos directly', t => {
 test('should copy fifos directly via symlinks', t => {
   try {
     shell.exec(`mkfifo ${t.context.tmp}/fifo`);
-    shell.exec(`echo -n test1 > ${t.context.tmp}/fifo`, { async: true });
+    shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
   } catch (e) {
     console.warn('Exception trying to create fifo. Skipping fifo copy test.');
     return;
