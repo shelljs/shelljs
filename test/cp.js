@@ -814,5 +814,5 @@ test('should copy fifos directly via symlinks', t => {
     t.is(result.code, 0);
     t.is(shell.cat(`${t.context.tmp}/newFifo`).toString(), 'test1');
     t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
-    }
+  }
 });
