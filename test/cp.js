@@ -758,10 +758,8 @@ test('should not overwrite recently created files (not give error no-force mode)
 
 test('should not attempt to copy fifos in directories', t => {
   shell.mkdir(`${t.context.tmp}/dir`);
-  try {
-    shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`);
-  } catch (e) {
-    console.warn('Exception trying to create fifo. Skipping fifo copy test.');
+  if(shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`).code !== 0) {
+    console.warn('Error while trying to create fifo. Skipping fifo copy test.');
     return;
   }
   shell.cp('resources/file1', `${t.context.tmp}/dir`);
@@ -775,10 +773,8 @@ test('should not attempt to copy fifos in directories', t => {
 
 test('should not attempt to copy fifos via symlinks in directories', t => {
   shell.mkdir(`${t.context.tmp}/dir`);
-  try {
-    shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`);
-  } catch (e) {
-    console.warn('Exception trying to create fifo. Skipping fifo copy test.');
+  if(shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`).code !== 0) {
+    console.warn('Error while trying to create fifo. Skipping fifo copy test.');
     return;
   }
   shell.cp('resources/file1', `${t.context.tmp}/dir`);
@@ -795,13 +791,11 @@ test('should not attempt to copy fifos via symlinks in directories', t => {
 });
 
 test('should copy fifos directly', t => {
-  try {
-    shell.exec(`mkfifo ${t.context.tmp}/fifo`);
-    shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
-  } catch (e) {
-    console.warn('Exception trying to create fifo. Skipping fifo copy test.');
+  if(shell.exec(`mkfifo ${t.context.tmp}/fifo`).code !== 0) {
+    console.warn('Error while trying to create fifo. Skipping fifo copy test.');
     return;
   }
+  shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
   t.truthy(fs.existsSync(`${t.context.tmp}/fifo`));
   const result = shell.cp(`${t.context.tmp}/fifo`, `${t.context.tmp}/newFifo`);
   t.falsy(shell.error());
@@ -811,13 +805,11 @@ test('should copy fifos directly', t => {
 });
 
 test('should copy fifos directly via symlinks', t => {
-  try {
-    shell.exec(`mkfifo ${t.context.tmp}/fifo`);
-    shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
-  } catch (e) {
-    console.warn('Exception trying to create fifo. Skipping fifo copy test.');
+  if(shell.exec(`mkfifo ${t.context.tmp}/fifo`).code !== 0) {
+    console.warn('Error while trying to create fifo. Skipping fifo copy test.');
     return;
   }
+  shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
   shell.pushd(t.context.tmp);
   fs.symlinkSync('fifo', 'symFifo');
   shell.popd();
