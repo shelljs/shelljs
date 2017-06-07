@@ -164,6 +164,11 @@ function handleFIFO(file) {
 //@
 //@ Removes files.
 function _rm(options, files) {
+  // Switch Electron asar support off
+  // Prevents unexpected behaviour when attempting to remove an asar archive
+  var noAsar = process.noAsar;
+  process.noAsar = true;
+
   if (!files) common.error('no paths given');
 
   // Convert to array
@@ -195,6 +200,8 @@ function _rm(options, files) {
       handleFIFO(file);
     }
   }); // forEach(file)
+
+  process.noAsar = noAsar;
   return '';
 } // rm
 module.exports = _rm;
