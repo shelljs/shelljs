@@ -1,5 +1,51 @@
 # Change Log
 
+## [Unreleased](https://github.com/shelljs/shelljs/tree/HEAD)
+
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.7...HEAD)
+
+**Closed issues:**
+
+- Add node v8 to CI [\#729](https://github.com/shelljs/shelljs/issues/729)
+- Exec not working in Electron ! [\#726](https://github.com/shelljs/shelljs/issues/726)
+- is rechoir used anywhere? [\#723](https://github.com/shelljs/shelljs/issues/723)
+- ShellJS: internal error on shelljs.mkdir\('myFile/myDir'\) [\#720](https://github.com/shelljs/shelljs/issues/720)
+- Can't make sed perform global replace [\#719](https://github.com/shelljs/shelljs/issues/719)
+- grep: option not recognized: l [\#717](https://github.com/shelljs/shelljs/issues/717)
+- Problems getting code, stdout, stderr [\#715](https://github.com/shelljs/shelljs/issues/715)
+- Copying hidden files fails on Windows 10 [\#711](https://github.com/shelljs/shelljs/issues/711)
+- How am I suppose to handle errors with ShellJS? [\#707](https://github.com/shelljs/shelljs/issues/707)
+- use cp\('-r', './src', './dist'\) bug [\#705](https://github.com/shelljs/shelljs/issues/705)
+- Way to ignore files in globs. [\#699](https://github.com/shelljs/shelljs/issues/699)
+- Buffer constructor is deprecated [\#694](https://github.com/shelljs/shelljs/issues/694)
+- source command not working via exec method. [\#693](https://github.com/shelljs/shelljs/issues/693)
+- Would you be interested in a PR for `open`? [\#692](https://github.com/shelljs/shelljs/issues/692)
+- Get rid of common.platform in favor of process.platform [\#670](https://github.com/shelljs/shelljs/issues/670)
+- Passing empty string to cp throws internal error [\#664](https://github.com/shelljs/shelljs/issues/664)
+- Why does sed split files into an array, call replace on each line and rejoin? [\#645](https://github.com/shelljs/shelljs/issues/645)
+- feat: cp & mv should not overwrite recently created files [\#631](https://github.com/shelljs/shelljs/issues/631)
+- Echo tests unnecessarily run tests in own process [\#622](https://github.com/shelljs/shelljs/issues/622)
+- rm -rf on a symbolic link to a dir deletes its contents [\#587](https://github.com/shelljs/shelljs/issues/587)
+- "Cannot extract package" with node-webkit [\#181](https://github.com/shelljs/shelljs/issues/181)
+- EBADF, bad file descriptor [\#180](https://github.com/shelljs/shelljs/issues/180)
+
+**Merged pull requests:**
+
+- Add node 8 to CI [\#730](https://github.com/shelljs/shelljs/pull/730) ([freitagbr](https://github.com/freitagbr))
+- Deprecate common.getUserHome, advise using os.homedir instead [\#725](https://github.com/shelljs/shelljs/pull/725) ([freitagbr](https://github.com/freitagbr))
+- fix\(mkdir\): improve error handling around files [\#721](https://github.com/shelljs/shelljs/pull/721) ([nfischer](https://github.com/nfischer))
+- Properly handle directories as arguments [\#713](https://github.com/shelljs/shelljs/pull/713) ([nfischer](https://github.com/nfischer))
+- Add common.buffer [\#710](https://github.com/shelljs/shelljs/pull/710) ([freitagbr](https://github.com/freitagbr))
+- Fix common.expand error [\#709](https://github.com/shelljs/shelljs/pull/709) ([freitagbr](https://github.com/freitagbr))
+- Echo test mocks [\#708](https://github.com/shelljs/shelljs/pull/708) ([freitagbr](https://github.com/freitagbr))
+- refactor: remove unnecessary common.js imports [\#703](https://github.com/shelljs/shelljs/pull/703) ([nfischer](https://github.com/nfischer))
+- Fix \#631 throw error when overwriting recently created file [\#702](https://github.com/shelljs/shelljs/pull/702) ([uttpal](https://github.com/uttpal))
+- Small clarification of verbose flag [\#691](https://github.com/shelljs/shelljs/pull/691) ([zommerfelds](https://github.com/zommerfelds))
+- fix\(grep, sed, sort, uniq\): Split only on newline characters [\#690](https://github.com/shelljs/shelljs/pull/690) ([freitagbr](https://github.com/freitagbr))
+- Refactor: Use process.platform across codebase [\#689](https://github.com/shelljs/shelljs/pull/689) ([freitagbr](https://github.com/freitagbr))
+- Remove contents of symlink to dir with rm -rf [\#688](https://github.com/shelljs/shelljs/pull/688) ([freitagbr](https://github.com/freitagbr))
+- Echo stdout [\#677](https://github.com/shelljs/shelljs/pull/677) ([nfischer](https://github.com/nfischer))
+
 ## [v0.7.7](https://github.com/shelljs/shelljs/tree/v0.7.7) (2017-03-09)
 [Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.6...v0.7.7)
 
