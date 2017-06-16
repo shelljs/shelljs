@@ -17,7 +17,6 @@ ShellJS is proudly tested on every node release since `v4`!
 
 The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battle-tested in projects like:
 
-+ [PDF.js](http://github.com/mozilla/pdf.js) - Firefox's next-gen PDF reader
 + [Firebug](http://getfirebug.com/) - Firefox's infamous debugger
 + [JSHint](http://jshint.com) & [ESLint](http://eslint.org/) - popular JavaScript linters
 + [Zepto](http://zeptojs.com) - jQuery-compatible JavaScript library for modern browsers
