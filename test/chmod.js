@@ -32,7 +32,7 @@ test('invalid permissions', t => {
 });
 
 test('Basic usage with octal codes', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('755', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
@@ -45,11 +45,11 @@ test('Basic usage with octal codes', t => {
       fs.statSync(`${TMP}/chmod/file1`).mode & BITMASK,
       parseInt('644', 8)
     );
-  }
+  });
 });
 
 test('symbolic mode', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('o+x', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
@@ -58,11 +58,11 @@ test('symbolic mode', t => {
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
-  }
+  });
 });
 
 test('symbolic mode, without group', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('+x', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
@@ -71,11 +71,11 @@ test('symbolic mode, without group', t => {
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
-  }
+  });
 });
 
 test('Test setuid', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('u+s', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
@@ -102,11 +102,11 @@ test('Test setuid', t => {
     );
     result = shell.chmod('u-s', `${TMP}/chmod/c`);
     t.is(result.code, 0);
-  }
+  });
 });
 
 test('Test setgid', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('g+s', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
@@ -119,11 +119,11 @@ test('Test setgid', t => {
       fs.statSync(`${TMP}/chmod/file1`).mode & BITMASK,
       parseInt('644', 8)
     );
-  }
+  });
 });
 
 test('Test sticky bit', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('+t', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
@@ -137,11 +137,11 @@ test('Test sticky bit', t => {
       parseInt('644', 8)
     );
     t.is(fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('1000', 8), 0);
-  }
+  });
 });
 
 test('Test directories', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('a-w', `${TMP}/chmod/b/a/b`);
     t.is(result.code, 0);
     t.is(
@@ -150,11 +150,11 @@ test('Test directories', t => {
     );
     result = shell.chmod('755', `${TMP}/chmod/b/a/b`);
     t.is(result.code, 0);
-  }
+  });
 });
 
 test('Test recursion', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('-R', 'a+w', `${TMP}/chmod/b`);
     t.is(result.code, 0);
     t.is(
@@ -167,11 +167,11 @@ test('Test recursion', t => {
       fs.statSync(`${TMP}/chmod/b/a/b`).mode & BITMASK,
       parseInt('755', 8)
     );
-  }
+  });
 });
 
 test('Test symbolic links w/ recursion  - WARNING: *nix only', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     fs.symlinkSync(`${TMP}/chmod/b/a`, `${TMP}/chmod/a/b/c/link`, 'dir');
     let result = shell.chmod('-R', 'u-w', `${TMP}/chmod/a/b`);
     t.is(result.code, 0);
@@ -186,7 +186,7 @@ test('Test symbolic links w/ recursion  - WARNING: *nix only', t => {
     result = shell.chmod('-R', 'u+w', `${TMP}/chmod/a/b`);
     t.is(result.code, 0);
     fs.unlinkSync(`${TMP}/chmod/a/b/c/link`);
-  }
+  });
 });
 
 test('Test combinations', t => {
@@ -223,7 +223,7 @@ test('multiple symbolic modes #2', t => {
 });
 
 test('multiple symbolic modes #3', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('a-rwx,u+rwx', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
@@ -232,7 +232,7 @@ test('multiple symbolic modes #3', t => {
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
-  }
+  });
 });
 
 test('u+rw', t => {
@@ -249,7 +249,7 @@ test('u+rw', t => {
 });
 
 test('u+wx', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('000', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     result = shell.chmod('u+wx', `${TMP}/chmod/file1`);
@@ -260,11 +260,11 @@ test('u+wx', t => {
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
-  }
+  });
 });
 
 test('Multiple symbolic modes at once', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('000', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     result = shell.chmod('u+r,g+w,o+x', `${TMP}/chmod/file1`);
@@ -275,11 +275,11 @@ test('Multiple symbolic modes at once', t => {
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
-  }
+  });
 });
 
 test('u+rw,g+wx', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.chmod('000', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     result = shell.chmod('u+rw,g+wx', `${TMP}/chmod/file1`);
@@ -290,7 +290,7 @@ test('u+rw,g+wx', t => {
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
-  }
+  });
 });
 
 test('u-x,g+rw', t => {
@@ -337,7 +337,7 @@ test('Numeric modes', t => {
 });
 
 test('Make sure chmod succeeds for a variety of octal codes', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     t.is(
       fs.statSync(`${TMP}/chmod/xdir`).mode & parseInt('755', 8),
       parseInt('755', 8)
@@ -354,5 +354,5 @@ test('Make sure chmod succeeds for a variety of octal codes', t => {
       fs.statSync(`${TMP}/chmod/xdir/deep/file`).mode & parseInt('644', 8),
       parseInt('644', 8)
     );
-  }
+  });
 });

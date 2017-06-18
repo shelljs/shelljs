@@ -84,7 +84,7 @@ test('try to make a subdirectory of a file', t => {
 });
 
 test('Check for invalid permissions', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     // This test case only works on unix, but should work on Windows as well
     const dirName = 'nowritedir';
     shell.mkdir(dirName);
@@ -99,7 +99,7 @@ test('Check for invalid permissions', t => {
     t.truthy(shell.error());
     t.falsy(fs.existsSync(dirName + '/foo'));
     shell.rm('-rf', dirName); // clean up
-  }
+  });
 });
 
 //

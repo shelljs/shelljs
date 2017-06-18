@@ -307,7 +307,7 @@ test('recursive, everything exists, no force flag', t => {
 });
 
 test('-R implies to not follow links', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     shell.cp('-R', 'resources/cp/*', t.context.tmp);
     t.truthy(fs.lstatSync(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
     t.falsy((fs.lstatSync(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink())); // this one isn't
@@ -325,11 +325,11 @@ test('-R implies to not follow links', t => {
       shell.cat(`${t.context.tmp}/links/sym.lnk`).toString(),
       shell.cat(`${t.context.tmp}/fakeLinks/sym.lnk`).toString()
     );
-  }
+  });
 });
 
 test('Missing -R implies -L', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     // Recursive, everything exists, overwrite a real file *by following a link*
     // Because missing the -R implies -L.
     shell.cp('-R', 'resources/cp/*', t.context.tmp);
@@ -350,7 +350,7 @@ test('Missing -R implies -L', t => {
       shell.cat(`${t.context.tmp}/links/sym.lnk`).toString(),
       shell.cat(`${t.context.tmp}/fakeLinks/sym.lnk`).toString()
     );
-  }
+  });
 });
 
 test('recursive, everything exists, with force flag', t => {
@@ -411,7 +411,7 @@ test('recursive, with trailing slash, does the exact same', t => {
 test(
   'On Windows, permission bits are quite different so skip those tests for now',
   t => {
-    if (process.platform !== 'win32') {
+    utils.skipOnWin(t, () => {
       // preserve mode bits
       const execBit = parseInt('001', 8);
       t.is(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
@@ -420,7 +420,7 @@ test(
         fs.statSync('resources/cp-mode-bits/executable').mode,
         fs.statSync(`${t.context.tmp}/executable`).mode
       );
-    }
+    });
   }
 );
 
@@ -457,42 +457,42 @@ test('no-recursive will copy regular files only', t => {
 });
 
 test('-R implies -P', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     shell.cp('-R', 'resources/cp/links/sym.lnk', t.context.tmp);
     t.truthy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
-  }
+  });
 });
 
 test('using -P explicitly works', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     shell.cp('-P', 'resources/cp/links/sym.lnk', t.context.tmp);
     t.truthy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
-  }
+  });
 });
 
 test('using -PR on a link to a folder does not follow the link', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     shell.cp('-PR', 'resources/cp/symFolder', t.context.tmp);
     t.truthy(fs.lstatSync(`${t.context.tmp}/symFolder`).isSymbolicLink());
-  }
+  });
 });
 
 test('-L overrides -P for copying directory', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     shell.cp('-LPR', 'resources/cp/symFolder', t.context.tmp);
     t.falsy(fs.lstatSync(`${t.context.tmp}/symFolder`).isSymbolicLink());
     t.falsy(fs.lstatSync(`${t.context.tmp}/symFolder/sym.lnk`).isSymbolicLink());
-  }
+  });
 });
 
 test('Recursive, copies entire directory with no symlinks and -L option does not cause change in behavior', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     const result = shell.cp('-rL', 'resources/cp/dir_a', `${t.context.tmp}/dest`);
     t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
     t.truthy(fs.existsSync(`${t.context.tmp}/dest/z`));
-  }
+  });
 });
 
 test('-u flag won\'t overwrite newer files', t => {
