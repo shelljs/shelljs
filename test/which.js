@@ -3,6 +3,7 @@ import fs from 'fs';
 import test from 'ava';
 
 import shell from '..';
+import utils from './utils/utils';
 
 shell.config.silent = true;
 
@@ -35,7 +36,7 @@ test('basic usage', t => {
 });
 
 test('Windows can search with or without a .exe extension', t => {
-  if (process.platform === 'win32') {
+  utils.skipOnUnix(t, () => {
     // This should be equivalent on Windows
     const node = shell.which('node');
     const nodeExe = shell.which('node.exe');
@@ -43,7 +44,7 @@ test('Windows can search with or without a .exe extension', t => {
     // If the paths are equal, then this file *should* exist, since that's
     // already been checked.
     t.is(node.toString(), nodeExe.toString());
-  }
+  });
 });
 
 test('Searching with -a flag returns an array', t => {

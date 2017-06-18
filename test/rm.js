@@ -268,7 +268,7 @@ test('remove symbolic link to a dir', t => {
 });
 
 test('rm -rf on a symbolic link to a dir deletes its contents', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     const result = shell.rm('-rf', `${t.context.tmp}/rm/link_to_a_dir/`);
     t.falsy(shell.error());
     t.is(result.code, 0);
@@ -277,18 +277,18 @@ test('rm -rf on a symbolic link to a dir deletes its contents', t => {
     t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
     t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
     t.falsy(fs.existsSync(`${t.context.tmp}/rm/a_dir/a_file`));
-  }
+  });
 });
 
 test('remove broken symbolic link', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     t.truthy(shell.test('-L', `${t.context.tmp}/rm/fake.lnk`));
     const result = shell.rm(`${t.context.tmp}/rm/fake.lnk`);
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.falsy(shell.test('-L', `${t.context.tmp}/rm/fake.lnk`));
     t.falsy(fs.existsSync(`${t.context.tmp}/rm/fake.lnk`));
-  }
+  });
 });
 
 test('recursive dir removal, for non-normalized path', t => {
@@ -301,10 +301,10 @@ test('recursive dir removal, for non-normalized path', t => {
 });
 
 test('remove fifo', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     const fifo = utils.mkfifo(t.context.tmp);
     const result = shell.rm(fifo);
     t.falsy(shell.error());
     t.is(result.code, 0);
-  }
+  });
 });

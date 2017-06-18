@@ -164,11 +164,11 @@ test('file array', t => {
 });
 
 test('touching broken link creates a new file', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     const result = shell.touch('resources/badlink');
     t.is(result.code, 0);
     t.falsy(shell.error());
     t.truthy(fs.existsSync('resources/not_existed_file'));
     shell.rm('resources/not_existed_file');
-  }
+  });
 });

@@ -1,4 +1,7 @@
 const child = require('child_process');
+const path = require('path');
+
+const chalk = require('chalk');
 
 const common = require('../../src/common');
 
@@ -33,7 +36,11 @@ function runScript(script, cb) {
 exports.runScript = runScript;
 
 function sleep(time) {
-  child.execFileSync(common.config.execPath, ['resources/exec/slow.js', time.toString()]);
+  const testDirectoryPath = path.dirname(__dirname);
+  child.execFileSync(common.config.execPath, [
+    path.join(testDirectoryPath, 'resources', 'exec', 'slow.js'),
+    time.toString(),
+  ]);
 }
 exports.sleep = sleep;
 
@@ -46,3 +53,18 @@ function mkfifo(dir) {
   return null;
 }
 exports.mkfifo = mkfifo;
+
+function skipIfTrue(booleanValue, t, closure) {
+  if (booleanValue) {
+    console.warn(
+      chalk.yellow('Warning: skipping platform-dependent test ') +
+      chalk.bold.white(`'${t._test.title}'`)
+    );
+    t.truthy(true); // dummy assertion to satisfy ava v0.19+
+  } else {
+    closure();
+  }
+}
+
+exports.skipOnUnix = skipIfTrue.bind(module.exports, process.platform !== 'win32');
+exports.skipOnWin = skipIfTrue.bind(module.exports, process.platform === 'win32');

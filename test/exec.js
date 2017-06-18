@@ -5,6 +5,7 @@ import util from 'util';
 import test from 'ava';
 
 import shell from '..';
+import utils from './utils/utils';
 
 const CWD = process.cwd();
 const ORIG_EXEC_PATH = shell.config.execPath;
@@ -138,7 +139,7 @@ test('check process.env works', t => {
 });
 
 test('set shell option (TODO: add tests for Windows)', t => {
-  if (process.platform !== 'win32') {
+  utils.skipOnWin(t, () => {
     let result = shell.exec('echo $0');
     t.falsy(shell.error());
     t.is(result.code, 0);
@@ -151,7 +152,7 @@ test('set shell option (TODO: add tests for Windows)', t => {
       t.is(result.code, 0);
       t.is(result.stdout, '/bin/bash\n');
     }
-  }
+  });
 });
 
 test('exec returns a ShellString', t => {
