@@ -78,6 +78,7 @@ function execSync(cmd, opts, pipe) {
 
   fs.writeFileSync(scriptFile, script);
 
+  /* istanbul ignore else */
   if (opts.silent) {
     opts.stdio = 'ignore';
   } else {
@@ -137,6 +138,7 @@ function execAsync(cmd, opts, pipe, callback) {
         callback(0, stdout, stderr);
       } else if (err.code === undefined) {
         // See issue #536
+        /* istanbul ignore next */
         callback(1, stdout, stderr);
       } else {
         callback(err.code, stdout, stderr);
