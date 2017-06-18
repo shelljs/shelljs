@@ -201,7 +201,7 @@ test.cb('callback as 3rd argument (silent:true)', t => {
 });
 
 test.cb('command that fails', t => {
-  shell.exec(`shx cp onlyOneCpArgument.txt`, { silent: true }, (code, stdout, stderr) => {
+  shell.exec('shx cp onlyOneCpArgument.txt', { silent: true }, (code, stdout, stderr) => {
     t.is(code, 1);
     t.is(stdout, '');
     t.is(stderr, 'cp: missing <source> and/or <dest>\n');
