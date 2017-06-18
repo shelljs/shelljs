@@ -8,20 +8,14 @@ common.register('head', _head, {
   },
 });
 
-// This reads n or more lines, or the entire file, whichever is less.
+// Reads |numLines| lines or the entire file, whichever is less.
 function readSomeLines(file, numLines) {
   var buf = common.buffer();
   var bufLength = buf.length;
   var bytesRead = bufLength;
   var pos = 0;
-  var fdr = null;
 
-  try {
-    fdr = fs.openSync(file, 'r');
-  } catch (e) {
-    common.error('cannot read file: ' + file);
-  }
-
+  var fdr = fs.openSync(file, 'r');
   var numLinesRead = 0;
   var ret = '';
   while (bytesRead === bufLength && numLinesRead < numLines) {
@@ -35,6 +29,7 @@ function readSomeLines(file, numLines) {
   fs.closeSync(fdr);
   return ret;
 }
+
 //@
 //@ ### head([{'-n': \<num\>},] file [, file ...])
 //@ ### head([{'-n': \<num\>},] file_array)

@@ -127,3 +127,10 @@ test('negative values (-num) are the same as (numLines - num)', t => {
   t.is(result.code, 0);
   t.is(result.toString(), 'file1 1\nfile1 2\nfile1 3\nfile1 4\n');
 });
+
+test('right-hand side of a pipe', t => {
+  const result = shell.cat('resources/head/file1.txt').head();
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), topOfFile1.slice(0, 10).join('\n') + '\n');
+});
