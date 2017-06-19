@@ -7,6 +7,7 @@ import utils from './utils/utils';
 
 const oldMaxDepth = shell.config.maxdepth;
 const CWD = process.cwd();
+const isRoot = process.getuid && process.getuid() === 0;
 
 test.beforeEach(t => {
   t.context.tmp = utils.getTempDir();
@@ -813,7 +814,7 @@ test('should create an equivalent fifo when copying fifos when set to recursive 
 });
 
 test('should copy character devices when set to recursive mode', t => {
-  if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
+  if (process.platform !== 'win32' && isRoot) {
     shell.exec(`mknod ${t.context.tmp}/zero c 1 5`);
     t.truthy(fs.existsSync(`${t.context.tmp}/zero`));
     const result = shell.cp('-r', `${t.context.tmp}/zero`, `${t.context.tmp}/newZero`);
@@ -824,7 +825,7 @@ test('should copy character devices when set to recursive mode', t => {
 });
 
 test('should copy block devices when set to recursive mode', t => {
-  if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
+  if (process.platform !== 'win32' && isRoot) {
     shell.exec(`mknod ${t.context.tmp}/sda1 b 8 1`);
     t.truthy(fs.existsSync(`${t.context.tmp}/sda1`));
     const result = shell.cp('-r', `${t.context.tmp}/sda1`, `${t.context.tmp}/newSda1`);
