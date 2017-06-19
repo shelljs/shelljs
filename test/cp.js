@@ -808,9 +808,6 @@ test('should create an equivalent fifo when copying fifos when set to recursive 
     const result = shell.cp('-rL', `${t.context.tmp}/symFifo`, `${t.context.tmp}/newFifo`);
     t.falsy(shell.error());
     t.is(result.code, 0);
-    console.log(fs.statSync(`${t.context.tmp}/fifo`));
-    console.log(fs.statSync(`${t.context.tmp}/symFifo`));
-    console.log(fs.statSync(`${t.context.tmp}/newFifo`));
     t.truthy(fs.statSync(`${t.context.tmp}/newFifo`).isFIFO());
   }
 });
