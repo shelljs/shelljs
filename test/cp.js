@@ -828,7 +828,7 @@ test('should set the mode when copying character devices', t => {
   if (process.platform !== 'win32' && isRoot) {
     shell.exec(`mknod ${t.context.tmp}/zero c 1 5`);
     t.truthy(fs.existsSync(`${t.context.tmp}/zero`));
-    var originalMode = fs.statSync(`${t.context.tmp}/zero`).mode;
+    const originalMode = fs.statSync(`${t.context.tmp}/zero`).mode;
     fs.chmodSync(`${t.context.tmp}/zero`, parseInt('777', 8));
     t.not(fs.statSync(`${t.context.tmp}/zero`).mode, originalMode);
     const result = shell.cp('-r', `${t.context.tmp}/zero`, `${t.context.tmp}/newZero`);
@@ -854,7 +854,7 @@ test('should set the mode when copying block devices', t => {
   if (process.platform !== 'win32' && isRoot) {
     shell.exec(`mknod ${t.context.tmp}/sda1 b 8 1`);
     t.truthy(fs.existsSync(`${t.context.tmp}/sda1`));
-    var originalMode = fs.statSync(`${t.context.tmp}/sda1`).mode;
+    const originalMode = fs.statSync(`${t.context.tmp}/sda1`).mode;
     fs.chmodSync(`${t.context.tmp}/sda1`, parseInt('777', 8));
     t.not(fs.statSync(`${t.context.tmp}/sda1`).mode, originalMode);
     const result = shell.cp('-r', `${t.context.tmp}/sda1`, `${t.context.tmp}/newSda1`);
