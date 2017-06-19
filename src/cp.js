@@ -55,7 +55,12 @@ function copyFileSync(srcFile, destFile, options) {
   // recursive is a special case for non-files that means "create an equivalent at the dest" rather than reading and writing
   } else if (options.recursive && (srcFileStat.isFIFO() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice())) {
     if (mknod(destFile, srcFileStat)) {
-      fs.chmodSync(destFile, fs.statSync(srcFile).mode);
+      fs.chmodSync(destFile, srcFileStat.mode);
+      try {
+        fs.chownSync(destFile, srcFileStat.uid, srcFileStat.gid);
+      } catch (e) {
+        common.error('copyFileSync: could not set ownership for dest file (' + srcFile + ')');
+      }
     }
   } else {
     var buf = common.buffer();
