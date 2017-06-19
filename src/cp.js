@@ -174,6 +174,7 @@ function minor(rdev) {
 // attempts to create a dev (character or block) by shelling out to mknod.
 function mknod(destFile, stat) {
   var created;
+  var failureMessage;
   var args = ['mknod'];
   args.push('"' + destFile + '"');
   if (stat.isFIFO()) {
@@ -184,12 +185,17 @@ function mknod(destFile, stat) {
     args.push(major(stat.rdev), minor(stat.rdev));
   }
   try {
-    if (exec(args.join(' '), { silent: true }).code === 0) {
+    var mknod = exec(args.join(' '), { silent: true });
+    if (mknod.code === 0) {
       created = true;
+    } else {
+      failureMessage = mknod.stderr;
     }
-  } catch (e) {}
+  } catch (e) {
+    failureMessage = 'cannot create special file (' + destFile + '): ' + e.message
+  }
   if (!created) {
-    common.log('copyFileSync: failed to execute mknod (' + destFile + ')');
+    common.log('copyFileSync: ' + failureMessage);
   }
   return created;
 }
