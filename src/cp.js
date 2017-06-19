@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
+var exec = require('./exec');
 
 common.register('cp', _cp, {
   cmdOptions: {
@@ -141,23 +142,37 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
       srcFileStat = fs.statSync(srcFile);
       if (srcFileStat.isDirectory()) {
         cpdirSyncRecursive(srcFile, destFile, currentDepth, opts);
-      } else if (srcFileStat.isFile() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice()) {
-        copyFileSync(srcFile, destFile, opts);
+      } else if (srcFileStat.isFIFO()) {
+        mkfifo(destFile);
       } else {
-        common.log('copyFileSync: skipping non-file (' + srcFile + ')');
+        copyFileSync(srcFile, destFile, opts);
       }
-    } else if (srcFileStat.isFile() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice()) {
+    } else if(srcFileStat.isFIFO()) {
+      mkfifo(destFile);
+    } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && opts.no_force) {
         common.log('skipping existing file: ' + files[i]);
       } else {
         copyFileSync(srcFile, destFile, opts);
       }
-    } else {
-      common.log('copyFileSync: skipping non-file (' + srcFile + ')');
     }
   } // for files
 } // cpdirSyncRecursive
+
+// attempts to create a fifo by shelling out ot mkfifo.
+function mkfifo(destFile) {
+  var fifoCreated;
+  try {
+    if(exec('mkfifo ' + destFile, { silent: true }).code === 0) {
+      fifoCreated = true;
+    }
+  } catch(e) {}
+  if(!fifoCreated) {
+    common.log('copyFileSync: failed to create fifo (' + destFile + ')');
+  }
+  return fifoCreated;
+}
 
 // Checks if cureent file was created recently
 function checkRecentCreated(sources, index) {

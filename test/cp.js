@@ -756,7 +756,7 @@ test('should not overwrite recently created files (not give error no-force mode)
   t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
 });
 
-test('should not attempt to copy fifos in directories', t => {
+test('should create fifos during copy in a directory', t => {
   if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
     shell.mkdir(`${t.context.tmp}/dir`);
     shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`);
@@ -766,11 +766,11 @@ test('should not attempt to copy fifos in directories', t => {
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(shell.cat(`${t.context.tmp}/cp/file1`).toString(), 'test1');
-    t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
+    t.truthy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
   }
 });
 
-test('should not attempt to copy fifos via symlinks in directories', t => {
+test('should create fifos during copy via symlinks in a directory', t => {
   if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
     shell.mkdir(`${t.context.tmp}/dir`);
     shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`);
@@ -783,8 +783,8 @@ test('should not attempt to copy fifos via symlinks in directories', t => {
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(shell.cat(`${t.context.tmp}/cp/file1`).toString(), 'test1');
-    t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
-    t.falsy(fs.existsSync(`${t.context.tmp}/cp/symFifo`));
+    t.truthy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
+    t.truthy(fs.existsSync(`${t.context.tmp}/cp/symFifo`));
   }
 });
 
@@ -797,7 +797,6 @@ test('should copy fifos directly', t => {
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(shell.cat(`${t.context.tmp}/newFifo`).toString(), 'test1');
-    t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
   }
 });
 
@@ -813,6 +812,5 @@ test('should copy fifos directly via symlinks', t => {
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(shell.cat(`${t.context.tmp}/newFifo`).toString(), 'test1');
-    t.falsy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
   }
 });
