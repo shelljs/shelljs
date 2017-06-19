@@ -756,39 +756,7 @@ test('should not overwrite recently created files (not give error no-force mode)
   t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
 });
 
-test('should create fifos during copy in a directory', t => {
-  if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
-    shell.mkdir(`${t.context.tmp}/dir`);
-    shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`);
-    shell.cp('resources/file1', `${t.context.tmp}/dir`);
-    t.truthy(fs.existsSync(`${t.context.tmp}/dir/fifo`));
-    const result = shell.cp('-r', `${t.context.tmp}/dir`, `${t.context.tmp}/cp`);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-    t.is(shell.cat(`${t.context.tmp}/cp/file1`).toString(), 'test1');
-    t.truthy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
-  }
-});
-
-test('should create fifos during copy via symlinks in a directory', t => {
-  if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
-    shell.mkdir(`${t.context.tmp}/dir`);
-    shell.exec(`mkfifo ${t.context.tmp}/dir/fifo`);
-    shell.cp('resources/file1', `${t.context.tmp}/dir`);
-    t.truthy(fs.existsSync(`${t.context.tmp}/dir/fifo`));
-    shell.pushd(`${t.context.tmp}/dir`);
-    fs.symlinkSync('fifo', 'symFifo');
-    shell.popd();
-    const result = shell.cp('-rL', `${t.context.tmp}/dir`, `${t.context.tmp}/cp`);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-    t.is(shell.cat(`${t.context.tmp}/cp/file1`).toString(), 'test1');
-    t.truthy(fs.existsSync(`${t.context.tmp}/cp/fifo`));
-    t.truthy(fs.existsSync(`${t.context.tmp}/cp/symFifo`));
-  }
-});
-
-test('should copy fifos directly', t => {
+test('should copy fifos contents', t => {
   if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
     shell.exec(`mkfifo ${t.context.tmp}/fifo`);
     shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
@@ -797,10 +765,23 @@ test('should copy fifos directly', t => {
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(shell.cat(`${t.context.tmp}/newFifo`).toString(), 'test1');
+    t.falsy(fs.statSync(`${t.context.tmp}/newFifo`).isFIFO());
   }
 });
 
-test('should copy fifos directly via symlinks', t => {
+test('should create an equivalent fifo when copying fifos when set to recursive mode', t => {
+  if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
+    shell.exec(`mkfifo ${t.context.tmp}/fifo`);
+    shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
+    t.truthy(fs.existsSync(`${t.context.tmp}/fifo`));
+    const result = shell.cp('-r', `${t.context.tmp}/fifo`, `${t.context.tmp}/newFifo`);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.truthy(fs.statSync(`${t.context.tmp}/newFifo`).isFIFO());
+  }
+});
+
+test('should copy fifos contents via symlinks', t => {
   if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
     shell.exec(`mkfifo ${t.context.tmp}/fifo`);
     shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
@@ -812,5 +793,46 @@ test('should copy fifos directly via symlinks', t => {
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(shell.cat(`${t.context.tmp}/newFifo`).toString(), 'test1');
+    t.falsy(fs.statSync(`${t.context.tmp}/newFifo`).isFIFO());
+  }
+});
+
+test('should create an equivalent fifo when copying fifos when set to recursive mode via symlinks', t => {
+  if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
+    shell.exec(`mkfifo ${t.context.tmp}/fifo`);
+    shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
+    shell.pushd(t.context.tmp);
+    fs.symlinkSync('fifo', 'symFifo');
+    shell.popd();
+    t.truthy(fs.existsSync(`${t.context.tmp}/symFifo`));
+    const result = shell.cp('-rL', `${t.context.tmp}/symFifo`, `${t.context.tmp}/newFifo`);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    console.log(fs.statSync(`${t.context.tmp}/fifo`));
+    console.log(fs.statSync(`${t.context.tmp}/symFifo`));
+    console.log(fs.statSync(`${t.context.tmp}/newFifo`));
+    t.truthy(fs.statSync(`${t.context.tmp}/newFifo`).isFIFO());
+  }
+});
+
+test('should copy character devices when set to recursive mode', t => {
+  if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
+    shell.exec(`mknod ${t.context.tmp}/zero c 1 5`);
+    t.truthy(fs.existsSync(`${t.context.tmp}/zero`));
+    const result = shell.cp('-r', `${t.context.tmp}/zero`, `${t.context.tmp}/newZero`);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.truthy(fs.statSync(`${t.context.tmp}/newZero`).isCharacterDevice());
+  }
+});
+
+test('should copy block devices when set to recursive mode', t => {
+  if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
+    shell.exec(`mknod ${t.context.tmp}/sda1 b 8 1`);
+    t.truthy(fs.existsSync(`${t.context.tmp}/sda1`));
+    const result = shell.cp('-r', `${t.context.tmp}/sda1`, `${t.context.tmp}/newSda1`);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.truthy(fs.statSync(`${t.context.tmp}/newSda1`).isBlockDevice());
   }
 });

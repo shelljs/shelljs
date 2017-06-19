@@ -37,16 +37,24 @@ function copyFileSync(srcFile, destFile, options) {
 
   var srcFileStat = fs.lstatSync(srcFile);
 
-  if (srcFileStat.isSymbolicLink() && !options.followsymlink) {
-    try {
-      fs.lstatSync(destFile);
-      common.unlinkSync(destFile); // re-link it
-    } catch (e) {
-      // it doesn't exist, so no work needs to be done
-    }
+  if (srcFileStat.isSymbolicLink()) {
+    if (options.followsymlink) {
+      // recurse to copy the target of the symlink to the dest to ensure we handle complex scenarios
+      return copyFileSync(fs.realpathSync(srcFile), destFile, options);
+    } else {
+      try {
+        fs.lstatSync(destFile);
+        common.unlinkSync(destFile); // re-link it
+      } catch (e) {
+        // it doesn't exist, so no work needs to be done
+      }
 
-    var symlinkFull = fs.readlinkSync(srcFile);
-    fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
+      var symlinkFull = fs.readlinkSync(srcFile);
+      fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
+    }
+  // recursive is a special case for non-files that means "create an equivalent at the dest" rather than reading and writing
+  } else if (options.recursive && (srcFileStat.isFIFO() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice())) {
+    mknod(destFile, srcFileStat);
   } else {
     var buf = common.buffer();
     var bufLength = buf.length;
@@ -142,13 +150,9 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
       srcFileStat = fs.statSync(srcFile);
       if (srcFileStat.isDirectory()) {
         cpdirSyncRecursive(srcFile, destFile, currentDepth, opts);
-      } else if (srcFileStat.isFIFO()) {
-        mkfifo(destFile);
       } else {
         copyFileSync(srcFile, destFile, opts);
       }
-    } else if(srcFileStat.isFIFO()) {
-      mkfifo(destFile);
     } else {
       /* At this point, we've hit a file actually worth copying... so copy it on over. */
       if (fs.existsSync(destFile) && opts.no_force) {
@@ -160,18 +164,34 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
   } // for files
 } // cpdirSyncRecursive
 
-// attempts to create a fifo by shelling out ot mkfifo.
-function mkfifo(destFile) {
-  var fifoCreated;
-  try {
-    if(exec('mkfifo ' + destFile, { silent: true }).code === 0) {
-      fifoCreated = true;
-    }
-  } catch(e) {}
-  if(!fifoCreated) {
-    common.log('copyFileSync: failed to create fifo (' + destFile + ')');
+function major(rdev) {
+  return ((rdev >> 31 >> 1) & 0xfffff000) | ((rdev >> 8) & 0x00000fff);
+}
+function minor(rdev) {
+  return ((rdev >> 12) & 0xffffff00) | (rdev & 0x000000ff);
+}
+
+// attempts to create a dev (character or block) by shelling out to mknod.
+function mknod(destFile, stat) {
+  var created;
+  var args = ['mknod'];
+  args.push('"' + destFile + '"');
+  if (stat.isFIFO()) {
+    args.push('p');
+  } else {
+    if (stat.isCharacterDevice()) args.push('c');
+    if (stat.isBlockDevice()) args.push('b');
+    args.push(major(stat.rdev), minor(stat.rdev));
   }
-  return fifoCreated;
+  try {
+    if (exec(args.join(' '), { silent: true }).code === 0) {
+      created = true;
+    }
+  } catch (e) {}
+  if (!created) {
+    common.log('copyFileSync: failed to execute mknod (' + destFile + ')');
+  }
+  return created;
 }
 
 // Checks if cureent file was created recently
