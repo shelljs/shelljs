@@ -197,7 +197,7 @@ function mknod(destFile, stat) {
     failureMessage = 'cannot create special file (' + destFile + '): ' + e.message;
   }
   if (!created) {
-    common.log('copyFileSync: ' + failureMessage);
+    common.error('copyFileSync: ' + failureMessage);
   }
   return created;
 }
