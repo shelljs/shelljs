@@ -185,14 +185,14 @@ function mknod(destFile, stat) {
     args.push(major(stat.rdev), minor(stat.rdev));
   }
   try {
-    var mknod = exec(args.join(' '), { silent: true });
-    if (mknod.code === 0) {
+    var cmd = exec(args.join(' '), { silent: true });
+    if (cmd.code === 0) {
       created = true;
     } else {
-      failureMessage = mknod.stderr;
+      failureMessage = cmd.stderr;
     }
   } catch (e) {
-    failureMessage = 'cannot create special file (' + destFile + '): ' + e.message
+    failureMessage = 'cannot create special file (' + destFile + '): ' + e.message;
   }
   if (!created) {
     common.log('copyFileSync: ' + failureMessage);
