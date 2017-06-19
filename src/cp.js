@@ -54,7 +54,9 @@ function copyFileSync(srcFile, destFile, options) {
     }
   // recursive is a special case for non-files that means "create an equivalent at the dest" rather than reading and writing
   } else if (options.recursive && (srcFileStat.isFIFO() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice())) {
-    mknod(destFile, srcFileStat);
+    if (mknod(destFile, srcFileStat)) {
+      fs.chmodSync(destFile, fs.statSync(srcFile).mode);
+    }
   } else {
     var buf = common.buffer();
     var bufLength = buf.length;
