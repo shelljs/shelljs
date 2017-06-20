@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
-var exec = require('./exec');
+var execFileSync = require('child_process').execFileSync;
 
 common.register('cp', _cp, {
   cmdOptions: {
@@ -171,19 +171,18 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
   } // for files
 } // cpdirSyncRecursive
 
+// get major id from device id, from musl
 function major(rdev) {
   return ((rdev >> 31 >> 1) & 0xfffff000) | ((rdev >> 8) & 0x00000fff);
 }
+// get minor id from device id, from musl
 function minor(rdev) {
   return ((rdev >> 12) & 0xffffff00) | (rdev & 0x000000ff);
 }
 
 // attempts to create a dev (character or block) by shelling out to mknod.
 function mknod(destFile, stat) {
-  var created;
-  var failureMessage;
-  var args = ['mknod'];
-  args.push('"' + destFile + '"');
+  var args = [destFile];
   if (stat.isFIFO()) {
     args.push('p');
   } else {
@@ -192,19 +191,12 @@ function mknod(destFile, stat) {
     args.push(major(stat.rdev), minor(stat.rdev));
   }
   try {
-    var cmd = exec(args.join(' '), { silent: true });
-    if (cmd.code === 0) {
-      created = true;
-    } else {
-      failureMessage = cmd.stderr;
-    }
+    execFileSync('mknod', args);
+    return true;
   } catch (e) {
-    failureMessage = 'cannot create special file (' + destFile + '): ' + e.message;
+    common.error('copyFileSync: cannot create special file (' + destFile + '): ' + e.stderr);
+    return false;
   }
-  if (!created) {
-    common.error('copyFileSync: ' + failureMessage);
-  }
-  return created;
 }
 
 // Checks if cureent file was created recently
