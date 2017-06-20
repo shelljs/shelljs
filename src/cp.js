@@ -54,7 +54,7 @@ function copyFileSync(srcFile, destFile, options) {
     }
   // recursive is a special case for non-files that means "create an equivalent at the dest" rather than reading and writing
   } else if (options.recursive && (srcFileStat.isFIFO() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice())) {
-    if (mknod(destFile, srcFileStat)) {
+    if (srcFileStat.isFIFO() ? mkfifo(destFile) : mknod(destFile, srcFileStat)) {
       fs.chmodSync(destFile, srcFileStat.mode);
       try {
         fs.chownSync(destFile, srcFileStat.uid, srcFileStat.gid);
@@ -180,16 +180,24 @@ function minor(rdev) {
   return ((rdev >> 12) & 0xffffff00) | (rdev & 0x000000ff);
 }
 
+// attempts to create a fifo by shelling out to mkfifo.
+// can't reuse mknod because OSX doesn't support the `p` argument.
+function mkfifo(destFile) {
+  try {
+    execFileSync('mkfifo', [destFile]);
+    return true;
+  } catch (e) {
+    common.error('copyFileSync: cannot create special file (' + destFile + '): ' + e.stderr);
+    return false;
+  }
+}
+
 // attempts to create a dev (character or block) by shelling out to mknod.
 function mknod(destFile, stat) {
   var args = [destFile];
-  if (stat.isFIFO()) {
-    args.push('p');
-  } else {
-    if (stat.isCharacterDevice()) args.push('c');
-    if (stat.isBlockDevice()) args.push('b');
-    args.push(major(stat.rdev), minor(stat.rdev));
-  }
+  if (stat.isCharacterDevice()) args.push('c');
+  if (stat.isBlockDevice()) args.push('b');
+  args.push(major(stat.rdev), minor(stat.rdev));
   try {
     execFileSync('mknod', args);
     return true;
