@@ -757,7 +757,7 @@ test('should not overwrite recently created files (not give error no-force mode)
   t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
 });
 
-test('should copy fifos contents', t => {
+test('should copy fifo contents', t => {
   if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
     shell.exec(`mkfifo ${t.context.tmp}/fifo`);
     shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
@@ -770,19 +770,19 @@ test('should copy fifos contents', t => {
   }
 });
 
-test('should create an equivalent fifo when copying fifos when set to recursive mode', t => {
+test('should warn about fifos in recursive mode', t => {
   if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
     shell.exec(`mkfifo ${t.context.tmp}/fifo`);
     shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
     t.truthy(fs.existsSync(`${t.context.tmp}/fifo`));
     const result = shell.cp('-r', `${t.context.tmp}/fifo`, `${t.context.tmp}/newFifo`);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-    t.truthy(fs.statSync(`${t.context.tmp}/newFifo`).isFIFO());
+    t.truthy(shell.error());
+    t.is(result.code, 1);
+    t.falsy(fs.existsSync(`${t.context.tmp}/newFifo`));
   }
 });
 
-test('should copy fifos contents via symlinks', t => {
+test('should copy fifo contents via symlinks', t => {
   if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
     shell.exec(`mkfifo ${t.context.tmp}/fifo`);
     shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
@@ -798,7 +798,7 @@ test('should copy fifos contents via symlinks', t => {
   }
 });
 
-test('should create an equivalent fifo when copying fifos when set to recursive mode via symlinks', t => {
+test('should warn about fifos when set to recursive mode, via symlinks', t => {
   if (process.platform !== 'win32') { // fs.exists doesn't support fifos on windows
     shell.exec(`mkfifo ${t.context.tmp}/fifo`);
     shell.exec(`printf test1 > ${t.context.tmp}/fifo`, { async: true });
@@ -807,60 +807,30 @@ test('should create an equivalent fifo when copying fifos when set to recursive 
     shell.popd();
     t.truthy(fs.existsSync(`${t.context.tmp}/symFifo`));
     const result = shell.cp('-rL', `${t.context.tmp}/symFifo`, `${t.context.tmp}/newFifo`);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-    t.truthy(fs.statSync(`${t.context.tmp}/newFifo`).isFIFO());
+    t.truthy(shell.error());
+    t.is(result.code, 1);
+    t.falsy(fs.existsSync(`${t.context.tmp}/newFifo`));
   }
 });
 
-test('should copy character devices when set to recursive mode', t => {
+test('should warn about character devices when set to recursive mode', t => {
   if (process.platform !== 'win32' && isRoot) {
     shell.exec(`mknod ${t.context.tmp}/zero c 1 5`);
     t.truthy(fs.existsSync(`${t.context.tmp}/zero`));
     const result = shell.cp('-r', `${t.context.tmp}/zero`, `${t.context.tmp}/newZero`);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-    t.truthy(fs.statSync(`${t.context.tmp}/newZero`).isCharacterDevice());
+    t.truthy(shell.error());
+    t.is(result.code, 1);
+    t.falsy(fs.existsSync(`${t.context.tmp}/newZero`));
   }
 });
 
-test('should set the mode when copying character devices', t => {
-  if (process.platform !== 'win32' && isRoot) {
-    shell.exec(`mknod ${t.context.tmp}/zero c 1 5`);
-    t.truthy(fs.existsSync(`${t.context.tmp}/zero`));
-    const originalMode = fs.statSync(`${t.context.tmp}/zero`).mode;
-    fs.chmodSync(`${t.context.tmp}/zero`, parseInt('777', 8));
-    t.not(fs.statSync(`${t.context.tmp}/zero`).mode, originalMode);
-    const result = shell.cp('-r', `${t.context.tmp}/zero`, `${t.context.tmp}/newZero`);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-    t.truthy(fs.statSync(`${t.context.tmp}/newZero`).isCharacterDevice());
-    t.is(fs.statSync(`${t.context.tmp}/zero`).mode, fs.statSync(`${t.context.tmp}/newZero`).mode);
-  }
-});
-
-test('should copy block devices when set to recursive mode', t => {
+test('should warn about block devices when set to recursive mode', t => {
   if (process.platform !== 'win32' && isRoot) {
     shell.exec(`mknod ${t.context.tmp}/sda1 b 8 1`);
     t.truthy(fs.existsSync(`${t.context.tmp}/sda1`));
     const result = shell.cp('-r', `${t.context.tmp}/sda1`, `${t.context.tmp}/newSda1`);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-    t.truthy(fs.statSync(`${t.context.tmp}/newSda1`).isBlockDevice());
-  }
-});
-
-test('should set the mode when copying block devices', t => {
-  if (process.platform !== 'win32' && isRoot) {
-    shell.exec(`mknod ${t.context.tmp}/sda1 b 8 1`);
-    t.truthy(fs.existsSync(`${t.context.tmp}/sda1`));
-    const originalMode = fs.statSync(`${t.context.tmp}/sda1`).mode;
-    fs.chmodSync(`${t.context.tmp}/sda1`, parseInt('777', 8));
-    t.not(fs.statSync(`${t.context.tmp}/sda1`).mode, originalMode);
-    const result = shell.cp('-r', `${t.context.tmp}/sda1`, `${t.context.tmp}/newSda1`);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-    t.truthy(fs.statSync(`${t.context.tmp}/newSda1`).isBlockDevice());
-    t.is(fs.statSync(`${t.context.tmp}/sda1`).mode, fs.statSync(`${t.context.tmp}/newSda1`).mode);
+    t.truthy(shell.error());
+    t.is(result.code, 1);
+    t.falsy(fs.existsSync(`${t.context.tmp}/newSda1`));
   }
 });

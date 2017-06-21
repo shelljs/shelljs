@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var common = require('./common');
-var execFileSync = require('child_process').execFileSync;
 
 common.register('cp', _cp, {
   cmdOptions: {
@@ -54,14 +53,11 @@ function copyFileSync(srcFile, destFile, options) {
     }
   // recursive is a special case for non-files that means "create an equivalent at the dest" rather than reading and writing
   } else if (options.recursive && (srcFileStat.isFIFO() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice())) {
-    if (srcFileStat.isFIFO() ? mkfifo(destFile) : mknod(destFile, srcFileStat)) {
-      fs.chmodSync(destFile, srcFileStat.mode);
-      try {
-        fs.chownSync(destFile, srcFileStat.uid, srcFileStat.gid);
-      } catch (e) {
-        common.error('copyFileSync: could not set ownership for dest file (' + srcFile + ')');
-      }
-    }
+    var type = 'unknown file';
+    if (srcFileStat.isFIFO()) type = 'fifo';
+    if (srcFileStat.isCharacterDevice()) type = 'block device';
+    if (srcFileStat.isBlockDevice()) type = 'character device';
+    common.error('copyFileSync: ' + type + ' is not supported (' + srcFile + ')', { continue: true });
   } else {
     var buf = common.buffer();
     var bufLength = buf.length;
@@ -170,42 +166,6 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
     }
   } // for files
 } // cpdirSyncRecursive
-
-// get major id from device id, from musl
-function major(rdev) {
-  return ((rdev >> 31 >> 1) & 0xfffff000) | ((rdev >> 8) & 0x00000fff);
-}
-// get minor id from device id, from musl
-function minor(rdev) {
-  return ((rdev >> 12) & 0xffffff00) | (rdev & 0x000000ff);
-}
-
-// attempts to create a fifo by shelling out to mkfifo.
-// can't reuse mknod because OSX doesn't support the `p` argument.
-function mkfifo(destFile) {
-  try {
-    execFileSync('mkfifo', [destFile]);
-    return true;
-  } catch (e) {
-    common.error('copyFileSync: cannot create special file (' + destFile + '): ' + e.stderr);
-    return false;
-  }
-}
-
-// attempts to create a dev (character or block) by shelling out to mknod.
-function mknod(destFile, stat) {
-  var args = [destFile];
-  if (stat.isCharacterDevice()) args.push('c');
-  if (stat.isBlockDevice()) args.push('b');
-  args.push(major(stat.rdev), minor(stat.rdev));
-  try {
-    execFileSync('mknod', args);
-    return true;
-  } catch (e) {
-    common.error('copyFileSync: cannot create special file (' + destFile + '): ' + e.stderr);
-    return false;
-  }
-}
 
 // Checks if cureent file was created recently
 function checkRecentCreated(sources, index) {
