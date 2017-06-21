@@ -13,19 +13,12 @@ var args = JSON.parse(argString);
 
 var c = childProcess.spawn(cmd, args, opts);
 
-// Wait to exit until all other work has been finished, like closing IO streams
-function delayedExit(code) {
-  setTimeout(function () {
-    process.exit(code); // let streams close before ending
-  }, 0);
-}
-
 c.on('error', function () {
-  delayedExit(127);
+  process.exitCode = 127;
 });
 
 c.on('exit', function (code) {
-  delayedExit(code);
+  process.exitCode = code;
 });
 
 var stdoutStream = fs.createWriteStream(stdoutFile);
