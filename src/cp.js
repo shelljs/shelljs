@@ -58,7 +58,6 @@ function copyFileSync(srcFile, destFile, options) {
     if (srcFileStat.isCharacterDevice()) type = 'block device';
     if (srcFileStat.isBlockDevice()) type = 'character device';
     common.error('copyFileSync: ' + type + ' is not supported (' + srcFile + ')', { continue: true });
-    common.logLater('copyFileSync: Special files were encountered during this operation. Please investigate shelljs plugins if you would like to add support for these.');
   } else {
     var buf = common.buffer();
     var bufLength = buf.length;
@@ -309,7 +308,6 @@ function _cp(options, sources, dest) {
     }
   }); // forEach(src)
 
-  common.outputLaterLog();
   return new common.ShellString('', common.state.error, common.state.errorCode);
 }
 module.exports = _cp;
