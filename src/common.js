@@ -84,6 +84,28 @@ function log() {
 }
 exports.log = log;
 
+var _logLater = [];
+// facilate logging informational messages at the end of a command
+function logLater(message) {
+  if (!_logLater.length) {
+    // only logs if outputLaterLog hasn't been called
+    process.on('exit', outputLaterLog);
+  }
+  if (_logLater.indexOf(message) === -1) {
+    _logLater = _logLater.concat(message);
+  }
+}
+exports.logLater = logLater;
+
+function outputLaterLog() {
+  _logLater.forEach(function (m) {
+    log(m);
+  });
+  _logLater = [];
+  process.removeListener('exit', outputLaterLog);
+}
+exports.outputLaterLog = outputLaterLog;
+
 // Converts strings to be equivalent across all platforms. Primarily responsible
 // for making sure we use '/' instead of '\' as path separators, but this may be
 // expanded in the future if necessary
