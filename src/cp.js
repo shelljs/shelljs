@@ -218,8 +218,8 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 //@ ```
 //@
-//@ Copies files. Natively, this command won't attempt to recreate special unix
-//@ files like fifos. To add support for special unix cases
+//@ Copies files. Natively, this command will skip special unix files like
+//@ fifos. To add support for special unix cases
 //@ [see this issue](https://github.com/shelljs/shelljs/issues/748) (WIP).
 function _cp(options, sources, dest) {
   // If we're missing -R, it actually implies -L (unless -P is explicit)
