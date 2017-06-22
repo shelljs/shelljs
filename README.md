@@ -191,7 +191,9 @@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
 cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 ```
 
-Copies files.
+Copies files. Natively, this command will skip special unix files like
+fifos. To add support for special unix cases
+[see this issue](https://github.com/shelljs/shelljs/issues/748) (WIP).
 
 
 ### pushd([options,] [dir | '-N' | '+N'])
