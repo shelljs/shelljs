@@ -51,8 +51,8 @@ function copyFileSync(srcFile, destFile, options) {
       var symlinkFull = fs.readlinkSync(srcFile);
       fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
     }
-  // recursive is a special case for non-files that means "create an equivalent at the dest" rather than reading and writing
-  } else if (options.recursive && (srcFileStat.isFIFO() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice())) {
+  // skip unix-like files. Anticipate adding support via a plugin.
+  } else if (srcFileStat.isFIFO() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice()) {
     var type = 'unknown file';
     if (srcFileStat.isFIFO()) type = 'fifo';
     if (srcFileStat.isCharacterDevice()) type = 'block device';
