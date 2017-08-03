@@ -1,8 +1,6 @@
 var common = require('./common');
-var _tempDir = require('./tempdir');
 var _pwd = require('./pwd');
 var path = require('path');
-var fs = require('fs');
 var child = require('child_process');
 
 var DEFAULT_MAXBUFFER_SIZE = 20 * 1024 * 1024;
@@ -13,105 +11,44 @@ common.register('exec', _exec, {
   wrapOutput: false,
 });
 
-// Hack to run child_process.exec() synchronously (sync avoids callback hell)
-// Uses a custom wait loop that checks for a flag file, created when the child process is done.
-// (Can't do a wait loop that checks for internal Node variables/messages as
-// Node is single-threaded; callbacks and other internal state changes are done in the
-// event loop).
 function execSync(cmd, opts, pipe) {
-  if (!common.config.execPath) {
-    common.error('Unable to find a path to the node binary. Please manually set config.execPath');
-  }
-
-  var tempDir = _tempDir();
-  var stdoutFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var stderrFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var codeFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var scriptFile = path.resolve(tempDir + '/' + common.randomFileName());
+  var silent = opts.silent || common.config.silent;
+  var stdout;
+  var stderr;
+  var code;
 
   opts = common.extend({
-    silent: common.config.silent,
     cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
+    shell: true,
   }, opts);
 
-  if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
-  if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
-  if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
-  if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
+  opts.encoding = 'utf8';
 
-  var execCommand = JSON.stringify(common.config.execPath) + ' ' + JSON.stringify(scriptFile);
-  var script;
+  if (pipe) {
+    opts.input = pipe;
+  }
 
   opts.cwd = path.resolve(opts.cwd);
-  var optString = JSON.stringify(opts);
-
-  script = [
-    "var child = require('child_process')",
-    "  , fs = require('fs');",
-    'var childProcess = child.exec(' + JSON.stringify(cmd) + ', ' + optString + ', function(err) {',
-    '  var fname = ' + JSON.stringify(codeFile) + ';',
-    '  if (!err) {',
-    '    fs.writeFileSync(fname, "0");',
-    '  } else if (err.code === undefined) {',
-    '    fs.writeFileSync(fname, "1");',
-    '  } else {',
-    '    fs.writeFileSync(fname, err.code.toString());',
-    '  }',
-    '});',
-    'var stdoutStream = fs.createWriteStream(' + JSON.stringify(stdoutFile) + ');',
-    'var stderrStream = fs.createWriteStream(' + JSON.stringify(stderrFile) + ');',
-    'childProcess.stdout.pipe(stdoutStream, {end: false});',
-    'childProcess.stderr.pipe(stderrStream, {end: false});',
-    'childProcess.stdout.pipe(process.stdout);',
-    'childProcess.stderr.pipe(process.stderr);',
-  ].join('\n') +
-    (pipe ? '\nchildProcess.stdin.end(' + JSON.stringify(pipe) + ');\n' : '\n') +
-    [
-      'var stdoutEnded = false, stderrEnded = false;',
-      'function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }',
-      'function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }',
-      "childProcess.stdout.on('end', function(){ stdoutEnded = true; tryClosingStdout(); });",
-      "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });",
-    ].join('\n');
-
-  fs.writeFileSync(scriptFile, script);
 
   /* istanbul ignore else */
-  if (opts.silent) {
-    opts.stdio = 'ignore';
+  if (silent) {
+    opts.stdio = 'pipe';
   } else {
-    opts.stdio = [0, 1, 2];
+    opts.stdio = 'inherit';
   }
 
-  // Welcome to the future
-  try {
-    child.execSync(execCommand, opts);
-  } catch (e) {
-    // Clean up immediately if we have an exception
-    try { common.unlinkSync(scriptFile); } catch (e2) {}
-    try { common.unlinkSync(stdoutFile); } catch (e2) {}
-    try { common.unlinkSync(stderrFile); } catch (e2) {}
-    try { common.unlinkSync(codeFile); } catch (e2) {}
-    throw e;
+  var c = child.spawnSync(cmd, opts);
+
+  stdout = c.stdout || '';
+  stderr = c.stderr || '';
+
+  if (c.error) {
+    code = (typeof c.error.code === 'number' ? c.error.code : 1);
+  } else {
+    code = c.status || 0;
   }
-
-  // At this point codeFile exists, but it's not necessarily flushed yet.
-  // Keep reading it until it is.
-  var code = parseInt('', 10);
-  while (isNaN(code)) {
-    code = parseInt(fs.readFileSync(codeFile, 'utf8'), 10);
-  }
-
-  var stdout = fs.readFileSync(stdoutFile, 'utf8');
-  var stderr = fs.readFileSync(stderrFile, 'utf8');
-
-  // No biggie if we can't erase the files now -- they're in a temp dir anyway
-  try { common.unlinkSync(scriptFile); } catch (e) {}
-  try { common.unlinkSync(stdoutFile); } catch (e) {}
-  try { common.unlinkSync(stderrFile); } catch (e) {}
-  try { common.unlinkSync(codeFile); } catch (e) {}
 
   if (code !== 0) {
     common.error('', code, { continue: true });

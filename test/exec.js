@@ -8,12 +8,10 @@ import shell from '..';
 import utils from './utils/utils';
 
 const CWD = process.cwd();
-const ORIG_EXEC_PATH = shell.config.execPath;
 shell.config.silent = true;
 
 test.afterEach.always(() => {
   process.chdir(CWD);
-  shell.config.execPath = ORIG_EXEC_PATH;
 });
 
 //
@@ -37,15 +35,6 @@ test('config.fatal and unknown command', t => {
     shell.exec('asdfasdf'); // could not find command
   }, /exec: internal error/);
   shell.config.fatal = oldFatal;
-});
-
-test('exec exits gracefully if we cannot find the execPath', t => {
-  shell.config.execPath = null;
-  shell.exec('echo foo');
-  t.regex(
-    shell.error(),
-    /Unable to find a path to the node binary\. Please manually set config\.execPath/
-  );
 });
 
 //
