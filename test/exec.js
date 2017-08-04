@@ -106,6 +106,13 @@ test('set maxBuffer (very small)', t => {
   t.truthy(shell.error());
 });
 
+test('multiple commands should work', t => {
+  const result = shell.exec('echo abc ; echo bcd');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.stdout, 'abc' + os.EOL + 'bcd' + os.EOL);
+});
+
 test('set timeout option', t => {
   const result = shell.exec(`${JSON.stringify(shell.config.execPath)} resources/exec/slow.js 100`); // default timeout is ok
   t.falsy(shell.error());
