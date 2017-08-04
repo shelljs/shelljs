@@ -13,8 +13,6 @@ common.register('exec', _exec, {
 
 function execSync(cmd, opts, pipe) {
   var silent = opts.silent || common.config.silent;
-  var stdout;
-  var stderr;
   var code;
 
   opts = common.extend({
@@ -31,18 +29,14 @@ function execSync(cmd, opts, pipe) {
   }
 
   opts.cwd = path.resolve(opts.cwd);
-
-  /* istanbul ignore else */
-  if (silent) {
-    opts.stdio = 'pipe';
-  } else {
-    opts.stdio = 'inherit';
-  }
+  opts.stdio = 'pipe';
 
   var c = child.spawnSync(cmd, opts);
 
-  stdout = c.stdout || '';
-  stderr = c.stderr || '';
+  if (!silent) {
+    process.stdout.write(c.stdout);
+    process.stderr.write(c.stderr);
+  }
 
   if (c.error) {
     code = (typeof c.error.code === 'number' ? c.error.code : 1);
@@ -53,7 +47,7 @@ function execSync(cmd, opts, pipe) {
   if (code !== 0) {
     common.error('', code, { continue: true });
   }
-  var obj = common.ShellString(stdout, stderr, code);
+  var obj = common.ShellString(c.stdout, c.stderr, code);
   return obj;
 } // execSync()
 
