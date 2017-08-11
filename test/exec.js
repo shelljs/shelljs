@@ -86,7 +86,7 @@ test('check exit code', t => {
 });
 
 test('interaction with cd', t => {
-  shell.cd('resources/external');
+  shell.cd('test/resources/external');
   const result = shell.exec(`${JSON.stringify(shell.config.execPath)} node_script.js`);
   t.falsy(shell.error());
   t.is(result.code, 0);
@@ -118,12 +118,12 @@ test('set maxBuffer (very small)', t => {
 });
 
 test('set timeout option', t => {
-  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} resources/exec/slow.js 100`); // default timeout is ok
+  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`); // default timeout is ok
   t.falsy(shell.error());
   t.is(result.code, 0);
   if (process.version >= 'v0.11') {
     // this option doesn't work on v0.10
-    shell.exec(`${JSON.stringify(shell.config.execPath)} resources/exec/slow.js 100`, { timeout: 10 }); // times out
+    shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`, { timeout: 10 }); // times out
   }
   t.truthy(shell.error());
 });

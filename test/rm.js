@@ -9,7 +9,7 @@ import utils from './utils/utils';
 test.beforeEach(t => {
   t.context.tmp = utils.getTempDir();
   shell.config.resetForTesting();
-  shell.cp('-r', 'resources', t.context.tmp);
+  shell.cp('-r', 'test/resources', t.context.tmp);
 });
 
 test.afterEach.always(t => {
@@ -50,10 +50,10 @@ test('only an option', t => {
 });
 
 test('invalid option', t => {
-  const result = shell.rm('-@', 'resources/file1');
+  const result = shell.rm('-@', 'test/resources/file1');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.truthy(fs.existsSync('resources/file1'));
+  t.truthy(fs.existsSync('test/resources/file1'));
   t.is(result.stderr, 'rm: option not recognized: @');
 });
 

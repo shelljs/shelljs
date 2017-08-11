@@ -6,7 +6,7 @@ import shell from '..';
 
 test.beforeEach(() => {
   shell.config.resetForTesting();
-  shell.pushd('resources/pushd');
+  shell.pushd('test/resources/pushd');
   shell.pushd('a');
 });
 
@@ -15,8 +15,8 @@ test.beforeEach(() => {
 //
 
 const trail = [
-  path.resolve(path.resolve(), 'resources/pushd/a'),
-  path.resolve(path.resolve(), 'resources/pushd'),
+  path.resolve(path.resolve(), 'test/resources/pushd/a'),
+  path.resolve(path.resolve(), 'test/resources/pushd'),
   path.resolve(),
 ];
 

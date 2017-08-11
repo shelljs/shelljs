@@ -10,7 +10,7 @@ const BITMASK = parseInt('777', 8);
 
 test.before(() => {
   TMP = utils.getTempDir();
-  shell.cp('-r', 'resources', TMP);
+  shell.cp('-r', 'test/resources', TMP);
   shell.config.silent = true;
 });
 

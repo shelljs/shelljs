@@ -95,9 +95,9 @@ test('The command parses options', t => {
 });
 
 test('The command supports globbing by default', t => {
-  shell.foo('-f', 're*u?ces');
+  shell.foo('-f', 'test/re*u?ces');
   t.is(data, 12);
-  t.is(fname, 'resources');
+  t.is(fname, 'test/resources');
 });
 
 test('Plugins are also compatible with shelljs/global', t => {

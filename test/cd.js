@@ -34,11 +34,11 @@ test('nonexistent directory', t => {
 });
 
 test('file not dir', t => {
-  t.truthy(fs.existsSync('resources/file1')); // sanity check
-  const result = shell.cd('resources/file1'); // file, not dir
+  t.truthy(fs.existsSync('test/resources/file1')); // sanity check
+  const result = shell.cd('test/resources/file1'); // file, not dir
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'cd: not a directory: resources/file1');
+  t.is(result.stderr, 'cd: not a directory: test/resources/file1');
 });
 
 test('no previous dir', t => {
@@ -76,13 +76,13 @@ test('previous directory (-)', t => {
 
 test('cd + other commands', t => {
   t.falsy(fs.existsSync(`${t.context.tmp}/file1`));
-  let result = shell.cd('resources');
+  let result = shell.cd('test/resources');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  result = shell.cp('file1', `../${t.context.tmp}`);
+  result = shell.cp('file1', `../../${t.context.tmp}`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  result = shell.cd(`../${t.context.tmp}`);
+  result = shell.cd(`../../${t.context.tmp}`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(fs.existsSync('file1'));

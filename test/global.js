@@ -26,14 +26,14 @@ test('env is exported', t => {
 });
 
 test('cat', t => {
-  const result = cat('resources/cat/file1');
+  const result = cat('test/resources/cat/file1');
   t.falsy(error());
   t.is(result.code, 0);
   t.is(result.toString(), 'test1\n');
 });
 
 test('rm', t => {
-  cp('-f', 'resources/file1', `${t.context.tmp}/file1`);
+  cp('-f', 'test/resources/file1', `${t.context.tmp}/file1`);
   t.truthy(fs.existsSync(`${t.context.tmp}/file1`));
   const result = rm(`${t.context.tmp}/file1`);
   t.falsy(error());
