@@ -26,10 +26,10 @@ test('nonexistent file', t => {
 });
 
 test('directory', t => {
-  const result = shell.cat('resources/cat');
+  const result = shell.cat('test/resources/cat');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'cat: resources/cat: Is a directory');
+  t.is(result.stderr, 'cat: test/resources/cat: Is a directory');
 });
 
 //
@@ -37,28 +37,28 @@ test('directory', t => {
 //
 
 test('simple', t => {
-  const result = shell.cat('resources/cat/file1');
+  const result = shell.cat('test/resources/cat/file1');
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'test1\n');
 });
 
 test('multiple files', t => {
-  const result = shell.cat('resources/cat/file2', 'resources/cat/file1');
+  const result = shell.cat('test/resources/cat/file2', 'test/resources/cat/file1');
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'test2\ntest1\n');
 });
 
 test('multiple files, array syntax', t => {
-  const result = shell.cat(['resources/cat/file2', 'resources/cat/file1']);
+  const result = shell.cat(['test/resources/cat/file2', 'test/resources/cat/file1']);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'test2\ntest1\n');
 });
 
 test('glob', t => {
-  const result = shell.cat('resources/file*.txt');
+  const result = shell.cat('test/resources/file*.txt');
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.search('test1') > -1); // file order might be random

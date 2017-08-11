@@ -11,7 +11,7 @@ const CWD = process.cwd();
 test.beforeEach(t => {
   t.context.tmp = utils.getTempDir();
   shell.config.resetForTesting();
-  shell.cp('-r', 'resources', t.context.tmp);
+  shell.cp('-r', 'test/resources', t.context.tmp);
   process.chdir(CWD);
 });
 

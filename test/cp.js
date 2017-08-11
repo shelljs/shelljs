@@ -46,7 +46,7 @@ test('only an option', t => {
 });
 
 test('invalid option', t => {
-  const result = shell.cp('-@', 'resources/file1', `${t.context.tmp}/file1`);
+  const result = shell.cp('-@', 'test/resources/file1', `${t.context.tmp}/file1`);
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.falsy(fs.existsSync(`${t.context.tmp}/file1`));
@@ -84,14 +84,14 @@ test('multiple sources do not exist', t => {
 });
 
 test('too many sources', t => {
-  const result = shell.cp('asdfasdf1', 'asdfasdf2', 'resources/file1');
+  const result = shell.cp('asdfasdf1', 'asdfasdf2', 'test/resources/file1');
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(result.stderr, 'cp: dest is not a directory (too many sources)');
 });
 
 test('too many sources #2', t => {
-  const result = shell.cp('resources/file1', 'resources/file2', `${t.context.tmp}/a_file`);
+  const result = shell.cp('test/resources/file1', 'test/resources/file2', `${t.context.tmp}/a_file`);
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.falsy(fs.existsSync(`${t.context.tmp}/a_file`));
@@ -110,12 +110,12 @@ test('empty string source', t => {
 //
 
 test('dest already exists', t => {
-  const oldContents = shell.cat('resources/file2').toString();
-  const result = shell.cp('-n', 'resources/file1', 'resources/file2');
+  const oldContents = shell.cat('test/resources/file2').toString();
+  const result = shell.cp('-n', 'test/resources/file1', 'test/resources/file2');
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stderr, '');
-  t.is(shell.cat('resources/file2').toString(), oldContents);
+  t.is(shell.cat('test/resources/file2').toString(), oldContents);
 });
 
 test('-nR does not overwrite an existing file at the destination', t => {
@@ -125,8 +125,8 @@ test('-nR does not overwrite an existing file at the destination', t => {
   const oldContents = 'original content';
   shell.ShellString(oldContents).to(`${dest}/a`);
 
-  // Attempt to overwrite /tmp/new/cp/ with resources/cp/
-  const result = shell.cp('-nR', 'resources/cp/', `${t.context.tmp}/new/`);
+  // Attempt to overwrite /tmp/new/cp/ with test/resources/cp/
+  const result = shell.cp('-nR', 'test/resources/cp/', `${t.context.tmp}/new/`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.falsy(result.stderr);
@@ -135,9 +135,9 @@ test('-nR does not overwrite an existing file at the destination', t => {
 
 test('-n does not overwrite an existing file if the destination is a directory', t => {
   const oldContents = 'original content';
-  shell.cp('resources/file1', `${t.context.tmp}`);
+  shell.cp('test/resources/file1', `${t.context.tmp}`);
   new shell.ShellString(oldContents).to(`${t.context.tmp}/file1`);
-  const result = shell.cp('-n', 'resources/file1', `${t.context.tmp}`);
+  const result = shell.cp('-n', 'test/resources/file1', `${t.context.tmp}`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.falsy(result.stderr);
@@ -145,30 +145,30 @@ test('-n does not overwrite an existing file if the destination is a directory',
 });
 
 test('-f by default', t => {
-  shell.cp('resources/file2', 'resources/copyfile2');
-  const result = shell.cp('resources/file1', 'resources/file2'); // dest already exists
+  shell.cp('test/resources/file2', 'test/resources/copyfile2');
+  const result = shell.cp('test/resources/file1', 'test/resources/file2'); // dest already exists
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.falsy(result.stderr);
-  t.is(shell.cat('resources/file1').toString(), shell.cat('resources/file2').toString()); // after cp
-  shell.mv('resources/copyfile2', 'resources/file2'); // restore
+  t.is(shell.cat('test/resources/file1').toString(), shell.cat('test/resources/file2').toString()); // after cp
+  shell.mv('test/resources/copyfile2', 'test/resources/file2'); // restore
   t.falsy(shell.error());
 });
 
 test('-f (explicitly)', t => {
-  shell.cp('resources/file2', 'resources/copyfile2');
-  const result = shell.cp('-f', 'resources/file1', 'resources/file2'); // dest already exists
+  shell.cp('test/resources/file2', 'test/resources/copyfile2');
+  const result = shell.cp('-f', 'test/resources/file1', 'test/resources/file2'); // dest already exists
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
-  t.is(shell.cat('resources/file1').toString(), shell.cat('resources/file2').toString()); // after cp
-  shell.mv('resources/copyfile2', 'resources/file2'); // restore
+  t.is(shell.cat('test/resources/file1').toString(), shell.cat('test/resources/file2').toString()); // after cp
+  shell.mv('test/resources/copyfile2', 'test/resources/file2'); // restore
   t.falsy(shell.error());
   t.is(result.code, 0);
 });
 
 test('simple - to dir', t => {
-  const result = shell.cp('resources/file1', t.context.tmp);
+  const result = shell.cp('test/resources/file1', t.context.tmp);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -176,7 +176,7 @@ test('simple - to dir', t => {
 });
 
 test('simple - to file', t => {
-  const result = shell.cp('resources/file2', `${t.context.tmp}/file2`);
+  const result = shell.cp('test/resources/file2', `${t.context.tmp}/file2`);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -184,7 +184,7 @@ test('simple - to file', t => {
 });
 
 test('simple - file list', t => {
-  const result = shell.cp('resources/file1', 'resources/file2', t.context.tmp);
+  const result = shell.cp('test/resources/file1', 'test/resources/file2', t.context.tmp);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -193,7 +193,7 @@ test('simple - file list', t => {
 });
 
 test('simple - file list, array syntax', t => {
-  const result = shell.cp(['resources/file1', 'resources/file2'], t.context.tmp);
+  const result = shell.cp(['test/resources/file1', 'test/resources/file2'], t.context.tmp);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -202,9 +202,9 @@ test('simple - file list, array syntax', t => {
 });
 
 test('-f option', t => {
-  shell.cp('resources/file2', `${t.context.tmp}/file3`);
+  shell.cp('test/resources/file2', `${t.context.tmp}/file3`);
   t.truthy(fs.existsSync(`${t.context.tmp}/file3`));
-  const result = shell.cp('-f', 'resources/file2', `${t.context.tmp}/file3`); // file exists, but -f specified
+  const result = shell.cp('-f', 'test/resources/file2', `${t.context.tmp}/file3`); // file exists, but -f specified
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -212,7 +212,7 @@ test('-f option', t => {
 });
 
 test('glob', t => {
-  const result = shell.cp('resources/file?', t.context.tmp);
+  const result = shell.cp('test/resources/file?', t.context.tmp);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -226,7 +226,7 @@ test('glob', t => {
 
 test('wildcard', t => {
   shell.rm(`${t.context.tmp}/file1`, `${t.context.tmp}/file2`);
-  const result = shell.cp('resources/file*', t.context.tmp);
+  const result = shell.cp('test/resources/file*', t.context.tmp);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -239,7 +239,7 @@ test('wildcard', t => {
 });
 
 test('recursive, with regular files', t => {
-  const result = shell.cp('-R', 'resources/file1', 'resources/file2', t.context.tmp);
+  const result = shell.cp('-R', 'test/resources/file1', 'test/resources/file2', t.context.tmp);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -248,37 +248,37 @@ test('recursive, with regular files', t => {
 });
 
 test('omit directory if missing recursive flag', t => {
-  const result = shell.cp('resources/cp', t.context.tmp);
-  t.is(shell.error(), "cp: omitting directory 'resources/cp'");
-  t.is(result.stderr, "cp: omitting directory 'resources/cp'");
+  const result = shell.cp('test/resources/cp', t.context.tmp);
+  t.is(shell.error(), "cp: omitting directory 'test/resources/cp'");
+  t.is(result.stderr, "cp: omitting directory 'test/resources/cp'");
   t.is(result.code, 1);
   t.falsy(fs.existsSync(`${t.context.tmp}/file1`));
   t.falsy(fs.existsSync(`${t.context.tmp}/file2`));
 });
 
 test('recursive, nothing exists', t => {
-  const result = shell.cp('-R', 'resources/cp', t.context.tmp);
+  const result = shell.cp('-R', 'test/resources/cp', t.context.tmp);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
-  t.is(shell.ls('-R', 'resources/cp').toString(), shell.ls('-R', `${t.context.tmp}/cp`).toString());
+  t.is(shell.ls('-R', 'test/resources/cp').toString(), shell.ls('-R', `${t.context.tmp}/cp`).toString());
 });
 
 test(
   'recursive, nothing exists, source ends in \'/\' (see Github issue #15)',
   t => {
-    const result = shell.cp('-R', 'resources/cp/', `${t.context.tmp}/`);
+    const result = shell.cp('-R', 'test/resources/cp/', `${t.context.tmp}/`);
     t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
-    t.is(shell.ls('-R', 'resources/cp').toString(), shell.ls('-R', `${t.context.tmp}/cp`).toString());
+    t.is(shell.ls('-R', 'test/resources/cp').toString(), shell.ls('-R', `${t.context.tmp}/cp`).toString());
   }
 );
 
 test(
   'recursive, globbing regular files with extension (see Github issue #376)',
   t => {
-    const result = shell.cp('-R', 'resources/file*.txt', t.context.tmp);
+    const result = shell.cp('-R', 'test/resources/file*.txt', t.context.tmp);
     t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
@@ -290,7 +290,7 @@ test(
 test(
   'recursive, copying one regular file (also related to Github issue #376)',
   t => {
-    const result = shell.cp('-R', 'resources/file1.txt', t.context.tmp);
+    const result = shell.cp('-R', 'test/resources/file1.txt', t.context.tmp);
     t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
@@ -300,7 +300,7 @@ test(
 );
 
 test('recursive, everything exists, no force flag', t => {
-  const result = shell.cp('-R', 'resources/cp', t.context.tmp);
+  const result = shell.cp('-R', 'test/resources/cp', t.context.tmp);
   t.falsy(shell.error()); // crash test only
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -308,7 +308,7 @@ test('recursive, everything exists, no force flag', t => {
 
 test('-R implies to not follow links', t => {
   utils.skipOnWin(t, () => {
-    shell.cp('-R', 'resources/cp/*', t.context.tmp);
+    shell.cp('-R', 'test/resources/cp/*', t.context.tmp);
     t.truthy(fs.lstatSync(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
     t.falsy((fs.lstatSync(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink())); // this one isn't
     t.not(
@@ -332,7 +332,7 @@ test('Missing -R implies -L', t => {
   utils.skipOnWin(t, () => {
     // Recursive, everything exists, overwrite a real file *by following a link*
     // Because missing the -R implies -L.
-    shell.cp('-R', 'resources/cp/*', t.context.tmp);
+    shell.cp('-R', 'test/resources/cp/*', t.context.tmp);
     t.truthy(fs.lstatSync(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
     t.falsy((fs.lstatSync(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink())); // this one isn't
     t.not(
@@ -354,26 +354,26 @@ test('Missing -R implies -L', t => {
 });
 
 test('recursive, everything exists, with force flag', t => {
-  let result = shell.cp('-R', 'resources/cp', t.context.tmp);
+  let result = shell.cp('-R', 'test/resources/cp', t.context.tmp);
   shell.ShellString('changing things around').to(`${t.context.tmp}/cp/dir_a/z`);
-  t.not(shell.cat('resources/cp/dir_a/z').toString(), shell.cat(`${t.context.tmp}/cp/dir_a/z`).toString()); // before cp
-  result = shell.cp('-Rf', 'resources/cp', t.context.tmp);
+  t.not(shell.cat('test/resources/cp/dir_a/z').toString(), shell.cat(`${t.context.tmp}/cp/dir_a/z`).toString()); // before cp
+  result = shell.cp('-Rf', 'test/resources/cp', t.context.tmp);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
-  t.is(shell.cat('resources/cp/dir_a/z').toString(), shell.cat(`${t.context.tmp}/cp/dir_a/z`).toString()); // after cp
+  t.is(shell.cat('test/resources/cp/dir_a/z').toString(), shell.cat(`${t.context.tmp}/cp/dir_a/z`).toString()); // after cp
 });
 
 test(
   'recursive, creates dest dir since it\'s only one level deep (see Github issue #44)',
   t => {
-    const result = shell.cp('-r', 'resources/issue44', `${t.context.tmp}/dir2`);
+    const result = shell.cp('-r', 'test/resources/issue44', `${t.context.tmp}/dir2`);
     t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
-    t.is(shell.ls('-R', 'resources/issue44').toString(), shell.ls('-R', `${t.context.tmp}/dir2`).toString());
+    t.is(shell.ls('-R', 'test/resources/issue44').toString(), shell.ls('-R', `${t.context.tmp}/dir2`).toString());
     t.is(
-      shell.cat('resources/issue44/main.js').toString(),
+      shell.cat('test/resources/issue44/main.js').toString(),
       shell.cat(`${t.context.tmp}/dir2/main.js`).toString()
     );
   }
@@ -382,7 +382,7 @@ test(
 test(
   'recursive, does *not* create dest dir since it\'s too deep (see Github issue #44)',
   t => {
-    const result = shell.cp('-r', 'resources/issue44', `${t.context.tmp}/dir2/dir3`);
+    const result = shell.cp('-r', 'test/resources/issue44', `${t.context.tmp}/dir2/dir3`);
     t.truthy(shell.error());
     t.is(
       result.stderr,
@@ -394,7 +394,7 @@ test(
 );
 
 test('recursive, copies entire directory', t => {
-  const result = shell.cp('-r', 'resources/cp/dir_a', `${t.context.tmp}/dest`);
+  const result = shell.cp('-r', 'test/resources/cp/dir_a', `${t.context.tmp}/dest`);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -402,7 +402,7 @@ test('recursive, copies entire directory', t => {
 });
 
 test('recursive, with trailing slash, does the exact same', t => {
-  const result = shell.cp('-r', 'resources/cp/dir_a/', `${t.context.tmp}/dest`);
+  const result = shell.cp('-r', 'test/resources/cp/dir_a/', `${t.context.tmp}/dest`);
   t.is(result.code, 0);
   t.falsy(shell.error());
   t.truthy(fs.existsSync(`${t.context.tmp}/dest/z`));
@@ -414,10 +414,10 @@ test(
     utils.skipOnWin(t, () => {
       // preserve mode bits
       const execBit = parseInt('001', 8);
-      t.is(fs.statSync('resources/cp-mode-bits/executable').mode & execBit, execBit);
-      shell.cp('resources/cp-mode-bits/executable', `${t.context.tmp}/executable`);
+      t.is(fs.statSync('test/resources/cp-mode-bits/executable').mode & execBit, execBit);
+      shell.cp('test/resources/cp-mode-bits/executable', `${t.context.tmp}/executable`);
       t.is(
-        fs.statSync('resources/cp-mode-bits/executable').mode,
+        fs.statSync('test/resources/cp-mode-bits/executable').mode,
         fs.statSync(`${t.context.tmp}/executable`).mode
       );
     });
@@ -426,7 +426,7 @@ test(
 
 test('Make sure hidden files are copied recursively', t => {
   shell.rm('-rf', t.context.tmp);
-  const result = shell.cp('-r', 'resources/ls/', t.context.tmp);
+  const result = shell.cp('-r', 'test/resources/ls/', t.context.tmp);
   t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
@@ -434,7 +434,7 @@ test('Make sure hidden files are copied recursively', t => {
 });
 
 test('no-recursive will copy regular files only', t => {
-  const result = shell.cp('resources/file1.txt', 'resources/ls/', t.context.tmp);
+  const result = shell.cp('test/resources/file1.txt', 'test/resources/ls/', t.context.tmp);
   t.is(result.code, 1);
   t.truthy(shell.error());
   t.falsy(fs.existsSync(`${t.context.tmp}/.hidden_file`)); // doesn't copy dir contents
@@ -443,8 +443,8 @@ test('no-recursive will copy regular files only', t => {
 });
 
 test('no-recursive will copy regular files only', t => {
-  const result = shell.cp('resources/file1.txt', 'resources/file2.txt', 'resources/cp',
-    'resources/ls/', t.context.tmp);
+  const result = shell.cp('test/resources/file1.txt', 'test/resources/file2.txt', 'test/resources/cp',
+    'test/resources/ls/', t.context.tmp);
 
   t.is(result.code, 1);
   t.truthy(shell.error());
@@ -458,28 +458,28 @@ test('no-recursive will copy regular files only', t => {
 
 test('-R implies -P', t => {
   utils.skipOnWin(t, () => {
-    shell.cp('-R', 'resources/cp/links/sym.lnk', t.context.tmp);
+    shell.cp('-R', 'test/resources/cp/links/sym.lnk', t.context.tmp);
     t.truthy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
   });
 });
 
 test('using -P explicitly works', t => {
   utils.skipOnWin(t, () => {
-    shell.cp('-P', 'resources/cp/links/sym.lnk', t.context.tmp);
+    shell.cp('-P', 'test/resources/cp/links/sym.lnk', t.context.tmp);
     t.truthy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
   });
 });
 
 test('using -PR on a link to a folder does not follow the link', t => {
   utils.skipOnWin(t, () => {
-    shell.cp('-PR', 'resources/cp/symFolder', t.context.tmp);
+    shell.cp('-PR', 'test/resources/cp/symFolder', t.context.tmp);
     t.truthy(fs.lstatSync(`${t.context.tmp}/symFolder`).isSymbolicLink());
   });
 });
 
 test('-L overrides -P for copying directory', t => {
   utils.skipOnWin(t, () => {
-    shell.cp('-LPR', 'resources/cp/symFolder', t.context.tmp);
+    shell.cp('-LPR', 'test/resources/cp/symFolder', t.context.tmp);
     t.falsy(fs.lstatSync(`${t.context.tmp}/symFolder`).isSymbolicLink());
     t.falsy(fs.lstatSync(`${t.context.tmp}/symFolder/sym.lnk`).isSymbolicLink());
   });
@@ -487,7 +487,7 @@ test('-L overrides -P for copying directory', t => {
 
 test('Recursive, copies entire directory with no symlinks and -L option does not cause change in behavior', t => {
   utils.skipOnWin(t, () => {
-    const result = shell.cp('-rL', 'resources/cp/dir_a', `${t.context.tmp}/dest`);
+    const result = shell.cp('-rL', 'test/resources/cp/dir_a', `${t.context.tmp}/dest`);
     t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
@@ -497,23 +497,23 @@ test('Recursive, copies entire directory with no symlinks and -L option does not
 
 test('-u flag won\'t overwrite newer files', t => {
   shell.touch(`${t.context.tmp}/file1.js`);
-  shell.cp('-u', 'resources/file1.js', t.context.tmp);
+  shell.cp('-u', 'test/resources/file1.js', t.context.tmp);
   t.falsy(shell.error());
-  t.not(shell.cat('resources/file1.js').toString(), shell.cat(`${t.context.tmp}/file1.js`).toString());
+  t.not(shell.cat('test/resources/file1.js').toString(), shell.cat(`${t.context.tmp}/file1.js`).toString());
 });
 
 test('-u flag does overwrite older files', t => {
   shell.touch({ '-d': new Date(10) }, `${t.context.tmp}/file1.js`); // really old file
-  shell.cp('-u', 'resources/file1.js', t.context.tmp);
+  shell.cp('-u', 'test/resources/file1.js', t.context.tmp);
   t.falsy(shell.error());
-  t.is(shell.cat('resources/file1.js').toString(), shell.cat(`${t.context.tmp}/file1.js`).toString());
+  t.is(shell.cat('test/resources/file1.js').toString(), shell.cat(`${t.context.tmp}/file1.js`).toString());
 });
 
 test('-u flag works even if it\'s not overwriting a file', t => {
   t.falsy(fs.existsSync(`${t.context.tmp}/file1.js`));
-  shell.cp('-u', 'resources/file1.js', t.context.tmp);
+  shell.cp('-u', 'test/resources/file1.js', t.context.tmp);
   t.falsy(shell.error());
-  t.is(shell.cat('resources/file1.js').toString(), shell.cat(`${t.context.tmp}/file1.js`).toString());
+  t.is(shell.cat('test/resources/file1.js').toString(), shell.cat(`${t.context.tmp}/file1.js`).toString());
 });
 
 test('-u flag works correctly recursively', t => {
@@ -536,34 +536,34 @@ test('-u flag works correctly recursively', t => {
 });
 
 test('using -R on a link to a folder *does* follow the link', t => {
-  shell.cp('-R', 'resources/cp/symFolder', t.context.tmp);
+  shell.cp('-R', 'test/resources/cp/symFolder', t.context.tmp);
   t.falsy(fs.lstatSync(`${t.context.tmp}/symFolder`).isSymbolicLink());
 });
 
 test('Without -R, -L is implied', t => {
-  shell.cp('resources/cp/links/sym.lnk', t.context.tmp);
+  shell.cp('test/resources/cp/links/sym.lnk', t.context.tmp);
   t.falsy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
 });
 
 test('-L explicitly works', t => {
-  shell.cp('-L', 'resources/cp/links/sym.lnk', t.context.tmp);
+  shell.cp('-L', 'test/resources/cp/links/sym.lnk', t.context.tmp);
   t.falsy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
 });
 
 test('using -LR does not imply -P', t => {
-  shell.cp('-LR', 'resources/cp/links/sym.lnk', t.context.tmp);
+  shell.cp('-LR', 'test/resources/cp/links/sym.lnk', t.context.tmp);
   t.falsy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
 });
 
 test('using -LR also works recursively on directories containing links', t => {
-  shell.cp('-LR', 'resources/cp/links', t.context.tmp);
+  shell.cp('-LR', 'test/resources/cp/links', t.context.tmp);
   t.falsy(fs.lstatSync(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink());
 });
 
 test('-L always overrides a -P', t => {
-  shell.cp('-LP', 'resources/cp/links/sym.lnk', t.context.tmp);
+  shell.cp('-LP', 'test/resources/cp/links/sym.lnk', t.context.tmp);
   t.falsy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
-  shell.cp('-LPR', 'resources/cp/links/sym.lnk', t.context.tmp);
+  shell.cp('-LPR', 'test/resources/cp/links/sym.lnk', t.context.tmp);
   t.falsy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
 });
 
@@ -623,7 +623,7 @@ test('cp -L follows symlinks', t => {
   utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
     shell.mkdir('-p', `${t.context.tmp}/sub`);
     shell.mkdir('-p', `${t.context.tmp}/new`);
-    shell.cp('-f', 'resources/file1.txt', `${t.context.tmp}/sub/file.txt`);
+    shell.cp('-f', 'test/resources/file1.txt', `${t.context.tmp}/sub/file.txt`);
     shell.cd(`${t.context.tmp}/sub`);
     shell.ln('-s', 'file.txt', 'foo.lnk');
     shell.ln('-s', 'file.txt', 'sym.lnk');
@@ -631,7 +631,7 @@ test('cp -L follows symlinks', t => {
     shell.cp('-L', 'sub/*', 'new/');
     shell.cd('new');
 
-    shell.cp('-f', '../../resources/file2.txt', 'file.txt');
+    shell.cp('-f', '../../test/resources/file2.txt', 'file.txt');
     t.is(shell.cat('file.txt').toString(), 'test2\n');
     // Ensure other files have not changed.
     t.is(shell.cat('foo.lnk').toString(), 'test1\n');
@@ -645,8 +645,8 @@ test('cp -L follows symlinks', t => {
 test('Test with recursive option and symlinks.', t => {
   utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
     shell.mkdir('-p', `${t.context.tmp}/sub/sub1`);
-    shell.cp('-f', 'resources/file1.txt', `${t.context.tmp}/sub/file.txt`);
-    shell.cp('-f', 'resources/file1.txt', `${t.context.tmp}/sub/sub1/file.txt`);
+    shell.cp('-f', 'test/resources/file1.txt', `${t.context.tmp}/sub/file.txt`);
+    shell.cp('-f', 'test/resources/file1.txt', `${t.context.tmp}/sub/sub1/file.txt`);
     shell.cd(`${t.context.tmp}/sub`);
     shell.ln('-s', 'file.txt', 'foo.lnk');
     shell.ln('-s', 'file.txt', 'sym.lnk');
@@ -665,7 +665,7 @@ test('Test with recursive option and symlinks.', t => {
     shell.cd('new');
 
     // Ensure copies of files are symlinks by updating file contents.
-    shell.cp('-f', '../../resources/file2.txt', 'file.txt');
+    shell.cp('-f', '../../test/resources/file2.txt', 'file.txt');
     t.is(shell.cat('file.txt').toString(), 'test2\n');
     // Ensure other files have not changed.
     t.is(shell.cat('foo.lnk').toString(), 'test1\n');
@@ -677,7 +677,7 @@ test('Test with recursive option and symlinks.', t => {
 
     // Ensure other files have not changed.
     shell.cd('sub1');
-    shell.cp('-f', '../../../resources/file2.txt', 'file.txt');
+    shell.cp('-f', '../../../test/resources/file2.txt', 'file.txt');
     t.is(shell.cat('file.txt').toString(), 'test2\n');
     t.is(shell.cat('foo.lnk').toString(), 'test1\n');
     t.is(shell.cat('sym.lnk').toString(), 'test1\n');
@@ -689,39 +689,39 @@ test('Test with recursive option and symlinks.', t => {
 });
 
 test('recursive, with a non-normalized path', t => {
-  const result = shell.cp('-R', 'resources/../resources/./cp', t.context.tmp);
+  const result = shell.cp('-R', 'test/resources/../resources/./cp', t.context.tmp);
   t.falsy(shell.error()); // crash test only
   t.falsy(result.stderr);
   t.is(result.code, 0);
 });
 
 test('copy file to same path', t => {
-  const result = shell.cp('resources/file1', 'resources/file1');
+  const result = shell.cp('test/resources/file1', 'test/resources/file1');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, "cp: 'resources/file1' and 'resources/file1' are the same file");
+  t.is(result.stderr, "cp: 'test/resources/file1' and 'test/resources/file1' are the same file");
 });
 
 test('copy file to same directory', t => {
-  const result = shell.cp('resources/file1', 'resources');
+  const result = shell.cp('test/resources/file1', 'test/resources');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, "cp: 'resources/file1' and 'resources/file1' are the same file");
+  t.is(result.stderr, "cp: 'test/resources/file1' and 'test/resources/file1' are the same file");
 });
 
 test('copy mutliple files to same location', t => {
-  const result = shell.cp('resources/file1', 'resources/file2', 'resources');
+  const result = shell.cp('test/resources/file1', 'test/resources/file2', 'test/resources');
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(
     result.stderr,
-    "cp: 'resources/file1' and 'resources/file1' are the same file\n" +
-    "cp: 'resources/file2' and 'resources/file2' are the same file"
+    "cp: 'test/resources/file1' and 'test/resources/file1' are the same file\n" +
+    "cp: 'test/resources/file2' and 'test/resources/file2' are the same file"
   );
 });
 
 test('should not overwrite recently created files', t => {
-  const result = shell.cp('resources/file1', 'resources/cp/file1', t.context.tmp);
+  const result = shell.cp('test/resources/file1', 'test/resources/cp/file1', t.context.tmp);
   t.truthy(shell.error());
   t.is(result.code, 1);
 
@@ -729,13 +729,13 @@ test('should not overwrite recently created files', t => {
   t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
   t.is(
     result.stderr,
-    `cp: will not overwrite just-created '${t.context.tmp}/file1' with 'resources/cp/file1'`
+    `cp: will not overwrite just-created '${t.context.tmp}/file1' with 'test/resources/cp/file1'`
   );
 });
 
 
 test('should not overwrite recently created files (in recursive Mode)', t => {
-  const result = shell.cp('-R', 'resources/file1', 'resources/cp/file1', t.context.tmp);
+  const result = shell.cp('-R', 'test/resources/file1', 'test/resources/cp/file1', t.context.tmp);
   t.truthy(shell.error());
   t.is(result.code, 1);
 
@@ -743,12 +743,12 @@ test('should not overwrite recently created files (in recursive Mode)', t => {
   t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
   t.is(
     result.stderr,
-    `cp: will not overwrite just-created '${t.context.tmp}/file1' with 'resources/cp/file1'`
+    `cp: will not overwrite just-created '${t.context.tmp}/file1' with 'test/resources/cp/file1'`
   );
 });
 
 test('should not overwrite recently created files (not give error no-force mode)', t => {
-  const result = shell.cp('-n', 'resources/file1', 'resources/cp/file1', t.context.tmp);
+  const result = shell.cp('-n', 'test/resources/file1', 'test/resources/cp/file1', t.context.tmp);
   t.falsy(shell.error());
   t.is(result.code, 0);
 

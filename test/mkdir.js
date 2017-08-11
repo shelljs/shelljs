@@ -37,12 +37,12 @@ test('dir already exists', t => {
 });
 
 test('Can\'t overwrite a broken link', t => {
-  const mtime = fs.lstatSync('resources/badlink').mtime.toString();
-  const result = shell.mkdir('resources/badlink');
+  const mtime = fs.lstatSync('test/resources/badlink').mtime.toString();
+  const result = shell.mkdir('test/resources/badlink');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'mkdir: path already exists: resources/badlink');
-  t.is(fs.lstatSync('resources/badlink').mtime.toString(), mtime); // didn't mess with file
+  t.is(result.stderr, 'mkdir: path already exists: test/resources/badlink');
+  t.is(fs.lstatSync('test/resources/badlink').mtime.toString(), mtime); // didn't mess with file
 });
 
 test('root path does not exist', t => {
@@ -56,31 +56,31 @@ test('root path does not exist', t => {
 });
 
 test('try to overwrite file', t => {
-  t.truthy(fs.statSync('resources/file1').isFile());
-  const result = shell.mkdir('resources/file1');
+  t.truthy(fs.statSync('test/resources/file1').isFile());
+  const result = shell.mkdir('test/resources/file1');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'mkdir: path already exists: resources/file1');
-  t.truthy(fs.statSync('resources/file1').isFile());
+  t.is(result.stderr, 'mkdir: path already exists: test/resources/file1');
+  t.truthy(fs.statSync('test/resources/file1').isFile());
 });
 
 test('try to overwrite file, with -p', t => {
-  t.truthy(fs.statSync('resources/file1').isFile());
-  const result = shell.mkdir('-p', 'resources/file1');
+  t.truthy(fs.statSync('test/resources/file1').isFile());
+  const result = shell.mkdir('-p', 'test/resources/file1');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'mkdir: cannot create directory resources/file1: File exists');
-  t.truthy(fs.statSync('resources/file1').isFile());
+  t.is(result.stderr, 'mkdir: cannot create directory test/resources/file1: File exists');
+  t.truthy(fs.statSync('test/resources/file1').isFile());
 });
 
 test('try to make a subdirectory of a file', t => {
-  t.truthy(fs.statSync('resources/file1').isFile());
-  const result = shell.mkdir('resources/file1/subdir');
+  t.truthy(fs.statSync('test/resources/file1').isFile());
+  const result = shell.mkdir('test/resources/file1/subdir');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'mkdir: cannot create directory resources/file1/subdir: Not a directory');
-  t.truthy(fs.statSync('resources/file1').isFile());
-  t.falsy(fs.existsSync('resources/file1/subdir'));
+  t.is(result.stderr, 'mkdir: cannot create directory test/resources/file1/subdir: Not a directory');
+  t.truthy(fs.statSync('test/resources/file1').isFile());
+  t.falsy(fs.existsSync('test/resources/file1/subdir'));
 });
 
 test('Check for invalid permissions', t => {

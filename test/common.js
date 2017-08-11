@@ -23,7 +23,7 @@ test('too few args', t => {
 
 test('should be a list', t => {
   t.throws(() => {
-    common.expand('resources');
+    common.expand('test/resources');
   }, TypeError);
 });
 
@@ -138,36 +138,36 @@ test('convertErrorOutput: changes backslashes to forward slashes', t => {
 // common.expand()
 //
 test('single file, array syntax', t => {
-  const result = common.expand(['resources/file1.txt']);
+  const result = common.expand(['test/resources/file1.txt']);
   t.falsy(shell.error());
-  t.deepEqual(result, ['resources/file1.txt']);
+  t.deepEqual(result, ['test/resources/file1.txt']);
 });
 
 test('multiple file, glob syntax, * for file name', t => {
-  const result = common.expand(['resources/file*.txt']);
+  const result = common.expand(['test/resources/file*.txt']);
   t.falsy(shell.error());
-  t.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
+  t.deepEqual(result.sort(), ['test/resources/file1.txt', 'test/resources/file2.txt'].sort());
 });
 
 test('multiple file, glob syntax, * for directory name', t => {
-  const result = common.expand(['r*/file*.txt']);
+  const result = common.expand(['test/r*/file*.txt']);
   t.falsy(shell.error());
-  t.deepEqual(result.sort(), ['resources/file1.txt', 'resources/file2.txt'].sort());
+  t.deepEqual(result.sort(), ['test/resources/file1.txt', 'test/resources/file2.txt'].sort());
 });
 
 test('multiple file, glob syntax, ** for directory name', t => {
-  const result = common.expand(['resources/**/file*.js']);
+  const result = common.expand(['test/resources/**/file*.js']);
   t.falsy(shell.error());
   t.deepEqual(
     result.sort(),
-    ['resources/file1.js', 'resources/file2.js', 'resources/ls/file1.js', 'resources/ls/file2.js'].sort()
+    ['test/resources/file1.js', 'test/resources/file2.js', 'test/resources/ls/file1.js', 'test/resources/ls/file2.js'].sort()
   );
 });
 
 test('broken links still expand', t => {
-  const result = common.expand(['resources/b*dlink']);
+  const result = common.expand(['test/resources/b*dlink']);
   t.falsy(shell.error());
-  t.deepEqual(result, ['resources/badlink']);
+  t.deepEqual(result, ['test/resources/badlink']);
 });
 
 test('empty array', t => {
@@ -285,7 +285,7 @@ test('Some basic tests on the ShellString type', t => {
 });
 
 test.cb('Commands that fail will still output error messages to stderr', t => {
-  const script = 'require(\'../global\'); ls(\'noexist\'); cd(\'noexist\');';
+  const script = 'require(\'./global\'); ls(\'noexist\'); cd(\'noexist\');';
   utils.runScript(script, (err, stdout, stderr) => {
     t.is(stdout, '');
     t.is(

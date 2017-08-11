@@ -165,10 +165,10 @@ test('file array', t => {
 
 test('touching broken link creates a new file', t => {
   utils.skipOnWin(t, () => {
-    const result = shell.touch('resources/badlink');
+    const result = shell.touch('test/resources/badlink');
     t.is(result.code, 0);
     t.falsy(shell.error());
-    t.truthy(fs.existsSync('resources/not_existed_file'));
-    shell.rm('resources/not_existed_file');
+    t.truthy(fs.existsSync('test/resources/not_existed_file'));
+    shell.rm('test/resources/not_existed_file');
   });
 });

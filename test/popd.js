@@ -26,7 +26,7 @@ test.after.always(() => {
 //
 
 test('basic usage', t => {
-  shell.pushd('resources/pushd');
+  shell.pushd('test/resources/pushd');
   const trail = shell.popd();
   t.falsy(shell.error());
   t.is(process.cwd(), trail[0]);
@@ -34,33 +34,33 @@ test('basic usage', t => {
 });
 
 test('two directories on the stack', t => {
-  shell.pushd('resources/pushd');
+  shell.pushd('test/resources/pushd');
   shell.pushd('a');
   const trail = shell.popd();
   t.falsy(shell.error());
   t.is(process.cwd(), trail[0]);
   t.deepEqual(trail, [
-    path.resolve(rootDir, 'resources/pushd'),
+    path.resolve(rootDir, 'test/resources/pushd'),
     rootDir,
   ]);
 });
 
 test('three directories on the stack', t => {
-  shell.pushd('resources/pushd');
+  shell.pushd('test/resources/pushd');
   shell.pushd('b');
   shell.pushd('c');
   const trail = shell.popd();
   t.falsy(shell.error());
   t.is(process.cwd(), trail[0]);
   t.deepEqual(trail, [
-    path.resolve(rootDir, 'resources/pushd/b'),
-    path.resolve(rootDir, 'resources/pushd'),
+    path.resolve(rootDir, 'test/resources/pushd/b'),
+    path.resolve(rootDir, 'test/resources/pushd'),
     rootDir,
   ]);
 });
 
 test('Valid by index', t => {
-  shell.pushd('resources/pushd');
+  shell.pushd('test/resources/pushd');
   const trail = shell.popd('+0');
   t.falsy(shell.error());
   t.is(process.cwd(), trail[0]);
@@ -68,23 +68,23 @@ test('Valid by index', t => {
 });
 
 test('Using +1 option', t => {
-  shell.pushd('resources/pushd');
+  shell.pushd('test/resources/pushd');
   const trail = shell.popd('+1');
   t.falsy(shell.error());
   t.is(process.cwd(), trail[0]);
-  t.deepEqual(trail, [path.resolve(rootDir, 'resources/pushd')]);
+  t.deepEqual(trail, [path.resolve(rootDir, 'test/resources/pushd')]);
 });
 
 test('Using -0 option', t => {
-  shell.pushd('resources/pushd');
+  shell.pushd('test/resources/pushd');
   const trail = shell.popd('-0');
   t.falsy(shell.error());
   t.is(process.cwd(), trail[0]);
-  t.deepEqual(trail, [path.resolve(rootDir, 'resources/pushd')]);
+  t.deepEqual(trail, [path.resolve(rootDir, 'test/resources/pushd')]);
 });
 
 test('Using -1 option', t => {
-  shell.pushd('resources/pushd');
+  shell.pushd('test/resources/pushd');
   const trail = shell.popd('-1');
   t.falsy(shell.error());
   t.is(process.cwd(), trail[0]);
@@ -92,11 +92,11 @@ test('Using -1 option', t => {
 });
 
 test('Using -n option', t => {
-  shell.pushd('resources/pushd');
+  shell.pushd('test/resources/pushd');
   const trail = shell.popd('-n');
   t.falsy(shell.error());
   t.is(process.cwd(), trail[0]);
-  t.deepEqual(trail, [path.resolve(rootDir, 'resources/pushd')]);
+  t.deepEqual(trail, [path.resolve(rootDir, 'test/resources/pushd')]);
 });
 
 test('Popping an empty stack', t => {
@@ -105,11 +105,11 @@ test('Popping an empty stack', t => {
 });
 
 test('Test that rootDir is not stored', t => {
-  shell.cd('resources/pushd');
+  shell.cd('test/resources/pushd');
   shell.pushd('b');
   const trail = shell.popd();
   t.falsy(shell.error());
-  t.is(trail[0], path.resolve(rootDir, 'resources/pushd'));
+  t.is(trail[0], path.resolve(rootDir, 'test/resources/pushd'));
   t.is(process.cwd(), trail[0]);
   shell.popd(); // no more in the stack
   t.truthy(shell.error());
