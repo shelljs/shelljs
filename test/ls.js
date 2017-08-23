@@ -328,6 +328,16 @@ test('-L flag, path is symlink', t => {
   });
 });
 
+test('follow links to directories by default', t => {
+  utils.skipOnWin(t, () => {
+    const result = shell.ls('test/resources/rm/link_to_a_dir');
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.truthy(result.indexOf('a_file') > -1);
+    t.is(result.length, 1);
+  });
+});
+
 test('-Rd works like -d', t => {
   const result = shell.ls('-Rd', 'test/resources/ls');
   t.falsy(shell.error());
