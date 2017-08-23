@@ -163,6 +163,14 @@ test('exec returns a ShellString', t => {
   t.is(result.toString(), result.stdout);
 });
 
+test('encoding option works', t => {
+  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(1234);"`, { encoding: 'buffer' });
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(Buffer.isBuffer(result.stdout));
+  t.is(result.stdout.toString(), '1234\n');
+});
+
 //
 // async
 //
@@ -206,6 +214,17 @@ test.cb('command that fails', t => {
     t.is(code, 1);
     t.is(stdout, '');
     t.is(stderr, 'cp: missing <source> and/or <dest>\n');
+    t.end();
+  });
+});
+
+test.cb('encoding option works with async', t => {
+  shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(5566);"`, { async: true, encoding: 'buffer' }, (code, stdout, stderr) => {
+    t.is(code, 0);
+    t.truthy(Buffer.isBuffer(stdout));
+    t.truthy(Buffer.isBuffer(stderr));
+    t.is(stdout.toString(), '5566\n');
+    t.is(stderr.toString(), '');
     t.end();
   });
 });
