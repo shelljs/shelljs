@@ -34,6 +34,7 @@ function execSync(cmd, opts, pipe) {
     cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
+    encoding: 'utf8',
   }, opts);
 
   if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
@@ -104,8 +105,11 @@ function execSync(cmd, opts, pipe) {
     code = parseInt(fs.readFileSync(codeFile, 'utf8'), 10);
   }
 
-  var stdout = fs.readFileSync(stdoutFile, 'utf8');
-  var stderr = fs.readFileSync(stderrFile, 'utf8');
+  // fs.readFileSync uses buffer encoding by default, so set
+  // the encoding only if opts.encoding wasn't set to 'buffer'
+  var encoding = opts.encoding !== 'buffer' ? opts.encoding : null;
+  var stdout = fs.readFileSync(stdoutFile, encoding);
+  var stderr = fs.readFileSync(stderrFile, encoding);
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
   try { common.unlinkSync(scriptFile); } catch (e) {}
@@ -122,17 +126,15 @@ function execSync(cmd, opts, pipe) {
 
 // Wrapper around exec() to enable echoing output to console in real time
 function execAsync(cmd, opts, pipe, callback) {
-  var stdout = '';
-  var stderr = '';
-
   opts = common.extend({
     silent: common.config.silent,
     cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
+    encoding: 'utf8',
   }, opts);
 
-  var c = child.exec(cmd, opts, function (err) {
+  var c = child.exec(cmd, opts, function (err, stdout, stderr) {
     if (callback) {
       if (!err) {
         callback(0, stdout, stderr);
@@ -148,15 +150,10 @@ function execAsync(cmd, opts, pipe, callback) {
 
   if (pipe) c.stdin.end(pipe);
 
-  c.stdout.on('data', function (data) {
-    stdout += data;
-    if (!opts.silent) process.stdout.write(data);
-  });
-
-  c.stderr.on('data', function (data) {
-    stderr += data;
-    if (!opts.silent) process.stderr.write(data);
-  });
+  if (!opts.silent) {
+    c.stdout.pipe(process.stdout);
+    c.stderr.pipe(process.stderr);
+  }
 
   return c;
 }
