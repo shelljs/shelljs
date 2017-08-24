@@ -105,11 +105,17 @@ function execSync(cmd, opts, pipe) {
     code = parseInt(fs.readFileSync(codeFile, 'utf8'), 10);
   }
 
-  // fs.readFileSync uses buffer encoding by default, so set
-  // the encoding only if opts.encoding wasn't set to 'buffer'
-  var encoding = opts.encoding !== 'buffer' ? opts.encoding : null;
-  var stdout = fs.readFileSync(stdoutFile, encoding);
-  var stderr = fs.readFileSync(stderrFile, encoding);
+  // fs.readFileSync uses buffer encoding by default, so call
+  // it without the encoding option if the encoding is 'buffer'
+  var stdout;
+  var stderr;
+  if (opts.encoding === 'buffer') {
+    stdout = fs.readFileSync(stdoutFile);
+    stderr = fs.readFileSync(stderrFile);
+  } else {
+    stdout = fs.readFileSync(stdoutFile, opts.encoding);
+    stderr = fs.readFileSync(stderrFile, opts.encoding);
+  }
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
   try { common.unlinkSync(scriptFile); } catch (e) {}
