@@ -168,7 +168,9 @@ test('encoding option works', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(Buffer.isBuffer(result.stdout));
+  t.truthy(Buffer.isBuffer(result.stderr));
   t.is(result.stdout.toString(), '1234\n');
+  t.is(result.stderr.toString(), '');
 });
 
 //
