@@ -8,12 +8,10 @@ import shell from '..';
 import utils from './utils/utils';
 
 const CWD = process.cwd();
-const ORIG_EXEC_PATH = shell.config.execPath;
 shell.config.silent = true;
 
 test.afterEach.always(() => {
   process.chdir(CWD);
-  shell.config.execPath = ORIG_EXEC_PATH;
 });
 
 //
@@ -37,15 +35,6 @@ test('config.fatal and unknown command', t => {
     shell.exec('asdfasdf'); // could not find command
   }, /exec: internal error/);
   shell.config.fatal = oldFatal;
-});
-
-test('exec exits gracefully if we cannot find the execPath', t => {
-  shell.config.execPath = null;
-  shell.exec('echo foo');
-  t.regex(
-    shell.error(),
-    /Unable to find a path to the node binary\. Please manually set config\.execPath/
-  );
 });
 
 //
@@ -115,6 +104,13 @@ test('set maxBuffer (very small)', t => {
   t.is(result.stdout, '1234567890' + os.EOL);
   shell.exec('echo 1234567890', { maxBuffer: 6 });
   t.truthy(shell.error());
+});
+
+test('multiple commands should work', t => {
+  const result = shell.exec('echo abc ; echo bcd');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.stdout, 'abc' + os.EOL + 'bcd' + os.EOL);
 });
 
 test('set timeout option', t => {
