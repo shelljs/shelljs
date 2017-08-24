@@ -75,6 +75,15 @@ function _ls(options, paths) {
 
     try {
       stat = options.link ? fs.statSync(p) : fs.lstatSync(p);
+      // follow links to directories by default
+      if (stat.isSymbolicLink()) {
+        try {
+          var _stat = fs.statSync(p);
+          if (_stat.isDirectory()) {
+            stat = _stat;
+          }
+        } catch (_) {} // bad symlink, treat it like a file
+      }
     } catch (e) {
       common.error('no such file or directory: ' + p, 2, { continue: true });
       return;
