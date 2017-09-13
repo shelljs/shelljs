@@ -273,11 +273,13 @@ like `.to()`.
 
 
 ### exec(command [, options] [, callback])
-Available options (all `false` by default):
+Available options:
 
 + `async`: Asynchronous execution. If a callback is provided, it will be set to
-  `true`, regardless of the passed value.
-+ `silent`: Do not echo program output to console.
+  `true`, regardless of the passed value (default: `false`).
++ `silent`: Do not echo program output to console (default: `false`).
++ `encoding`: Character encoding to use. Affects the returned stdout and stderr values, and
+  what is written to stdout and stderr when not in silent mode (default: `'utf8'`).
 + and any option available to Node.js's
   [child_process.exec()](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback)
 
