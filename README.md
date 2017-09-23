@@ -121,8 +121,11 @@ For less-commonly used commands and features, please check out our [wiki
 page](https://github.com/shelljs/shelljs/wiki).
 
 
-### cat(file [, file ...])
-### cat(file_array)
+### cat([options,] file [, file ...])
+### cat([options,] file_array)
+Available options:
+
++ `-n`: number all output lines
 
 Examples:
 
