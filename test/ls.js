@@ -125,7 +125,10 @@ test('wildcard, very simple', t => {
   t.is(result.code, 0);
   t.truthy(result.indexOf('test/resources/cat/file1') > -1);
   t.truthy(result.indexOf('test/resources/cat/file2') > -1);
-  t.is(result.length, 2);
+  t.truthy(result.indexOf('test/resources/cat/file3') > -1);
+  t.truthy(result.indexOf('test/resources/cat/file4') > -1);
+  t.truthy(result.indexOf('test/resources/cat/file5') > -1);
+  t.is(result.length, 5);
 });
 
 test('wildcard, simple', t => {
