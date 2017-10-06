@@ -40,7 +40,7 @@ function _tempDir() {
   var state = common.state;
   if (state.tempDir) return state.tempDir; // from cache
 
-  state.tempDir = writeableDir(os.tmpdir && os.tmpdir()) || // node 0.10+
+  state.tempDir = writeableDir(os.tmpdir()) ||
                   writeableDir(process.env.TMPDIR) ||
                   writeableDir(process.env.TEMP) ||
                   writeableDir(process.env.TMP) ||

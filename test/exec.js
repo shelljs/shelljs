@@ -121,10 +121,7 @@ test('set timeout option', t => {
   const result = shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`); // default timeout is ok
   t.falsy(shell.error());
   t.is(result.code, 0);
-  if (process.version >= 'v0.11') {
-    // this option doesn't work on v0.10
-    shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`, { timeout: 10 }); // times out
-  }
+  shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`, { timeout: 10 }); // times out
   t.truthy(shell.error());
 });
 
@@ -145,7 +142,6 @@ test('set shell option (TODO: add tests for Windows)', t => {
     t.is(result.code, 0);
     t.is(result.stdout, '/bin/sh\n'); // sh by default
     const bashPath = shell.which('bash').trim();
-    // this option doesn't work on v0.10
     if (bashPath) {
       result = shell.exec('echo $0', { shell: '/bin/bash' });
       t.falsy(shell.error());
