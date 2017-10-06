@@ -97,7 +97,7 @@ function _pushd(options, dir) {
   }
 
   _dirStack = dirs;
-  return _dirs(options.quiet ? 'q' : '');
+  return _dirs(options.quiet ? '-q' : '');
 }
 exports.pushd = _pushd;
 
@@ -150,7 +150,7 @@ function _popd(options, index) {
     _cd('', dir);
   }
 
-  return _dirs(options.quiet ? 'q' : '');
+  return _dirs(options.quiet ? '-q' : '');
 }
 exports.popd = _popd;
 
