@@ -116,11 +116,30 @@ test('Test that rootDir is not stored', t => {
   t.truthy(shell.error());
 });
 
-test('quiet mode', t => {
+test('quiet mode off', t => {
   try {
     shell.config.silent = false;
+    shell.pushd('test/resources/pushd');
     mocks.init();
-    shell.pushd('-q', 'test/resources/pushd');
+    const trail = shell.popd();
+    const stdout = mocks.stdout();
+    const stderr = mocks.stderr();
+    t.falsy(shell.error());
+    t.is(stdout, '');
+    t.is(stderr, `${rootDir}\n`);
+    t.is(process.cwd(), trail[0]);
+    t.deepEqual(trail, [rootDir]);
+  } finally {
+    shell.config.silent = true;
+    mocks.restore();
+  }
+});
+
+test('quiet mode on', t => {
+  try {
+    shell.config.silent = false;
+    shell.pushd('test/resources/pushd');
+    mocks.init();
     const trail = shell.popd('-q');
     const stdout = mocks.stdout();
     const stderr = mocks.stderr();

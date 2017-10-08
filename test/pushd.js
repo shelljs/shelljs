@@ -330,7 +330,28 @@ test('Push without arguments invalid when stack is empty', t => {
   t.is(shell.error(), 'pushd: no other directory');
 });
 
-test('quiet mode', t => {
+test('quiet mode off', t => {
+  try {
+    shell.config.silent = false;
+    mocks.init();
+    const trail = shell.pushd('test/resources/pushd');
+    const stdout = mocks.stdout();
+    const stderr = mocks.stderr();
+    t.falsy(shell.error());
+    t.is(stdout, '');
+    t.is(stderr, `${path.resolve(rootDir, 'test/resources/pushd')} ${rootDir}\n`);
+    t.is(process.cwd(), trail[0]);
+    t.deepEqual(trail, [
+      path.resolve(rootDir, 'test/resources/pushd'),
+      rootDir,
+    ]);
+  } finally {
+    shell.config.silent = true;
+    mocks.restore();
+  }
+});
+
+test('quiet mode on', t => {
   try {
     shell.config.silent = false;
     mocks.init();
