@@ -118,8 +118,8 @@ test('Test that rootDir is not stored', t => {
 
 test('quiet mode off', t => {
   try {
-    shell.config.silent = false;
     shell.pushd('test/resources/pushd');
+    shell.config.silent = false;
     mocks.init();
     const trail = shell.popd();
     const stdout = mocks.stdout();
@@ -137,8 +137,8 @@ test('quiet mode off', t => {
 
 test('quiet mode on', t => {
   try {
-    shell.config.silent = false;
     shell.pushd('test/resources/pushd');
+    shell.config.silent = false;
     mocks.init();
     const trail = shell.popd('-q');
     const stdout = mocks.stdout();
