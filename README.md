@@ -201,6 +201,7 @@ Copies files.
 Available options:
 
 + `-n`: Suppresses the normal change of directory when adding directories to the stack, so that only the stack is manipulated.
++ `-q`: Supresses output to the console.
 
 Arguments:
 
@@ -223,6 +224,7 @@ Save the current directory on the top of the directory stack and then cd to `dir
 Available options:
 
 + `-n`: Suppresses the normal change of directory when removing directories from the stack, so that only the stack is manipulated.
++ `-q`: Supresses output to the console.
 
 Arguments:
 
@@ -246,6 +248,7 @@ When no arguments are given, popd removes the top directory from the stack and p
 Available options:
 
 + `-c`: Clears the directory stack by deleting all of the elements.
++ `-q`: Supresses output to the console.
 
 Arguments:
 

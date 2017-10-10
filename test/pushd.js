@@ -3,6 +3,7 @@ import path from 'path';
 import test from 'ava';
 
 import shell from '..';
+import mocks from './utils/mocks';
 
 const rootDir = path.resolve();
 
@@ -327,4 +328,46 @@ test('Pushing with no args', t => {
 test('Push without arguments invalid when stack is empty', t => {
   shell.pushd();
   t.is(shell.error(), 'pushd: no other directory');
+});
+
+test('quiet mode off', t => {
+  try {
+    shell.config.silent = false;
+    mocks.init();
+    const trail = shell.pushd('test/resources/pushd');
+    const stdout = mocks.stdout();
+    const stderr = mocks.stderr();
+    t.falsy(shell.error());
+    t.is(stdout, '');
+    t.is(stderr, `${path.resolve(rootDir, 'test/resources/pushd')} ${rootDir}\n`);
+    t.is(process.cwd(), trail[0]);
+    t.deepEqual(trail, [
+      path.resolve(rootDir, 'test/resources/pushd'),
+      rootDir,
+    ]);
+  } finally {
+    shell.config.silent = true;
+    mocks.restore();
+  }
+});
+
+test('quiet mode on', t => {
+  try {
+    shell.config.silent = false;
+    mocks.init();
+    const trail = shell.pushd('-q', 'test/resources/pushd');
+    const stdout = mocks.stdout();
+    const stderr = mocks.stderr();
+    t.falsy(shell.error());
+    t.is(stdout, '');
+    t.is(stderr, '');
+    t.is(process.cwd(), trail[0]);
+    t.deepEqual(trail, [
+      path.resolve(rootDir, 'test/resources/pushd'),
+      rootDir,
+    ]);
+  } finally {
+    shell.config.silent = true;
+    mocks.restore();
+  }
 });

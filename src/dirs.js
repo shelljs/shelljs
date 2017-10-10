@@ -40,6 +40,7 @@ function _actualDirStack() {
 //@ Available options:
 //@
 //@ + `-n`: Suppresses the normal change of directory when adding directories to the stack, so that only the stack is manipulated.
+//@ + `-q`: Supresses output to the console.
 //@
 //@ Arguments:
 //@
@@ -64,6 +65,7 @@ function _pushd(options, dir) {
 
   options = common.parseOptions(options, {
     'n': 'no-cd',
+    'q': 'quiet',
   });
 
   var dirs = _actualDirStack();
@@ -95,7 +97,7 @@ function _pushd(options, dir) {
   }
 
   _dirStack = dirs;
-  return _dirs('');
+  return _dirs(options.quiet ? '-q' : '');
 }
 exports.pushd = _pushd;
 
@@ -105,6 +107,7 @@ exports.pushd = _pushd;
 //@ Available options:
 //@
 //@ + `-n`: Suppresses the normal change of directory when removing directories from the stack, so that only the stack is manipulated.
+//@ + `-q`: Supresses output to the console.
 //@
 //@ Arguments:
 //@
@@ -130,6 +133,7 @@ function _popd(options, index) {
 
   options = common.parseOptions(options, {
     'n': 'no-cd',
+    'q': 'quiet',
   });
 
   if (!_dirStack.length) {
@@ -146,7 +150,7 @@ function _popd(options, index) {
     _cd('', dir);
   }
 
-  return _dirs('');
+  return _dirs(options.quiet ? '-q' : '');
 }
 exports.popd = _popd;
 
@@ -156,6 +160,7 @@ exports.popd = _popd;
 //@ Available options:
 //@
 //@ + `-c`: Clears the directory stack by deleting all of the elements.
+//@ + `-q`: Supresses output to the console.
 //@
 //@ Arguments:
 //@
@@ -173,6 +178,7 @@ function _dirs(options, index) {
 
   options = common.parseOptions(options, {
     'c': 'clear',
+    'q': 'quiet',
   });
 
   if (options.clear) {
@@ -189,11 +195,15 @@ function _dirs(options, index) {
       index = stack.length + index;
     }
 
-    common.log(stack[index]);
+    if (!options.quiet) {
+      common.log(stack[index]);
+    }
     return stack[index];
   }
 
-  common.log(stack.join(' '));
+  if (!options.quiet) {
+    common.log(stack.join(' '));
+  }
 
   return stack;
 }

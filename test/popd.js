@@ -3,6 +3,7 @@ import path from 'path';
 import test from 'ava';
 
 import shell from '..';
+import mocks from './utils/mocks';
 
 const rootDir = path.resolve();
 
@@ -113,4 +114,42 @@ test('Test that rootDir is not stored', t => {
   t.is(process.cwd(), trail[0]);
   shell.popd(); // no more in the stack
   t.truthy(shell.error());
+});
+
+test('quiet mode off', t => {
+  try {
+    shell.pushd('test/resources/pushd');
+    shell.config.silent = false;
+    mocks.init();
+    const trail = shell.popd();
+    const stdout = mocks.stdout();
+    const stderr = mocks.stderr();
+    t.falsy(shell.error());
+    t.is(stdout, '');
+    t.is(stderr, `${rootDir}\n`);
+    t.is(process.cwd(), trail[0]);
+    t.deepEqual(trail, [rootDir]);
+  } finally {
+    shell.config.silent = true;
+    mocks.restore();
+  }
+});
+
+test('quiet mode on', t => {
+  try {
+    shell.pushd('test/resources/pushd');
+    shell.config.silent = false;
+    mocks.init();
+    const trail = shell.popd('-q');
+    const stdout = mocks.stdout();
+    const stderr = mocks.stderr();
+    t.falsy(shell.error());
+    t.is(stdout, '');
+    t.is(stderr, '');
+    t.is(process.cwd(), trail[0]);
+    t.deepEqual(trail, [rootDir]);
+  } finally {
+    shell.config.silent = true;
+    mocks.restore();
+  }
 });
