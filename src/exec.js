@@ -24,10 +24,10 @@ function execSync(cmd, opts, pipe) {
   }
 
   var tempDir = _tempDir();
-  var stdoutFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var stderrFile = path.resolve(tempDir + '/' + common.randomFileName());
   var codeFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var scriptFile = path.resolve(tempDir + '/' + common.randomFileName());
+  var paramsFile = path.resolve(tempDir + '/' + common.randomFileName());
+  var stderrFile = path.resolve(tempDir + '/' + common.randomFileName());
+  var stdoutFile = path.resolve(tempDir + '/' + common.randomFileName());
 
   opts = common.extend({
     silent: common.config.silent,
@@ -37,47 +37,29 @@ function execSync(cmd, opts, pipe) {
     encoding: 'utf8',
   }, opts);
 
-  if (fs.existsSync(scriptFile)) common.unlinkSync(scriptFile);
-  if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
-  if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
   if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
-
-  var execCommand = JSON.stringify(common.config.execPath) + ' ' + JSON.stringify(scriptFile);
-  var script;
+  if (fs.existsSync(paramsFile)) common.unlinkSync(paramsFile);
+  if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
+  if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
 
   opts.cwd = path.resolve(opts.cwd);
-  var optString = JSON.stringify(opts);
 
-  script = [
-    "var child = require('child_process')",
-    "  , fs = require('fs');",
-    'var childProcess = child.exec(' + JSON.stringify(cmd) + ', ' + optString + ', function(err) {',
-    '  var fname = ' + JSON.stringify(codeFile) + ';',
-    '  if (!err) {',
-    '    fs.writeFileSync(fname, "0");',
-    '  } else if (err.code === undefined) {',
-    '    fs.writeFileSync(fname, "1");',
-    '  } else {',
-    '    fs.writeFileSync(fname, err.code.toString());',
-    '  }',
-    '});',
-    'var stdoutStream = fs.createWriteStream(' + JSON.stringify(stdoutFile) + ');',
-    'var stderrStream = fs.createWriteStream(' + JSON.stringify(stderrFile) + ');',
-    'childProcess.stdout.pipe(stdoutStream, {end: false});',
-    'childProcess.stderr.pipe(stderrStream, {end: false});',
-    'childProcess.stdout.pipe(process.stdout);',
-    'childProcess.stderr.pipe(process.stderr);',
-  ].join('\n') +
-    (pipe ? '\nchildProcess.stdin.end(' + JSON.stringify(pipe) + ');\n' : '\n') +
-    [
-      'var stdoutEnded = false, stderrEnded = false;',
-      'function tryClosingStdout(){ if(stdoutEnded){ stdoutStream.end(); } }',
-      'function tryClosingStderr(){ if(stderrEnded){ stderrStream.end(); } }',
-      "childProcess.stdout.on('end', function(){ stdoutEnded = true; tryClosingStdout(); });",
-      "childProcess.stderr.on('end', function(){ stderrEnded = true; tryClosingStderr(); });",
-    ].join('\n');
+  var paramsToSerialize = {
+    command: cmd,
+    execOptions: opts,
+    pipe: pipe,
+    stdoutFile: stdoutFile,
+    stderrFile: stderrFile,
+    codeFile: codeFile,
+  };
 
-  fs.writeFileSync(scriptFile, script);
+  fs.writeFileSync(paramsFile, JSON.stringify(paramsToSerialize), 'utf8');
+
+  var execCommand = [
+    JSON.stringify(common.config.execPath),
+    JSON.stringify(path.join(__dirname, 'exec-child.js')),
+    JSON.stringify(paramsFile),
+  ].join(' ');
 
   /* istanbul ignore else */
   if (opts.silent) {
@@ -91,10 +73,10 @@ function execSync(cmd, opts, pipe) {
     child.execSync(execCommand, opts);
   } catch (e) {
     // Clean up immediately if we have an exception
-    try { common.unlinkSync(scriptFile); } catch (e2) {}
-    try { common.unlinkSync(stdoutFile); } catch (e2) {}
-    try { common.unlinkSync(stderrFile); } catch (e2) {}
     try { common.unlinkSync(codeFile); } catch (e2) {}
+    try { common.unlinkSync(paramsFile); } catch (e2) {}
+    try { common.unlinkSync(stderrFile); } catch (e2) {}
+    try { common.unlinkSync(stdoutFile); } catch (e2) {}
     throw e;
   }
 
@@ -118,10 +100,10 @@ function execSync(cmd, opts, pipe) {
   }
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
-  try { common.unlinkSync(scriptFile); } catch (e) {}
-  try { common.unlinkSync(stdoutFile); } catch (e) {}
-  try { common.unlinkSync(stderrFile); } catch (e) {}
   try { common.unlinkSync(codeFile); } catch (e) {}
+  try { common.unlinkSync(paramsFile); } catch (e) {}
+  try { common.unlinkSync(stderrFile); } catch (e) {}
+  try { common.unlinkSync(stdoutFile); } catch (e) {}
 
   if (code !== 0) {
     common.error('', code, { continue: true });
