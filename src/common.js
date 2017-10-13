@@ -277,6 +277,18 @@ function unlinkSync(file) {
 }
 exports.unlinkSync = unlinkSync;
 
+// wrappers around fs.statSync and fs.lstatSync that clarify intent
+// and improve readability
+function statFollowLinks() {
+  return fs.statSync.apply(fs, arguments);
+}
+exports.statFollowLinks = statFollowLinks;
+
+function statNoFollowLinks() {
+  return fs.lstatSync.apply(fs, arguments);
+}
+exports.statNoFollowLinks = statNoFollowLinks;
+
 // e.g. 'shelljs_a5f185d0443ca...'
 function randomFileName() {
   function randomHash(count) {
