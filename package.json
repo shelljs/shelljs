@@ -34,8 +34,8 @@
   ],
   "scripts": {
     "posttest": "npm run lint",
-    "test": "nyc --reporter=text --reporter=lcov ava --serial test/*.js",
-    "test-no-coverage": "ava --serial test/*.js",
+    "test": "nyc --reporter=text --reporter=lcov ava test/*.js",
+    "test-no-coverage": "ava test/*.js",
     "gendocs": "node scripts/generate-docs",
     "lint": "eslint .",
     "after-travis": "travis-check-changes",
@@ -52,6 +52,10 @@
     "glob": "^7.0.0",
     "interpret": "^1.0.0",
     "rechoir": "^0.6.2"
+  },
+  "ava": {
+    "serial": true,
+    "powerAssert": false
   },
   "devDependencies": {
     "ava": "^0.21.0",
