@@ -27,16 +27,16 @@ function copyFileSync(srcFile, destFile, options) {
 
   // Check the mtimes of the files if the '-u' flag is provided
   try {
-    if (options.update && fs.statSync(srcFile).mtime < fs.statSync(destFile).mtime) {
+    if (options.update && common.statFollowLinks(srcFile).mtime < fs.statSync(destFile).mtime) {
       return;
     }
   } catch (e) {
     // If we're here, destFile probably doesn't exist, so just do a normal copy
   }
 
-  if (fs.lstatSync(srcFile).isSymbolicLink() && !options.followsymlink) {
+  if (common.statNoFollowLinks(srcFile).isSymbolicLink() && !options.followsymlink) {
     try {
-      fs.lstatSync(destFile);
+      common.statNoFollowLinks(destFile);
       common.unlinkSync(destFile); // re-link it
     } catch (e) {
       // it doesn't exist, so no work needs to be done
@@ -75,7 +75,7 @@ function copyFileSync(srcFile, destFile, options) {
     fs.closeSync(fdr);
     fs.closeSync(fdw);
 
-    fs.chmodSync(destFile, fs.statSync(srcFile).mode);
+    fs.chmodSync(destFile, common.statFollowLinks(srcFile).mode);
   }
 }
 
@@ -99,7 +99,7 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
   // Create the directory where all our junk is moving to; read the mode of the
   // source directory and mirror it
   try {
-    var checkDir = fs.statSync(sourceDir);
+    var checkDir = common.statFollowLinks(sourceDir);
     fs.mkdirSync(destDir, checkDir.mode);
   } catch (e) {
     // if the directory already exists, that's okay
@@ -111,7 +111,7 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
   for (var i = 0; i < files.length; i++) {
     var srcFile = sourceDir + '/' + files[i];
     var destFile = destDir + '/' + files[i];
-    var srcFileStat = fs.lstatSync(srcFile);
+    var srcFileStat = common.statNoFollowLinks(srcFile);
 
     var symlinkFull;
     if (opts.followsymlink) {
@@ -129,14 +129,14 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
     } else if (srcFileStat.isSymbolicLink() && !opts.followsymlink) {
       symlinkFull = fs.readlinkSync(srcFile);
       try {
-        fs.lstatSync(destFile);
+        common.statNoFollowLinks(destFile);
         common.unlinkSync(destFile); // re-link it
       } catch (e) {
         // it doesn't exist, so no work needs to be done
       }
       fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
     } else if (srcFileStat.isSymbolicLink() && opts.followsymlink) {
-      srcFileStat = fs.statSync(srcFile);
+      srcFileStat = common.statFollowLinks(srcFile);
       if (srcFileStat.isDirectory()) {
         cpdirSyncRecursive(srcFile, destFile, currentDepth, opts);
       } else {
@@ -162,7 +162,7 @@ function checkRecentCreated(sources, index) {
 }
 
 function cpcheckcycle(sourceDir, srcFile) {
-  var srcFileStat = fs.lstatSync(srcFile);
+  var srcFileStat = common.statNoFollowLinks(srcFile);
   if (srcFileStat.isSymbolicLink()) {
     // Do cycle check. For example:
     //   $ mkdir -p 1/2/3/4
@@ -170,7 +170,7 @@ function cpcheckcycle(sourceDir, srcFile) {
     //   $ ln -s ../../3 link
     //   $ cd ../../../..
     //   $ cp -RL 1 copy
-    var cyclecheck = fs.statSync(srcFile);
+    var cyclecheck = common.statFollowLinks(srcFile);
     if (cyclecheck.isDirectory()) {
       var sourcerealpath = fs.realpathSync(sourceDir);
       var symlinkrealpath = fs.realpathSync(srcFile);
@@ -223,7 +223,7 @@ function _cp(options, sources, dest) {
   }
 
   var destExists = fs.existsSync(dest);
-  var destStat = destExists && fs.statSync(dest);
+  var destStat = destExists && common.statFollowLinks(dest);
 
   // Dest is not existing dir, but multiple sources given
   if ((!destExists || !destStat.isDirectory()) && sources.length > 1) {
@@ -241,7 +241,7 @@ function _cp(options, sources, dest) {
       common.error('no such file or directory: ' + src, { continue: true });
       return; // skip file
     }
-    var srcStat = fs.statSync(src);
+    var srcStat = common.statFollowLinks(src);
     if (!options.noFollowsymlink && srcStat.isDirectory()) {
       if (!options.recursive) {
         // Non-Recursive
@@ -254,7 +254,7 @@ function _cp(options, sources, dest) {
             dest;
 
         try {
-          fs.statSync(path.dirname(dest));
+          common.statFollowLinks(path.dirname(dest));
           cpdirSyncRecursive(src, newDest, 0, { no_force: options.no_force, followsymlink: options.followsymlink });
         } catch (e) {
           /* istanbul ignore next */

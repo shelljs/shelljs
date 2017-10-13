@@ -3,6 +3,7 @@ import fs from 'fs';
 import test from 'ava';
 
 import shell from '..';
+import common from '../src/common';
 import utils from './utils/utils';
 
 const CWD = process.cwd();
@@ -455,7 +456,7 @@ test('long option, directory, recursive (and windows converts slashes)', t => {
   t.truthy(idx >= 0);
   result = result[idx];
   t.is(result.name, result.name);
-  t.truthy(fs.statSync('test/resources/ls/a_dir/b_dir').isDirectory());
+  t.truthy(common.statFollowLinks('test/resources/ls/a_dir/b_dir').isDirectory());
   t.is(typeof result.nlink, 'number'); // This can vary between the local machine and travis
   t.is(typeof result.size, 'number'); // This can vary between different file systems
   t.truthy(result.mode); // check that these keys exist

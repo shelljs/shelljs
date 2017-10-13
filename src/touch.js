@@ -103,7 +103,7 @@ module.exports = _touch;
 
 function tryStatFile(filePath) {
   try {
-    return fs.statSync(filePath);
+    return common.statFollowLinks(filePath);
   } catch (e) {
     return null;
   }

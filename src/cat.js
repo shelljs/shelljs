@@ -36,7 +36,7 @@ function _cat(options, files) {
   files.forEach(function (file) {
     if (!fs.existsSync(file)) {
       common.error('no such file or directory: ' + file);
-    } else if (fs.statSync(file).isDirectory()) {
+    } else if (common.statFollowLinks(file).isDirectory()) {
       common.error(file + ': Is a directory');
     }
 

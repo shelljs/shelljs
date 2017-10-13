@@ -19,7 +19,7 @@ function splitPath(p) {
 }
 
 function checkPath(pathName) {
-  return fs.existsSync(pathName) && !fs.statSync(pathName).isDirectory();
+  return fs.existsSync(pathName) && !common.statFollowLinks(pathName).isDirectory();
 }
 
 //@

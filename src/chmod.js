@@ -85,7 +85,7 @@ function _chmod(options, mode, filePattern) {
   if (options.recursive) {
     files = [];
     filePattern.forEach(function addFile(expandedFile) {
-      var stat = fs.lstatSync(expandedFile);
+      var stat = common.statNoFollowLinks(expandedFile);
 
       if (!stat.isSymbolicLink()) {
         files.push(expandedFile);
@@ -108,11 +108,11 @@ function _chmod(options, mode, filePattern) {
     }
 
     // When recursing, don't follow symlinks.
-    if (options.recursive && fs.lstatSync(file).isSymbolicLink()) {
+    if (options.recursive && common.statNoFollowLinks(file).isSymbolicLink()) {
       return;
     }
 
-    var stat = fs.statSync(file);
+    var stat = common.statFollowLinks(file);
     var isDir = stat.isDirectory();
     var perms = stat.mode;
     var type = perms & PERMS.TYPE_MASK;
@@ -175,7 +175,7 @@ function _chmod(options, mode, filePattern) {
 
               // According to POSIX, when using = to explicitly set the
               // permissions, setuid and setgid can never be cleared.
-              if (fs.statSync(file).isDirectory()) {
+              if (common.statFollowLinks(file).isDirectory()) {
                 newPerms |= (PERMS.SETUID + PERMS.SETGID) & perms;
               }
               break;
@@ -204,7 +204,7 @@ function _chmod(options, mode, filePattern) {
 
       // POSIX rules are that setuid and setgid can only be added using numeric
       // form, but not cleared.
-      if (fs.statSync(file).isDirectory()) {
+      if (common.statFollowLinks(file).isDirectory()) {
         newPerms |= (PERMS.SETUID + PERMS.SETGID) & perms;
       }
 

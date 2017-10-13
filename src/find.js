@@ -1,4 +1,3 @@
-var fs = require('fs');
 var path = require('path');
 var common = require('./common');
 var _ls = require('./ls');
@@ -42,7 +41,7 @@ function _find(options, paths) {
   paths.forEach(function (file) {
     var stat;
     try {
-      stat = fs.statSync(file);
+      stat = common.statFollowLinks(file);
     } catch (e) {
       common.error('no such file or directory: ' + file);
     }

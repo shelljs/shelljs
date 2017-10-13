@@ -1,4 +1,3 @@
-var fs = require('fs');
 var os = require('os');
 var common = require('./common');
 
@@ -27,7 +26,7 @@ function _cd(options, dir) {
     // something went wrong, let's figure out the error
     var err;
     try {
-      fs.statSync(dir); // if this succeeds, it must be some sort of file
+      common.statFollowLinks(dir); // if this succeeds, it must be some sort of file
       err = 'not a directory: ' + dir;
     } catch (e2) {
       err = 'no such file or directory: ' + dir;

@@ -3,6 +3,7 @@ import fs from 'fs';
 import test from 'ava';
 
 import shell from '..';
+import common from '../src/common';
 import utils from './utils/utils';
 
 const oldMaxDepth = shell.config.maxdepth;
@@ -295,7 +296,7 @@ test(
     t.falsy(result.stderr);
     t.is(result.code, 0);
     t.truthy(fs.existsSync(`${t.context.tmp}/file1.txt`));
-    t.falsy(fs.statSync(`${t.context.tmp}/file1.txt`).isDirectory()); // don't let it be a dir
+    t.falsy(common.statFollowLinks(`${t.context.tmp}/file1.txt`).isDirectory()); // don't let it be a dir
   }
 );
 
@@ -309,8 +310,8 @@ test('recursive, everything exists, no force flag', t => {
 test('-R implies to not follow links', t => {
   utils.skipOnWin(t, () => {
     shell.cp('-R', 'test/resources/cp/*', t.context.tmp);
-    t.truthy(fs.lstatSync(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
-    t.falsy((fs.lstatSync(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink())); // this one isn't
+    t.truthy(common.statNoFollowLinks(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
+    t.falsy((common.statNoFollowLinks(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink())); // this one isn't
     t.not(
       shell.cat(`${t.context.tmp}/links/sym.lnk`).toString(),
       shell.cat(`${t.context.tmp}/fakeLinks/sym.lnk`).toString()
@@ -319,8 +320,8 @@ test('-R implies to not follow links', t => {
     t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
-    t.truthy(fs.lstatSync(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
-    t.truthy(fs.lstatSync(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink()); // this one is now a link
+    t.truthy(common.statNoFollowLinks(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
+    t.truthy(common.statNoFollowLinks(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink()); // this one is now a link
     t.is(
       shell.cat(`${t.context.tmp}/links/sym.lnk`).toString(),
       shell.cat(`${t.context.tmp}/fakeLinks/sym.lnk`).toString()
@@ -333,8 +334,8 @@ test('Missing -R implies -L', t => {
     // Recursive, everything exists, overwrite a real file *by following a link*
     // Because missing the -R implies -L.
     shell.cp('-R', 'test/resources/cp/*', t.context.tmp);
-    t.truthy(fs.lstatSync(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
-    t.falsy((fs.lstatSync(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink())); // this one isn't
+    t.truthy(common.statNoFollowLinks(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
+    t.falsy((common.statNoFollowLinks(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink())); // this one isn't
     t.not(
       shell.cat(`${t.context.tmp}/links/sym.lnk`).toString(),
       shell.cat(`${t.context.tmp}/fakeLinks/sym.lnk`).toString()
@@ -343,8 +344,8 @@ test('Missing -R implies -L', t => {
     t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
-    t.truthy(fs.lstatSync(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
-    t.falsy(fs.lstatSync(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink()); // this one is still not a link
+    t.truthy(common.statNoFollowLinks(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink()); // this one is a link
+    t.falsy(common.statNoFollowLinks(`${t.context.tmp}/fakeLinks/sym.lnk`).isSymbolicLink()); // this one is still not a link
     // But it still follows the link
     t.is(
       shell.cat(`${t.context.tmp}/links/sym.lnk`).toString(),
@@ -414,11 +415,11 @@ test(
     utils.skipOnWin(t, () => {
       // preserve mode bits
       const execBit = parseInt('001', 8);
-      t.is(fs.statSync('test/resources/cp-mode-bits/executable').mode & execBit, execBit);
+      t.is(common.statFollowLinks('test/resources/cp-mode-bits/executable').mode & execBit, execBit);
       shell.cp('test/resources/cp-mode-bits/executable', `${t.context.tmp}/executable`);
       t.is(
-        fs.statSync('test/resources/cp-mode-bits/executable').mode,
-        fs.statSync(`${t.context.tmp}/executable`).mode
+        common.statFollowLinks('test/resources/cp-mode-bits/executable').mode,
+        common.statFollowLinks(`${t.context.tmp}/executable`).mode
       );
     });
   }
@@ -459,29 +460,29 @@ test('no-recursive will copy regular files only', t => {
 test('-R implies -P', t => {
   utils.skipOnWin(t, () => {
     shell.cp('-R', 'test/resources/cp/links/sym.lnk', t.context.tmp);
-    t.truthy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
+    t.truthy(common.statNoFollowLinks(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
   });
 });
 
 test('using -P explicitly works', t => {
   utils.skipOnWin(t, () => {
     shell.cp('-P', 'test/resources/cp/links/sym.lnk', t.context.tmp);
-    t.truthy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
+    t.truthy(common.statNoFollowLinks(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
   });
 });
 
 test('using -PR on a link to a folder does not follow the link', t => {
   utils.skipOnWin(t, () => {
     shell.cp('-PR', 'test/resources/cp/symFolder', t.context.tmp);
-    t.truthy(fs.lstatSync(`${t.context.tmp}/symFolder`).isSymbolicLink());
+    t.truthy(common.statNoFollowLinks(`${t.context.tmp}/symFolder`).isSymbolicLink());
   });
 });
 
 test('-L overrides -P for copying directory', t => {
   utils.skipOnWin(t, () => {
     shell.cp('-LPR', 'test/resources/cp/symFolder', t.context.tmp);
-    t.falsy(fs.lstatSync(`${t.context.tmp}/symFolder`).isSymbolicLink());
-    t.falsy(fs.lstatSync(`${t.context.tmp}/symFolder/sym.lnk`).isSymbolicLink());
+    t.falsy(common.statNoFollowLinks(`${t.context.tmp}/symFolder`).isSymbolicLink());
+    t.falsy(common.statNoFollowLinks(`${t.context.tmp}/symFolder/sym.lnk`).isSymbolicLink());
   });
 });
 
@@ -537,34 +538,34 @@ test('-u flag works correctly recursively', t => {
 
 test('using -R on a link to a folder *does* follow the link', t => {
   shell.cp('-R', 'test/resources/cp/symFolder', t.context.tmp);
-  t.falsy(fs.lstatSync(`${t.context.tmp}/symFolder`).isSymbolicLink());
+  t.falsy(common.statNoFollowLinks(`${t.context.tmp}/symFolder`).isSymbolicLink());
 });
 
 test('Without -R, -L is implied', t => {
   shell.cp('test/resources/cp/links/sym.lnk', t.context.tmp);
-  t.falsy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
+  t.falsy(common.statNoFollowLinks(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
 });
 
 test('-L explicitly works', t => {
   shell.cp('-L', 'test/resources/cp/links/sym.lnk', t.context.tmp);
-  t.falsy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
+  t.falsy(common.statNoFollowLinks(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
 });
 
 test('using -LR does not imply -P', t => {
   shell.cp('-LR', 'test/resources/cp/links/sym.lnk', t.context.tmp);
-  t.falsy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
+  t.falsy(common.statNoFollowLinks(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
 });
 
 test('using -LR also works recursively on directories containing links', t => {
   shell.cp('-LR', 'test/resources/cp/links', t.context.tmp);
-  t.falsy(fs.lstatSync(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink());
+  t.falsy(common.statNoFollowLinks(`${t.context.tmp}/links/sym.lnk`).isSymbolicLink());
 });
 
 test('-L always overrides a -P', t => {
   shell.cp('-LP', 'test/resources/cp/links/sym.lnk', t.context.tmp);
-  t.falsy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
+  t.falsy(common.statNoFollowLinks(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
   shell.cp('-LPR', 'test/resources/cp/links/sym.lnk', t.context.tmp);
-  t.falsy(fs.lstatSync(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
+  t.falsy(common.statNoFollowLinks(`${t.context.tmp}/sym.lnk`).isSymbolicLink());
 });
 
 test('Make sure max depth does not limit shallow directory structures', t => {

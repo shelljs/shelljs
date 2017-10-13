@@ -3,6 +3,7 @@ import fs from 'fs';
 import test from 'ava';
 
 import shell from '..';
+import common from '../src/common';
 
 shell.config.silent = true;
 
@@ -24,7 +25,7 @@ test('file does not exist', t => {
 });
 
 test('directory', t => {
-  t.truthy(fs.statSync('test/resources/').isDirectory()); // sanity check
+  t.truthy(common.statFollowLinks('test/resources/').isDirectory()); // sanity check
   const result = shell.tail('test/resources/');
   t.truthy(shell.error());
   t.is(result.code, 1);

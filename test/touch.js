@@ -4,6 +4,7 @@ import fs from 'fs';
 import test from 'ava';
 
 import shell from '..';
+import common from '../src/common';
 import utils from './utils/utils';
 
 test.beforeEach(t => {
@@ -21,7 +22,7 @@ function resetUtimes(f) {
   const d = new Date();
   d.setYear(2000);
   fs.utimesSync(f, d, d);
-  return fs.statSync(f);
+  return common.statFollowLinks(f);
 }
 
 function tmpFile(t, noCreate) {
@@ -98,23 +99,23 @@ test('uses a reference file for mtime', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.not(
-    fs.statSync(testFile).mtime.getTime(),
-    fs.statSync(testFile2).mtime.getTime()
+    common.statFollowLinks(testFile).mtime.getTime(),
+    common.statFollowLinks(testFile2).mtime.getTime()
   );
   t.not(
-    fs.statSync(testFile).atime.getTime(),
-    fs.statSync(testFile2).atime.getTime()
+    common.statFollowLinks(testFile).atime.getTime(),
+    common.statFollowLinks(testFile2).atime.getTime()
   );
   result = shell.touch({ '-r': testFile2 }, testFile);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(
-    fs.statSync(testFile).mtime.getTime(),
-    fs.statSync(testFile2).mtime.getTime()
+    common.statFollowLinks(testFile).mtime.getTime(),
+    common.statFollowLinks(testFile2).mtime.getTime()
   );
   t.is(
-    fs.statSync(testFile).atime.getTime(),
-    fs.statSync(testFile2).atime.getTime()
+    common.statFollowLinks(testFile).atime.getTime(),
+    common.statFollowLinks(testFile2).atime.getTime()
   );
 });
 
@@ -123,8 +124,8 @@ test('sets mtime and atime by default', t => {
   const oldStat = resetUtimes(testFile);
   const result = shell.touch(testFile);
   t.is(result.code, 0);
-  t.truthy(oldStat.mtime < fs.statSync(testFile).mtime);
-  t.truthy(oldStat.atime < fs.statSync(testFile).atime);
+  t.truthy(oldStat.mtime < common.statFollowLinks(testFile).mtime);
+  t.truthy(oldStat.atime < common.statFollowLinks(testFile).atime);
 });
 
 test('does not set mtime if told not to', t => {
@@ -132,7 +133,7 @@ test('does not set mtime if told not to', t => {
   const oldStat = resetUtimes(testFile);
   const result = shell.touch('-a', testFile);
   t.is(result.code, 0);
-  t.is(oldStat.mtime.getTime(), fs.statSync(testFile).mtime.getTime());
+  t.is(oldStat.mtime.getTime(), common.statFollowLinks(testFile).mtime.getTime());
 });
 
 test('does not set atime if told not to', t => {
@@ -140,7 +141,7 @@ test('does not set atime if told not to', t => {
   const oldStat = resetUtimes(testFile);
   const result = shell.touch('-m', testFile);
   t.is(result.code, 0);
-  t.is(oldStat.atime.getTime(), fs.statSync(testFile).atime.getTime());
+  t.is(oldStat.atime.getTime(), common.statFollowLinks(testFile).atime.getTime());
 });
 
 test('multiple files', t => {

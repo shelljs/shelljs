@@ -62,7 +62,7 @@ function _ls(options, paths) {
       relName = relName.replace(/\\/g, '/');
     }
     if (options.long) {
-      stat = stat || (options.link ? fs.statSync(abs) : fs.lstatSync(abs));
+      stat = stat || (options.link ? common.statFollowLinks(abs) : common.statNoFollowLinks(abs));
       list.push(addLsAttributes(relName, stat));
     } else {
       // list.push(path.relative(rel || '.', file));
@@ -74,11 +74,11 @@ function _ls(options, paths) {
     var stat;
 
     try {
-      stat = options.link ? fs.statSync(p) : fs.lstatSync(p);
+      stat = options.link ? common.statFollowLinks(p) : common.statNoFollowLinks(p);
       // follow links to directories by default
       if (stat.isSymbolicLink()) {
         try {
-          var _stat = fs.statSync(p);
+          var _stat = common.statFollowLinks(p);
           if (_stat.isDirectory()) {
             stat = _stat;
           }

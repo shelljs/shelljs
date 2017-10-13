@@ -57,7 +57,7 @@ function _mkdir(options, dirs) {
 
   dirs.forEach(function (dir) {
     try {
-      var stat = fs.lstatSync(dir);
+      var stat = common.statNoFollowLinks(dir);
       if (!options.fullpath) {
         common.error('path already exists: ' + dir, { continue: true });
       } else if (stat.isFile()) {

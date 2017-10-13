@@ -25,7 +25,7 @@ function rmdirSyncRecursive(dir, force, fromSymlink) {
   // Loop through and delete everything in the sub-tree after checking it
   for (var i = 0; i < files.length; i++) {
     var file = dir + '/' + files[i];
-    var currFile = fs.lstatSync(file);
+    var currFile = common.statNoFollowLinks(file);
 
     if (currFile.isDirectory()) { // Recursive function back to the beginning
       rmdirSyncRecursive(file, force);
@@ -116,7 +116,7 @@ function handleDirectory(file, options) {
 function handleSymbolicLink(file, options) {
   var stats;
   try {
-    stats = fs.statSync(file);
+    stats = common.statFollowLinks(file);
   } catch (e) {
     // symlink is broken, so remove the symlink itself
     common.unlinkSync(file);
@@ -175,7 +175,7 @@ function _rm(options, files) {
       var filepath = (file[file.length - 1] === '/')
         ? file.slice(0, -1) // remove the '/' so lstatSync can detect symlinks
         : file;
-      lstats = fs.lstatSync(filepath); // test for existence
+      lstats = common.statNoFollowLinks(filepath); // test for existence
     } catch (e) {
       // Path does not exist, no force flag given
       if (!options.force) {

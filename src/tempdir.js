@@ -11,7 +11,7 @@ common.register('tempdir', _tempDir, {
 function writeableDir(dir) {
   if (!dir || !fs.existsSync(dir)) return false;
 
-  if (!fs.statSync(dir).isDirectory()) return false;
+  if (!common.statFollowLinks(dir).isDirectory()) return false;
 
   var testFile = dir + '/' + common.randomFileName();
   try {

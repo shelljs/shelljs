@@ -3,6 +3,7 @@ import fs from 'fs';
 import test from 'ava';
 
 import shell from '..';
+import common from '../src/common';
 import utils from './utils/utils';
 
 let TMP;
@@ -36,13 +37,13 @@ test('Basic usage with octal codes', t => {
     let result = shell.chmod('755', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & BITMASK,
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & BITMASK,
       parseInt('755', 8)
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & BITMASK,
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & BITMASK,
       parseInt('644', 8)
     );
   });
@@ -53,7 +54,7 @@ test('symbolic mode', t => {
     let result = shell.chmod('o+x', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('007', 8),
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('007', 8),
       parseInt('005', 8)
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -66,7 +67,7 @@ test('symbolic mode, without group', t => {
     let result = shell.chmod('+x', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & BITMASK,
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & BITMASK,
       parseInt('755', 8)
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -79,13 +80,13 @@ test('Test setuid', t => {
     let result = shell.chmod('u+s', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('4000', 8),
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('4000', 8),
       parseInt('4000', 8)
     );
     result = shell.chmod('u-s', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & BITMASK,
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & BITMASK,
       parseInt('644', 8)
     );
 
@@ -97,7 +98,7 @@ test('Test setuid', t => {
     result = shell.chmod('755', `${TMP}/chmod/c`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/c`).mode & parseInt('4000', 8),
+      common.statFollowLinks(`${TMP}/chmod/c`).mode & parseInt('4000', 8),
       parseInt('4000', 8)
     );
     result = shell.chmod('u-s', `${TMP}/chmod/c`);
@@ -110,13 +111,13 @@ test('Test setgid', t => {
     let result = shell.chmod('g+s', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('2000', 8),
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('2000', 8),
       parseInt('2000', 8)
     );
     result = shell.chmod('g-s', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & BITMASK,
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & BITMASK,
       parseInt('644', 8)
     );
   });
@@ -127,16 +128,16 @@ test('Test sticky bit', t => {
     let result = shell.chmod('+t', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('1000', 8),
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('1000', 8),
       parseInt('1000', 8)
     );
     result = shell.chmod('-t', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & BITMASK,
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & BITMASK,
       parseInt('644', 8)
     );
-    t.is(fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('1000', 8), 0);
+    t.is(common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('1000', 8), 0);
   });
 });
 
@@ -145,7 +146,7 @@ test('Test directories', t => {
     let result = shell.chmod('a-w', `${TMP}/chmod/b/a/b`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/b/a/b`).mode & BITMASK,
+      common.statFollowLinks(`${TMP}/chmod/b/a/b`).mode & BITMASK,
       parseInt('555', 8)
     );
     result = shell.chmod('755', `${TMP}/chmod/b/a/b`);
@@ -158,13 +159,13 @@ test('Test recursion', t => {
     let result = shell.chmod('-R', 'a+w', `${TMP}/chmod/b`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/b/a/b`).mode & BITMASK,
+      common.statFollowLinks(`${TMP}/chmod/b/a/b`).mode & BITMASK,
       BITMASK
     );
     result = shell.chmod('-R', '755', `${TMP}/chmod/b`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/b/a/b`).mode & BITMASK,
+      common.statFollowLinks(`${TMP}/chmod/b/a/b`).mode & BITMASK,
       parseInt('755', 8)
     );
   });
@@ -176,11 +177,11 @@ test('Test symbolic links w/ recursion  - WARNING: *nix only', t => {
     let result = shell.chmod('-R', 'u-w', `${TMP}/chmod/a/b`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/a/b/c`).mode & parseInt('700', 8),
+      common.statFollowLinks(`${TMP}/chmod/a/b/c`).mode & parseInt('700', 8),
       parseInt('500', 8)
     );
     t.is(
-      fs.statSync(`${TMP}/chmod/b/a`).mode & parseInt('700', 8),
+      common.statFollowLinks(`${TMP}/chmod/b/a`).mode & parseInt('700', 8),
       parseInt('700', 8)
     );
     result = shell.chmod('-R', 'u+w', `${TMP}/chmod/a/b`);
@@ -193,7 +194,7 @@ test('Test combinations', t => {
   let result = shell.chmod('a-rwx', `${TMP}/chmod/file1`);
   t.is(result.code, 0);
   t.is(
-    fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('000', 8),
+    common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('000', 8),
     parseInt('000', 8)
   );
   result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -204,7 +205,7 @@ test('multiple symbolic modes', t => {
   let result = shell.chmod('a-rwx,u+r', `${TMP}/chmod/file1`);
   t.is(result.code, 0);
   t.is(
-    fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('400', 8),
+    common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('400', 8),
     parseInt('400', 8)
   );
   result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -215,7 +216,7 @@ test('multiple symbolic modes #2', t => {
   let result = shell.chmod('a-rwx,u+rw', `${TMP}/chmod/file1`);
   t.is(result.code, 0);
   t.is(
-    fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('600', 8),
+    common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('600', 8),
     parseInt('600', 8)
   );
   result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -227,7 +228,7 @@ test('multiple symbolic modes #3', t => {
     let result = shell.chmod('a-rwx,u+rwx', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('700', 8),
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('700', 8),
       parseInt('700', 8)
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -241,7 +242,7 @@ test('u+rw', t => {
   result = shell.chmod('u+rw', `${TMP}/chmod/file1`);
   t.is(result.code, 0);
   t.is(
-    fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('600', 8),
+    common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('600', 8),
     parseInt('600', 8)
   );
   result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -255,7 +256,7 @@ test('u+wx', t => {
     result = shell.chmod('u+wx', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('300', 8),
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('300', 8),
       parseInt('300', 8)
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -270,7 +271,7 @@ test('Multiple symbolic modes at once', t => {
     result = shell.chmod('u+r,g+w,o+x', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('421', 8),
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('421', 8),
       parseInt('421', 8)
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -285,7 +286,7 @@ test('u+rw,g+wx', t => {
     result = shell.chmod('u+rw,g+wx', `${TMP}/chmod/file1`);
     t.is(result.code, 0);
     t.is(
-      fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('630', 8),
+      common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('630', 8),
       parseInt('630', 8)
     );
     result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -299,7 +300,7 @@ test('u-x,g+rw', t => {
   result = shell.chmod('u-x,g+rw', `${TMP}/chmod/file1`);
   t.is(result.code, 0);
   t.is(
-    fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('660', 8),
+    common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('660', 8),
     parseInt('660', 8)
   );
   result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -310,13 +311,13 @@ test('a-rwx,u+rw', t => {
   let result = shell.chmod('a-rwx,u+rw', `${TMP}/chmod/file1`);
   t.is(result.code, 0);
   t.is(
-    fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('600', 8),
+    common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('600', 8),
     parseInt('600', 8)
   );
   result = shell.chmod('a-rwx,u+rw', `${TMP}/chmod/file1`);
   t.is(result.code, 0);
   t.is(
-    fs.statSync(`${TMP}/chmod/file1`).mode & parseInt('600', 8),
+    common.statFollowLinks(`${TMP}/chmod/file1`).mode & parseInt('600', 8),
     parseInt('600', 8)
   );
   result = shell.chmod('644', `${TMP}/chmod/file1`);
@@ -339,19 +340,19 @@ test('Numeric modes', t => {
 test('Make sure chmod succeeds for a variety of octal codes', t => {
   utils.skipOnWin(t, () => {
     t.is(
-      fs.statSync(`${TMP}/chmod/xdir`).mode & parseInt('755', 8),
+      common.statFollowLinks(`${TMP}/chmod/xdir`).mode & parseInt('755', 8),
       parseInt('755', 8)
     );
     t.is(
-      fs.statSync(`${TMP}/chmod/xdir/file`).mode & parseInt('644', 8),
+      common.statFollowLinks(`${TMP}/chmod/xdir/file`).mode & parseInt('644', 8),
       parseInt('644', 8)
     );
     t.is(
-      fs.statSync(`${TMP}/chmod/xdir/deep`).mode & parseInt('755', 8),
+      common.statFollowLinks(`${TMP}/chmod/xdir/deep`).mode & parseInt('755', 8),
       parseInt('755', 8)
     );
     t.is(
-      fs.statSync(`${TMP}/chmod/xdir/deep/file`).mode & parseInt('644', 8),
+      common.statFollowLinks(`${TMP}/chmod/xdir/deep/file`).mode & parseInt('644', 8),
       parseInt('644', 8)
     );
   });

@@ -277,7 +277,7 @@ function unlinkSync(file) {
 }
 exports.unlinkSync = unlinkSync;
 
-// wrappers around fs.statSync and fs.lstatSync that clarify intent
+// wrappers around common.statFollowLinks and common.statNoFollowLinks that clarify intent
 // and improve readability
 function statFollowLinks() {
   return fs.statSync.apply(fs, arguments);
