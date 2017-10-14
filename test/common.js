@@ -139,25 +139,21 @@ test('convertErrorOutput: changes backslashes to forward slashes', t => {
 //
 test('single file, array syntax', t => {
   const result = common.expand(['test/resources/file1.txt']);
-  t.falsy(shell.error());
   t.deepEqual(result, ['test/resources/file1.txt']);
 });
 
 test('multiple file, glob syntax, * for file name', t => {
   const result = common.expand(['test/resources/file*.txt']);
-  t.falsy(shell.error());
   t.deepEqual(result.sort(), ['test/resources/file1.txt', 'test/resources/file2.txt'].sort());
 });
 
 test('multiple file, glob syntax, * for directory name', t => {
   const result = common.expand(['test/r*/file*.txt']);
-  t.falsy(shell.error());
   t.deepEqual(result.sort(), ['test/resources/file1.txt', 'test/resources/file2.txt'].sort());
 });
 
 test('multiple file, glob syntax, ** for directory name', t => {
   const result = common.expand(['test/resources/**/file*.js']);
-  t.falsy(shell.error());
   t.deepEqual(
     result.sort(),
     ['test/resources/file1.js', 'test/resources/file2.js', 'test/resources/ls/file1.js', 'test/resources/ls/file2.js'].sort()
@@ -166,25 +162,21 @@ test('multiple file, glob syntax, ** for directory name', t => {
 
 test('broken links still expand', t => {
   const result = common.expand(['test/resources/b*dlink']);
-  t.falsy(shell.error());
   t.deepEqual(result, ['test/resources/badlink']);
 });
 
 test('empty array', t => {
   const result = common.expand([]);
-  t.falsy(shell.error());
   t.deepEqual(result, []);
 });
 
 test('empty string', t => {
   const result = common.expand(['']);
-  t.falsy(shell.error());
   t.deepEqual(result, ['']);
 });
 
 test('non-string', t => {
   const result = common.expand([5]);
-  t.falsy(shell.error());
   t.deepEqual(result, [5]);
 });
 
@@ -193,14 +185,12 @@ test('non-string', t => {
 //
 test('common.buffer returns buffer', t => {
   const buf = common.buffer();
-  t.falsy(shell.error());
   t.truthy(buf instanceof Buffer);
   t.is(buf.length, 64 * 1024);
 });
 
 test('common.buffer with explicit length', t => {
   const buf = common.buffer(20);
-  t.falsy(shell.error());
   t.truthy(buf instanceof Buffer);
   t.is(buf.length, 20);
 });
@@ -208,7 +198,6 @@ test('common.buffer with explicit length', t => {
 test('common.buffer with different config.bufLength', t => {
   common.config.bufLength = 20;
   const buf = common.buffer();
-  t.falsy(shell.error());
   t.truthy(buf instanceof Buffer);
   t.is(buf.length, 20);
   common.config.reset();
