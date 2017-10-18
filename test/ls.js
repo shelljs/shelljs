@@ -87,6 +87,14 @@ test('simple arg, with a trailing slash', t => {
   t.is(result.length, 6);
 });
 
+test('simple arg, a file', t => {
+  const result = shell.ls('test/resources/ls/file1');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(result.indexOf('test/resources/ls/file1') > -1);
+  t.is(result.length, 1);
+});
+
 test('no args, -A option', t => {
   shell.cd('test/resources/ls');
   const result = shell.ls('-A');
