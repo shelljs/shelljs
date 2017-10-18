@@ -34,16 +34,30 @@ function copyFileSync(srcFile, destFile, options) {
     // If we're here, destFile probably doesn't exist, so just do a normal copy
   }
 
-  if (fs.lstatSync(srcFile).isSymbolicLink() && !options.followsymlink) {
-    try {
-      fs.lstatSync(destFile);
-      common.unlinkSync(destFile); // re-link it
-    } catch (e) {
-      // it doesn't exist, so no work needs to be done
-    }
+  var srcFileStat = fs.lstatSync(srcFile);
 
-    var symlinkFull = fs.readlinkSync(srcFile);
-    fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
+  if (srcFileStat.isSymbolicLink()) {
+    if (options.followsymlink) {
+      // recurse to copy the target of the symlink to the dest to ensure we handle complex scenarios
+      return copyFileSync(fs.realpathSync(srcFile), destFile, options);
+    } else {
+      try {
+        fs.lstatSync(destFile);
+        common.unlinkSync(destFile); // re-link it
+      } catch (e) {
+        // it doesn't exist, so no work needs to be done
+      }
+
+      var symlinkFull = fs.readlinkSync(srcFile);
+      fs.symlinkSync(symlinkFull, destFile, isWindows ? 'junction' : null);
+    }
+  // skip unix-like files. Anticipate adding support via a plugin.
+  } else if (srcFileStat.isFIFO() || srcFileStat.isCharacterDevice() || srcFileStat.isBlockDevice()) {
+    var type = 'unknown file';
+    if (srcFileStat.isFIFO()) type = 'fifo';
+    if (srcFileStat.isCharacterDevice()) type = 'block device';
+    if (srcFileStat.isBlockDevice()) type = 'character device';
+    common.error('copyFileSync: ' + type + ' is not supported (' + srcFile + ')', { continue: true });
   } else {
     var buf = common.buffer();
     var bufLength = buf.length;
@@ -67,7 +81,7 @@ function copyFileSync(srcFile, destFile, options) {
     }
 
     while (bytesRead === bufLength) {
-      bytesRead = fs.readSync(fdr, buf, 0, bufLength, pos);
+      bytesRead = fs.readSync(fdr, buf, 0, bufLength, pos || -1);
       fs.writeSync(fdw, buf, 0, bytesRead);
       pos += bytesRead;
     }
@@ -204,7 +218,9 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 //@ ```
 //@
-//@ Copies files.
+//@ Copies files. Natively, this command will skip special unix files like
+//@ fifos. To add support for special unix cases
+//@ [see this issue](https://github.com/shelljs/shelljs/issues/748) (WIP).
 function _cp(options, sources, dest) {
   // If we're missing -R, it actually implies -L (unless -P is explicit)
   if (options.followsymlink) {
