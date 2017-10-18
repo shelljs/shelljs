@@ -51,7 +51,7 @@ function _mv(options, sources, dest) {
   }
 
   var exists = fs.existsSync(dest);
-  var stats = exists && fs.statSync(dest);
+  var stats = exists && common.statFollowLinks(dest);
 
   // Dest is not existing dir, but multiple sources given
   if ((!exists || !stats.isDirectory()) && sources.length > 1) {
@@ -74,7 +74,7 @@ function _mv(options, sources, dest) {
     // When copying to '/path/dir':
     //    thisDest = '/path/dir/file1'
     var thisDest = dest;
-    if (fs.existsSync(dest) && fs.statSync(dest).isDirectory()) {
+    if (fs.existsSync(dest) && common.statFollowLinks(dest).isDirectory()) {
       thisDest = path.normalize(dest + '/' + path.basename(src));
     }
 

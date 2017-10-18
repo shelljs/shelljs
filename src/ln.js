@@ -48,7 +48,7 @@ function _ln(options, source, dest) {
     var resolvedSourcePath = isAbsolute ? sourcePath : path.resolve(process.cwd(), path.dirname(dest), source);
     if (!fs.existsSync(resolvedSourcePath)) {
       common.error('Source file does not exist', { continue: true });
-    } else if (isWindows && fs.statSync(resolvedSourcePath).isDirectory()) {
+    } else if (isWindows && common.statFollowLinks(resolvedSourcePath).isDirectory()) {
       linkType = 'junction';
     }
 

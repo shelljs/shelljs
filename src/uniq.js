@@ -45,11 +45,11 @@ function _uniq(options, input, output) {
 
     if (!fs.existsSync(input)) {
       common.error(input + ': No such file or directory');
-    } else if (fs.statSync(input).isDirectory()) {
+    } else if (common.statFollowLinks(input).isDirectory()) {
       common.error("error reading '" + input + "'");
     }
   }
-  if (output && fs.existsSync(output) && fs.statSync(output).isDirectory()) {
+  if (output && fs.existsSync(output) && common.statFollowLinks(output).isDirectory()) {
     common.error(output + ': Is a directory');
   }
 

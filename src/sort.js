@@ -72,7 +72,7 @@ function _sort(options, files) {
       if (!fs.existsSync(file)) {
         common.error('no such file or directory: ' + file, { continue: true });
         return accum;
-      } else if (fs.statSync(file).isDirectory()) {
+      } else if (common.statFollowLinks(file).isDirectory()) {
         common.error('read failed: ' + file + ': Is a directory', {
           continue: true,
         });

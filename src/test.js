@@ -52,7 +52,7 @@ function _test(options, path) {
 
   if (options.link) {
     try {
-      return fs.lstatSync(path).isSymbolicLink();
+      return common.statNoFollowLinks(path).isSymbolicLink();
     } catch (e) {
       return false;
     }
@@ -62,7 +62,7 @@ function _test(options, path) {
 
   if (options.exists) return true;
 
-  var stats = fs.statSync(path);
+  var stats = common.statFollowLinks(path);
 
   if (options.block) return stats.isBlockDevice();
 
