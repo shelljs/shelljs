@@ -1,3 +1,7 @@
+if (require.main !== module) {
+  throw new Error('This file should not be required');
+}
+
 var childProcess = require('child_process');
 var fs = require('fs');
 
