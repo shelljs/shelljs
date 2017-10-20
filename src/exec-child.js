@@ -19,8 +19,9 @@ var pipe = params.pipe;
 var stdoutFile = params.stdoutFile;
 var stderrFile = params.stderrFile;
 
+var c;
 try {
-  var c = childProcess.exec(cmd, execOptions, function (err) {
+  c = childProcess.exec(cmd, execOptions, function (err) {
     if (!err) {
       process.exit(0);
     } else if (err.code === undefined) {
