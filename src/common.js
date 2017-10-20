@@ -171,6 +171,11 @@ function parseOptions(opt, map, errorOptions) {
     throw new Error('parseOptions() internal error: errorOptions must be object');
   }
 
+  if (opt === '--') {
+    // This means there are no options.
+    return {};
+  }
+
   // All options are false by default
   var options = {};
   Object.keys(map).forEach(function (letter) {

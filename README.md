@@ -94,6 +94,16 @@ if (shell.exec('git commit -am "Auto-commit"').code !== 0) {
 }
 ```
 
+## Exclude options
+
+If you need to pass a parameter that looks like an option, you can do so like:
+
+```js
+shell.grep('--', '-v', 'path/to/file'); // Search for "-v", no grep options
+
+shell.cp('-R', '-dir', 'outdir'); // If already using an option, you're done
+```
+
 ## Global vs. Local
 
 We no longer recommend using a global-import for ShellJS (i.e.
