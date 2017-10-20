@@ -55,11 +55,10 @@ function execSync(cmd, opts, pipe) {
 
   fs.writeFileSync(paramsFile, JSON.stringify(paramsToSerialize), 'utf8');
 
-  var execCommand = [
-    JSON.stringify(common.config.execPath),
-    JSON.stringify(path.join(__dirname, 'exec-child.js')),
-    JSON.stringify(paramsFile),
-  ].join(' ');
+  var execArgs = [
+    path.join(__dirname, 'exec-child.js'),
+    paramsFile,
+  ];
 
   /* istanbul ignore else */
   if (opts.silent) {
@@ -70,7 +69,11 @@ function execSync(cmd, opts, pipe) {
 
   // Welcome to the future
   try {
-    child.execSync(execCommand, opts);
+    // Bad things if we pass in a `shell` option to child_process.execFileSync,
+    // so we need to explicitly remove it here.
+    delete opts.shell;
+
+    child.execFileSync(common.config.execPath, execArgs, opts);
   } catch (e) {
     // Clean up immediately if we have an exception
     try { common.unlinkSync(codeFile); } catch (e2) {}
