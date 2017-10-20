@@ -18,17 +18,21 @@ var execOptions = params.execOptions;
 var pipe = params.pipe;
 var stdoutFile = params.stdoutFile;
 var stderrFile = params.stderrFile;
-var codeFile = params.codeFile;
 
-var c = childProcess.exec(cmd, execOptions, function (err) {
-  if (!err) {
-    fs.writeFileSync(codeFile, '0');
-  } else if (err.code === undefined) {
-    fs.writeFileSync(codeFile, '1');
-  } else {
-    fs.writeFileSync(codeFile, err.code.toString());
-  }
-});
+try {
+  var c = childProcess.exec(cmd, execOptions, function (err) {
+    if (!err) {
+      process.exit(0);
+    } else if (err.code === undefined) {
+      process.exit(1);
+    } else {
+      process.exit(err.code);
+    }
+  });
+} catch (e) {
+  // child_process could not run the command.
+  process.exit(127);
+}
 
 var stdoutStream = fs.createWriteStream(stdoutFile);
 var stderrStream = fs.createWriteStream(stderrFile);

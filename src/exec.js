@@ -13,18 +13,14 @@ common.register('exec', _exec, {
   wrapOutput: false,
 });
 
-// Hack to run child_process.exec() synchronously (sync avoids callback hell)
-// Uses a custom wait loop that checks for a flag file, created when the child process is done.
-// (Can't do a wait loop that checks for internal Node variables/messages as
-// Node is single-threaded; callbacks and other internal state changes are done in the
-// event loop).
+// We use this function to run exec synchronously while also providing realtime
+// output.
 function execSync(cmd, opts, pipe) {
   if (!common.config.execPath) {
     common.error('Unable to find a path to the node binary. Please manually set config.execPath');
   }
 
   var tempDir = _tempDir();
-  var codeFile = path.resolve(tempDir + '/' + common.randomFileName());
   var paramsFile = path.resolve(tempDir + '/' + common.randomFileName());
   var stderrFile = path.resolve(tempDir + '/' + common.randomFileName());
   var stdoutFile = path.resolve(tempDir + '/' + common.randomFileName());
@@ -37,7 +33,6 @@ function execSync(cmd, opts, pipe) {
     encoding: 'utf8',
   }, opts);
 
-  if (fs.existsSync(codeFile)) common.unlinkSync(codeFile);
   if (fs.existsSync(paramsFile)) common.unlinkSync(paramsFile);
   if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
   if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
@@ -50,7 +45,6 @@ function execSync(cmd, opts, pipe) {
     pipe: pipe,
     stdoutFile: stdoutFile,
     stderrFile: stderrFile,
-    codeFile: codeFile,
   };
 
   fs.writeFileSync(paramsFile, JSON.stringify(paramsToSerialize), 'utf8');
@@ -68,23 +62,14 @@ function execSync(cmd, opts, pipe) {
     opts.stdio = [0, 1, 2];
   }
 
+  var code = 0;
+
   // Welcome to the future
   try {
     child.execSync(execCommand, opts);
   } catch (e) {
-    // Clean up immediately if we have an exception
-    try { common.unlinkSync(codeFile); } catch (e2) {}
-    try { common.unlinkSync(paramsFile); } catch (e2) {}
-    try { common.unlinkSync(stderrFile); } catch (e2) {}
-    try { common.unlinkSync(stdoutFile); } catch (e2) {}
-    throw e;
-  }
-
-  // At this point codeFile exists, but it's not necessarily flushed yet.
-  // Keep reading it until it is.
-  var code = parseInt('', 10);
-  while (isNaN(code)) {
-    code = parseInt(fs.readFileSync(codeFile, 'utf8'), 10);
+    // Commands with non-zero exit code raise an exception.
+    code = e.status;
   }
 
   // fs.readFileSync uses buffer encoding by default, so call
@@ -100,7 +85,6 @@ function execSync(cmd, opts, pipe) {
   }
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
-  try { common.unlinkSync(codeFile); } catch (e) {}
   try { common.unlinkSync(paramsFile); } catch (e) {}
   try { common.unlinkSync(stderrFile); } catch (e) {}
   try { common.unlinkSync(stdoutFile); } catch (e) {}
