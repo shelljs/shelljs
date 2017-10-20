@@ -1,5 +1,56 @@
 # Change Log
 
+## [Unreleased](https://github.com/shelljs/shelljs/tree/HEAD)
+
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.8...HEAD)
+
+**Closed issues:**
+
+- Is it possible to get a js library\(file\) for ShellJS [\#776](https://github.com/shelljs/shelljs/issues/776)
+- 48, [\#774](https://github.com/shelljs/shelljs/issues/774)
+- 47 [\#773](https://github.com/shelljs/shelljs/issues/773)
+- getting different result from terminal and with shelljs  [\#769](https://github.com/shelljs/shelljs/issues/769)
+- test\(\) does not support -w and -x options [\#768](https://github.com/shelljs/shelljs/issues/768)
+- Snyk "high severity" issue [\#766](https://github.com/shelljs/shelljs/issues/766)
+- Snyk "high security [\#765](https://github.com/shelljs/shelljs/issues/765)
+- Run second shell script [\#756](https://github.com/shelljs/shelljs/issues/756)
+- shelljs seems NOT compatible with nexe under CentOS 6.5 [\#754](https://github.com/shelljs/shelljs/issues/754)
+- Feature request: pushd/popd -q option [\#753](https://github.com/shelljs/shelljs/issues/753)
+- cat doesn't support '-n' option [\#750](https://github.com/shelljs/shelljs/issues/750)
+- shelljs run xcodebuild error [\#749](https://github.com/shelljs/shelljs/issues/749)
+- Add wrappers around fs.statSync and fs.lstatSync [\#745](https://github.com/shelljs/shelljs/issues/745)
+- Improve coverage for exec\(\) [\#742](https://github.com/shelljs/shelljs/issues/742)
+- Improve coverage for head\(\) [\#741](https://github.com/shelljs/shelljs/issues/741)
+- shelljs is no longer used in PDF.js [\#737](https://github.com/shelljs/shelljs/issues/737)
+- ls doesn't follow links to directories [\#733](https://github.com/shelljs/shelljs/issues/733)
+- Add test for `ls regular-file.txt` [\#732](https://github.com/shelljs/shelljs/issues/732)
+- shelljs.exec hangs when password it's asked [\#716](https://github.com/shelljs/shelljs/issues/716)
+- Clean up common tests [\#714](https://github.com/shelljs/shelljs/issues/714)
+- Switch to os.homedir\(\) when we move to v4+ [\#683](https://github.com/shelljs/shelljs/issues/683)
+- Can't run docker with exec\(\) \(the input device is not a TTY\) [\#680](https://github.com/shelljs/shelljs/issues/680)
+- Cant get encoding buffer to work on exec [\#675](https://github.com/shelljs/shelljs/issues/675)
+- Set up Codecov for the project [\#671](https://github.com/shelljs/shelljs/issues/671)
+- ShellJS: internal error Error: EBUSY: resource busy or locked, lstat 'C:\pagefile.sys' [\#514](https://github.com/shelljs/shelljs/issues/514)
+- Echo doesn't return value ending in a trailing newline [\#476](https://github.com/shelljs/shelljs/issues/476)
+
+**Merged pull requests:**
+
+- refactor\(exec\): move child process to source file [\#786](https://github.com/shelljs/shelljs/pull/786) ([nfischer](https://github.com/nfischer))
+- Remove unnecessary shell.error checks from common tests [\#785](https://github.com/shelljs/shelljs/pull/785) ([freitagbr](https://github.com/freitagbr))
+- Add a test for ls for a single file [\#784](https://github.com/shelljs/shelljs/pull/784) ([freitagbr](https://github.com/freitagbr))
+- Wrap fs.statSync and fs.lstatSync [\#783](https://github.com/shelljs/shelljs/pull/783) ([freitagbr](https://github.com/freitagbr))
+- chore: set AVA options [\#780](https://github.com/shelljs/shelljs/pull/780) ([nfischer](https://github.com/nfischer))
+- chore: clean up refs to unsupported node versions [\#779](https://github.com/shelljs/shelljs/pull/779) ([nfischer](https://github.com/nfischer))
+- Added `-q` \(quiet\) option to `push`, `popd`, `dirs` functions. [\#777](https://github.com/shelljs/shelljs/pull/777) ([alexreg](https://github.com/alexreg))
+- feat\(cat\): number output lines \(\#750\) [\#775](https://github.com/shelljs/shelljs/pull/775) ([gcca](https://github.com/gcca))
+- Fix ls not following links to directories by default [\#764](https://github.com/shelljs/shelljs/pull/764) ([freitagbr](https://github.com/freitagbr))
+- Add "encoding" option to exec [\#763](https://github.com/shelljs/shelljs/pull/763) ([freitagbr](https://github.com/freitagbr))
+- refactor\(test\): update AVA and refactor tests [\#760](https://github.com/shelljs/shelljs/pull/760) ([nfischer](https://github.com/nfischer))
+- chore: add skipOnWin and skipOnUnix test helpers [\#746](https://github.com/shelljs/shelljs/pull/746) ([nfischer](https://github.com/nfischer))
+- test\(exec\): add tests for coverage [\#744](https://github.com/shelljs/shelljs/pull/744) ([nfischer](https://github.com/nfischer))
+- test\(head\): improve coverage [\#743](https://github.com/shelljs/shelljs/pull/743) ([nfischer](https://github.com/nfischer))
+- Remove PDF.js mention from README.md [\#738](https://github.com/shelljs/shelljs/pull/738) ([voy](https://github.com/voy))
+
 ## [v0.7.8](https://github.com/shelljs/shelljs/tree/v0.7.8) (2017-06-07)
 [Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.7...v0.7.8)
 
@@ -30,6 +81,7 @@
 
 **Merged pull requests:**
 
+- Merge dev into master [\#731](https://github.com/shelljs/shelljs/pull/731) ([freitagbr](https://github.com/freitagbr))
 - Add node 8 to CI [\#730](https://github.com/shelljs/shelljs/pull/730) ([freitagbr](https://github.com/freitagbr))
 - Deprecate common.getUserHome, advise using os.homedir instead [\#725](https://github.com/shelljs/shelljs/pull/725) ([freitagbr](https://github.com/freitagbr))
 - fix\(mkdir\): improve error handling around files [\#721](https://github.com/shelljs/shelljs/pull/721) ([nfischer](https://github.com/nfischer))
