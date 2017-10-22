@@ -1,6 +1,5 @@
 <!--
-For questions regarding executing local binaries in node_modules/.bin
-or running interactive programs with exec(), please refer to the FAQ:
+Before posting your issue, please check our FAQ:
     https://github.com/shelljs/shelljs/wiki/FAQ
 -->
 ### Node version (or tell us if you're using electron or some other framework):
