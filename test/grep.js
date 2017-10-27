@@ -136,3 +136,9 @@ test('-l option', t => {
   t.falsy(result.match(/file2.txt/));
   t.is(result.split('\n').length - 1, 2);
 });
+
+test('the pattern looks like an option', t => {
+  const result = shell.grep('--', '-v', 'test/resources/grep/file2');
+  t.falsy(shell.error());
+  t.is(result.toString(), '-v\n-vv\n');
+});

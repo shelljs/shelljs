@@ -264,6 +264,18 @@ test('common.parseOptions throws when passed a string not starting with "-"', t 
   }, Error, "Options string must start with a '-'");
 });
 
+test('common.parseOptions with -- argument', t => {
+  const result = common.parseOptions('--', {
+    R: 'recursive',
+    f: 'force',
+    r: 'reverse',
+  });
+
+  t.falsy(result.recursive);
+  t.falsy(result.force);
+  t.falsy(result.reverse);
+});
+
 test('Some basic tests on the ShellString type', t => {
   const result = shell.ShellString('foo');
   t.is(result.toString(), 'foo');
