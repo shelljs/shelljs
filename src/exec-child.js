@@ -32,6 +32,7 @@ try {
   });
 } catch (e) {
   // child_process could not run the command.
+  /* istanbul ignore next */
   process.exitCode = 127;
 }
 
