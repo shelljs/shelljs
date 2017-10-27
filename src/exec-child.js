@@ -23,29 +23,26 @@ var c;
 try {
   c = childProcess.exec(cmd, execOptions, function (err) {
     if (!err) {
-      process.exit(0);
+      process.exitCode = 0;
     } else if (err.code === undefined) {
-      process.exit(1);
+      process.exitCode = 1;
     } else {
-      process.exit(err.code);
+      process.exitCode = err.code;
     }
   });
 } catch (e) {
   // child_process could not run the command.
-  process.exit(127);
+  process.exitCode = 127;
 }
 
 var stdoutStream = fs.createWriteStream(stdoutFile);
 var stderrStream = fs.createWriteStream(stderrFile);
 
-c.stdout.pipe(stdoutStream, { end: false });
-c.stderr.pipe(stderrStream, { end: false });
+c.stdout.pipe(stdoutStream);
+c.stderr.pipe(stderrStream);
 c.stdout.pipe(process.stdout);
 c.stderr.pipe(process.stderr);
 
 if (pipe) {
   c.stdin.end(pipe);
 }
-
-c.stdout.on('end', stdoutStream.end);
-c.stderr.on('end', stderrStream.end);
