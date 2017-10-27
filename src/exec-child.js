@@ -5,9 +5,6 @@ if (require.main !== module) {
 var childProcess = require('child_process');
 var fs = require('fs');
 
-// Note: this will break if `paramFilePath` contains special characters ( '\n',
-// '\t', etc.). Such characters are possible if $TMP gets modified. We already
-// rely on tempdir() to work for other things, so this is an acceptable risk.
 var paramFilePath = process.argv[2];
 
 var serializedParams = fs.readFileSync(paramFilePath, 'utf8');
