@@ -19,22 +19,15 @@ var pipe = params.pipe;
 var stdoutFile = params.stdoutFile;
 var stderrFile = params.stderrFile;
 
-var c;
-try {
-  c = childProcess.exec(cmd, execOptions, function (err) {
-    if (!err) {
-      process.exitCode = 0;
-    } else if (err.code === undefined) {
-      process.exitCode = 1;
-    } else {
-      process.exitCode = err.code;
-    }
-  });
-} catch (e) {
-  // child_process could not run the command.
-  /* istanbul ignore next */
-  process.exitCode = 127;
-}
+var c = childProcess.exec(cmd, execOptions, function (err) {
+  if (!err) {
+    process.exitCode = 0;
+  } else if (err.code === undefined) {
+    process.exitCode = 1;
+  } else {
+    process.exitCode = err.code;
+  }
+});
 
 var stdoutStream = fs.createWriteStream(stdoutFile);
 var stderrStream = fs.createWriteStream(stderrFile);
