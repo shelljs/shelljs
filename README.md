@@ -117,6 +117,15 @@ var shell = require('shelljs');
 shell.echo('hello world');
 ```
 
+## Plugin API
+
+If you'd like to add your own ShellJS commands, we now support plugins! Check
+out the wiki pages to see:
+
+ - [How to import existing plugins in your project](https://github.com/shelljs/shelljs/wiki/Using-ShellJS-Plugins#using-an-existing-plugin)
+ - [How to write your own plugin](https://github.com/shelljs/shelljs/wiki/Using-ShellJS-Plugins#writing-a-plugin)
+ - [A list of known-plugins](https://github.com/shelljs/shelljs/wiki/Derivative-works-and-related-projects#plugins)
+
 <!-- DO NOT MODIFY BEYOND THIS POINT - IT'S AUTOMATICALLY GENERATED -->
 
 
