@@ -93,7 +93,7 @@ function execSync(cmd, opts, pipe) {
   try { common.unlinkSync(stdoutFile); } catch (e) {}
 
   if (code !== 0) {
-    common.error('', code, { continue: true });
+    common.error(stderr, code, { continue: true });
   }
   var obj = common.ShellString(stdout, stderr, code);
   return obj;
@@ -196,14 +196,10 @@ function _exec(command, options, callback) {
     async: false,
   }, options);
 
-  try {
-    if (options.async) {
-      return execAsync(command, options, pipe, callback);
-    } else {
-      return execSync(command, options, pipe);
-    }
-  } catch (e) {
-    common.error('internal error');
+  if (options.async) {
+    return execAsync(command, options, pipe, callback);
+  } else {
+    return execSync(command, options, pipe);
   }
 }
 module.exports = _exec;
