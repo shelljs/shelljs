@@ -35,7 +35,7 @@ test('config.fatal and unknown command', t => {
   shell.config.fatal = true;
   t.throws(() => {
     shell.exec('asdfasdf'); // could not find command
-  }, /asdfasdf: command not found/);
+  }, /((asdfasdf: not found)|(asdfasdf: command not found)|('asdfasdf' is not recognized))/);
   shell.config.fatal = oldFatal;
 });
 
