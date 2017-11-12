@@ -52,9 +52,6 @@ exports.state = state;
 
 delete process.env.OLDPWD; // initially, there's no previous directory
 
-// This is populated by calls to commonl.wrap()
-var pipeMethods = [];
-
 // Reliably test if something is any sort of javascript object
 function isObject(a) {
   return typeof a === 'object' && a !== null;
@@ -315,9 +312,6 @@ exports.randomFileName = randomFileName;
 // command-logging, and other nice things
 function wrap(cmd, fn, options) {
   options = options || {};
-  if (options.canReceivePipe) {
-    pipeMethods.push(cmd);
-  }
   return function () {
     var retValue = null;
 
@@ -428,22 +422,36 @@ exports.readFromPipe = _readFromPipe;
 var DEFAULT_WRAP_OPTIONS = {
   allowGlobbing: true,
   canReceivePipe: false,
-  cmdOptions: false,
+  cmdOptions: null,
   globStart: 1,
   pipeOnly: false,
-  unix: true,
   wrapOutput: true,
-  overWrite: false,
+  unix: true,
 };
+
+// This is populated during plugin registration
+var pipeMethods = [];
 
 // Register a new ShellJS command
 function _register(name, implementation, wrapOptions) {
   wrapOptions = wrapOptions || {};
+
+  // Validate options
+  Object.keys(wrapOptions).forEach(function (option) {
+    if (!DEFAULT_WRAP_OPTIONS.hasOwnProperty(option)) {
+      throw new Error("Unknown option '" + option + "'");
+    }
+    if (typeof wrapOptions[option] !== typeof DEFAULT_WRAP_OPTIONS[option]) {
+      throw new TypeError("Unsupported type '" + typeof wrapOptions[option] +
+        "' for option '" + option + "'");
+    }
+  });
+
   // If an option isn't specified, use the default
   wrapOptions = Object.assign({}, DEFAULT_WRAP_OPTIONS, wrapOptions);
 
-  if (shell[name] && !wrapOptions.overWrite) {
-    throw new Error('unable to overwrite `' + name + '` command');
+  if (shell[name]) {
+    throw new Error('Command `' + name + '` already exists');
   }
 
   if (wrapOptions.pipeOnly) {
@@ -451,6 +459,10 @@ function _register(name, implementation, wrapOptions) {
     shellMethods[name] = wrap(name, implementation, wrapOptions);
   } else {
     shell[name] = wrap(name, implementation, wrapOptions);
+  }
+
+  if (wrapOptions.canReceivePipe) {
+    pipeMethods.push(name);
   }
 }
 exports.register = _register;

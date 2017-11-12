@@ -39,6 +39,25 @@ test.beforeEach(() => {
   shell.config.resetForTesting();
 });
 
+//
+// Invalids
+//
+
+test('Unable to register a plugin with unknown options', t => {
+  t.throws(() => {
+    plugin.register('foo', fooImplementation, {
+      foobar: true,
+    });
+  }, Error);
+});
+
+test('Unable to register a plugin with wrong option types', t => {
+  t.throws(() => {
+    plugin.register('foo', fooImplementation, {
+      wrapOutput: 'true', // should be a boolean
+    });
+  }, TypeError);
+});
 
 //
 // Valids
@@ -139,10 +158,10 @@ test('Plugins can continue from errors', t => {
   t.is(shell.error(), 'foo: Error, but continuing');
 });
 
-test('Cannot overwrite an existing command by default', t => {
+test('Cannot overwrite an existing command', t => {
   const oldCat = shell.cat;
   t.throws(() => {
     plugin.register('cat', fooImplementation);
-  }, 'unable to overwrite `cat` command');
+  }, 'Command `cat` already exists');
   t.is(shell.cat, oldCat);
 });
