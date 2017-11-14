@@ -65,7 +65,7 @@
     "eslint": "^2.0.0",
     "eslint-config-airbnb-base": "^3.0.0",
     "eslint-plugin-import": "^1.11.1",
-    "nyc": "^10.0.0",
+    "nyc": "^11.3.0",
     "shelljs-changelog": "^0.2.0",
     "shelljs-release": "^0.2.0",
     "shx": "^0.2.0",
