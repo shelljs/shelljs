@@ -131,10 +131,8 @@ test('set timeout option', t => {
   const result = shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`); // default timeout is ok
   t.falsy(shell.error());
   t.is(result.code, 0);
-  const err = t.throws(() => {
-    shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`, { timeout: 10 }); // times out
-  }, /ENOENT: no such file or directory/);
-  t.is(err.name, 'ShellJSInternalError');
+  shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`, { timeout: 10 }); // times out
+  t.truthy(shell.error());
 });
 
 test('check process.env works', t => {

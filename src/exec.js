@@ -77,14 +77,14 @@ function execSync(cmd, opts, pipe) {
 
   // fs.readFileSync uses buffer encoding by default, so call
   // it without the encoding option if the encoding is 'buffer'
-  var stdout;
-  var stderr;
+  var stdout = '';
+  var stderr = '';
   if (opts.encoding === 'buffer') {
-    stdout = fs.readFileSync(stdoutFile);
-    stderr = fs.readFileSync(stderrFile);
+    try { stdout = fs.readFileSync(stdoutFile); } catch (e) {}
+    try { stderr = fs.readFileSync(stderrFile); } catch (e) {}
   } else {
-    stdout = fs.readFileSync(stdoutFile, opts.encoding);
-    stderr = fs.readFileSync(stderrFile, opts.encoding);
+    try { stdout = fs.readFileSync(stdoutFile, opts.encoding); } catch (e) {}
+    try { stderr = fs.readFileSync(stderrFile, opts.encoding); } catch (e) {}
   }
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
