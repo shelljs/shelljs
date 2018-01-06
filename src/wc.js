@@ -42,7 +42,7 @@ function getLines(data) {
 }
 
 function getWords(data) {
-    var wordsInitial = data.split(' '); //array
+    var wordsInitial = data.split(' ' || ('\n' || '\r')); //array
 
     while (wordsInitial.indexOf('') !== -1) {
         //with words, cut out any blanks enumerated
@@ -104,6 +104,8 @@ function _wc(options, files) {
 
     var moreThan1 = false;
     var totalLines = 0;
+    var totalWords = 0;
+    var totalChars = 0;
     if (files.length > 1) moreThan1 = true;
     files.forEach(function(file) {
         if (file !== '-') {
@@ -127,17 +129,21 @@ function _wc(options, files) {
 
         var temp = '';
         var thisLines = getLines(contents);
+        var thisWords = getWords(contents);
+        var thisChars = getChars(contents);
         totalLines += parseInt(thisLines);
+        totalWords += parseInt(thisWords);
+        totalChars += parseInt(thisChars);
 
         if (options.charCount || options.lineCount || options.wordCount) {
             //modify wc accordingly
 
             if (options.lineCount) temp += `${thisLines} `;
-            if (options.wordCount) temp += `${getWords(contents)} `;
-            if (options.charCount) temp += `${getChars(contents)} `;
+            if (options.wordCount) temp += `${thisWords} `;
+            if (options.charCount) temp += `${thisChars} `;
         } else {
             //get all variables! 
-            temp += `${getChars(contents)} ${thisLines} ${getWords(contents)}`;
+            temp += `${thisLines} ${thisWords} ${thisChars}`;
         }
         temp += ` ${file}`
 
