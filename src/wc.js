@@ -102,7 +102,9 @@ function _wc(options, files) {
         files.unshift('-');
     }
 
-    var shouldAppendNewline = false;
+    var moreThan1 = false;
+    var totalLines = 0;
+    if (files.length > 1) moreThan1 = true;
     files.forEach(function(file) {
         if (file !== '-') {
             if (!fs.existsSync(file)) {
@@ -123,18 +125,19 @@ function _wc(options, files) {
         'w': 'wordCount',
         */
 
-        var temp;
-
+        var temp = '';
+        var thisLines = getLines(contents);
+        totalLines += parseInt(thisLines);
 
         if (options.charCount || options.lineCount || options.wordCount) {
             //modify wc accordingly
 
-            if (options.lineCount) temp += `${getLines(contentsfile)} `;
+            if (options.lineCount) temp += `${thisLines} `;
             if (options.wordCount) temp += `${getWords(contents)} `;
             if (options.charCount) temp += `${getChars(contents)} `;
         } else {
             //get all variables! 
-            temp += `${getChars(contents)} ${getLines(contents)} ${getWords(contents)}`;
+            temp += `${getChars(contents)} ${thisLines} ${getWords(contents)}`;
         }
         temp += ` ${file}`
 
@@ -142,7 +145,8 @@ function _wc(options, files) {
 
     });
 
-    //joins seperate file output into big string
+    if (moreThan1) wc.push(`${totalLines} total`);
+
     return wc.join('\n');
 }
 module.exports = _wc;
