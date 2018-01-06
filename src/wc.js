@@ -40,32 +40,35 @@ common.register('wc', _wc, {
 //@ Examples:
 //@
 //@ ```javascript
-//@ var counts = wc('file.txt'); //returns object {'c':byteCount,'l':lineCount,'w':wordCount}
-//@ var byteCount = wc('-c','file.txt'); //returns integer number of bytes
-//@ var lineCount = wc('-l','file.txt'); //returns integer number of newlines
-//@ var wordCount = wc('-w','file.txt'); //returns integer number of words 
-//@ var countFiles = wc('file1', 'file2'); // returns object {'file1':{'c':byteCount,'l':lineCount,'w':wordCount},
-//@                                                           'file2':{'c':byteCount,'l':lineCount,'w':wordCount},
-//@                                                           'total':lineCount,
-//@                                                          }
+//@ var counts = wc('file.txt'); //returns byteCount lineCount wordCount
+//@ var byteCount = wc('-c','file.txt'); //returns number of bytes
+//@ var lineCount = wc('-l','file.txt'); //returns number of newlines
+//@ var wordCount = wc('-w','file.txt'); //returns number of words 
+//@ var countFiles = wc('file1', 'file2'); // returns 'file1' byteCount lineCount wordCount\n'file2' byteCount lineCount wordCount\n'total' lineCount
 //@ var countFiles = wc(['file1', 'file2']); //same as above
 //@ ```
 //@
 //@ Read the end of a file.
 function _wc(options, files) {
-    var wc = {};
+    var wc = [];
     var pipe = common.readFromPipe();
 
     if (!files && !pipe) common.error('no paths given');
 
     var idx = 1;
-    if (options.byteCount === true) {
+
+    /*  - from tail.js, which I'm using as a template. Not sure I need this section
+        - so each file will get the options applied to it?
+    if (options.numLines === true) {
         idx = 2;
         options.numLines = Number(arguments[1]);
     } else if (options.numLines === false) {
         options.numLines = 10;
     }
     options.numLines = -1 * Math.abs(options.numLines);
+
+    */
+
     files = [].slice.call(arguments, idx);
 
     if (pipe) {
@@ -88,6 +91,7 @@ function _wc(options, files) {
 
         var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
 
+
         var lines = contents.split('\n');
         if (lines[lines.length - 1] === '') {
             lines.pop();
@@ -96,12 +100,16 @@ function _wc(options, files) {
             shouldAppendNewline = false;
         }
 
-        tail = tail.concat(lines.slice(options.numLines));
+        wc = wc.concat(lines.slice(options.numLines));
     });
 
+    //see how/if this applies to the object
     if (shouldAppendNewline) {
-        tail.push(''); // to add a trailing newline once we join
+
+        wc.push(''); // to add a trailing newline once we join
     }
-    return tail.join('\n');
+
+    //joins seperate file output into big string
+    return wc.join('\n');
 }
-module.exports = _tail;
+module.exports = wc;
