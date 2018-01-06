@@ -141,4 +141,4 @@ function _wc(options, files) {
     //joins seperate file output into big string
     return wc.join('\n');
 }
-module.exports = wc;
+module.exports = _wc;
