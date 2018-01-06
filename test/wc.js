@@ -7,30 +7,30 @@ import common from '../src/common';
 
 shell.config.silent = true;
 
-//testing wc, converted from tail
+// testing wc, converted from tail
 //
 // Invalids
 //
 
 test('no args', t => {
-    const result = shell.tail();
+    const result = shell.wc();
     t.truthy(shell.error());
     t.is(result.code, 1);
 });
 
 test('file does not exist', t => {
     t.falsy(fs.existsSync('/asdfasdf')); // sanity check
-    const result = shell.tail('/asdfasdf');
+    const result = shell.wc('/asdfasdf');
     t.truthy(shell.error());
     t.is(result.code, 1);
 });
 
 test('directory', t => {
     t.truthy(common.statFollowLinks('test/resources/').isDirectory()); // sanity check
-    const result = shell.tail('test/resources/');
+    const result = shell.wc('test/resources/');
     t.truthy(shell.error());
     t.is(result.code, 1);
-    t.is(result.stderr, "tail: error reading 'test/resources/': Is a directory");
+    t.is(result.stderr, "wc: error reading 'test/resources/': Is a directory");
 });
 
 //
@@ -49,14 +49,14 @@ const bottomOfFile2 = ['file2 50', 'file2 49', 'file2 48', 'file2 47', 'file2 46
 ];
 
 test('simple', t => {
-    const result = shell.tail('test/resources/head/file1.txt');
+    const result = shell.wc('test/resources/head/file1.txt');
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(result.toString(), bottomOfFile1.slice(0, 10).reverse().join('\n') + '\n');
 });
 
 test('multiple files', t => {
-    const result = shell.tail('test/resources/head/file2.txt', 'test/resources/head/file1.txt');
+    const result = shell.wc('test/resources/head/file2.txt', 'test/resources/head/file1.txt');
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(result.toString(),
@@ -68,7 +68,7 @@ test('multiple files', t => {
 });
 
 test('multiple files, array syntax', t => {
-    const result = shell.tail(['test/resources/head/file2.txt', 'test/resources/head/file1.txt']);
+    const result = shell.wc(['test/resources/head/file2.txt', 'test/resources/head/file1.txt']);
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(result.toString(),
@@ -80,21 +80,21 @@ test('multiple files, array syntax', t => {
 });
 
 test('reading more lines than are in the file (no trailing newline)', t => {
-    const result = shell.tail('test/resources/file2', 'test/resources/file1');
+    const result = shell.wc('test/resources/file2', 'test/resources/file1');
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(result.toString(), 'test2\ntest1'); // these files only have one line (no \n)
 });
 
 test('reading more lines than are in the file (with trailing newline)', t => {
-    const result = shell.tail('test/resources/head/shortfile2', 'test/resources/head/shortfile1');
+    const result = shell.wc('test/resources/head/shortfile2', 'test/resources/head/shortfile1');
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(result.toString(), 'short2\nshort1\n'); // these files only have one line (with \n)
 });
 
 test('Globbed file', t => {
-    const result = shell.tail('test/resources/head/file?.txt');
+    const result = shell.wc('test/resources/head/file?.txt');
     t.falsy(shell.error());
     t.is(result.code, 0);
     t.is(result.toString(),
@@ -106,7 +106,7 @@ test('Globbed file', t => {
 });
 
 test('With `\'-n\' <num>` option', t => {
-    const result = shell.tail('-n', 4, 'test/resources/head/file2.txt',
+    const result = shell.wc('-n', 4, 'test/resources/head/file2.txt',
         'test/resources/head/file1.txt');
     t.falsy(shell.error());
     t.is(result.code, 0);
@@ -119,7 +119,7 @@ test('With `\'-n\' <num>` option', t => {
 });
 
 test('With `{\'-n\': <num>}` option', t => {
-    const result = shell.tail({ '-n': 4 }, 'test/resources/head/file2.txt',
+    const result = shell.wc({ '-n': 4 }, 'test/resources/head/file2.txt',
         'test/resources/head/file1.txt');
     t.falsy(shell.error());
     t.is(result.code, 0);
@@ -132,7 +132,7 @@ test('With `{\'-n\': <num>}` option', t => {
 });
 
 test('negative values are the same as positive values', t => {
-    const result = shell.tail('-n', -4, 'test/resources/head/file2.txt',
+    const result = shell.wc('-n', -4, 'test/resources/head/file2.txt',
         'test/resources/head/file1.txt');
     t.falsy(shell.error());
     t.is(result.code, 0);
