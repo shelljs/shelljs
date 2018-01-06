@@ -71,7 +71,7 @@ function getChars(data) {
 //@ var charCount = wc('-m','file.txt'); //returns number of characters
 //@ var lineCount = wc('-l','file.txt'); //returns number of newlines
 //@ var wordCount = wc('-w','file.txt'); //returns number of words 
-//@ var countFiles = wc('file1', 'file2'); // returns 'file1' charCount lineCount wordCount\n'file2' charCount lineCount wordCount\n'total' lineCount
+//@ var countFiles = wc('file1', 'file2'); // returns: lineCount wordCount charCount 'file1'\nlineCount wordCount charCount 'file2' \n totalLines totalWords totalChars 'total'
 //@ var countFiles = wc(['file1', 'file2']); //same as above
 //@ ```
 //@
@@ -152,7 +152,7 @@ function _wc(options, files) {
 
     });
 
-    if (moreThan1) wc.push(`${totalLines} total`);
+    if (moreThan1) wc.push(`${totalLines} ${totalWords} ${totalChars} total`);
 
     return wc.join('\n');
 }
