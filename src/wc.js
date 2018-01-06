@@ -29,6 +29,24 @@ common.register('wc', _wc, {
     },
 });
 
+function getLines(data) {
+    //data is the file contents
+    var lines = contents.split('\n').length; //int
+}
+
+function getWords(data) {
+    var wordsInitial = contents.split(' '); //array
+
+    while (wordsInitial.indexOf('') !== -1) {
+        //with words, cut out any blanks enumerated
+        wordsInitial.splice(wordsInitial.indexOf(''), 1);
+    }
+    var words = wordsInitial.length; //int
+}
+
+function getBytes(data) {
+
+}
 //@
 //@ ### wc([options,] file [, file ...])
 //@ ### wc([options,] file_array)
@@ -59,6 +77,7 @@ function _wc(options, files) {
 
     /*  - from tail.js, which I'm using as a template. Not sure I need this section
         - so each file will get the options applied to it?
+
     if (options.numLines === true) {
         idx = 2;
         options.numLines = Number(arguments[1]);
@@ -90,24 +109,32 @@ function _wc(options, files) {
         }
 
         var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
-
-
-        var lines = contents.split('\n');
-        if (lines[lines.length - 1] === '') {
-            lines.pop();
-            shouldAppendNewline = true;
+        /*
+        'c': 'byteCount',
+        'l': 'lineCount',
+        'w': 'wordCount',
+        */
+        var temp;
+        if (files.length === 1) {
+            //then not including filename in the result
         } else {
-            shouldAppendNewline = false;
+            //include filename in result:
+            temp = `${file.toString()} `;
         }
 
-        wc = wc.concat(lines.slice(options.numLines));
+        if (options.byteCount || options.lineCount || options.wordCount) {
+            //modify wc accordingly
+            if (options.byteCount) temp += `${getBytes(file)} `;
+            if (options.lineCount) temp += `${getLines(file)} `;
+            if (options.wordCount) temp += `${getWords(file)} `;
+        } else {
+            //get all variables! should return strings
+            temp += `${getBytes(file)} ${getLines(file)} ${getWords}`;
+        }
+
+        wc.push(temp);
+
     });
-
-    //see how/if this applies to the object
-    if (shouldAppendNewline) {
-
-        wc.push(''); // to add a trailing newline once we join
-    }
 
     //joins seperate file output into big string
     return wc.join('\n');
