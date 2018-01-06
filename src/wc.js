@@ -31,8 +31,14 @@ common.register('wc', _wc, {
 
 function getLines(data) {
     //data is the file contents
-    var lines = data.split('\n').length; //int is size of array
-    return lines.toString();
+    var lines = data.split('\n'); // array
+
+    if (lines[lines.length - 1] === '') {
+        //in case it wanted to count an empty line at the bottom
+        lines.pop();
+    }
+
+    return lines.length.toString();
 }
 
 function getWords(data) {
@@ -116,23 +122,21 @@ function _wc(options, files) {
         'l': 'lineCount',
         'w': 'wordCount',
         */
+
         var temp;
-        if (files.length === 1) {
-            //then not including filename in the result
-        } else {
-            //include filename in result:
-            temp = `${file.toString()} `;
-        }
+
 
         if (options.charCount || options.lineCount || options.wordCount) {
             //modify wc accordingly
-            if (options.charCount) temp += `${getChars(contents)} `;
+
             if (options.lineCount) temp += `${getLines(contentsfile)} `;
             if (options.wordCount) temp += `${getWords(contents)} `;
+            if (options.charCount) temp += `${getChars(contents)} `;
         } else {
             //get all variables! 
             temp += `${getChars(contents)} ${getLines(contents)} ${getWords(contents)}`;
         }
+        temp += ` ${file}`
 
         wc.push(temp);
 
