@@ -42,7 +42,8 @@ function getLines(data) {
 }
 
 function getWords(data) {
-    var wordsInitial = data.split(' ' || ('\n' || '\r')); //array
+    var regexSplit = /\s/;
+    var wordsInitial = data.split(regexSplit); //array
 
     while (wordsInitial.indexOf('') !== -1) {
         //with words, cut out any blanks enumerated
