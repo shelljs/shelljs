@@ -23,7 +23,7 @@ var fs = require('fs');
 common.register('wc', _wc, {
     canReceivePipe: true,
     cmdOptions: {
-        'c': 'byteCount',
+        'm': 'charCount',
         'l': 'lineCount',
         'w': 'wordCount',
     },
@@ -31,38 +31,40 @@ common.register('wc', _wc, {
 
 function getLines(data) {
     //data is the file contents
-    var lines = contents.split('\n').length; //int
+    var lines = data.split('\n').length; //int is size of array
+    return lines.toString();
 }
 
 function getWords(data) {
-    var wordsInitial = contents.split(' '); //array
+    var wordsInitial = data.split(' '); //array
 
     while (wordsInitial.indexOf('') !== -1) {
         //with words, cut out any blanks enumerated
         wordsInitial.splice(wordsInitial.indexOf(''), 1);
     }
-    var words = wordsInitial.length; //int
+    return wordsInitial.length.toString();
 }
 
-function getBytes(data) {
-
+function getChars(data) {
+    return data.length.toString();
 }
+
 //@
 //@ ### wc([options,] file [, file ...])
 //@ ### wc([options,] file_array)
 //@ Available options:
-//@ + `-c`: print the byte counts (generally the number of characters)
+//@ + `-m`: print the char counts 
 //@ + `-l`: print the newline counts
 //@ + `-w`: print the word counts (space delimited characters)
 //@ 
 //@ Examples:
 //@
 //@ ```javascript
-//@ var counts = wc('file.txt'); //returns byteCount lineCount wordCount
-//@ var byteCount = wc('-c','file.txt'); //returns number of bytes
+//@ var counts = wc('file.txt'); //returns charCount lineCount wordCount
+//@ var charCount = wc('-m','file.txt'); //returns number of characters
 //@ var lineCount = wc('-l','file.txt'); //returns number of newlines
 //@ var wordCount = wc('-w','file.txt'); //returns number of words 
-//@ var countFiles = wc('file1', 'file2'); // returns 'file1' byteCount lineCount wordCount\n'file2' byteCount lineCount wordCount\n'total' lineCount
+//@ var countFiles = wc('file1', 'file2'); // returns 'file1' charCount lineCount wordCount\n'file2' charCount lineCount wordCount\n'total' lineCount
 //@ var countFiles = wc(['file1', 'file2']); //same as above
 //@ ```
 //@
@@ -76,15 +78,15 @@ function _wc(options, files) {
     var idx = 1;
 
     /*  - from tail.js, which I'm using as a template. Not sure I need this section
-        - so each file will get the options applied to it?
+            - so each file will get the options applied to it?
 
-    if (options.numLines === true) {
-        idx = 2;
-        options.numLines = Number(arguments[1]);
-    } else if (options.numLines === false) {
-        options.numLines = 10;
-    }
-    options.numLines = -1 * Math.abs(options.numLines);
+        if (options.numLines === true) {
+            idx = 2;
+            options.numLines = Number(arguments[1]);
+        } else if (options.numLines === false) {
+            options.numLines = 10;
+        }
+        options.numLines = -1 * Math.abs(options.numLines);
 
     */
 
@@ -110,7 +112,7 @@ function _wc(options, files) {
 
         var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
         /*
-        'c': 'byteCount',
+        'm': 'charCount',
         'l': 'lineCount',
         'w': 'wordCount',
         */
@@ -122,14 +124,14 @@ function _wc(options, files) {
             temp = `${file.toString()} `;
         }
 
-        if (options.byteCount || options.lineCount || options.wordCount) {
+        if (options.charCount || options.lineCount || options.wordCount) {
             //modify wc accordingly
-            if (options.byteCount) temp += `${getBytes(file)} `;
-            if (options.lineCount) temp += `${getLines(file)} `;
-            if (options.wordCount) temp += `${getWords(file)} `;
+            if (options.charCount) temp += `${getChars(contents)} `;
+            if (options.lineCount) temp += `${getLines(contentsfile)} `;
+            if (options.wordCount) temp += `${getWords(contents)} `;
         } else {
-            //get all variables! should return strings
-            temp += `${getBytes(file)} ${getLines(file)} ${getWords}`;
+            //get all variables! 
+            temp += `${getChars(contents)} ${getLines(contents)} ${getWords(contents)}`;
         }
 
         wc.push(temp);
