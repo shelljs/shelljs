@@ -51,7 +51,7 @@ $ shx rm -rf foo
 ## Plugin API
 
 ShellJS now supports third-party plugins! You can learn more about using plugins
-and writing your own shelljs commands in [the
+and writing your own ShellJS commands in [the
 wiki](https://github.com/shelljs/shelljs/wiki/Using-ShellJS-Plugins).
 
 ## A quick note about the docs
