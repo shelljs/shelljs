@@ -76,15 +76,17 @@ function execSync(cmd, opts, pipe) {
   }
 
   // fs.readFileSync uses buffer encoding by default, so call
-  // it without the encoding option if the encoding is 'buffer'
+  // it without the encoding option if the encoding is 'buffer'.
+  // Also, if the exec timeout is too short for node to start up,
+  // the files will not be created, so these calls will throw.
   var stdout = '';
   var stderr = '';
   if (opts.encoding === 'buffer') {
-    try { stdout = fs.readFileSync(stdoutFile); } catch (e) {}
-    try { stderr = fs.readFileSync(stderrFile); } catch (e) {}
+    stdout = fs.readFileSync(stdoutFile);
+    stderr = fs.readFileSync(stderrFile);
   } else {
-    try { stdout = fs.readFileSync(stdoutFile, opts.encoding); } catch (e) {}
-    try { stderr = fs.readFileSync(stderrFile, opts.encoding); } catch (e) {}
+    stdout = fs.readFileSync(stdoutFile, opts.encoding);
+    stderr = fs.readFileSync(stderrFile, opts.encoding);
   }
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway

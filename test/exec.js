@@ -131,7 +131,7 @@ test('set timeout option', t => {
   const result = shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`); // default timeout is ok
   t.falsy(shell.error());
   t.is(result.code, 0);
-  shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`, { timeout: 10 }); // times out
+  shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 2000`, { timeout: 1000 }); // times out
   t.truthy(shell.error());
 });
 
