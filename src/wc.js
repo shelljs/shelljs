@@ -1,22 +1,3 @@
-/*  
-    copy tail.sh as an example, and provide a similar function to wc.
-    wc man page:http://man7.org/linux/man-pages/man1/wc.1.html
-    (notes from man page)        
-       wc - Print newline, word, and byte counts for each FILE, and a total line
-       if more than one FILE is specified.  A word is a non-zero-length
-       sequence of characters delimited by white space.
-        -c, --bytes print the byte counts
-        -m, --chars print the character counts
-        -l, --lines print the newline counts
-        --files0-from=F
-                    read input from the files specified by NUL-terminated names in
-                    file F; If F is - then read names from standard input
-        -L, --max-line-length print the maximum display width
-        -w, --words print the word counts
-        --help display this help and exit
-        --version output version information and exit
-*/
-
 var common = require('./common');
 var fs = require('fs');
 
