@@ -1,3 +1,23 @@
+// @
+// @ ### wc([options,] file [, file ...])
+// @ ### wc([options,] file_array)
+// @ Available options:
+// @ + `-m`: print the char counts 
+// @ + `-l`: print the newline counts
+// @ + `-w`: print the word counts (space delimited characters)
+// @ 
+// @ Examples:
+// @
+// @ ```javascript
+// @ var counts = wc('file.txt'); //returns charCount lineCount wordCount
+// @ var charCount = wc('-m','file.txt'); //returns number of characters
+// @ var lineCount = wc('-l','file.txt'); //returns number of newlines
+// @ var wordCount = wc('-w','file.txt'); //returns number of words 
+// @ var countFiles = wc(['file1', 'file2']); //same as above
+// @ ```
+// @
+// @ read the number of characters, lines and words in a file.
+
 var common = require('./common');
 var fs = require('fs');
 
@@ -40,25 +60,11 @@ function getChars(data) {
     return data.length;
 }
 
-// @
-// @ ### wc([options,] file [, file ...])
-// @ ### wc([options,] file_array)
-// @ Available options:
-// @ + `-m`: print the char counts 
-// @ + `-l`: print the newline counts
-// @ + `-w`: print the word counts (space delimited characters)
-// @ 
-// @ Examples:
-// @
-// @ ```javascript
-// @ var counts = wc('file.txt'); //returns charCount lineCount wordCount
-// @ var charCount = wc('-m','file.txt'); //returns number of characters
-// @ var lineCount = wc('-l','file.txt'); //returns number of newlines
-// @ var wordCount = wc('-w','file.txt'); //returns number of words 
-// @ var countFiles = wc(['file1', 'file2']); //same as above
-// @ ```
-// @
-// @ Read the end of a file.
+function getBytes(data) {
+
+}
+
+
 function _wc(options, files) {
     var wc = [];
     var pipe = common.readFromPipe();
