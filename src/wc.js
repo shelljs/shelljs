@@ -73,11 +73,9 @@ function _wc(options, files) {
         files.unshift('-');
     }
 
-    var moreThan1 = false;
     var totalLines = 0;
     var totalWords = 0;
     var totalChars = 0;
-    if (files.length > 1) moreThan1 = true;
     files.forEach(function(file) {
         if (file !== '-') {
             if (!fs.existsSync(file)) {
@@ -122,7 +120,7 @@ function _wc(options, files) {
 
     });
 
-    if (moreThan1) wc.push(`${totalLines} ${totalWords} ${totalChars} total`);
+    if (files.length > 1) wc.push(`${totalLines} ${totalWords} ${totalChars} total`);
 
     return wc.join('\n');
 }
