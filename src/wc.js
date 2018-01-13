@@ -126,9 +126,10 @@ function _wc(options, files) {
             if (options.lineCount) formattedOutput += thisLines;
             if (options.wordCount) formattedOutput += thisWords;
             if (options.charCount) formattedOutput += thisChars;
+            if (options.byteCount) formattedOutput += thisBytes;
         } else {
             // get all variables! 
-            formattedOutput += `${thisLines} ${thisWords} ${thisChars}`;
+            formattedOutput += `${thisLines} ${thisWords} ${thisChars} ${thisBytes}`;
         }
         formattedOutput += ` ${file}`
 
@@ -136,7 +137,7 @@ function _wc(options, files) {
 
     });
 
-    if (files.length > 1) wc.push(`${totalLines} ${totalWords} ${totalChars} total\n`);
+    if (files.length > 1) wc.push(`${totalLines} ${totalWords} ${totalChars} ${thisBytes} total\n`);
 
     return wc.join('\n');
 }
