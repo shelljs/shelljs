@@ -120,7 +120,7 @@ function _wc(options, files) {
 
     });
 
-    if (files.length > 1) wc.push(`${totalLines} ${totalWords} ${totalChars} total`);
+    if (files.length > 1) wc.push(`${totalLines} ${totalWords} ${totalChars} total\n`);
 
     return wc.join('\n');
 }
