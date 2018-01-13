@@ -656,6 +656,7 @@ uniq('-cd', 'foo.txt', 'bar.txt');
 Filter adjacent matching lines from input
 
 
+<<<<<<< HEAD
 ### wc([options,] file [, file ...])
 ### wc([options,] file_array)
 Available options:
@@ -1376,6 +1377,8 @@ var countFiles = wc(['file1', 'file2']); //same as above
 Read the end of a file.
 
 
+=======
+>>>>>>> parent of 5040cfc... update with generate-doc.js
 ### which(command)
 
 Examples:
