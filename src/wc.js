@@ -10,14 +10,15 @@
 // @ Examples:
 // @
 // @ ```javascript
-// @ var counts = wc('file.txt'); //returns charCount lineCount wordCount
+// @ var counts = wc('file.txt'); //returns lineCount wordCount byteCount
 // @ var charCount = wc('-m','file.txt'); //returns number of characters
 // @ var lineCount = wc('-l','file.txt'); //returns number of newlines
 // @ var wordCount = wc('-w','file.txt'); //returns number of words 
 // @ var byteCount = wc('-c','file.txt'); //returns number of bytes 
 // @ var countFiles = wc(['file1', 'file2']); //same as above
 // @ ```
-// @
+// @ Note: The character counts include escaped characters
+// @ 
 // @ read the number of characters, lines and words in a file.
 
 var common = require('./common');
@@ -50,7 +51,7 @@ function getWords(data) {
     // the chars on the left of a newline to the ones on the right,
     // counting them as part of the same space delimited 'word'
 
-    var stringed = data.toString('utf8');
+    var stringed = data.toString('utf16le');
     var regexSplit = /\s/;
     var wordsInitial = stringed.split(regexSplit); // array
 
@@ -83,6 +84,7 @@ function getChars(data) {
         const num = Array.from(s.split(/[\ufe00-\ufe0f]/).join("")).length;
         count += num;
     }
+
     return count / split.length;
 }
 
@@ -136,7 +138,7 @@ function _wc(options, files) {
         var thisLines = getLines(contents);
         var thisWords = getWords(contents);
         var thisChars = getChars(contents);
-        var thisBytes = getChars(contents);
+        var thisBytes = getBytes(contents);
         totalLines += thisLines;
         totalWords += thisWords;
         totalChars += thisChars;
@@ -151,7 +153,7 @@ function _wc(options, files) {
             if (options.byteCount) formattedOutput += thisBytes;
         } else {
             // get all variables! 
-            formattedOutput += `${thisLines} ${thisWords} ${thisChars} ${thisBytes}`;
+            formattedOutput += `${thisLines} ${thisWords} ${thisBytes}`;
         }
         formattedOutput += ` ${file}`
 
@@ -159,7 +161,7 @@ function _wc(options, files) {
 
     });
 
-    if (files.length > 1) wc.push(`${totalLines} ${totalWords} ${totalChars} ${thisBytes} total\n`);
+    if (files.length > 1) wc.push(`${totalLines} ${totalWords} ${totalBytes} total\n`);
 
     return wc.join('\n');
 }
