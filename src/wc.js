@@ -96,7 +96,7 @@ function _wc(options, files) {
         'w': 'wordCount',
         */
 
-        var temp = '';
+        var formattedOutput = '';
         var thisLines = getLines(contents);
         var thisWords = getWords(contents);
         var thisChars = getChars(contents);
@@ -107,16 +107,16 @@ function _wc(options, files) {
         if (options.charCount || options.lineCount || options.wordCount) {
             // modify wc accordingly
 
-            if (options.lineCount) temp += `${thisLines} `;
-            if (options.wordCount) temp += `${thisWords} `;
-            if (options.charCount) temp += `${thisChars} `;
+            if (options.lineCount) formattedOutput += `${thisLines} `;
+            if (options.wordCount) formattedOutput += `${thisWords} `;
+            if (options.charCount) formattedOutput += `${thisChars} `;
         } else {
             // get all variables! 
-            temp += `${thisLines} ${thisWords} ${thisChars}`;
+            formattedOutput += `${thisLines} ${thisWords} ${thisChars}`;
         }
-        temp += ` ${file}`
+        formattedOutput += ` ${file}`
 
-        wc.push(temp);
+        wc.push(formattedOutput);
 
     });
 
