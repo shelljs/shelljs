@@ -19,7 +19,7 @@ function getLines(data) {
         lines.pop();
     }
 
-    return lines.length.toString();
+    return lines.length;
 }
 
 function getWords(data) {
@@ -30,11 +30,11 @@ function getWords(data) {
         //with words, cut out any blanks enumerated
         wordsInitial.splice(wordsInitial.indexOf(''), 1);
     }
-    return wordsInitial.length.toString();
+    return wordsInitial.length;
 }
 
 function getChars(data) {
-    return data.length.toString();
+    return data.length;
 }
 
 //@
@@ -64,19 +64,6 @@ function _wc(options, files) {
     if (!files && !pipe) common.error('no paths given');
 
     var idx = 1;
-
-    /*  - from tail.js, which I'm using as a template. Not sure I need this section
-            - so each file will get the options applied to it?
-
-        if (options.numLines === true) {
-            idx = 2;
-            options.numLines = Number(arguments[1]);
-        } else if (options.numLines === false) {
-            options.numLines = 10;
-        }
-        options.numLines = -1 * Math.abs(options.numLines);
-
-    */
 
     files = [].slice.call(arguments, idx);
 
@@ -113,9 +100,9 @@ function _wc(options, files) {
         var thisLines = getLines(contents);
         var thisWords = getWords(contents);
         var thisChars = getChars(contents);
-        totalLines += parseInt(thisLines);
-        totalWords += parseInt(thisWords);
-        totalChars += parseInt(thisChars);
+        totalLines += thisLines;
+        totalWords += thisWords;
+        totalChars += thisChars;
 
         if (options.charCount || options.lineCount || options.wordCount) {
             //modify wc accordingly
