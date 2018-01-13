@@ -23,14 +23,17 @@ function getLines(data) {
 }
 
 function getWords(data) {
+
+
+
     var regexSplit = /\s/;
     var wordsInitial = data.split(regexSplit); //array
 
-    while (wordsInitial.indexOf('') !== -1) {
-        //with words, cut out any blanks enumerated
-        wordsInitial.splice(wordsInitial.indexOf(''), 1);
-    }
-    return wordsInitial.length;
+    var wordsList = wordsInitial.filter(function(word) {
+        if (word !== '') return word;
+    });
+
+    return wordsList.length;
 }
 
 function getChars(data) {
