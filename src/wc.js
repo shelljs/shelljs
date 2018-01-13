@@ -27,6 +27,7 @@ common.register('wc', _wc, {
         'm': 'charCount',
         'l': 'lineCount',
         'w': 'wordCount',
+        'c': 'byteCount',
     },
 });
 
@@ -43,8 +44,9 @@ function getLines(data) {
 }
 
 function getWords(data) {
-
-
+    // there will be a difference from UNIX since UNIX wc connects
+    // the chars on the left of a newline to the ones on the right,
+    // counting them as part of the same space delimited 'word'
 
     var regexSplit = /\s/;
     var wordsInitial = data.split(regexSplit); // array
@@ -57,6 +59,8 @@ function getWords(data) {
 }
 
 function getChars(data) {
+    // in the case of a pipe, all we have is the string size
+    // in the file loaded buffer, we have a byte array
     return data.length;
 }
 
@@ -82,6 +86,8 @@ function _wc(options, files) {
     var totalLines = 0;
     var totalWords = 0;
     var totalChars = 0;
+    var totalBytes = 0;
+
     files.forEach(function(file) {
         if (file !== '-') {
             if (!fs.existsSync(file)) {
@@ -95,22 +101,26 @@ function _wc(options, files) {
             }
         }
 
-        var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
+        var contents = file === '-' ? Buffer.from(pipe) : fs.readFileSync(file);
+        // the contents are either a Buffer from pipe, or Buffer from fs
         /*
         'm': 'charCount',
         'l': 'lineCount',
         'w': 'wordCount',
+        'b': 'byteCount',
         */
 
         var formattedOutput = '';
         var thisLines = getLines(contents);
         var thisWords = getWords(contents);
         var thisChars = getChars(contents);
+        var thisBytes = getChars(contents);
         totalLines += thisLines;
         totalWords += thisWords;
         totalChars += thisChars;
+        totalBytes += thisBytes;
 
-        if (options.charCount || options.lineCount || options.wordCount) {
+        if (options.charCount || options.lineCount || options.wordCount || options.byteCount) {
             // modify wc accordingly
 
             if (options.lineCount) formattedOutput += thisLines;
