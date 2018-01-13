@@ -11,11 +11,11 @@ common.register('wc', _wc, {
 });
 
 function getLines(data) {
-    //data is the file contents
+    // data is the file contents
     var lines = data.split('\n'); // array
 
     if (lines[lines.length - 1] === '') {
-        //in case it wanted to count an empty line at the bottom
+        // in case it wanted to count an empty line at the bottom
         lines.pop();
     }
 
@@ -27,7 +27,7 @@ function getWords(data) {
 
 
     var regexSplit = /\s/;
-    var wordsInitial = data.split(regexSplit); //array
+    var wordsInitial = data.split(regexSplit); // array
 
     var wordsList = wordsInitial.filter(function(word) {
         if (word !== '') return word;
@@ -40,26 +40,25 @@ function getChars(data) {
     return data.length;
 }
 
-//@
-//@ ### wc([options,] file [, file ...])
-//@ ### wc([options,] file_array)
-//@ Available options:
-//@ + `-m`: print the char counts 
-//@ + `-l`: print the newline counts
-//@ + `-w`: print the word counts (space delimited characters)
-//@ 
-//@ Examples:
-//@
-//@ ```javascript
-//@ var counts = wc('file.txt'); //returns charCount lineCount wordCount
-//@ var charCount = wc('-m','file.txt'); //returns number of characters
-//@ var lineCount = wc('-l','file.txt'); //returns number of newlines
-//@ var wordCount = wc('-w','file.txt'); //returns number of words 
-//@ var countFiles = wc('file1', 'file2'); // returns: lineCount wordCount charCount 'file1'\nlineCount wordCount charCount 'file2' \n totalLines totalWords totalChars 'total'
-//@ var countFiles = wc(['file1', 'file2']); //same as above
-//@ ```
-//@
-//@ Read the end of a file.
+// @
+// @ ### wc([options,] file [, file ...])
+// @ ### wc([options,] file_array)
+// @ Available options:
+// @ + `-m`: print the char counts 
+// @ + `-l`: print the newline counts
+// @ + `-w`: print the word counts (space delimited characters)
+// @ 
+// @ Examples:
+// @
+// @ ```javascript
+// @ var counts = wc('file.txt'); //returns charCount lineCount wordCount
+// @ var charCount = wc('-m','file.txt'); //returns number of characters
+// @ var lineCount = wc('-l','file.txt'); //returns number of newlines
+// @ var wordCount = wc('-w','file.txt'); //returns number of words 
+// @ var countFiles = wc(['file1', 'file2']); //same as above
+// @ ```
+// @
+// @ Read the end of a file.
 function _wc(options, files) {
     var wc = [];
     var pipe = common.readFromPipe();
@@ -108,13 +107,13 @@ function _wc(options, files) {
         totalChars += thisChars;
 
         if (options.charCount || options.lineCount || options.wordCount) {
-            //modify wc accordingly
+            // modify wc accordingly
 
             if (options.lineCount) temp += `${thisLines} `;
             if (options.wordCount) temp += `${thisWords} `;
             if (options.charCount) temp += `${thisChars} `;
         } else {
-            //get all variables! 
+            // get all variables! 
             temp += `${thisLines} ${thisWords} ${thisChars}`;
         }
         temp += ` ${file}`
