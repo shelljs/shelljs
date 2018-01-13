@@ -5,6 +5,7 @@
 // @ + `-m`: print the char counts 
 // @ + `-l`: print the newline counts
 // @ + `-w`: print the word counts (space delimited characters)
+// @ + `-c`: print the byte counts 
 // @ 
 // @ Examples:
 // @
@@ -13,6 +14,7 @@
 // @ var charCount = wc('-m','file.txt'); //returns number of characters
 // @ var lineCount = wc('-l','file.txt'); //returns number of newlines
 // @ var wordCount = wc('-w','file.txt'); //returns number of words 
+// @ var byteCount = wc('-c','file.txt'); //returns number of bytes 
 // @ var countFiles = wc(['file1', 'file2']); //same as above
 // @ ```
 // @
@@ -33,7 +35,7 @@ common.register('wc', _wc, {
 
 function getLines(data) {
     // data is the file contents
-    var lines = data.split('\n'); // array
+    var lines = data.toString('utf8').split('\n'); // array
 
     if (lines[lines.length - 1] === '') {
         // in case it wanted to count an empty line at the bottom
@@ -48,8 +50,9 @@ function getWords(data) {
     // the chars on the left of a newline to the ones on the right,
     // counting them as part of the same space delimited 'word'
 
+    var stringed = data.toString('utf8');
     var regexSplit = /\s/;
-    var wordsInitial = data.split(regexSplit); // array
+    var wordsInitial = stringed.split(regexSplit); // array
 
     var wordsList = wordsInitial.filter(function(word) {
         if (word !== '') return word;
@@ -58,14 +61,33 @@ function getWords(data) {
     return wordsList.length;
 }
 
+// using this method, without modification, directly from: 
+// http://blog.jonnew.com/posts/poo-dot-length-equals-two
+// I think this is giving accurate characcter counts for the vast majority of unicode
+// (excellent post, by the way)
+
 function getChars(data) {
-    // in the case of a pipe, all we have is the string size
-    // in the file loaded buffer, we have a byte array
-    return data.length;
+    // make the data in the buffer into a utf16 string
+    var str = data.toString('utf16le');
+
+    // using implementation of a method, without modification, directly from: 
+    // http://blog.jonnew.com/posts/poo-dot-length-equals-two
+    // I think this is giving accurate characcter counts for the vast majority of unicode
+    // (excellent post, by the way)
+    const joiner = "\u{200D}";
+    const split = str.split(joiner);
+    let count = 0;
+
+    for (const s of split) {
+        //removing the variation selectors
+        const num = Array.from(s.split(/[\ufe00-\ufe0f]/).join("")).length;
+        count += num;
+    }
+    return count / split.length;
 }
 
 function getBytes(data) {
-
+    return data.length;
 }
 
 
