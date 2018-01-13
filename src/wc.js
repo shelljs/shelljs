@@ -124,4 +124,5 @@ function _wc(options, files) {
 
     return wc.join('\n');
 }
+
 module.exports = _wc;
