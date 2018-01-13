@@ -107,9 +107,9 @@ function _wc(options, files) {
         if (options.charCount || options.lineCount || options.wordCount) {
             // modify wc accordingly
 
-            if (options.lineCount) formattedOutput += `${thisLines} `;
-            if (options.wordCount) formattedOutput += `${thisWords} `;
-            if (options.charCount) formattedOutput += `${thisChars} `;
+            if (options.lineCount) formattedOutput += thisLines;
+            if (options.wordCount) formattedOutput += thisWords;
+            if (options.charCount) formattedOutput += thisChars;
         } else {
             // get all variables! 
             formattedOutput += `${thisLines} ${thisWords} ${thisChars}`;
