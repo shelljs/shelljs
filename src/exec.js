@@ -21,6 +21,7 @@ function execSync(cmd, opts, pipe) {
   }
 
   var tempDir = _tempDir();
+  var paramsFile = path.resolve(tempDir + '/' + common.randomFileName());
   var stderrFile = path.resolve(tempDir + '/' + common.randomFileName());
   var stdoutFile = path.resolve(tempDir + '/' + common.randomFileName());
 
@@ -32,6 +33,7 @@ function execSync(cmd, opts, pipe) {
     encoding: 'utf8',
   }, opts);
 
+  if (fs.existsSync(paramsFile)) common.unlinkSync(paramsFile);
   if (fs.existsSync(stderrFile)) common.unlinkSync(stderrFile);
   if (fs.existsSync(stdoutFile)) common.unlinkSync(stdoutFile);
 
@@ -45,9 +47,11 @@ function execSync(cmd, opts, pipe) {
     stderrFile: stderrFile,
   };
 
+  fs.writeFileSync(paramsFile, JSON.stringify(paramsToSerialize), 'utf8');
+
   var execArgs = [
     path.join(__dirname, 'exec-child.js'),
-    JSON.stringify(paramsToSerialize),
+    paramsFile,
   ];
 
   /* istanbul ignore else */
@@ -84,6 +88,7 @@ function execSync(cmd, opts, pipe) {
   }
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
+  try { common.unlinkSync(paramsFile); } catch (e) {}
   try { common.unlinkSync(stderrFile); } catch (e) {}
   try { common.unlinkSync(stdoutFile); } catch (e) {}
 
