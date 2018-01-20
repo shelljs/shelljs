@@ -1,5 +1,19 @@
 # Change Log
 
+## [v0.8.1](https://github.com/shelljs/shelljs/tree/v0.8.1) (2018-01-20)
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.8.0...v0.8.1)
+
+**Closed issues:**
+
+- Exec failing with internal error when piping large output [\#818](https://github.com/shelljs/shelljs/issues/818)
+- Shelljs exec\(\) not executing variables [\#815](https://github.com/shelljs/shelljs/issues/815)
+- support for node-0.10.\* is broken [\#814](https://github.com/shelljs/shelljs/issues/814)
+- using sed to replace just the first occurrence of a string [\#813](https://github.com/shelljs/shelljs/issues/813)
+
+**Merged pull requests:**
+
+- Revert "refactor\(exec\): remove paramsFile \(\#807\)" [\#819](https://github.com/shelljs/shelljs/pull/819) ([nfischer](https://github.com/nfischer))
+
 ## [v0.8.0](https://github.com/shelljs/shelljs/tree/v0.8.0) (2018-01-12)
 [Full Changelog](https://github.com/shelljs/shelljs/compare/v0.7.8...v0.8.0)
 
@@ -29,9 +43,7 @@
 - shelljs is no longer used in PDF.js [\#737](https://github.com/shelljs/shelljs/issues/737)
 - ls doesn't follow links to directories [\#733](https://github.com/shelljs/shelljs/issues/733)
 - Add test for `ls regular-file.txt` [\#732](https://github.com/shelljs/shelljs/issues/732)
-- shelljs.exec hangs when password it's asked [\#716](https://github.com/shelljs/shelljs/issues/716)
 - Clean up common tests [\#714](https://github.com/shelljs/shelljs/issues/714)
-- Can't run docker with exec\(\) \(the input device is not a TTY\) [\#680](https://github.com/shelljs/shelljs/issues/680)
 - Cant get encoding buffer to work on exec [\#675](https://github.com/shelljs/shelljs/issues/675)
 - Set up Codecov for the project [\#671](https://github.com/shelljs/shelljs/issues/671)
 - ShellJS: internal error Error: EBUSY: resource busy or locked, lstat 'C:\pagefile.sys' [\#514](https://github.com/shelljs/shelljs/issues/514)
@@ -192,7 +204,6 @@
 - bug: cp\(\) doesn't always copy everything [\#547](https://github.com/shelljs/shelljs/issues/547)
 - User-friendly lint command [\#544](https://github.com/shelljs/shelljs/issues/544)
 - Lint warning [\#542](https://github.com/shelljs/shelljs/issues/542)
-- Possible Regression: cp from 0.6.0 to 0.7.x version [\#538](https://github.com/shelljs/shelljs/issues/538)
 - chore: add nodejs v7 to CI [\#537](https://github.com/shelljs/shelljs/issues/537)
 - error.code is not always available [\#536](https://github.com/shelljs/shelljs/issues/536)
 - Add shx as a dependency for testing [\#525](https://github.com/shelljs/shelljs/issues/525)
@@ -367,7 +378,6 @@
 - Stdout is empty on Git log command [\#439](https://github.com/shelljs/shelljs/issues/439)
 - Cannot read toString of null when using execSync [\#415](https://github.com/shelljs/shelljs/issues/415)
 - cp -R dir/ target fails to copy hidden files in dir [\#140](https://github.com/shelljs/shelljs/issues/140)
-- Adding callback to basic commands [\#102](https://github.com/shelljs/shelljs/issues/102)
 - \#mv Won't Work Across Disks [\#1](https://github.com/shelljs/shelljs/issues/1)
 
 **Merged pull requests:**
@@ -397,8 +407,6 @@
 **Closed issues:**
 
 - exec\('nohup node some.js &'\) [\#426](https://github.com/shelljs/shelljs/issues/426)
-- cp copy to symlinked folder [\#414](https://github.com/shelljs/shelljs/issues/414)
-- Invalid version number \(0.0.1alpha1\) [\#399](https://github.com/shelljs/shelljs/issues/399)
 - shelljs Breaks SemVer for Alpha and Pre-Release Versions [\#390](https://github.com/shelljs/shelljs/issues/390)
 - Copy not accepting source end with wildcards \* when using -r on v0.6.0 [\#389](https://github.com/shelljs/shelljs/issues/389)
 - Support globbing in `shjs` [\#388](https://github.com/shelljs/shelljs/issues/388)
@@ -417,7 +425,6 @@
 - "exec" causes LiveScript interpreter \(lsc\) to hang [\#160](https://github.com/shelljs/shelljs/issues/160)
 - Don't modify string prototype [\#159](https://github.com/shelljs/shelljs/issues/159)
 - `exec\(...\).to\(file\)` should work [\#154](https://github.com/shelljs/shelljs/issues/154)
-- Would like to see more async variants for cp/rm etc [\#144](https://github.com/shelljs/shelljs/issues/144)
 - Can't install shelljs locally instead of globally [\#136](https://github.com/shelljs/shelljs/issues/136)
 - shelljs and node 0.10.28 [\#125](https://github.com/shelljs/shelljs/issues/125)
 - Use case for global installed shelljs [\#123](https://github.com/shelljs/shelljs/issues/123)
@@ -521,7 +528,6 @@
 - sed\(\) should accept multiple file arguments [\#231](https://github.com/shelljs/shelljs/issues/231)
 - shelljs.exec\('aaa && bbb'\) blocks [\#229](https://github.com/shelljs/shelljs/issues/229)
 - Consider creating a GitHub Organization with more maintainers [\#223](https://github.com/shelljs/shelljs/issues/223)
-- Doesn't work inside Electron [\#220](https://github.com/shelljs/shelljs/issues/220)
 - \[idea\] Add chmodr function. [\#219](https://github.com/shelljs/shelljs/issues/219)
 - Execute a file [\#211](https://github.com/shelljs/shelljs/issues/211)
 - Where is standard error going to? [\#209](https://github.com/shelljs/shelljs/issues/209)
@@ -533,7 +539,6 @@
 - Cannot recursively list all \*.js files [\#162](https://github.com/shelljs/shelljs/issues/162)
 - exec\(\) breaks if executed in a deleted directory [\#157](https://github.com/shelljs/shelljs/issues/157)
 - shjs command always exits with zero code [\#133](https://github.com/shelljs/shelljs/issues/133)
-- Windows failing tests [\#127](https://github.com/shelljs/shelljs/issues/127)
 - touch command [\#122](https://github.com/shelljs/shelljs/issues/122)
 - Symbolic links are broken! [\#100](https://github.com/shelljs/shelljs/issues/100)
 - interpret `--` as stdin [\#55](https://github.com/shelljs/shelljs/issues/55)
