@@ -5,7 +5,10 @@ if (require.main !== module) {
 var childProcess = require('child_process');
 var fs = require('fs');
 
-var params = JSON.parse(process.argv[2]);
+var paramFilePath = process.argv[2];
+
+var serializedParams = fs.readFileSync(paramFilePath, 'utf8');
+var params = JSON.parse(serializedParams);
 
 var cmd = params.command;
 var execOptions = params.execOptions;
