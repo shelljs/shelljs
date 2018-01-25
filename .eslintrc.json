@@ -23,6 +23,7 @@
     "consistent-return": "off",
     "no-mixed-operators": "off",
     "no-prototype-builtins": "off",
+    "no-multiple-empty-lines": ["error", { "max": 2, "maxBOF": 0, "maxEOF": 0 } ],
     "new-cap": ["error", {
       "capIsNewExceptions": [
         "ShellString"
