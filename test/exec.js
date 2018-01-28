@@ -35,11 +35,7 @@ test('config.fatal and unknown command', t => {
   shell.config.fatal = true;
   t.throws(() => {
     shell.exec('asdfasdf'); // could not find command
-    // the expected message depends on where tests are run:
-    //   /bin/sh says "foo: not found"
-    //   /bin/bash says "foo: command not found"
-    //   cmd.exe says "'foo' is not recognized..."
-  }, /((asdfasdf: not found)|(asdfasdf: command not found)|('asdfasdf' is not recognized))/);
+  }, /asdfasdf/); // name of command should be in error message
   shell.config.fatal = oldFatal;
 });
 
