@@ -6,6 +6,7 @@ var fs = require('fs');
 var child = require('child_process');
 
 var DEFAULT_MAXBUFFER_SIZE = 20 * 1024 * 1024;
+var DEFAULT_ERROR_CODE = 1;
 
 common.register('exec', _exec, {
   unix: false,
@@ -72,7 +73,7 @@ function execSync(cmd, opts, pipe) {
     child.execFileSync(common.config.execPath, execArgs, opts);
   } catch (e) {
     // Commands with non-zero exit code raise an exception.
-    code = e.status;
+    code = e.status || DEFAULT_ERROR_CODE;
   }
 
   // fs.readFileSync uses buffer encoding by default, so call
