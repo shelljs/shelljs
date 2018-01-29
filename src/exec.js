@@ -6,6 +6,7 @@ var fs = require('fs');
 var child = require('child_process');
 
 var DEFAULT_MAXBUFFER_SIZE = 20 * 1024 * 1024;
+var DEFAULT_ERROR_CODE = 1;
 
 common.register('exec', _exec, {
   unix: false,
@@ -72,13 +73,15 @@ function execSync(cmd, opts, pipe) {
     child.execFileSync(common.config.execPath, execArgs, opts);
   } catch (e) {
     // Commands with non-zero exit code raise an exception.
-    code = e.status;
+    code = e.status || DEFAULT_ERROR_CODE;
   }
 
   // fs.readFileSync uses buffer encoding by default, so call
-  // it without the encoding option if the encoding is 'buffer'
-  var stdout;
-  var stderr;
+  // it without the encoding option if the encoding is 'buffer'.
+  // Also, if the exec timeout is too short for node to start up,
+  // the files will not be created, so these calls will throw.
+  var stdout = '';
+  var stderr = '';
   if (opts.encoding === 'buffer') {
     stdout = fs.readFileSync(stdoutFile);
     stderr = fs.readFileSync(stderrFile);
@@ -93,7 +96,7 @@ function execSync(cmd, opts, pipe) {
   try { common.unlinkSync(stdoutFile); } catch (e) {}
 
   if (code !== 0) {
-    common.error('', code, { continue: true });
+    common.error(stderr, code, { continue: true });
   }
   var obj = common.ShellString(stdout, stderr, code);
   return obj;
@@ -196,14 +199,10 @@ function _exec(command, options, callback) {
     async: false,
   }, options);
 
-  try {
-    if (options.async) {
-      return execAsync(command, options, pipe, callback);
-    } else {
-      return execSync(command, options, pipe);
-    }
-  } catch (e) {
-    common.error('internal error');
+  if (options.async) {
+    return execAsync(command, options, pipe, callback);
+  } else {
+    return execSync(command, options, pipe);
   }
 }
 module.exports = _exec;
