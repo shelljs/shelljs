@@ -162,7 +162,7 @@ function handleFIFO(file) {
 //@ rm(['some_file.txt', 'another_file.txt']); // same as above
 //@ ```
 //@
-//@ Removes files.
+//@ Removes `file`s.
 function _rm(options, files) {
   if (!files) common.error('no paths given');
 

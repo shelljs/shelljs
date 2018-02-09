@@ -190,7 +190,7 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@
 //@ + `-f`: force (default behavior)
 //@ + `-n`: no-clobber
-//@ + `-u`: only copy if source is newer than dest
+//@ + `-u`: only copy if `source` is newer than `dest`
 //@ + `-r`, `-R`: recursive
 //@ + `-L`: follow symlinks
 //@ + `-P`: don't follow symlinks

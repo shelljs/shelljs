@@ -15,10 +15,10 @@ common.register('find', _find, {});
 //@ find('.').filter(function(file) { return file.match(/\.js$/); });
 //@ ```
 //@
-//@ Returns array of all files (however deep) in the given paths.
+//@ Returns array of all files (however deep) in the given `path`s.
 //@
 //@ The main difference from `ls('-R', path)` is that the resulting file names
-//@ include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
+//@ include the base directories (e.g., `lib/resources/file1` instead of just `file1`).
 function _find(options, paths) {
   if (!paths) {
     common.error('no path specified');
@@ -35,8 +35,8 @@ function _find(options, paths) {
     list.push(file);
   }
 
-  // why not simply do ls('-R', paths)? because the output wouldn't give the base dirs
-  // to get the base dir in the output, we need instead ls('-R', 'dir/*') for every directory
+  // why not simply do `ls('-R', paths)`? because the output wouldn't give the base dirs
+  // to get the base dir in the output, we need instead `ls('-R', 'dir/*')` for every directory
 
   paths.forEach(function (file) {
     var stat;

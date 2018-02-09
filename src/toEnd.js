@@ -9,7 +9,6 @@ common.register('toEnd', _toEnd, {
 
 //@
 //@ ### ShellString.prototype.toEnd(file)
-//@
 //@ Examples:
 //@
 //@ ```javascript
@@ -17,7 +16,7 @@ common.register('toEnd', _toEnd, {
 //@ ```
 //@
 //@ Analogous to the redirect-and-append operator `>>` in Unix, but works with
-//@ ShellStrings (such as those returned by `cat`, `grep`, etc).
+//@ `ShellStrings` (such as those returned by `cat`, `grep`, etc.).
 function _toEnd(options, file) {
   if (!file) common.error('wrong arguments');
 

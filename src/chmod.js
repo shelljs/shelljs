@@ -35,11 +35,10 @@ common.register('chmod', _chmod, {
 //@
 //@ ### chmod([options,] octal_mode || octal_string, file)
 //@ ### chmod([options,] symbolic_mode, file)
-//@
 //@ Available options:
 //@
-//@ + `-v`: output a diagnostic for every file processed//@
-//@ + `-c`: like verbose but report only when a change is made//@
+//@ + `-v`: output a diagnostic for every `file` processed//@
+//@ + `-c`: like verbose, but report only when a change is made//@
 //@ + `-R`: change files and directories recursively//@
 //@
 //@ Examples:
@@ -56,9 +55,9 @@ common.register('chmod', _chmod, {
 //@ This command tries to mimic the POSIX behavior as much as possible.
 //@ Notable exceptions:
 //@
-//@ + In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
-//@   given to the umask.
-//@ + There is no "quiet" option since default behavior is to run silent.
+//@ + In symbolic modes, `a-r` and `-r` are identical.  No consideration is
+//@   given to the `umask`.
+//@ + There is no "quiet" option, since default behavior is to run silent.
 function _chmod(options, mode, filePattern) {
   if (!filePattern) {
     if (options.length > 0 && options.charAt(0) === '-') {

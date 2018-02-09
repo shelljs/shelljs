@@ -9,11 +9,11 @@ common.register('which', _which, {
   },
 });
 
-// XP's system default value for PATHEXT system variable, just in case it's not
+// XP's system default value for `PATHEXT` system variable, just in case it's not
 // set on Windows.
 var XP_DEFAULT_PATHEXT = '.com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh';
 
-// Cross-platform method for splitting environment PATH variables
+// Cross-platform method for splitting environment `PATH` variables
 function splitPath(p) {
   return p ? p.split(path.delimiter) : [];
 }
@@ -31,9 +31,9 @@ function checkPath(pathName) {
 //@ var nodeExec = which('node');
 //@ ```
 //@
-//@ Searches for `command` in the system's PATH. On Windows, this uses the
+//@ Searches for `command` in the system's `PATH`. On Windows, this uses the
 //@ `PATHEXT` variable to append the extension if it's not already executable.
-//@ Returns string containing the absolute path to the command.
+//@ Returns string containing the absolute path to `command`.
 function _which(options, cmd) {
   if (!cmd) common.error('must specify command');
 

@@ -27,7 +27,7 @@ common.register('ls', _ls, {
 //@ + `-d`: list directories themselves, not their contents
 //@ + `-l`: list objects representing each file, each with fields containing `ls
 //@         -l` output fields. See
-//@         [fs.Stats](https://nodejs.org/api/fs.html#fs_class_fs_stats)
+//@         [`fs.Stats`](https://nodejs.org/api/fs.html#fs_class_fs_stats)
 //@         for more info
 //@
 //@ Examples:
@@ -39,7 +39,8 @@ common.register('ls', _ls, {
 //@ ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
 //@ ```
 //@
-//@ Returns array of files in the given path, or in current directory if no path provided.
+//@ Returns array of files in the given `path`, or files in 
+//@ the current directory if no `path` is  provided.
 function _ls(options, paths) {
   if (options.all_deprecated) {
     // We won't support the -a option as it's hard to image why it's useful

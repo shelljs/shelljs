@@ -20,7 +20,7 @@ common.register('set', _set, {
 //@ set('+e'); // this undoes a "set('-e')"
 //@ ```
 //@
-//@ Sets global configuration variables
+//@ Sets global configuration variables.
 function _set(options) {
   if (!options) {
     var args = [].slice.call(arguments, 0);
