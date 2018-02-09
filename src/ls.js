@@ -39,7 +39,7 @@ common.register('ls', _ls, {
 //@ ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
 //@ ```
 //@
-//@ Returns array of files in the given `path`, or files in 
+//@ Returns array of files in the given `path`, or files in
 //@ the current directory if no `path` is  provided.
 function _ls(options, paths) {
   if (options.all_deprecated) {
