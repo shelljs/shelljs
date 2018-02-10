@@ -476,7 +476,7 @@ rm('some_file.txt', 'another_file.txt');
 rm(['some_file.txt', 'another_file.txt']); // same as above
 ```
 
-Removes `file`s.
+Removes files.
 
 
 ### sed([options,] search_regex, replacement, file [, file ...])
@@ -688,7 +688,7 @@ var foo = ShellString('hello world');
 ```
 
 Turns a regular string into a string-like object similar to what each
-command returns. This has special methods, like `.to()` and `.toEnd()`
+command returns. This has special methods, like `.to()` and `.toEnd()`.
 
 
 ### env['VAR_NAME']
