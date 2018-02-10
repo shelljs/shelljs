@@ -37,7 +37,7 @@ function mkdirSyncRecursive(dir) {
 //@ ### mkdir([options,] dir_array)
 //@ Available options:
 //@
-//@ + `-p`: full path (will create intermediate `dir`s, if necessary)
+//@ + `-p`: full path (and create intermediate directories, if necessary)
 //@
 //@ Examples:
 //@

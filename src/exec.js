@@ -173,10 +173,6 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ Not seeing the behavior you want? `exec()` runs everything through `sh`
 //@ by default (or `cmd.exe` on Windows), which differs from `bash`. If you
 //@ need bash-specific behavior, try out the `{shell: 'path/to/bash'}` option.
-//@
-//@ **Note:** For long-lived processes, it's best to run `exec()` asynchronously, as
-//@ the current synchronous implementation uses a lot of CPU. This should be getting
-//@ fixed soon.
 function _exec(command, options, callback) {
   options = options || {};
   if (!command) common.error('must specify command');

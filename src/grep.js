@@ -16,7 +16,7 @@ common.register('grep', _grep, {
 //@ Available options:
 //@
 //@ + `-v`: Invert `regex_filter` (only print non-matching lines).
-//@ + `-l`: Print only filenames of matching `file`s
+//@ + `-l`: Print only filenames of matching files
 //@
 //@ Examples:
 //@
@@ -25,7 +25,7 @@ common.register('grep', _grep, {
 //@ grep('GLOBAL_VARIABLE', '*.js');
 //@ ```
 //@
-//@ Reads input string from given `file`s and returns a string containing all lines of the
+//@ Reads input string from given files and returns a string containing all lines of the
 //@ file that match the given `regex_filter`.
 function _grep(options, regex, files) {
   // Check if this is coming from a pipe

@@ -151,7 +151,7 @@ var str = cat('file1', 'file2');
 var str = cat(['file1', 'file2']); // same as above
 ```
 
-Returns a string containing the given `file`, or a concatenated string
+Returns a string containing the given file, or a concatenated string
 containing the files if more than one file is given (a new line character is
 introduced between each file).
 
@@ -165,7 +165,7 @@ directory if no argument is supplied.
 ### chmod([options,] symbolic_mode, file)
 Available options:
 
-+ `-v`: output a diagnostic for every `file` processed
++ `-v`: output a diagnostic for every file processed
 + `-c`: like verbose, but report only when a change is made
 + `-R`: change files and directories recursively
 
@@ -329,10 +329,6 @@ Not seeing the behavior you want? `exec()` runs everything through `sh`
 by default (or `cmd.exe` on Windows), which differs from `bash`. If you
 need bash-specific behavior, try out the `{shell: 'path/to/bash'}` option.
 
-**Note:** For long-lived processes, it's best to run `exec()` asynchronously, as
-the current synchronous implementation uses a lot of CPU. This should be getting
-fixed soon.
-
 
 ### find(path [, path ...])
 ### find(path_array)
@@ -344,7 +340,7 @@ find(['src', 'lib']); // same as above
 find('.').filter(function(file) { return file.match(/\.js$/); });
 ```
 
-Returns array of all files (however deep) in the given `path`s.
+Returns array of all files (however deep) in the given paths.
 
 The main difference from `ls('-R', path)` is that the resulting file names
 include the base directories (e.g., `lib/resources/file1` instead of just `file1`).
@@ -355,7 +351,7 @@ include the base directories (e.g., `lib/resources/file1` instead of just `file1
 Available options:
 
 + `-v`: Invert `regex_filter` (only print non-matching lines).
-+ `-l`: Print only filenames of matching `file`s
++ `-l`: Print only filenames of matching files
 
 Examples:
 
@@ -364,7 +360,7 @@ grep('-v', 'GLOBAL_VARIABLE', '*.js');
 grep('GLOBAL_VARIABLE', '*.js');
 ```
 
-Reads input string from given `file`s and returns a string containing all lines of the
+Reads input string from given files and returns a string containing all lines of the
 file that match the given `regex_filter`.
 
 
@@ -372,7 +368,7 @@ file that match the given `regex_filter`.
 ### head([{'-n': \<num\>},] file_array)
 Available options:
 
-+ `-n <num>`: Show the first `<num>` lines of the `file`s
++ `-n <num>`: Show the first `<num>` lines of the files
 
 Examples:
 
@@ -382,7 +378,7 @@ var str = head('file1', 'file2');
 var str = head(['file1', 'file2']); // same as above
 ```
 
-Read the start of a `file`.
+Read the start of a file.
 
 
 ### ln([options,] source, dest)
@@ -423,7 +419,7 @@ ls('-R', ['/users/me', '/tmp']); // same as above
 ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
 ```
 
-Returns array of files in the given `path`, or files in 
+Returns array of files in the given `path`, or files in
 the current directory if no `path` is  provided.
 
 
@@ -431,7 +427,7 @@ the current directory if no `path` is  provided.
 ### mkdir([options,] dir_array)
 Available options:
 
-+ `-p`: full path (will create intermediate `dir`s, if necessary)
++ `-p`: full path (and create intermediate directories, if necessary)
 
 Examples:
 
@@ -637,7 +633,7 @@ touch({ '-r': FILE }, '/path/to/some/dir/source.js');
 
 Update the access and modification times of each `FILE` to the current time.
 A `FILE` argument that does not exist is created empty, unless `-c` is supplied.
-This is a partial implementation of *[`touch(1)`](http://linux.die.net/man/1/touch)*.
+This is a partial implementation of [`touch(1)`](http://linux.die.net/man/1/touch).
 
 
 ### uniq([options,] [input, [output]])
@@ -678,7 +674,7 @@ Exits the current process with the given exit `code`.
 Tests if error occurred in the last command. Returns a truthy value if an
 error returned, or a falsy value otherwise.
 
-**Note**: Do not rely on the
+**Note**: do not rely on the
 return value to be an error message. If you need the last error message, use
 the `.stderr` attribute from the last command's return value instead.
 

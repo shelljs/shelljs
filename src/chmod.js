@@ -37,7 +37,7 @@ common.register('chmod', _chmod, {
 //@ ### chmod([options,] symbolic_mode, file)
 //@ Available options:
 //@
-//@ + `-v`: output a diagnostic for every `file` processed//@
+//@ + `-v`: output a diagnostic for every file processed//@
 //@ + `-c`: like verbose, but report only when a change is made//@
 //@ + `-R`: change files and directories recursively//@
 //@

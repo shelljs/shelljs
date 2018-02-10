@@ -15,7 +15,7 @@ common.register('find', _find, {});
 //@ find('.').filter(function(file) { return file.match(/\.js$/); });
 //@ ```
 //@
-//@ Returns array of all files (however deep) in the given `path`s.
+//@ Returns array of all files (however deep) in the given paths.
 //@
 //@ The main difference from `ls('-R', path)` is that the resulting file names
 //@ include the base directories (e.g., `lib/resources/file1` instead of just `file1`).

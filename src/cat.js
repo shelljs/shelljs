@@ -23,7 +23,7 @@ common.register('cat', _cat, {
 //@ var str = cat(['file1', 'file2']); // same as above
 //@ ```
 //@
-//@ Returns a string containing the given `file`, or a concatenated string
+//@ Returns a string containing the given file, or a concatenated string
 //@ containing the files if more than one file is given (a new line character is
 //@ introduced between each file).
 function _cat(options, files) {
