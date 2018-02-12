@@ -51,7 +51,7 @@
   "dependencies": {
     "glob": "^7.0.0",
     "interpret": "^1.0.0",
-    "rechoir": "^0.6.2"
+    "rechoir": "^0.6.0"
   },
   "ava": {
     "serial": true,
