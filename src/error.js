@@ -2,6 +2,7 @@ var common = require('./common');
 
 //@
 //@ ### error()
+//@
 //@ Tests if error occurred in the last command. Returns a truthy value if an
 //@ error returned, or a falsy value otherwise.
 //@

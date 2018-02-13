@@ -27,6 +27,7 @@ require('./commands').forEach(function (command) {
 
 //@
 //@ ### exit(code)
+//@
 //@ Exits the current process with the given exit `code`.
 exports.exit = process.exit;
 
@@ -38,6 +39,7 @@ exports.ShellString = common.ShellString;
 
 //@
 //@ ### env['VAR_NAME']
+//@
 //@ Object containing environment variables (both getter and setter). Shortcut
 //@ to `process.env`.
 exports.env = process.env;

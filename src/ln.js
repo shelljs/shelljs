@@ -11,6 +11,7 @@ common.register('ln', _ln, {
 
 //@
 //@ ### ln([options,] source, dest)
+//@
 //@ Available options:
 //@
 //@ + `-s`: symlink

@@ -9,6 +9,7 @@ common.register('toEnd', _toEnd, {
 
 //@
 //@ ### ShellString.prototype.toEnd(file)
+//@
 //@ Examples:
 //@
 //@ ```javascript

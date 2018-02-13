@@ -139,6 +139,7 @@ page](https://github.com/shelljs/shelljs/wiki).
 
 ### cat([options,] file [, file ...])
 ### cat([options,] file_array)
+
 Available options:
 
 + `-n`: number all output lines
@@ -157,12 +158,14 @@ introduced between each file).
 
 
 ### cd([dir])
+
 Changes to directory `dir` for the duration of the script. Changes to home
 directory if no argument is supplied.
 
 
 ### chmod([options,] octal_mode || octal_string, file)
 ### chmod([options,] symbolic_mode, file)
+
 Available options:
 
 + `-v`: output a diagnostic for every file processed
@@ -190,6 +193,7 @@ Notable exceptions:
 
 ### cp([options,] source [, source ...], dest)
 ### cp([options,] source_array, dest)
+
 Available options:
 
 + `-f`: force (default behavior)
@@ -212,6 +216,7 @@ Copies files.
 
 
 ### pushd([options,] [dir | '-N' | '+N'])
+
 Available options:
 
 + `-n`: Suppresses the normal change of directory when adding directories to the stack, so that only the stack is manipulated.
@@ -235,6 +240,7 @@ Save the current directory on the top of the directory stack and then `cd` to `d
 
 
 ### popd([options,] ['-N' | '+N'])
+
 Available options:
 
 + `-n`: Suppress the normal directory change when removing directories from the stack, so that only the stack is manipulated.
@@ -259,6 +265,7 @@ When no arguments are given, `popd` removes the top directory from the stack and
 
 
 ### dirs([options | '+N' | '-N'])
+
 Available options:
 
 + `-c`: Clears the directory stack by deleting all of the elements.
@@ -275,6 +282,7 @@ See also: `pushd`, `popd`
 
 
 ### echo([options,] string [, string ...])
+
 Available options:
 
 + `-e`: interpret backslash escapes (default)
@@ -293,6 +301,7 @@ like `.to()`.
 
 
 ### exec(command [, options] [, callback])
+
 Available options:
 
 + `async`: Asynchronous execution. If a callback is provided, it will be set to
@@ -332,6 +341,7 @@ need bash-specific behavior, try out the `{shell: 'path/to/bash'}` option.
 
 ### find(path [, path ...])
 ### find(path_array)
+
 Examples:
 
 ```javascript
@@ -348,6 +358,7 @@ include the base directories (e.g., `lib/resources/file1` instead of just `file1
 
 ### grep([options,] regex_filter, file [, file ...])
 ### grep([options,] regex_filter, file_array)
+
 Available options:
 
 + `-v`: Invert `regex_filter` (only print non-matching lines).
@@ -366,6 +377,7 @@ file that match the given `regex_filter`.
 
 ### head([{'-n': \<num\>},] file [, file ...])
 ### head([{'-n': \<num\>},] file_array)
+
 Available options:
 
 + `-n <num>`: Show the first `<num>` lines of the files
@@ -382,6 +394,7 @@ Read the start of a file.
 
 
 ### ln([options,] source, dest)
+
 Available options:
 
 + `-s`: symlink
@@ -399,6 +412,7 @@ Links `source` to `dest`. Use `-f` to force the link, should `dest` already exis
 
 ### ls([options,] [path, ...])
 ### ls([options,] path_array)
+
 Available options:
 
 + `-R`: recursive
@@ -425,6 +439,7 @@ the current directory if no `path` is  provided.
 
 ### mkdir([options,] dir [, dir ...])
 ### mkdir([options,] dir_array)
+
 Available options:
 
 + `-p`: full path (and create intermediate directories, if necessary)
@@ -441,6 +456,7 @@ Creates directories.
 
 ### mv([options ,] source [, source ...], dest')
 ### mv([options ,] source_array, dest')
+
 Available options:
 
 + `-f`: force (default behavior)
@@ -458,11 +474,13 @@ Moves `source` file(s) to `dest`.
 
 
 ### pwd()
+
 Returns the current directory.
 
 
 ### rm([options,] file [, file ...])
 ### rm([options,] file_array)
+
 Available options:
 
 + `-f`: force
@@ -481,6 +499,7 @@ Removes files.
 
 ### sed([options,] search_regex, replacement, file [, file ...])
 ### sed([options,] search_regex, replacement, file_array)
+
 Available options:
 
 + `-i`: Replace contents of `file` in-place. _Note that no backups will be created!_
@@ -506,6 +525,7 @@ sed(/(\w+)\s(\w+)/, '$2, $1', 'file.txt');
 
 
 ### set(options)
+
 Available options:
 
 + `+/-e`: exit upon error (`config.fatal`)
@@ -524,6 +544,7 @@ Sets global configuration variables.
 
 ### sort([options,] file [, file ...])
 ### sort([options,] file_array)
+
 Available options:
 
 + `-r`: Reverse the results
@@ -542,6 +563,7 @@ files mixes their content (just as unix `sort` does).
 
 ### tail([{'-n': \<num\>},] file [, file ...])
 ### tail([{'-n': \<num\>},] file_array)
+
 Available options:
 
 + `-n <num>`: Show the last `<num>` lines of `file`s
@@ -558,6 +580,7 @@ Read the end of a `file`.
 
 
 ### tempdir()
+
 Examples:
 
 ```javascript
@@ -569,6 +592,7 @@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.ht
 
 
 ### test(expression)
+
 Available expression primaries:
 
 + `'-b', 'path'`: true if path is a block device
@@ -591,6 +615,7 @@ Evaluates `expression` using the available primaries and returns corresponding v
 
 
 ### ShellString.prototype.to(file)
+
 Examples:
 
 ```javascript
@@ -603,6 +628,7 @@ redirections, `to()` will overwrite any existing file!_
 
 
 ### ShellString.prototype.toEnd(file)
+
 Examples:
 
 ```javascript
@@ -615,6 +641,7 @@ Analogous to the redirect-and-append operator `>>` in Unix, but works with
 
 ### touch([options,] file [, file ...])
 ### touch([options,] file_array)
+
 Available options:
 
 + `-a`: Change only the access time
@@ -637,6 +664,7 @@ This is a partial implementation of [`touch(1)`](http://linux.die.net/man/1/touc
 
 
 ### uniq([options,] [input, [output]])
+
 Available options:
 
 + `-i`: Ignore case while comparing
@@ -668,9 +696,11 @@ Returns string containing the absolute path to `command`.
 
 
 ### exit(code)
+
 Exits the current process with the given exit `code`.
 
 ### error()
+
 Tests if error occurred in the last command. Returns a truthy value if an
 error returned, or a falsy value otherwise.
 
@@ -692,6 +722,7 @@ command returns. This has special methods, like `.to()` and `.toEnd()`.
 
 
 ### env['VAR_NAME']
+
 Object containing environment variables (both getter and setter). Shortcut
 to `process.env`.
 

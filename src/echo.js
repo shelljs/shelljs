@@ -8,6 +8,7 @@ common.register('echo', _echo, {
 
 //@
 //@ ### echo([options,] string [, string ...])
+//@
 //@ Available options:
 //@
 //@ + `-e`: interpret backslash escapes (default)

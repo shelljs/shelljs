@@ -12,6 +12,7 @@ common.register('sed', _sed, {
 //@
 //@ ### sed([options,] search_regex, replacement, file [, file ...])
 //@ ### sed([options,] search_regex, replacement, file_array)
+//@
 //@ Available options:
 //@
 //@ + `-i`: Replace contents of `file` in-place. _Note that no backups will be created!_

@@ -11,6 +11,7 @@ common.register('cat', _cat, {
 //@
 //@ ### cat([options,] file [, file ...])
 //@ ### cat([options,] file_array)
+//@
 //@ Available options:
 //@
 //@ + `-n`: number all output lines

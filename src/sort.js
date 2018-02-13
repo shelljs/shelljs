@@ -41,6 +41,7 @@ function numericalCmp(a, b) {
 //@
 //@ ### sort([options,] file [, file ...])
 //@ ### sort([options,] file_array)
+//@
 //@ Available options:
 //@
 //@ + `-r`: Reverse the results

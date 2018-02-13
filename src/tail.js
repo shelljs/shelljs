@@ -11,6 +11,7 @@ common.register('tail', _tail, {
 //@
 //@ ### tail([{'-n': \<num\>},] file [, file ...])
 //@ ### tail([{'-n': \<num\>},] file_array)
+//@
 //@ Available options:
 //@
 //@ + `-n <num>`: Show the last `<num>` lines of `file`s

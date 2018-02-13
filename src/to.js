@@ -9,6 +9,7 @@ common.register('to', _to, {
 
 //@
 //@ ### ShellString.prototype.to(file)
+//@
 //@ Examples:
 //@
 //@ ```javascript

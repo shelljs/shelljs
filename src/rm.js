@@ -149,6 +149,7 @@ function handleFIFO(file) {
 //@
 //@ ### rm([options,] file [, file ...])
 //@ ### rm([options,] file_array)
+//@
 //@ Available options:
 //@
 //@ + `-f`: force

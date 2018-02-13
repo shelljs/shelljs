@@ -14,6 +14,7 @@ common.register('touch', _touch, {
 //@
 //@ ### touch([options,] file [, file ...])
 //@ ### touch([options,] file_array)
+//@
 //@ Available options:
 //@
 //@ + `-a`: Change only the access time

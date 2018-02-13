@@ -22,6 +22,7 @@ function checkRecentCreated(sources, index) {
 //@
 //@ ### mv([options ,] source [, source ...], dest')
 //@ ### mv([options ,] source_array, dest')
+//@
 //@ Available options:
 //@
 //@ + `-f`: force (default behavior)

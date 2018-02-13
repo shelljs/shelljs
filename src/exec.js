@@ -138,6 +138,7 @@ function execAsync(cmd, opts, pipe, callback) {
 
 //@
 //@ ### exec(command [, options] [, callback])
+//@
 //@ Available options:
 //@
 //@ + `async`: Asynchronous execution. If a callback is provided, it will be set to

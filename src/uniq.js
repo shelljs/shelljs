@@ -21,6 +21,7 @@ common.register('uniq', _uniq, {
 
 //@
 //@ ### uniq([options,] [input, [output]])
+//@
 //@ Available options:
 //@
 //@ + `-i`: Ignore case while comparing

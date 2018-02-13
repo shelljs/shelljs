@@ -186,6 +186,7 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@
 //@ ### cp([options,] source [, source ...], dest)
 //@ ### cp([options,] source_array, dest)
+//@
 //@ Available options:
 //@
 //@ + `-f`: force (default behavior)

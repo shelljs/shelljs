@@ -19,6 +19,7 @@ common.register('test', _test, {
 
 //@
 //@ ### test(expression)
+//@
 //@ Available expression primaries:
 //@
 //@ + `'-b', 'path'`: true if path is a block device

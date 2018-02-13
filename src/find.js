@@ -7,6 +7,7 @@ common.register('find', _find, {});
 //@
 //@ ### find(path [, path ...])
 //@ ### find(path_array)
+//@
 //@ Examples:
 //@
 //@ ```javascript

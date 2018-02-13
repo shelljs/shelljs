@@ -19,6 +19,7 @@ common.register('ls', _ls, {
 //@
 //@ ### ls([options,] [path, ...])
 //@ ### ls([options,] path_array)
+//@
 //@ Available options:
 //@
 //@ + `-R`: recursive

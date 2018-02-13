@@ -5,6 +5,7 @@ common.register('cd', _cd, {});
 
 //@
 //@ ### cd([dir])
+//@
 //@ Changes to directory `dir` for the duration of the script. Changes to home
 //@ directory if no argument is supplied.
 function _cd(options, dir) {

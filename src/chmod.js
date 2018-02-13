@@ -35,6 +35,7 @@ common.register('chmod', _chmod, {
 //@
 //@ ### chmod([options,] octal_mode || octal_string, file)
 //@ ### chmod([options,] symbolic_mode, file)
+//@
 //@ Available options:
 //@
 //@ + `-v`: output a diagnostic for every file processed//@

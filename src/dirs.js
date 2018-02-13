@@ -36,6 +36,7 @@ function _actualDirStack() {
 
 //@
 //@ ### pushd([options,] [dir | '-N' | '+N'])
+//@
 //@ Available options:
 //@
 //@ + `-n`: Suppresses the normal change of directory when adding directories to the stack, so that only the stack is manipulated.
@@ -103,6 +104,7 @@ exports.pushd = _pushd;
 //@
 //@
 //@ ### popd([options,] ['-N' | '+N'])
+//@
 //@ Available options:
 //@
 //@ + `-n`: Suppress the normal directory change when removing directories from the stack, so that only the stack is manipulated.
@@ -156,6 +158,7 @@ exports.popd = _popd;
 //@
 //@
 //@ ### dirs([options | '+N' | '-N'])
+//@
 //@ Available options:
 //@
 //@ + `-c`: Clears the directory stack by deleting all of the elements.

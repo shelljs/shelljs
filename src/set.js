@@ -7,6 +7,7 @@ common.register('set', _set, {
 
 //@
 //@ ### set(options)
+//@
 //@ Available options:
 //@
 //@ + `+/-e`: exit upon error (`config.fatal`)
