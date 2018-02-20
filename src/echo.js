@@ -8,6 +8,7 @@ common.register('echo', _echo, {
 
 //@
 //@ ### echo([options,] string [, string ...])
+//@
 //@ Available options:
 //@
 //@ + `-e`: interpret backslash escapes (default)
@@ -21,7 +22,7 @@ common.register('echo', _echo, {
 //@ echo('-n', 'no newline at end');
 //@ ```
 //@
-//@ Prints string to stdout, and returns string with additional utility methods
+//@ Prints `string` to stdout, and returns string with additional utility methods
 //@ like `.to()`.
 function _echo(opts) {
   // allow strings starting with '-', see issue #20

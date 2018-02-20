@@ -11,6 +11,7 @@ common.register('ln', _ln, {
 
 //@
 //@ ### ln([options,] source, dest)
+//@
 //@ Available options:
 //@
 //@ + `-s`: symlink
@@ -23,7 +24,7 @@ common.register('ln', _ln, {
 //@ ln('-sf', 'file', 'existing');
 //@ ```
 //@
-//@ Links source to dest. Use -f to force the link, should dest already exist.
+//@ Links `source` to `dest`. Use `-f` to force the link, should `dest` already exist.
 function _ln(options, source, dest) {
   if (!source || !dest) {
     common.error('Missing <source> and/or <dest>');

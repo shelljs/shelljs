@@ -8,7 +8,7 @@ common.register('mkdir', _mkdir, {
   },
 });
 
-// Recursively creates 'dir'
+// Recursively creates `dir`
 function mkdirSyncRecursive(dir) {
   var baseDir = path.dirname(dir);
 
@@ -35,9 +35,10 @@ function mkdirSyncRecursive(dir) {
 //@
 //@ ### mkdir([options,] dir [, dir ...])
 //@ ### mkdir([options,] dir_array)
+//@
 //@ Available options:
 //@
-//@ + `-p`: full path (will create intermediate dirs if necessary)
+//@ + `-p`: full path (and create intermediate directories, if necessary)
 //@
 //@ Examples:
 //@

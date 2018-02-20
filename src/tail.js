@@ -11,9 +11,10 @@ common.register('tail', _tail, {
 //@
 //@ ### tail([{'-n': \<num\>},] file [, file ...])
 //@ ### tail([{'-n': \<num\>},] file_array)
+//@
 //@ Available options:
 //@
-//@ + `-n <num>`: Show the last `<num>` lines of the files
+//@ + `-n <num>`: Show the last `<num>` lines of `file`s
 //@
 //@ Examples:
 //@
@@ -23,7 +24,7 @@ common.register('tail', _tail, {
 //@ var str = tail(['file1', 'file2']); // same as above
 //@ ```
 //@
-//@ Read the end of a file.
+//@ Read the end of a `file`.
 function _tail(options, files) {
   var tail = [];
   var pipe = common.readFromPipe();

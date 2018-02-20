@@ -44,7 +44,7 @@ function _actualDirStack() {
 //@
 //@ Arguments:
 //@
-//@ + `dir`: Makes the current working directory be the top of the stack, and then executes the equivalent of `cd dir`.
+//@ + `dir`: Sets the current working directory to the top of the stack, then executes the equivalent of `cd dir`.
 //@ + `+N`: Brings the Nth directory (counting from the left of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
 //@ + `-N`: Brings the Nth directory (counting from the right of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
 //@
@@ -56,7 +56,7 @@ function _actualDirStack() {
 //@ pushd('+1');   // Returns /usr /etc
 //@ ```
 //@
-//@ Save the current directory on the top of the directory stack and then cd to `dir`. With no arguments, pushd exchanges the top two directories. Returns an array of paths in the stack.
+//@ Save the current directory on the top of the directory stack and then `cd` to `dir`. With no arguments, `pushd` exchanges the top two directories. Returns an array of paths in the stack.
 function _pushd(options, dir) {
   if (_isStackIndex(options)) {
     dir = options;
@@ -102,11 +102,12 @@ function _pushd(options, dir) {
 exports.pushd = _pushd;
 
 //@
+//@
 //@ ### popd([options,] ['-N' | '+N'])
 //@
 //@ Available options:
 //@
-//@ + `-n`: Suppresses the normal change of directory when removing directories from the stack, so that only the stack is manipulated.
+//@ + `-n`: Suppress the normal directory change when removing directories from the stack, so that only the stack is manipulated.
 //@ + `-q`: Supresses output to the console.
 //@
 //@ Arguments:
@@ -124,7 +125,7 @@ exports.pushd = _pushd;
 //@ echo(process.cwd()); // '/usr'
 //@ ```
 //@
-//@ When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0. Returns an array of paths in the stack.
+//@ When no arguments are given, `popd` removes the top directory from the stack and performs a `cd` to the new top directory. The elements are numbered from 0, starting at the first directory listed with dirs (i.e., `popd` is equivalent to `popd +0`). Returns an array of paths in the stack.
 function _popd(options, index) {
   if (_isStackIndex(options)) {
     index = options;
@@ -155,6 +156,7 @@ function _popd(options, index) {
 exports.popd = _popd;
 
 //@
+//@
 //@ ### dirs([options | '+N' | '-N'])
 //@
 //@ Available options:
@@ -167,9 +169,9 @@ exports.popd = _popd;
 //@ + `+N`: Displays the Nth directory (counting from the left of the list printed by dirs when invoked without options), starting with zero.
 //@ + `-N`: Displays the Nth directory (counting from the right of the list printed by dirs when invoked without options), starting with zero.
 //@
-//@ Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if +N or -N was specified.
+//@ Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if `+N` or `-N` was specified.
 //@
-//@ See also: pushd, popd
+//@ See also: `pushd`, `popd`
 function _dirs(options, index) {
   if (_isStackIndex(options)) {
     index = options;

@@ -22,6 +22,7 @@ function checkRecentCreated(sources, index) {
 //@
 //@ ### mv([options ,] source [, source ...], dest')
 //@ ### mv([options ,] source_array, dest')
+//@
 //@ Available options:
 //@
 //@ + `-f`: force (default behavior)
@@ -35,7 +36,7 @@ function checkRecentCreated(sources, index) {
 //@ mv(['file1', 'file2'], 'dir/'); // same as above
 //@ ```
 //@
-//@ Moves files.
+//@ Moves `source` file(s) to `dest`.
 function _mv(options, sources, dest) {
   // Get sources, dest
   if (arguments.length < 3) {

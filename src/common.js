@@ -129,7 +129,7 @@ exports.error = error;
 //@ ```
 //@
 //@ Turns a regular string into a string-like object similar to what each
-//@ command returns. This has special methods, like `.to()` and `.toEnd()`
+//@ command returns. This has special methods, like `.to()` and `.toEnd()`.
 function ShellString(stdout, stderr, code) {
   var that;
   if (stdout instanceof Array) {

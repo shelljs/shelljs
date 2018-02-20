@@ -12,9 +12,10 @@ common.register('sed', _sed, {
 //@
 //@ ### sed([options,] search_regex, replacement, file [, file ...])
 //@ ### sed([options,] search_regex, replacement, file_array)
+//@
 //@ Available options:
 //@
-//@ + `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_
+//@ + `-i`: Replace contents of `file` in-place. _Note that no backups will be created!_
 //@
 //@ Examples:
 //@
@@ -23,8 +24,8 @@ common.register('sed', _sed, {
 //@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 //@ ```
 //@
-//@ Reads an input string from `files` and performs a JavaScript `replace()` on the input
-//@ using the given search regex and replacement string or function. Returns the new string after replacement.
+//@ Reads an input string from `file`s, and performs a JavaScript `replace()` on the input
+//@ using the given `search_regex` and `replacement` string or function. Returns the new string after replacement.
 //@
 //@ Note:
 //@

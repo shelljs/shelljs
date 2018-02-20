@@ -14,7 +14,7 @@ common.register('exec', _exec, {
   wrapOutput: false,
 });
 
-// We use this function to run exec synchronously while also providing realtime
+// We use this function to run `exec` synchronously while also providing realtime
 // output.
 function execSync(cmd, opts, pipe) {
   if (!common.config.execPath) {
@@ -138,15 +138,16 @@ function execAsync(cmd, opts, pipe, callback) {
 
 //@
 //@ ### exec(command [, options] [, callback])
+//@
 //@ Available options:
 //@
 //@ + `async`: Asynchronous execution. If a callback is provided, it will be set to
 //@   `true`, regardless of the passed value (default: `false`).
 //@ + `silent`: Do not echo program output to console (default: `false`).
-//@ + `encoding`: Character encoding to use. Affects the returned stdout and stderr values, and
+//@ + `encoding`: Character encoding to use. Affects the values returned to stdout and stderr, and
 //@   what is written to stdout and stderr when not in silent mode (default: `'utf8'`).
 //@ + and any option available to Node.js's
-//@   [child_process.exec()](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback)
+//@   [`child_process.exec()`](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback)
 //@
 //@ Examples:
 //@
@@ -166,17 +167,13 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ ```
 //@
 //@ Executes the given `command` _synchronously_, unless otherwise specified.  When in synchronous
-//@ mode, this returns a ShellString (compatible with ShellJS v0.6.x, which returns an object
+//@ mode, this returns a `ShellString` (compatible with ShellJS v0.6.x, which returns an object
 //@ of the form `{ code:..., stdout:... , stderr:... }`). Otherwise, this returns the child process
-//@ object, and the `callback` gets the arguments `(code, stdout, stderr)`.
+//@ object, and the `callback` receives the arguments `(code, stdout, stderr)`.
 //@
 //@ Not seeing the behavior you want? `exec()` runs everything through `sh`
 //@ by default (or `cmd.exe` on Windows), which differs from `bash`. If you
 //@ need bash-specific behavior, try out the `{shell: 'path/to/bash'}` option.
-//@
-//@ **Note:** For long-lived processes, it's best to run `exec()` asynchronously as
-//@ the current synchronous implementation uses a lot of CPU. This should be getting
-//@ fixed soon.
 function _exec(command, options, callback) {
   options = options || {};
   if (!command) common.error('must specify command');

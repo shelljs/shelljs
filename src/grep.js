@@ -13,9 +13,10 @@ common.register('grep', _grep, {
 //@
 //@ ### grep([options,] regex_filter, file [, file ...])
 //@ ### grep([options,] regex_filter, file_array)
+//@
 //@ Available options:
 //@
-//@ + `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
+//@ + `-v`: Invert `regex_filter` (only print non-matching lines).
 //@ + `-l`: Print only filenames of matching files
 //@
 //@ Examples:

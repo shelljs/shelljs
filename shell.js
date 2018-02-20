@@ -11,7 +11,7 @@ var common = require('./src/common');
 //@
 //@ All commands run synchronously, unless otherwise stated.
 //@ All commands accept standard bash globbing characters (`*`, `?`, etc.),
-//@ compatible with the [node glob module](https://github.com/isaacs/node-glob).
+//@ compatible with the [node `glob` module](https://github.com/isaacs/node-glob).
 //@
 //@ For less-commonly used commands and features, please check out our [wiki
 //@ page](https://github.com/shelljs/shelljs/wiki).
@@ -27,7 +27,8 @@ require('./commands').forEach(function (command) {
 
 //@
 //@ ### exit(code)
-//@ Exits the current process with the given exit code.
+//@
+//@ Exits the current process with the given exit `code`.
 exports.exit = process.exit;
 
 //@include ./src/error
@@ -38,8 +39,9 @@ exports.ShellString = common.ShellString;
 
 //@
 //@ ### env['VAR_NAME']
+//@
 //@ Object containing environment variables (both getter and setter). Shortcut
-//@ to process.env.
+//@ to `process.env`.
 exports.env = process.env;
 
 //@
@@ -91,9 +93,9 @@ exports.config = common.config;
 //@ /* more commands... */
 //@ ```
 //@
-//@ If `true` the script will throw a Javascript error when any shell.js
+//@ If `true`, the script will throw a Javascript error when any shell.js
 //@ command encounters an error. Default is `false`. This is analogous to
-//@ Bash's `set -e`
+//@ Bash's `set -e`.
 
 //@
 //@ ### config.verbose
@@ -140,7 +142,7 @@ exports.config = common.config;
 //@ /* ... */
 //@ ```
 //@
-//@ Reset shell.config to the defaults:
+//@ Reset `shell.config` to the defaults:
 //@
 //@ ```javascript
 //@ {

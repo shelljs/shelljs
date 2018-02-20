@@ -7,6 +7,7 @@ common.register('pwd', _pwd, {
 
 //@
 //@ ### pwd()
+//@
 //@ Returns the current directory.
 function _pwd() {
   var pwd = path.resolve(process.cwd());

@@ -41,9 +41,10 @@ function numericalCmp(a, b) {
 //@
 //@ ### sort([options,] file [, file ...])
 //@ ### sort([options,] file_array)
+//@
 //@ Available options:
 //@
-//@ + `-r`: Reverse the result of comparisons
+//@ + `-r`: Reverse the results
 //@ + `-n`: Compare according to numerical value
 //@
 //@ Examples:
@@ -53,8 +54,8 @@ function numericalCmp(a, b) {
 //@ sort('-r', 'foo.txt');
 //@ ```
 //@
-//@ Return the contents of the files, sorted line-by-line. Sorting multiple
-//@ files mixes their content, just like unix sort does.
+//@ Return the contents of the `file`s, sorted line-by-line. Sorting multiple
+//@ files mixes their content (just as unix `sort` does).
 function _sort(options, files) {
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe();

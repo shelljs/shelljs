@@ -21,6 +21,7 @@ common.register('uniq', _uniq, {
 
 //@
 //@ ### uniq([options,] [input, [output]])
+//@
 //@ Available options:
 //@
 //@ + `-i`: Ignore case while comparing
@@ -35,7 +36,7 @@ common.register('uniq', _uniq, {
 //@ uniq('-cd', 'foo.txt', 'bar.txt');
 //@ ```
 //@
-//@ Filter adjacent matching lines from input
+//@ Filter adjacent matching lines from `input`.
 function _uniq(options, input, output) {
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe();

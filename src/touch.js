@@ -14,13 +14,14 @@ common.register('touch', _touch, {
 //@
 //@ ### touch([options,] file [, file ...])
 //@ ### touch([options,] file_array)
+//@
 //@ Available options:
 //@
 //@ + `-a`: Change only the access time
 //@ + `-c`: Do not create any files
 //@ + `-m`: Change only the modification time
-//@ + `-d DATE`: Parse DATE and use it instead of current time
-//@ + `-r FILE`: Use FILE's times instead of current time
+//@ + `-d DATE`: Parse `DATE` and use it instead of current time
+//@ + `-r FILE`: Use `FILE`'s times instead of current time
 //@
 //@ Examples:
 //@
@@ -30,9 +31,9 @@ common.register('touch', _touch, {
 //@ touch({ '-r': FILE }, '/path/to/some/dir/source.js');
 //@ ```
 //@
-//@ Update the access and modification times of each FILE to the current time.
-//@ A FILE argument that does not exist is created empty, unless -c is supplied.
-//@ This is a partial implementation of *[touch(1)](http://linux.die.net/man/1/touch)*.
+//@ Update the access and modification times of each `FILE` to the current time.
+//@ A `FILE` argument that does not exist is created empty, unless `-c` is supplied.
+//@ This is a partial implementation of [`touch(1)`](http://linux.die.net/man/1/touch).
 function _touch(opts, files) {
   if (!files) {
     common.error('no files given');

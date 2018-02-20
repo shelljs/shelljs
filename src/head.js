@@ -33,6 +33,7 @@ function readSomeLines(file, numLines) {
 //@
 //@ ### head([{'-n': \<num\>},] file [, file ...])
 //@ ### head([{'-n': \<num\>},] file_array)
+//@
 //@ Available options:
 //@
 //@ + `-n <num>`: Show the first `<num>` lines of the files

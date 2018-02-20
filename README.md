@@ -131,7 +131,7 @@ shell.echo('hello world');
 
 All commands run synchronously, unless otherwise stated.
 All commands accept standard bash globbing characters (`*`, `?`, etc.),
-compatible with the [node glob module](https://github.com/isaacs/node-glob).
+compatible with the [node `glob` module](https://github.com/isaacs/node-glob).
 
 For less-commonly used commands and features, please check out our [wiki
 page](https://github.com/shelljs/shelljs/wiki).
@@ -139,6 +139,7 @@ page](https://github.com/shelljs/shelljs/wiki).
 
 ### cat([options,] file [, file ...])
 ### cat([options,] file_array)
+
 Available options:
 
 + `-n`: number all output lines
@@ -157,6 +158,7 @@ introduced between each file).
 
 
 ### cd([dir])
+
 Changes to directory `dir` for the duration of the script. Changes to home
 directory if no argument is supplied.
 
@@ -167,7 +169,7 @@ directory if no argument is supplied.
 Available options:
 
 + `-v`: output a diagnostic for every file processed
-+ `-c`: like verbose but report only when a change is made
++ `-c`: like verbose, but report only when a change is made
 + `-R`: change files and directories recursively
 
 Examples:
@@ -184,18 +186,19 @@ absolute permissions in octal form or expressing the changes in symbols.
 This command tries to mimic the POSIX behavior as much as possible.
 Notable exceptions:
 
-+ In symbolic modes, 'a-r' and '-r' are identical.  No consideration is
-  given to the umask.
-+ There is no "quiet" option since default behavior is to run silent.
++ In symbolic modes, `a-r` and `-r` are identical.  No consideration is
+  given to the `umask`.
++ There is no "quiet" option, since default behavior is to run silent.
 
 
 ### cp([options,] source [, source ...], dest)
 ### cp([options,] source_array, dest)
+
 Available options:
 
 + `-f`: force (default behavior)
 + `-n`: no-clobber
-+ `-u`: only copy if source is newer than dest
++ `-u`: only copy if `source` is newer than `dest`
 + `-r`, `-R`: recursive
 + `-L`: follow symlinks
 + `-P`: don't follow symlinks
@@ -221,7 +224,7 @@ Available options:
 
 Arguments:
 
-+ `dir`: Makes the current working directory be the top of the stack, and then executes the equivalent of `cd dir`.
++ `dir`: Sets the current working directory to the top of the stack, then executes the equivalent of `cd dir`.
 + `+N`: Brings the Nth directory (counting from the left of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
 + `-N`: Brings the Nth directory (counting from the right of the list printed by dirs, starting with zero) to the top of the list by rotating the stack.
 
@@ -233,13 +236,14 @@ pushd('/etc'); // Returns /etc /usr
 pushd('+1');   // Returns /usr /etc
 ```
 
-Save the current directory on the top of the directory stack and then cd to `dir`. With no arguments, pushd exchanges the top two directories. Returns an array of paths in the stack.
+Save the current directory on the top of the directory stack and then `cd` to `dir`. With no arguments, `pushd` exchanges the top two directories. Returns an array of paths in the stack.
+
 
 ### popd([options,] ['-N' | '+N'])
 
 Available options:
 
-+ `-n`: Suppresses the normal change of directory when removing directories from the stack, so that only the stack is manipulated.
++ `-n`: Suppress the normal directory change when removing directories from the stack, so that only the stack is manipulated.
 + `-q`: Supresses output to the console.
 
 Arguments:
@@ -257,7 +261,8 @@ popd();              // '/usr'
 echo(process.cwd()); // '/usr'
 ```
 
-When no arguments are given, popd removes the top directory from the stack and performs a cd to the new top directory. The elements are numbered from 0 starting at the first directory listed with dirs; i.e., popd is equivalent to popd +0. Returns an array of paths in the stack.
+When no arguments are given, `popd` removes the top directory from the stack and performs a `cd` to the new top directory. The elements are numbered from 0, starting at the first directory listed with dirs (i.e., `popd` is equivalent to `popd +0`). Returns an array of paths in the stack.
+
 
 ### dirs([options | '+N' | '-N'])
 
@@ -271,12 +276,13 @@ Arguments:
 + `+N`: Displays the Nth directory (counting from the left of the list printed by dirs when invoked without options), starting with zero.
 + `-N`: Displays the Nth directory (counting from the right of the list printed by dirs when invoked without options), starting with zero.
 
-Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if +N or -N was specified.
+Display the list of currently remembered directories. Returns an array of paths in the stack, or a single path if `+N` or `-N` was specified.
 
-See also: pushd, popd
+See also: `pushd`, `popd`
 
 
 ### echo([options,] string [, string ...])
+
 Available options:
 
 + `-e`: interpret backslash escapes (default)
@@ -290,20 +296,21 @@ var str = echo('hello world');
 echo('-n', 'no newline at end');
 ```
 
-Prints string to stdout, and returns string with additional utility methods
+Prints `string` to stdout, and returns string with additional utility methods
 like `.to()`.
 
 
 ### exec(command [, options] [, callback])
+
 Available options:
 
 + `async`: Asynchronous execution. If a callback is provided, it will be set to
   `true`, regardless of the passed value (default: `false`).
 + `silent`: Do not echo program output to console (default: `false`).
-+ `encoding`: Character encoding to use. Affects the returned stdout and stderr values, and
++ `encoding`: Character encoding to use. Affects the values returned to stdout and stderr, and
   what is written to stdout and stderr when not in silent mode (default: `'utf8'`).
 + and any option available to Node.js's
-  [child_process.exec()](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback)
+  [`child_process.exec()`](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback)
 
 Examples:
 
@@ -323,21 +330,18 @@ exec('some_long_running_process', function(code, stdout, stderr) {
 ```
 
 Executes the given `command` _synchronously_, unless otherwise specified.  When in synchronous
-mode, this returns a ShellString (compatible with ShellJS v0.6.x, which returns an object
+mode, this returns a `ShellString` (compatible with ShellJS v0.6.x, which returns an object
 of the form `{ code:..., stdout:... , stderr:... }`). Otherwise, this returns the child process
-object, and the `callback` gets the arguments `(code, stdout, stderr)`.
+object, and the `callback` receives the arguments `(code, stdout, stderr)`.
 
 Not seeing the behavior you want? `exec()` runs everything through `sh`
 by default (or `cmd.exe` on Windows), which differs from `bash`. If you
 need bash-specific behavior, try out the `{shell: 'path/to/bash'}` option.
 
-**Note:** For long-lived processes, it's best to run `exec()` asynchronously as
-the current synchronous implementation uses a lot of CPU. This should be getting
-fixed soon.
-
 
 ### find(path [, path ...])
 ### find(path_array)
+
 Examples:
 
 ```javascript
@@ -349,14 +353,15 @@ find('.').filter(function(file) { return file.match(/\.js$/); });
 Returns array of all files (however deep) in the given paths.
 
 The main difference from `ls('-R', path)` is that the resulting file names
-include the base directories, e.g. `lib/resources/file1` instead of just `file1`.
+include the base directories (e.g., `lib/resources/file1` instead of just `file1`).
 
 
 ### grep([options,] regex_filter, file [, file ...])
 ### grep([options,] regex_filter, file_array)
+
 Available options:
 
-+ `-v`: Inverse the sense of the regex and print the lines not matching the criteria.
++ `-v`: Invert `regex_filter` (only print non-matching lines).
 + `-l`: Print only filenames of matching files
 
 Examples:
@@ -372,6 +377,7 @@ file that match the given `regex_filter`.
 
 ### head([{'-n': \<num\>},] file [, file ...])
 ### head([{'-n': \<num\>},] file_array)
+
 Available options:
 
 + `-n <num>`: Show the first `<num>` lines of the files
@@ -388,6 +394,7 @@ Read the start of a file.
 
 
 ### ln([options,] source, dest)
+
 Available options:
 
 + `-s`: symlink
@@ -400,11 +407,12 @@ ln('file', 'newlink');
 ln('-sf', 'file', 'existing');
 ```
 
-Links source to dest. Use -f to force the link, should dest already exist.
+Links `source` to `dest`. Use `-f` to force the link, should `dest` already exist.
 
 
 ### ls([options,] [path, ...])
 ### ls([options,] path_array)
+
 Available options:
 
 + `-R`: recursive
@@ -413,7 +421,7 @@ Available options:
 + `-d`: list directories themselves, not their contents
 + `-l`: list objects representing each file, each with fields containing `ls
         -l` output fields. See
-        [fs.Stats](https://nodejs.org/api/fs.html#fs_class_fs_stats)
+        [`fs.Stats`](https://nodejs.org/api/fs.html#fs_class_fs_stats)
         for more info
 
 Examples:
@@ -425,14 +433,16 @@ ls('-R', ['/users/me', '/tmp']); // same as above
 ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
 ```
 
-Returns array of files in the given path, or in current directory if no path provided.
+Returns array of files in the given `path`, or files in
+the current directory if no `path` is  provided.
 
 
 ### mkdir([options,] dir [, dir ...])
 ### mkdir([options,] dir_array)
+
 Available options:
 
-+ `-p`: full path (will create intermediate dirs if necessary)
++ `-p`: full path (and create intermediate directories, if necessary)
 
 Examples:
 
@@ -446,6 +456,7 @@ Creates directories.
 
 ### mv([options ,] source [, source ...], dest')
 ### mv([options ,] source_array, dest')
+
 Available options:
 
 + `-f`: force (default behavior)
@@ -459,15 +470,17 @@ mv('file1', 'file2', 'dir/');
 mv(['file1', 'file2'], 'dir/'); // same as above
 ```
 
-Moves files.
+Moves `source` file(s) to `dest`.
 
 
 ### pwd()
+
 Returns the current directory.
 
 
 ### rm([options,] file [, file ...])
 ### rm([options,] file_array)
+
 Available options:
 
 + `-f`: force
@@ -486,9 +499,10 @@ Removes files.
 
 ### sed([options,] search_regex, replacement, file [, file ...])
 ### sed([options,] search_regex, replacement, file_array)
+
 Available options:
 
-+ `-i`: Replace contents of 'file' in-place. _Note that no backups will be created!_
++ `-i`: Replace contents of `file` in-place. _Note that no backups will be created!_
 
 Examples:
 
@@ -497,8 +511,8 @@ sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js');
 sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 ```
 
-Reads an input string from `files` and performs a JavaScript `replace()` on the input
-using the given search regex and replacement string or function. Returns the new string after replacement.
+Reads an input string from `file`s, and performs a JavaScript `replace()` on the input
+using the given `search_regex` and `replacement` string or function. Returns the new string after replacement.
 
 Note:
 
@@ -511,6 +525,7 @@ sed(/(\w+)\s(\w+)/, '$2, $1', 'file.txt');
 
 
 ### set(options)
+
 Available options:
 
 + `+/-e`: exit upon error (`config.fatal`)
@@ -524,14 +539,15 @@ set('-e'); // exit upon first error
 set('+e'); // this undoes a "set('-e')"
 ```
 
-Sets global configuration variables
+Sets global configuration variables.
 
 
 ### sort([options,] file [, file ...])
 ### sort([options,] file_array)
+
 Available options:
 
-+ `-r`: Reverse the result of comparisons
++ `-r`: Reverse the results
 + `-n`: Compare according to numerical value
 
 Examples:
@@ -541,15 +557,16 @@ sort('foo.txt', 'bar.txt');
 sort('-r', 'foo.txt');
 ```
 
-Return the contents of the files, sorted line-by-line. Sorting multiple
-files mixes their content, just like unix sort does.
+Return the contents of the `file`s, sorted line-by-line. Sorting multiple
+files mixes their content (just as unix `sort` does).
 
 
 ### tail([{'-n': \<num\>},] file [, file ...])
 ### tail([{'-n': \<num\>},] file_array)
+
 Available options:
 
-+ `-n <num>`: Show the last `<num>` lines of the files
++ `-n <num>`: Show the last `<num>` lines of `file`s
 
 Examples:
 
@@ -559,7 +576,7 @@ var str = tail('file1', 'file2');
 var str = tail(['file1', 'file2']); // same as above
 ```
 
-Read the end of a file.
+Read the end of a `file`.
 
 
 ### tempdir()
@@ -575,6 +592,7 @@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.ht
 
 
 ### test(expression)
+
 Available expression primaries:
 
 + `'-b', 'path'`: true if path is a block device
@@ -593,7 +611,7 @@ if (test('-d', path)) { /* do something with dir */ };
 if (!test('-f', path)) continue; // skip if it's a regular file
 ```
 
-Evaluates expression using the available primaries and returns corresponding value.
+Evaluates `expression` using the available primaries and returns corresponding value.
 
 
 ### ShellString.prototype.to(file)
@@ -605,7 +623,7 @@ cat('input.txt').to('output.txt');
 ```
 
 Analogous to the redirection operator `>` in Unix, but works with
-ShellStrings (such as those returned by `cat`, `grep`, etc). _Like Unix
+`ShellStrings` (such as those returned by `cat`, `grep`, etc.). _Like Unix
 redirections, `to()` will overwrite any existing file!_
 
 
@@ -618,18 +636,19 @@ cat('input.txt').toEnd('output.txt');
 ```
 
 Analogous to the redirect-and-append operator `>>` in Unix, but works with
-ShellStrings (such as those returned by `cat`, `grep`, etc).
+`ShellStrings` (such as those returned by `cat`, `grep`, etc.).
 
 
 ### touch([options,] file [, file ...])
 ### touch([options,] file_array)
+
 Available options:
 
 + `-a`: Change only the access time
 + `-c`: Do not create any files
 + `-m`: Change only the modification time
-+ `-d DATE`: Parse DATE and use it instead of current time
-+ `-r FILE`: Use FILE's times instead of current time
++ `-d DATE`: Parse `DATE` and use it instead of current time
++ `-r FILE`: Use `FILE`'s times instead of current time
 
 Examples:
 
@@ -639,12 +658,13 @@ touch('-c', '/path/to/some/dir/source.js');
 touch({ '-r': FILE }, '/path/to/some/dir/source.js');
 ```
 
-Update the access and modification times of each FILE to the current time.
-A FILE argument that does not exist is created empty, unless -c is supplied.
-This is a partial implementation of *[touch(1)](http://linux.die.net/man/1/touch)*.
+Update the access and modification times of each `FILE` to the current time.
+A `FILE` argument that does not exist is created empty, unless `-c` is supplied.
+This is a partial implementation of [`touch(1)`](http://linux.die.net/man/1/touch).
 
 
 ### uniq([options,] [input, [output]])
+
 Available options:
 
 + `-i`: Ignore case while comparing
@@ -659,7 +679,7 @@ uniq('-i', 'foo.txt');
 uniq('-cd', 'foo.txt', 'bar.txt');
 ```
 
-Filter adjacent matching lines from input
+Filter adjacent matching lines from `input`.
 
 
 ### which(command)
@@ -670,17 +690,19 @@ Examples:
 var nodeExec = which('node');
 ```
 
-Searches for `command` in the system's PATH. On Windows, this uses the
+Searches for `command` in the system's `PATH`. On Windows, this uses the
 `PATHEXT` variable to append the extension if it's not already executable.
-Returns string containing the absolute path to the command.
+Returns string containing the absolute path to `command`.
 
 
 ### exit(code)
-Exits the current process with the given exit code.
+
+Exits the current process with the given exit `code`.
 
 ### error()
+
 Tests if error occurred in the last command. Returns a truthy value if an
-error returned and a falsy value otherwise.
+error returned, or a falsy value otherwise.
 
 **Note**: do not rely on the
 return value to be an error message. If you need the last error message, use
@@ -696,12 +718,13 @@ var foo = ShellString('hello world');
 ```
 
 Turns a regular string into a string-like object similar to what each
-command returns. This has special methods, like `.to()` and `.toEnd()`
+command returns. This has special methods, like `.to()` and `.toEnd()`.
 
 
 ### env['VAR_NAME']
+
 Object containing environment variables (both getter and setter). Shortcut
-to process.env.
+to `process.env`.
 
 ### Pipes
 
@@ -746,9 +769,9 @@ cp('this_file_does_not_exist', '/dev/null'); // throws Error here
 /* more commands... */
 ```
 
-If `true` the script will throw a Javascript error when any shell.js
+If `true`, the script will throw a Javascript error when any shell.js
 command encounters an error. Default is `false`. This is analogous to
-Bash's `set -e`
+Bash's `set -e`.
 
 ### config.verbose
 
@@ -792,7 +815,7 @@ shell.config.reset(); // reset to original state
 /* ... */
 ```
 
-Reset shell.config to the defaults:
+Reset `shell.config` to the defaults:
 
 ```javascript
 {
