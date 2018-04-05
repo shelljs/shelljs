@@ -35,7 +35,7 @@ function _ln(options, source, dest) {
   var isAbsolute = (path.resolve(source) === sourcePath);
   dest = path.resolve(process.cwd(), String(dest));
 
-  if (fs.existsSync(dest) && common.statFollowLinks(dest).isDirectory(dest)) {
+  if (fs.existsSync(dest) && common.statFollowLinks(dest).isDirectory()) {
     dest = path.join(dest, path.basename(sourcePath));
   }
 
