@@ -35,6 +35,10 @@ function _ln(options, source, dest) {
   var isAbsolute = (path.resolve(source) === sourcePath);
   dest = path.resolve(process.cwd(), String(dest));
 
+  if (fs.existsSync(dest) && common.statFollowLinks(dest).isDirectory(dest)) {
+    dest = path.resolve(dest, path.basename(sourcePath))
+  }
+
   if (fs.existsSync(dest)) {
     if (!options.force) {
       common.error('Destination file exists', { continue: true });
