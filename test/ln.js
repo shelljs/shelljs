@@ -50,7 +50,7 @@ test('destination already exists', t => {
 
 test('destination already exists inside directory', t => {
   shell.cd(t.context.tmp);
-  let result = shell.ln('-s', 'file1', './');
+  const result = shell.ln('-s', 'file1', './');
   t.truthy(shell.error());
   t.is(result.code, 1);
   shell.cd('..');
@@ -147,7 +147,7 @@ test('To current directory', t => {
 
 test('Inside existing directory', t => {
   shell.cd(t.context.tmp);
-  let result = shell.ln('-s', 'external/node_script.js', './');
+  const result = shell.ln('-s', 'external/node_script.js', './');
   t.is(result.code, 0);
   t.truthy(fs.existsSync('node_script.js'));
   t.is(
