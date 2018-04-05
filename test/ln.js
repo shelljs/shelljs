@@ -53,7 +53,6 @@ test('destination already exists inside directory', t => {
   const result = shell.ln('-s', 'file1', './');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  shell.cd('..');
 });
 
 test('non-existent source', t => {
@@ -149,12 +148,13 @@ test('Inside existing directory', t => {
   shell.cd(t.context.tmp);
   const result = shell.ln('-s', 'external/node_script.js', './');
   t.is(result.code, 0);
+  t.falsy(result.stderr);
+  t.falsy(shell.error());
   t.truthy(fs.existsSync('node_script.js'));
   t.is(
     fs.readFileSync('external/node_script.js').toString(),
     fs.readFileSync('node_script.js').toString()
   );
-  shell.rm('node_script.js');
   shell.cd('..');
 });
 

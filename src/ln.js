@@ -36,7 +36,7 @@ function _ln(options, source, dest) {
   dest = path.resolve(process.cwd(), String(dest));
 
   if (fs.existsSync(dest) && common.statFollowLinks(dest).isDirectory(dest)) {
-    dest = path.resolve(dest, path.basename(sourcePath));
+    dest = path.join(dest, path.basename(sourcePath));
   }
 
   if (fs.existsSync(dest)) {
