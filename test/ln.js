@@ -53,6 +53,7 @@ test('destination already exists inside directory', t => {
   const result = shell.ln('-s', 'file1', './');
   t.truthy(shell.error());
   t.is(result.code, 1);
+  shell.cd('..');
 });
 
 test('non-existent source', t => {
