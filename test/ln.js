@@ -16,6 +16,7 @@ test.beforeEach(t => {
 });
 
 test.afterEach.always(t => {
+  process.chdir(CWD);
   shell.rm('-rf', t.context.tmp);
 });
 
@@ -53,7 +54,6 @@ test('destination already exists inside directory', t => {
   const result = shell.ln('-s', 'file1', './');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  shell.cd('..');
 });
 
 test('non-existent source', t => {
@@ -142,7 +142,6 @@ test('To current directory', t => {
   t.truthy(fs.existsSync('dest/testfile.txt'));
   t.truthy(fs.existsSync('dir1/insideDir.txt'));
   t.falsy(fs.existsSync('dest/insideDir.txt'));
-  shell.cd('..');
 });
 
 test('Inside existing directory', t => {
@@ -156,7 +155,6 @@ test('Inside existing directory', t => {
     fs.readFileSync('external/node_script.js').toString(),
     fs.readFileSync('node_script.js').toString()
   );
-  shell.cd('..');
 });
 
 test('-f option', t => {
