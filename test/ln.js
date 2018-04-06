@@ -157,6 +157,15 @@ test('Inside existing directory', t => {
   );
 });
 
+test('Link to dead source links', t => {
+  shell.cd(t.context.tmp);
+  const result = shell.ln('-s', 'badlink', 'link-to-dead-link');
+  t.is(result.code, 0);
+  t.falsy(result.stderr);
+  t.falsy(shell.error());
+  fs.lstatSync('link-to-dead-link');
+});
+
 test('-f option', t => {
   const result = shell.ln('-f', `${t.context.tmp}/file1.js`, `${t.context.tmp}/file2.js`);
   t.is(result.code, 0);
@@ -179,6 +188,18 @@ test('-sf option', t => {
     fs.writeFileSync(`${t.context.tmp}/file1.txt`, 'new content txt');
     t.is(fs.readFileSync(`${t.context.tmp}/file2.txt`).toString(), 'new content txt');
   });
+});
+
+test('Override dead destination links with -sf', t => {
+  shell.cd(t.context.tmp);
+  const result = shell.ln('-sf', 'file1.txt', 'badlink');
+  t.is(result.code, 0);
+  t.falsy(result.stderr);
+  t.falsy(shell.error());
+  t.is(
+    fs.readFileSync('file1.txt').toString(),
+    fs.readFileSync('badlink').toString()
+  );
 });
 
 test('Abspath regression', t => {
