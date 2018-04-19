@@ -79,9 +79,11 @@ function _ls(options, paths) {
       stat = options.link ? common.statFollowLinks(p) : common.statNoFollowLinks(p);
       // follow links to directories by default
       if (stat.isSymbolicLink()) {
+        console.log('[795] Follow symlink');
         try {
           var _stat = common.statFollowLinks(p);
           if (_stat.isDirectory()) {
+            console.log('[795] Follow existed symlink of directory');
             stat = _stat;
           }
         } catch (_) {} // bad symlink, treat it like a file
