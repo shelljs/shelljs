@@ -79,6 +79,10 @@ function _ls(options, paths) {
       stat = options.link ? common.statFollowLinks(p) : common.statNoFollowLinks(p);
       // follow links to directories by default
       if (stat.isSymbolicLink()) {
+        /* istanbul ignore next */
+        // workaround for https://github.com/shelljs/shelljs/issues/795
+        // codecov seems to have a bug that miscalculate this block as uncovered.
+        // but according to nyc report this block does get covered.
         try {
           var _stat = common.statFollowLinks(p);
           if (_stat.isDirectory()) {
