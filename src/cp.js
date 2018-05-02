@@ -11,6 +11,7 @@ common.register('cp', _cp, {
     'r': 'recursive',
     'L': 'followsymlink',
     'P': 'noFollowsymlink',
+    'p': 'preserve',
   },
   wrapOutput: false,
 });
@@ -51,6 +52,7 @@ function copyFileSync(srcFile, destFile, options) {
     var pos = 0;
     var fdr = null;
     var fdw = null;
+    var srcStat = common.statFollowLinks(srcFile);
 
     try {
       fdr = fs.openSync(srcFile, 'r');
@@ -75,7 +77,11 @@ function copyFileSync(srcFile, destFile, options) {
     fs.closeSync(fdr);
     fs.closeSync(fdw);
 
-    fs.chmodSync(destFile, common.statFollowLinks(srcFile).mode);
+    if (options.preserve) {
+      fs.chownSync(destFile, srcStat.uid, srcStat.gid);
+      fs.utimesSync(destFile, srcStat.atime, srcStat.mtime);
+    }
+    fs.chmodSync(destFile, srcStat.mode);
   }
 }
 
