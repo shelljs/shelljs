@@ -803,3 +803,29 @@ test('cp -R should be able to copy a readonly src. issue #98; (Non window platfo
     shell.chmod('-R', '755', t.context.tmp);
   });
 });
+
+test('cp -p should preserve mode, ownership, and timestamp', t => {
+  const result = shell.cp('-p', 'test/resources/file1', `${t.context.tmp}/preservedFile1`);
+  const stat = common.statFollowLinks('test/resources/file1');
+  const statOfResult = common.statFollowLinks(`${t.context.tmp}/preservedFile1`);
+  t.is(result.code, 0);
+
+  t.is(stat.mtime.getTime(), statOfResult.mtime.getTime());
+  t.is(stat.atime.getTime(), statOfResult.atime.getTime());
+  t.is(stat.mode, statOfResult.mode);
+  t.is(stat.uid, statOfResult.uid);
+  t.is(stat.gid, statOfResult.gid);
+});
+
+test('cp -p should preserve mode, ownership, and timestamp of symlink', t => {
+  const result = shell.cp('-p', 'test/resources/link', `${t.context.tmp}/copiedLink`);
+  const stat = common.statFollowLinks('test/resources/link');
+  const statOfResult = common.statFollowLinks(`${t.context.tmp}/copiedLink`);
+  t.is(result.code, 0);
+
+  t.is(stat.mtime.getTime(), statOfResult.mtime.getTime());
+  t.is(stat.atime.getTime(), statOfResult.atime.getTime());
+  t.is(stat.mode, statOfResult.mode);
+  t.is(stat.uid, statOfResult.uid);
+  t.is(stat.rid, statOfResult.rid);
+});
