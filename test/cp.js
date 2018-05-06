@@ -760,9 +760,12 @@ test('should not overwrite recently created files (not give error no-force mode)
 test('cp -p should preserve mode, ownership, and timestamp', t => {
   const result = shell.cp('-p', 'test/resources/file1', `${t.context.tmp}/preservedFile1`);
   const stat = common.statFollowLinks('test/resources/file1');
+  if (process.platform === 'linux') {
+    utils.sleep(1000);
+  }
   const statOfResult = common.statFollowLinks(`${t.context.tmp}/preservedFile1`);
-  t.is(result.code, 0);
 
+  t.is(result.code, 0);
   t.is(stat.mtime.getTime(), statOfResult.mtime.getTime());
   t.is(stat.atime.getTime(), statOfResult.atime.getTime());
   t.is(stat.mode, statOfResult.mode);
@@ -773,9 +776,12 @@ test('cp -p should preserve mode, ownership, and timestamp', t => {
 test('cp -p should preserve mode, ownership, and timestamp of symlink', t => {
   const result = shell.cp('-p', 'test/resources/link', `${t.context.tmp}/copiedLink`);
   const stat = common.statFollowLinks('test/resources/link');
+  if (process.platform === 'linux') {
+    utils.sleep(1000);
+  }
   const statOfResult = common.statFollowLinks(`${t.context.tmp}/copiedLink`);
-  t.is(result.code, 0);
 
+  t.is(result.code, 0);
   t.is(stat.mtime.getTime(), statOfResult.mtime.getTime());
   t.is(stat.atime.getTime(), statOfResult.atime.getTime());
   t.is(stat.mode, statOfResult.mode);
