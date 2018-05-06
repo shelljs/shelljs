@@ -62,7 +62,7 @@ function copyFileSync(srcFile, destFile, options) {
     }
 
     try {
-      fdw = fs.openSync(destFile, 'w');
+      fdw = fs.openSync(destFile, 'w', srcStat.mode);
     } catch (e) {
       /* istanbul ignore next */
       common.error('copyFileSync: could not write to dest file (code=' + e.code + '):' + destFile);
@@ -81,7 +81,6 @@ function copyFileSync(srcFile, destFile, options) {
       fs.chownSync(destFile, srcStat.uid, srcStat.gid);
       fs.utimesSync(destFile, srcStat.atime, srcStat.mtime);
     }
-    fs.chmodSync(destFile, srcStat.mode);
   }
 }
 
