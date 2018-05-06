@@ -74,13 +74,13 @@ function copyFileSync(srcFile, destFile, options) {
       pos += bytesRead;
     }
 
+    if (options.preserve) {
+      fs.fchownSync(fdw, srcStat.uid, srcStat.gid);
+      fs.futimesSync(fdw, srcStat.atime, srcStat.mtime);
+    }
+
     fs.closeSync(fdr);
     fs.closeSync(fdw);
-
-    if (options.preserve) {
-      fs.chownSync(destFile, srcStat.uid, srcStat.gid);
-      fs.utimesSync(destFile, srcStat.atime, srcStat.mtime);
-    }
   }
 }
 
