@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/shelljs/shelljs/tree/HEAD)
-
-[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.8.1...HEAD)
+## [v0.8.2](https://github.com/shelljs/shelljs/tree/v0.8.2) (2018-05-08)
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.8.1...v0.8.2)
 
 **Closed issues:**
 
@@ -815,7 +814,6 @@
 - exec with callback should automatically be async [\#31](https://github.com/shelljs/shelljs/issues/31)
 - Exporting variables. [\#30](https://github.com/shelljs/shelljs/issues/30)
 - Detecting shelljs/node [\#27](https://github.com/shelljs/shelljs/issues/27)
-- Unexpected cp behaviour with directories [\#15](https://github.com/shelljs/shelljs/issues/15)
 
 **Merged pull requests:**
 
@@ -830,6 +828,7 @@
 - gh-pages: clicking 'fork me' just reloads the page [\#26](https://github.com/shelljs/shelljs/issues/26)
 - Not declared local var implies possible memory leak [\#21](https://github.com/shelljs/shelljs/issues/21)
 - Cannot echo a string that starts with - [\#20](https://github.com/shelljs/shelljs/issues/20)
+- Unexpected cp behaviour with directories [\#15](https://github.com/shelljs/shelljs/issues/15)
 
 **Merged pull requests:**
 
