@@ -1,13 +1,34 @@
 # Change Log
 
+## [Unreleased](https://github.com/shelljs/shelljs/tree/HEAD)
+
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.8.1...HEAD)
+
+**Closed issues:**
+
+- High severity vulnerability in shelljs 0.8.1 [\#842](https://github.com/shelljs/shelljs/issues/842)
+- Add test for ls\(\) on a symlink to a directory [\#795](https://github.com/shelljs/shelljs/issues/795)
+- Harden shell.exec by writing the child process in a source file [\#782](https://github.com/shelljs/shelljs/issues/782)
+- shell.exec\(\) doesn't respond correctly to config.fatal = true [\#735](https://github.com/shelljs/shelljs/issues/735)
+- Merge 'exec: internal error' with ShellJSInternalError [\#734](https://github.com/shelljs/shelljs/issues/734)
+- exec returning null from command [\#724](https://github.com/shelljs/shelljs/issues/724)
+- Only Get Stderr from Exec [\#371](https://github.com/shelljs/shelljs/issues/371)
+- Execute child.stdout.on before child.on\("exit"\)  [\#224](https://github.com/shelljs/shelljs/issues/224)
+
+**Merged pull requests:**
+
+- Workaround codecov bug of miscalculation of coverage \(\#795\) [\#838](https://github.com/shelljs/shelljs/pull/838) ([dwi2](https://github.com/dwi2))
+- Update doc comments and regenerate README.md. [\#825](https://github.com/shelljs/shelljs/pull/825) ([Zearin](https://github.com/Zearin))
+- chore: update contributing guidelines [\#817](https://github.com/shelljs/shelljs/pull/817) ([nfischer](https://github.com/nfischer))
+- chore\(lint\): don't allow excess trailing newlines [\#816](https://github.com/shelljs/shelljs/pull/816) ([nfischer](https://github.com/nfischer))
+- Remove separate "internal error" from exec [\#802](https://github.com/shelljs/shelljs/pull/802) ([freitagbr](https://github.com/freitagbr))
+
 ## [v0.8.1](https://github.com/shelljs/shelljs/tree/v0.8.1) (2018-01-20)
 [Full Changelog](https://github.com/shelljs/shelljs/compare/v0.8.0...v0.8.1)
 
 **Closed issues:**
 
 - Exec failing with internal error when piping large output [\#818](https://github.com/shelljs/shelljs/issues/818)
-- Shelljs exec\(\) not executing variables [\#815](https://github.com/shelljs/shelljs/issues/815)
-- support for node-0.10.\* is broken [\#814](https://github.com/shelljs/shelljs/issues/814)
 - using sed to replace just the first occurrence of a string [\#813](https://github.com/shelljs/shelljs/issues/813)
 
 **Merged pull requests:**
@@ -794,6 +815,7 @@
 - exec with callback should automatically be async [\#31](https://github.com/shelljs/shelljs/issues/31)
 - Exporting variables. [\#30](https://github.com/shelljs/shelljs/issues/30)
 - Detecting shelljs/node [\#27](https://github.com/shelljs/shelljs/issues/27)
+- Unexpected cp behaviour with directories [\#15](https://github.com/shelljs/shelljs/issues/15)
 
 **Merged pull requests:**
 
@@ -808,7 +830,6 @@
 - gh-pages: clicking 'fork me' just reloads the page [\#26](https://github.com/shelljs/shelljs/issues/26)
 - Not declared local var implies possible memory leak [\#21](https://github.com/shelljs/shelljs/issues/21)
 - Cannot echo a string that starts with - [\#20](https://github.com/shelljs/shelljs/issues/20)
-- Unexpected cp behaviour with directories [\#15](https://github.com/shelljs/shelljs/issues/15)
 
 **Merged pull requests:**
 
