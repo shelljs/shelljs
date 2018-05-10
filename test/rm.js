@@ -58,12 +58,14 @@ test('invalid option', t => {
 });
 
 test('remove symbolic link to a dir without -r fails', t => {
-  const result = shell.rm(`${t.context.tmp}/rm/link_to_a_dir/`);
-  t.truthy(shell.error());
-  t.is(result.code, 1);
-  t.is(result.stderr, 'rm: path is a directory');
-  t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
-  t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
+  utils.skipOnWin(t, () => {
+    const result = shell.rm(`${t.context.tmp}/rm/link_to_a_dir/`);
+    t.truthy(shell.error());
+    t.is(result.code, 1);
+    t.is(result.stderr, 'rm: path is a directory');
+    t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
+    t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
+  });
 });
 
 //
