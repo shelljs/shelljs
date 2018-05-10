@@ -1,11 +1,20 @@
 #!/usr/bin/env node
-require('../global');
 
-if (process.argv.length < 3) {
-  console.log('ShellJS: missing argument (script name)');
+function exit(msg) {
+  console.log(msg);
   console.log();
   process.exit(1);
 }
+
+if (require.main !== module) {
+  throw new Error('Executable-only module should not be required');
+}
+
+if (process.argv.length < 3) {
+  exit('ShellJS: missing argument (script name)');
+}
+
+require('../global');
 
 var args,
   scriptName = process.argv[2];
@@ -19,9 +28,7 @@ if (!scriptName.match(/\.js/) && !scriptName.match(/\.coffee/)) {
 }
 
 if (!test('-f', scriptName)) {
-  console.log('ShellJS: script not found ('+scriptName+')');
-  console.log();
-  process.exit(1);
+  exit('ShellJS: script not found ('+scriptName+')');
 }
 
 args = process.argv.slice(3);

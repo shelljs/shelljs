@@ -4,9 +4,10 @@ import test from 'ava';
 
 import shell from '..';
 
+const binPath = path.resolve(__dirname, '../bin/shjs');
+
 function runWithShjs(name) {
   // prefix with 'node ' for Windows, don't prefix for unix
-  const binPath = path.resolve(__dirname, '../bin/shjs');
   const execPath = process.platform === 'win32'
     ? `${JSON.stringify(shell.config.execPath)} `
     : '';
@@ -51,4 +52,12 @@ test('Extension detection', t => {
   t.is(result.code, 0);
   t.is(result.stdout, 'OK!\n');
   t.falsy(result.stderr);
+});
+
+//
+// Invalids
+//
+
+test('disallow require-ing', t => {
+  t.throws(() => require(binPath), 'Executable-only module should not be required');
 });
