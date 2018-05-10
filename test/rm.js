@@ -57,6 +57,15 @@ test('invalid option', t => {
   t.is(result.stderr, 'rm: option not recognized: @');
 });
 
+test('remove symbolic link to a dir without -r fails', t => {
+  const result = shell.rm(`${t.context.tmp}/rm/link_to_a_dir/`);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'rm: path is a directory');
+  t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
+});
+
 //
 // Valids
 //
@@ -306,5 +315,16 @@ test('remove fifo', t => {
     const result = shell.rm(fifo);
     t.falsy(shell.error());
     t.is(result.code, 0);
+  });
+});
+
+test('remove symbolic link', t => {
+  utils.skipOnWin(t, () => {
+    t.truthy(shell.test('-L', `${t.context.tmp}/link`));
+    const result = shell.rm(`${t.context.tmp}/link`);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.falsy(shell.test('-L', `${t.context.tmp}/link`));
+    t.falsy(fs.existsSync(`${t.context.tmp}/link`));
   });
 });
