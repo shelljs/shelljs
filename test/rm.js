@@ -270,10 +270,22 @@ test(
   }
 );
 
+test('remove symbolic link to a file', t => {
+  t.truthy(shell.test('-L', `${t.context.tmp}/link`));
+  const result = shell.rm(`${t.context.tmp}/link`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.falsy(shell.test('-L', `${t.context.tmp}/link`));
+  t.falsy(fs.existsSync(`${t.context.tmp}/link`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/file1`));
+});
+
 test('remove symbolic link to a dir', t => {
+  t.truthy(shell.test('-L', `${t.context.tmp}/rm/link_to_a_dir`));
   const result = shell.rm(`${t.context.tmp}/rm/link_to_a_dir`);
   t.falsy(shell.error());
   t.is(result.code, 0);
+  t.falsy(shell.test('-L', `${t.context.tmp}/rm/link_to_a_dir`));
   t.falsy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
   t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
 });
@@ -317,16 +329,5 @@ test('remove fifo', t => {
     const result = shell.rm(fifo);
     t.falsy(shell.error());
     t.is(result.code, 0);
-  });
-});
-
-test('remove symbolic link', t => {
-  utils.skipOnWin(t, () => {
-    t.truthy(shell.test('-L', `${t.context.tmp}/link`));
-    const result = shell.rm(`${t.context.tmp}/link`);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-    t.falsy(shell.test('-L', `${t.context.tmp}/link`));
-    t.falsy(fs.existsSync(`${t.context.tmp}/link`));
   });
 });
