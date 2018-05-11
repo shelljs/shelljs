@@ -35,11 +35,14 @@ test('file does not exist', t => {
   t.is(result.stderr, 'rm: no such file or directory: asdfasdf');
 });
 
-test('cannot delete a directoy without recursive flag', t => {
+test('cannot delete a directory without recursive flag', t => {
   const result = shell.rm(`${t.context.tmp}/rm`);
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(result.stderr, 'rm: path is a directory');
+  t.truthy(fs.existsSync(`${t.context.tmp}/rm`));
+  const contents = fs.readdirSync(t.context.tmp);
+  t.true(contents.length > 0);
 });
 
 test('only an option', t => {
@@ -57,16 +60,23 @@ test('invalid option', t => {
   t.is(result.stderr, 'rm: option not recognized: @');
 });
 
-test('remove symbolic link to a dir without -r fails', t => {
-  utils.skipOnWin(t, () => {
-    const result = shell.rm(`${t.context.tmp}/rm/link_to_a_dir/`);
-    t.truthy(shell.error());
-    t.is(result.code, 1);
-    t.is(result.stderr, 'rm: path is a directory');
-    t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
-    t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
-  });
-});
+test(
+  'cannot remove a symbolic link to a directory with trailing slash without -r flag',
+  t => {
+    utils.skipOnWin(t, () => {
+      // the trailing slash signifies that we want to delete the source
+      // directory and its contents, which can only be done with the -r flag
+      const result = shell.rm(`${t.context.tmp}/rm/link_to_a_dir/`);
+      t.truthy(shell.error());
+      t.is(result.code, 1);
+      t.is(result.stderr, 'rm: path is a directory');
+      t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
+      t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
+      const contents = fs.readdirSync(`${t.context.tmp}/rm/a_dir`);
+      t.true(contents.length > 0);
+    });
+  }
+);
 
 //
 // Valids
@@ -290,16 +300,51 @@ test('remove symbolic link to a dir', t => {
   t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
 });
 
-test('rm -rf on a symbolic link to a dir deletes its contents', t => {
+test('rm -r, symlink to a dir, trailing slash', t => {
   utils.skipOnWin(t, () => {
-    const result = shell.rm('-rf', `${t.context.tmp}/rm/link_to_a_dir/`);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-
+    const result = shell.rm('-r', `${t.context.tmp}/rm/link_to_a_dir/`);
+    t.truthy(shell.error());
+    t.is(result.code, 1);
     // Both the link and original dir should remain, but contents are deleted
     t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
     t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
     t.falsy(fs.existsSync(`${t.context.tmp}/rm/a_dir/a_file`));
+  });
+});
+
+test('rm -rf, symlink to a dir, trailing slash', t => {
+  utils.skipOnWin(t, () => {
+    const result = shell.rm('-rf', `${t.context.tmp}/rm/link_to_a_dir/`);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    // Both the link and original dir should remain, but contents are deleted
+    t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
+    t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
+    t.falsy(fs.existsSync(`${t.context.tmp}/rm/a_dir/a_file`));
+  });
+});
+
+test('rm -r, symlink to a dir, no trailing slash', t => {
+  utils.skipOnWin(t, () => {
+    const result = shell.rm('-rf', `${t.context.tmp}/rm/link_to_a_dir`);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    // The link should be deleted, but the dir and contents remain
+    t.falsy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
+    t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
+    t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir/a_file`));
+  });
+});
+
+test('rm -rf, symlink to a dir, no trailing slash', t => {
+  utils.skipOnWin(t, () => {
+    const result = shell.rm('-rf', `${t.context.tmp}/rm/link_to_a_dir`);
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    // The link should be deleted, but the dir and contents remain
+    t.falsy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
+    t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
+    t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir/a_file`));
   });
 });
 
