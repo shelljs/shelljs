@@ -4,6 +4,10 @@ if (require.main !== module) {
   throw new Error('Executable-only module should not be required');
 }
 
+// we must import global ShellJS methods after the require.main check to prevent the global
+// namespace from being polluted if the error is caught
+require('../global');
+
 function exitWithErrorMessage(msg) {
   console.log(msg);
   console.log();
@@ -13,9 +17,6 @@ function exitWithErrorMessage(msg) {
 if (process.argv.length < 3) {
   exitWithErrorMessage('ShellJS: missing argument (script name)');
 }
-
-// we only need ShellJS methods past this point, so require here
-require('../global');
 
 var args,
   scriptName = process.argv[2];
