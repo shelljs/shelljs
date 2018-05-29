@@ -51,7 +51,7 @@
   "dependencies": {
     "glob": "^7.0.0",
     "interpret": "^1.0.0",
-    "rechoir": "^0.6.2"
+    "rechoir": "^0.6.0"
   },
   "ava": {
     "serial": true,
@@ -61,7 +61,7 @@
     "ava": "^0.21.0",
     "chalk": "^1.1.3",
     "codecov": "^1.0.1",
-    "coffee-script": "^1.10.0",
+    "coffeescript": "^2.2.1",
     "eslint": "^2.0.0",
     "eslint-config-airbnb-base": "^3.0.0",
     "eslint-plugin-import": "^1.11.1",
