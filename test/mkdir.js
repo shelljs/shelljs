@@ -108,12 +108,13 @@ test('name too long', t => {
   // major OS's share approximately the same limit (we bump this up to 260 to
   // be cautious).
   const longName = new Array(260 + 1).join('a');
+  const dirName = `${t.context.tmp}/${longName}`;
 
-  const result = shell.mkdir(longName);
+  const result = shell.mkdir(dirName);
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(result.stderr,
-    `mkdir: cannot create directory '${longName}': File name too long`);
+    `mkdir: cannot create directory '${dirName}': File name too long`);
   t.falsy(fs.existsSync(longName));
 });
 
