@@ -1,5 +1,4 @@
 import fs from 'fs';
-import path from 'path';
 
 import test from 'ava';
 
@@ -109,7 +108,7 @@ test('name too long', t => {
   // major OS's share approximately the same limit (we bump this up to 260 to
   // be cautious).
   const longName = new Array(260 + 1).join('a');
-  const dirName = path.join(t.context.tmp, longName);
+  const dirName = `${t.context.tmp}/${longName}`;
 
   const result = shell.mkdir(dirName);
   t.truthy(shell.error());
