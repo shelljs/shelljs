@@ -51,29 +51,13 @@ function mkdirSyncRecursive(dir) {
 function _mkdir(options, dirs) {
   if (!dirs) common.error('no paths given');
 
-  if (typeof dirs === 'string') {
-    dirs = [].slice.call(arguments, 1);
-  }
-  // if it's array leave it as it is
+  dirs = [].slice.call(arguments, 1);
 
   dirs.forEach(function (dir) {
-    try {
-      var stat = common.statNoFollowLinks(dir);
-      if (!options.fullpath) {
-        common.error('path already exists: ' + dir, { continue: true });
-      } else if (stat.isFile()) {
-        common.error('cannot create directory ' + dir + ': File exists', { continue: true });
-      }
-      return; // skip dir
-    } catch (e) {
-      // do nothing
-    }
-
-    // Base dir does not exist, and no -p option given
-    var baseDir = path.dirname(dir);
-    if (!fs.existsSync(baseDir) && !options.fullpath) {
-      common.error('no such file or directory: ' + baseDir, { continue: true });
-      return; // skip dir
+    // Skip mkdir if -p option is given and directory already exists
+    if (fs.existsSync(dir) && common.statNoFollowLinks(dir).isDirectory() &&
+      options.fullpath) {
+      return;
     }
 
     try {
@@ -83,16 +67,23 @@ function _mkdir(options, dirs) {
         fs.mkdirSync(dir, parseInt('0777', 8));
       }
     } catch (e) {
-      var reason;
-      if (e.code === 'EACCES') {
-        reason = 'Permission denied';
-      } else if (e.code === 'ENOTDIR' || e.code === 'ENOENT') {
-        reason = 'Not a directory';
-      } else {
-        /* istanbul ignore next */
-        throw e;
-      }
-      common.error('cannot create directory ' + dir + ': ' + reason, { continue: true });
+      // See mkdir(2) for details on each error case
+      // http://man7.org/linux/man-pages/man2/mkdir.2.html
+      var codeToMessage = {
+        EACCES: 'Permission denied',
+        EEXIST: 'File exists',
+        ENAMETOOLONG: 'File name too long',
+        ENOENT: 'No such file or directory',
+        ENOTDIR: 'Not a directory',
+      };
+      var reason = codeToMessage[e.code];
+
+      /* istanbul ignore if */
+      if (!reason) throw e;
+
+      common.error('cannot create directory \'' + dir + '\': ' + reason, {
+        continue: true,
+      });
     }
   });
   return '';

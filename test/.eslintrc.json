@@ -11,6 +11,7 @@
     "no-param-reassign": "off",
     "no-console": "off",
     "curly": "off",
+    "quotes": ["error", "single", "avoid-escape"],
     "no-var": "error",
     "prefer-const": "error",
     "prefer-template": "off",
