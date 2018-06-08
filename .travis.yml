@@ -7,6 +7,7 @@ env:
   - NODE_VERSION="7"
   - NODE_VERSION="8"
   - NODE_VERSION="9"
+  - NODE_VERSION="10"
 
 # keep this blank to make sure there are no before_install steps
 before_install:
