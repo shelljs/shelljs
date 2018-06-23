@@ -96,7 +96,7 @@ function execSync(cmd, opts, pipe) {
   try { common.unlinkSync(stdoutFile); } catch (e) {}
 
   if (code !== 0) {
-    common.error(stderr, code, { continue: true });
+    common.error(stderr, code, { continue: true, silent: opts.silent });
   }
   var obj = common.ShellString(stdout, stderr, code);
   return obj;
