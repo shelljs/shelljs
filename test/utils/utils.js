@@ -5,6 +5,9 @@ const chalk = require('chalk');
 
 const common = require('../../src/common');
 
+// Capture process.stderr.write, otherwise we have a conflict with mocks.js
+const _processStderrWrite = process.stderr.write.bind(process.stderr);
+
 function numLines(str) {
   return typeof str === 'string' ? (str.match(/\n/g) || []).length + 1 : 0;
 }
@@ -23,7 +26,7 @@ function skipOnWinForEPERM(action, testCase) {
   const error = ret.code;
   const isWindows = process.platform === 'win32';
   if (isWindows && error && /EPERM:/.test(error)) {
-    console.warn('Got EPERM when testing symlinks on Windows. Assuming non-admin environment and skipping test.');
+    _processStderrWrite('Got EPERM when testing symlinks on Windows. Assuming non-admin environment and skipping test.\n');
   } else {
     testCase();
   }
@@ -56,9 +59,10 @@ exports.mkfifo = mkfifo;
 
 function skipIfTrue(booleanValue, t, closure) {
   if (booleanValue) {
-    console.warn(
+    _processStderrWrite(
       chalk.yellow('Warning: skipping platform-dependent test ') +
-      chalk.bold.white(`'${t._test.title}'`)
+      chalk.bold.white(`'${t._test.title}'`) +
+      '\n'
     );
     t.truthy(true); // dummy assertion to satisfy ava v0.19+
   } else {
