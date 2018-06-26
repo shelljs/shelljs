@@ -8,6 +8,16 @@ common.register('mkdir', _mkdir, {
   },
 });
 
+// See mkdir(2) for details on each error case
+// http://man7.org/linux/man-pages/man2/mkdir.2.html
+var codeToMessage = {
+  EACCES: 'Permission denied',
+  EEXIST: 'File exists',
+  ENAMETOOLONG: 'File name too long',
+  ENOENT: 'No such file or directory',
+  ENOTDIR: 'Not a directory',
+};
+
 // Recursively creates `dir`
 function mkdirSyncRecursive(dir) {
   var baseDir = path.dirname(dir);
@@ -67,15 +77,6 @@ function _mkdir(options, dirs) {
         fs.mkdirSync(dir, parseInt('0777', 8));
       }
     } catch (e) {
-      // See mkdir(2) for details on each error case
-      // http://man7.org/linux/man-pages/man2/mkdir.2.html
-      var codeToMessage = {
-        EACCES: 'Permission denied',
-        EEXIST: 'File exists',
-        ENAMETOOLONG: 'File name too long',
-        ENOENT: 'No such file or directory',
-        ENOTDIR: 'Not a directory',
-      };
       var reason = codeToMessage[e.code];
 
       /* istanbul ignore if */
