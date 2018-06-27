@@ -1,10 +1,21 @@
 #!/usr/bin/env node
+
+if (require.main !== module) {
+  throw new Error('Executable-only module should not be required');
+}
+
+// we must import global ShellJS methods after the require.main check to prevent the global
+// namespace from being polluted if the error is caught
 require('../global');
 
-if (process.argv.length < 3) {
-  console.log('ShellJS: missing argument (script name)');
+function exitWithErrorMessage(msg) {
+  console.log(msg);
   console.log();
   process.exit(1);
+}
+
+if (process.argv.length < 3) {
+  exitWithErrorMessage('ShellJS: missing argument (script name)');
 }
 
 var args,
@@ -19,9 +30,7 @@ if (!scriptName.match(/\.js/) && !scriptName.match(/\.coffee/)) {
 }
 
 if (!test('-f', scriptName)) {
-  console.log('ShellJS: script not found ('+scriptName+')');
-  console.log();
-  process.exit(1);
+  exitWithErrorMessage('ShellJS: script not found ('+scriptName+')');
 }
 
 args = process.argv.slice(3);
