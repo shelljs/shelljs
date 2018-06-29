@@ -77,6 +77,10 @@ function convertErrorOutput(msg) {
 }
 exports.convertErrorOutput = convertErrorOutput;
 
+// TODO(nate): make this compatible with electron
+// The path to the NodeJS binary. This is mainly used for exec() and cmd()
+exports.nodeBinPath = process.execPath;
+
 // Shows error message. Throws if config.fatal is true
 function error(msg, _code, options) {
   // Validate input

@@ -2,6 +2,7 @@ module.exports = [
   'cat',
   'cd',
   'chmod',
+  'cmd',
   'cp',
   'dirs',
   'echo',
