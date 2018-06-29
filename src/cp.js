@@ -11,6 +11,7 @@ common.register('cp', _cp, {
     'r': 'recursive',
     'L': 'followsymlink',
     'P': 'noFollowsymlink',
+    'p': 'preserve',
   },
   wrapOutput: false,
 });
@@ -51,6 +52,7 @@ function copyFileSync(srcFile, destFile, options) {
     var pos = 0;
     var fdr = null;
     var fdw = null;
+    var srcStat = common.statFollowLinks(srcFile);
 
     try {
       fdr = fs.openSync(srcFile, 'r');
@@ -60,7 +62,7 @@ function copyFileSync(srcFile, destFile, options) {
     }
 
     try {
-      fdw = fs.openSync(destFile, 'w');
+      fdw = fs.openSync(destFile, 'w', srcStat.mode);
     } catch (e) {
       /* istanbul ignore next */
       common.error('copyFileSync: could not write to dest file (code=' + e.code + '):' + destFile);
@@ -72,10 +74,13 @@ function copyFileSync(srcFile, destFile, options) {
       pos += bytesRead;
     }
 
+    if (options.preserve) {
+      fs.fchownSync(fdw, srcStat.uid, srcStat.gid);
+      fs.futimesSync(fdw, srcStat.atime, srcStat.mtime);
+    }
+
     fs.closeSync(fdr);
     fs.closeSync(fdw);
-
-    fs.chmodSync(destFile, common.statFollowLinks(srcFile).mode);
   }
 }
 
