@@ -760,7 +760,7 @@ test('should not overwrite recently created files (not give error no-force mode)
 // cp -R should be able to copy a readonly src (issue #98).
 // On Windows, chmod acts VERY differently so skip these tests for now
 test('cp -R should be able to copy a readonly src. issue #98; (Non window platforms only)', t => {
-  if (common.platform !== 'win') {
+  utils.skipOnWin(t, () => {
     shell.cp('-r', 'test/resources/cp', t.context.tmp);
     shell.chmod('555', `${t.context.tmp}/cp/`);
     shell.chmod('555', `${t.context.tmp}/cp/dir_a`);
@@ -778,5 +778,5 @@ test('cp -R should be able to copy a readonly src. issue #98; (Non window platfo
     t.is(fs.statSync(`${t.context.tmp}/cp_cp/a`).mode & parseInt('777', 8), parseInt('555', 8));
 
     shell.chmod('-R', '755', t.context.tmp);
-  }
+  });
 });

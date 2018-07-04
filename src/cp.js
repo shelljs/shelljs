@@ -153,7 +153,7 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
 
   // finally change the mode for the newly created directory.
   var checkDir = common.statFollowLinks(sourceDir);
-  fs.chmod(destDir, checkDir.mode);
+  fs.chmodSync(destDir, checkDir.mode);
 } // cpdirSyncRecursive
 
 // Checks if cureent file was created recently
