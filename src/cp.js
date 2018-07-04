@@ -151,7 +151,8 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
     }
   } // for files
 
-  // finally change the mode for the newly created directory.
+  // finally change the mode for the newly created directory (otherwise, we
+  // couldn't add files to a read-only directory).
   var checkDir = common.statFollowLinks(sourceDir);
   fs.chmodSync(destDir, checkDir.mode);
 } // cpdirSyncRecursive
