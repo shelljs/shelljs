@@ -206,6 +206,7 @@ Available options:
 + `-r`, `-R`: recursive
 + `-L`: follow symlinks
 + `-P`: don't follow symlinks
++ `-p`: preserve file mode, ownership, and timestamps
 
 Examples:
 

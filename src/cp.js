@@ -76,6 +76,8 @@ function copyFileSync(srcFile, destFile, options) {
 
     if (options.preserve) {
       fs.fchownSync(fdw, srcStat.uid, srcStat.gid);
+      // Note: utimesSync does not work (rounds to seconds), but futimesSync has
+      // millisecond precision.
       fs.futimesSync(fdw, srcStat.atime, srcStat.mtime);
     }
 
@@ -201,6 +203,7 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@ + `-r`, `-R`: recursive
 //@ + `-L`: follow symlinks
 //@ + `-P`: don't follow symlinks
+//@ + `-p`: preserve file mode, ownership, and timestamps
 //@
 //@ Examples:
 //@
