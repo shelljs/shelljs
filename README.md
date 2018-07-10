@@ -682,6 +682,29 @@ uniq('-cd', 'foo.txt', 'bar.txt');
 Filter adjacent matching lines from `input`.
 
 
+### wc([options,] file [, file ...])
+### wc([options,] file_array)
+Available options:
++ `-m`: print the char counts 
++ `-l`: print the newline counts
++ `-w`: print the word counts (space delimited characters)
++ `-c`: print the byte counts 
+
+Examples:
+
+```javascript
+var counts = wc('file.txt'); //returns lineCount wordCount byteCount
+var charCount = wc('-m','file.txt'); //returns number of characters
+var lineCount = wc('-l','file.txt'); //returns number of newlines
+var wordCount = wc('-w','file.txt'); //returns number of words 
+var byteCount = wc('-c','file.txt'); //returns number of bytes 
+var countFiles = wc(['file1', 'file2']); //same as above
+```
+Note: The character counts include escaped characters
+
+read the number of characters, lines and words in a file.
+
+
 ### which(command)
 
 Examples:
