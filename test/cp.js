@@ -756,3 +756,27 @@ test('should not overwrite recently created files (not give error no-force mode)
   // Ensure First file is copied
   t.is(shell.cat(`${t.context.tmp}/file1`).toString(), 'test1');
 });
+
+// cp -R should be able to copy a readonly src (issue #98).
+// On Windows, chmod acts VERY differently so skip these tests for now
+test('cp -R should be able to copy a readonly src. issue #98; (Non window platforms only)', t => {
+  utils.skipOnWin(t, () => {
+    shell.cp('-r', 'test/resources/cp', t.context.tmp);
+    shell.chmod('555', `${t.context.tmp}/cp/`);
+    shell.chmod('555', `${t.context.tmp}/cp/dir_a`);
+    shell.chmod('555', `${t.context.tmp}/cp/dir_b`);
+    shell.chmod('555', `${t.context.tmp}/cp/a`);
+
+    const result = shell.cp('-r', `${t.context.tmp}/cp`, `${t.context.tmp}/cp_cp`);
+    t.falsy(shell.error());
+    t.falsy(result.stderr);
+    t.is(result.code, 0);
+
+    t.is(shell.ls('-R', `${t.context.tmp}/cp`) + '', shell.ls('-R', `${t.context.tmp}/cp_cp`) + '');
+    t.is(fs.statSync(`${t.context.tmp}/cp_cp`).mode & parseInt('777', 8), parseInt('555', 8));
+    t.is(fs.statSync(`${t.context.tmp}/cp_cp/dir_a`).mode & parseInt('777', 8), parseInt('555', 8));
+    t.is(fs.statSync(`${t.context.tmp}/cp_cp/a`).mode & parseInt('777', 8), parseInt('555', 8));
+
+    shell.chmod('-R', '755', t.context.tmp);
+  });
+});
