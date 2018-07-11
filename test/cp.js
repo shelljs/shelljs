@@ -54,7 +54,7 @@ test('invalid option', t => {
   t.is(result.stderr, 'cp: option not recognized: @');
 });
 
-test('invalid option', t => {
+test('invalid option #2', t => {
   const result = shell.cp('-Z', 'asdfasdf', `${t.context.tmp}/file2`);
   t.truthy(shell.error());
   t.is(result.code, 1);
@@ -265,39 +265,34 @@ test('recursive, nothing exists', t => {
   t.is(shell.ls('-R', 'test/resources/cp').toString(), shell.ls('-R', `${t.context.tmp}/cp`).toString());
 });
 
-test(
-  'recursive, nothing exists, source ends in \'/\' (see Github issue #15)',
-  t => {
-    const result = shell.cp('-R', 'test/resources/cp/', `${t.context.tmp}/`);
-    t.falsy(shell.error());
-    t.falsy(result.stderr);
-    t.is(result.code, 0);
-    t.is(shell.ls('-R', 'test/resources/cp').toString(), shell.ls('-R', `${t.context.tmp}/cp`).toString());
-  }
-);
+test('recursive, nothing exists, source ends in "/"', t => {
+  // Github issue #15
+  const result = shell.cp('-R', 'test/resources/cp/', `${t.context.tmp}/`);
+  t.falsy(shell.error());
+  t.falsy(result.stderr);
+  t.is(result.code, 0);
+  t.is(shell.ls('-R', 'test/resources/cp').toString(), shell.ls('-R', `${t.context.tmp}/cp`).toString());
+});
 
-test(
-  'recursive, globbing regular files with extension (see Github issue #376)',
-  t => {
-    const result = shell.cp('-R', 'test/resources/file*.txt', t.context.tmp);
-    t.falsy(shell.error());
-    t.falsy(result.stderr);
-    t.is(result.code, 0);
-    t.truthy(fs.existsSync(`${t.context.tmp}/file1.txt`));
-    t.truthy(fs.existsSync(`${t.context.tmp}/file2.txt`));
-  }
-);
+test('recursive, globbing regular files with extension', t => {
+  // Github issue #376
+  const result = shell.cp('-R', 'test/resources/file*.txt', t.context.tmp);
+  t.falsy(shell.error());
+  t.falsy(result.stderr);
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync(`${t.context.tmp}/file1.txt`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/file2.txt`));
+});
 
-test(
-  'recursive, copying one regular file (also related to Github issue #376)',
-  t => {
-    const result = shell.cp('-R', 'test/resources/file1.txt', t.context.tmp);
-    t.falsy(shell.error());
-    t.falsy(result.stderr);
-    t.is(result.code, 0);
-    t.truthy(fs.existsSync(`${t.context.tmp}/file1.txt`));
-    t.falsy(common.statFollowLinks(`${t.context.tmp}/file1.txt`).isDirectory()); // don't let it be a dir
-  }
+test('recursive, copying one regular file', t => {
+  // Github issue #376
+  const result = shell.cp('-R', 'test/resources/file1.txt', t.context.tmp);
+  t.falsy(shell.error());
+  t.falsy(result.stderr);
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync(`${t.context.tmp}/file1.txt`));
+  t.falsy(common.statFollowLinks(`${t.context.tmp}/file1.txt`).isDirectory()); // don't let it be a dir
+}
 );
 
 test('recursive, everything exists, no force flag', t => {
@@ -365,34 +360,30 @@ test('recursive, everything exists, with force flag', t => {
   t.is(shell.cat('test/resources/cp/dir_a/z').toString(), shell.cat(`${t.context.tmp}/cp/dir_a/z`).toString()); // after cp
 });
 
-test(
-  'recursive, creates dest dir since it\'s only one level deep (see Github issue #44)',
-  t => {
-    const result = shell.cp('-r', 'test/resources/issue44', `${t.context.tmp}/dir2`);
-    t.falsy(shell.error());
-    t.falsy(result.stderr);
-    t.is(result.code, 0);
-    t.is(shell.ls('-R', 'test/resources/issue44').toString(), shell.ls('-R', `${t.context.tmp}/dir2`).toString());
-    t.is(
+test("recursive, creates dest dir since it's only one level deep", t => {
+  // Github issue #44
+  const result = shell.cp('-r', 'test/resources/issue44', `${t.context.tmp}/dir2`);
+  t.falsy(shell.error());
+  t.falsy(result.stderr);
+  t.is(result.code, 0);
+  t.is(shell.ls('-R', 'test/resources/issue44').toString(), shell.ls('-R', `${t.context.tmp}/dir2`).toString());
+  t.is(
       shell.cat('test/resources/issue44/main.js').toString(),
       shell.cat(`${t.context.tmp}/dir2/main.js`).toString()
     );
-  }
-);
+});
 
-test(
-  'recursive, does *not* create dest dir since it\'s too deep (see Github issue #44)',
-  t => {
-    const result = shell.cp('-r', 'test/resources/issue44', `${t.context.tmp}/dir2/dir3`);
-    t.truthy(shell.error());
-    t.is(
-      result.stderr,
-      `cp: cannot create directory '${t.context.tmp}/dir2/dir3': No such file or directory`
-    );
-    t.is(result.code, 1);
-    t.falsy(fs.existsSync(`${t.context.tmp}/dir2`));
-  }
-);
+test("recursive, does *not* create dest dir since it's too deep", t => {
+  // Github issue #44
+  const result = shell.cp('-r', 'test/resources/issue44', `${t.context.tmp}/dir2/dir3`);
+  t.truthy(shell.error());
+  t.is(
+    result.stderr,
+    `cp: cannot create directory '${t.context.tmp}/dir2/dir3': No such file or directory`
+  );
+  t.is(result.code, 1);
+  t.falsy(fs.existsSync(`${t.context.tmp}/dir2`));
+});
 
 test('recursive, copies entire directory', t => {
   const result = shell.cp('-r', 'test/resources/cp/dir_a', `${t.context.tmp}/dest`);
@@ -409,21 +400,17 @@ test('recursive, with trailing slash, does the exact same', t => {
   t.truthy(fs.existsSync(`${t.context.tmp}/dest/z`));
 });
 
-test(
-  'On Windows, permission bits are quite different so skip those tests for now',
-  t => {
-    utils.skipOnWin(t, () => {
-      // preserve mode bits
-      const execBit = parseInt('001', 8);
-      t.is(common.statFollowLinks('test/resources/cp-mode-bits/executable').mode & execBit, execBit);
-      shell.cp('test/resources/cp-mode-bits/executable', `${t.context.tmp}/executable`);
-      t.is(
-        common.statFollowLinks('test/resources/cp-mode-bits/executable').mode,
-        common.statFollowLinks(`${t.context.tmp}/executable`).mode
-      );
-    });
-  }
-);
+test('preserve mode bits by default for file', t => {
+  utils.skipOnWin(t, () => {
+    const execBit = parseInt('001', 8);
+    t.is(common.statFollowLinks('test/resources/cp-mode-bits/executable').mode & execBit, execBit);
+    shell.cp('test/resources/cp-mode-bits/executable', `${t.context.tmp}/executable`);
+    t.is(
+      common.statFollowLinks('test/resources/cp-mode-bits/executable').mode,
+      common.statFollowLinks(`${t.context.tmp}/executable`).mode
+    );
+  });
+});
 
 test('Make sure hidden files are copied recursively', t => {
   shell.rm('-rf', t.context.tmp);

@@ -31,7 +31,7 @@ test('simple test with defaults', t => {
 });
 
 test('allow arguments to begin with a hyphen', t => {
-  // see issue #20
+  // Github issue #20
   const result = shell.echo('-asdf', '111');
   const stdout = mocks.stdout();
   const stderr = mocks.stderr();
@@ -62,7 +62,7 @@ test('-e option', t => {
 });
 
 test('piping to a file', t => {
-  // see issue #476
+  // Github issue #476
   shell.mkdir(t.context.tmp);
   const tmp = `${t.context.tmp}/echo.txt`;
   const resultA = shell.echo('A').toEnd(tmp);
@@ -121,7 +121,7 @@ test('-en option with escaped characters', t => {
 });
 
 test('piping to a file with -n', t => {
-  // see issue #476
+  // Github issue #476
   shell.mkdir(t.context.tmp);
   const tmp = `${t.context.tmp}/echo.txt`;
   const resultA = shell.echo('-n', 'A').toEnd(tmp);
