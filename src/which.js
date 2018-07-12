@@ -13,6 +13,9 @@ common.register('which', _which, {
 // set on Windows.
 var XP_DEFAULT_PATHEXT = '.com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh';
 
+// For earlier versions of NodeJS that doesn't have a list of constants (< v6)
+var FILE_EXECUTABLE_MODE = 1;
+
 // Cross-platform method for splitting environment `PATH` variables
 function splitPath(p) {
   return p ? p.split(path.delimiter) : [];
@@ -20,7 +23,7 @@ function splitPath(p) {
 
 function isExecutable(pathName) {
   try {
-    fs.accessSync(pathName, fs.constants.X_OK);
+    fs.accessSync(pathName, FILE_EXECUTABLE_MODE);
   } catch (err) {
     return false;
   }
