@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 import test from 'ava';
 
@@ -69,5 +70,25 @@ test('Searching with -a flag returns an array with first item equals to the regu
   t.falsy(shell.error());
   t.truthy(resultForWhich);
   t.truthy(resultForWhichA);
-  t.is(resultForWhich.toString(), resultForWhichA[0].toString());
+  t.is(resultForWhich.toString(), resultForWhichA[0]);
+});
+
+test('None executable files does not appear in the result list', t => {
+  const commandName = 'node'; // Should be an existing command
+  const pathEnv = process.env.path || process.env.Path || process.env.PATH;
+  const extraPath = path.resolve(__dirname, 'resources', 'which');
+  const matchingFile = path.resolve(extraPath, commandName);
+
+  // make sure that file is exists (will throw error otherwise)
+  fs.statSync(matchingFile);
+
+  process.env.path = process.env.Path = process.env.PATH = extraPath + path.delimiter + pathEnv;
+  const resultForWhich = shell.which(commandName);
+  const resultForWhichA = shell.which('-a', commandName);
+  t.falsy(shell.error());
+  t.truthy(resultForWhich);
+  t.truthy(resultForWhichA);
+  t.truthy(resultForWhichA.length);
+  t.not(resultForWhich.toString(), matchingFile);
+  t.not(resultForWhichA[0], matchingFile);
 });

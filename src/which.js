@@ -18,8 +18,17 @@ function splitPath(p) {
   return p ? p.split(path.delimiter) : [];
 }
 
+function isExecutable(pathName) {
+  try {
+    fs.accessSync(pathName, fs.constants.X_OK);
+  } catch (err) {
+    return false;
+  }
+  return true;
+}
+
 function checkPath(pathName) {
-  return fs.existsSync(pathName) && !common.statFollowLinks(pathName).isDirectory();
+  return fs.existsSync(pathName) && !common.statFollowLinks(pathName).isDirectory() && isExecutable(pathName);
 }
 
 //@
