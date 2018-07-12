@@ -305,6 +305,7 @@ test('rm -r, symlink to a dir, trailing slash', t => {
     const result = shell.rm('-r', `${t.context.tmp}/rm/link_to_a_dir/`);
     t.truthy(shell.error());
     t.is(result.code, 1);
+    t.is(result.stderr, `rm: cannot remove '${t.context.tmp}/rm/link_to_a_dir/': Not a directory`);
     // Both the link and original dir should remain, but contents are deleted
     t.truthy(fs.existsSync(`${t.context.tmp}/rm/link_to_a_dir`));
     t.truthy(fs.existsSync(`${t.context.tmp}/rm/a_dir`));
