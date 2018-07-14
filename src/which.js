@@ -16,6 +16,10 @@ var XP_DEFAULT_PATHEXT = '.com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh';
 // For earlier versions of NodeJS that doesn't have a list of constants (< v6)
 var FILE_EXECUTABLE_MODE = 1;
 
+function isWindowsPlatform() {
+  return process.platform === 'win32';
+}
+
 // Cross-platform method for splitting environment `PATH` variables
 function splitPath(p) {
   return p ? p.split(path.delimiter) : [];
@@ -23,6 +27,7 @@ function splitPath(p) {
 
 function isExecutable(pathName) {
   try {
+    // TODO(node-support): replace with fs.constants.X_OK once remove support for node < v6
     fs.accessSync(pathName, FILE_EXECUTABLE_MODE);
   } catch (err) {
     return false;
@@ -31,7 +36,8 @@ function isExecutable(pathName) {
 }
 
 function checkPath(pathName) {
-  return fs.existsSync(pathName) && !common.statFollowLinks(pathName).isDirectory() && isExecutable(pathName);
+  return fs.existsSync(pathName) && !common.statFollowLinks(pathName).isDirectory()
+    && (isWindowsPlatform() || isExecutable(pathName));
 }
 
 //@
@@ -49,9 +55,8 @@ function checkPath(pathName) {
 function _which(options, cmd) {
   if (!cmd) common.error('must specify command');
 
-  var isWindows = process.platform === 'win32';
-  var pathEnv = process.env.path || process.env.Path || process.env.PATH;
-  var pathArray = splitPath(pathEnv);
+  var isWindows = isWindowsPlatform();
+  var pathArray = splitPath(process.env.PATH);
 
   var queryMatches = [];
 

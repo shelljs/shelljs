@@ -75,14 +75,14 @@ test('Searching with -a flag returns an array with first item equals to the regu
 
 test('None executable files does not appear in the result list', t => {
   const commandName = 'node'; // Should be an existing command
-  const pathEnv = process.env.path || process.env.Path || process.env.PATH;
   const extraPath = path.resolve(__dirname, 'resources', 'which');
   const matchingFile = path.resolve(extraPath, commandName);
+  const pathEnv = process.env.PATH;
 
   // make sure that file is exists (will throw error otherwise)
-  fs.statSync(matchingFile);
+  t.truthy(fs.existsSync(matchingFile));
 
-  process.env.path = process.env.Path = process.env.PATH = extraPath + path.delimiter + pathEnv;
+  process.env.PATH = extraPath + path.delimiter + process.env.PATH;
   const resultForWhich = shell.which(commandName);
   const resultForWhichA = shell.which('-a', commandName);
   t.falsy(shell.error());
@@ -90,5 +90,8 @@ test('None executable files does not appear in the result list', t => {
   t.truthy(resultForWhichA);
   t.truthy(resultForWhichA.length);
   t.not(resultForWhich.toString(), matchingFile);
+  // TODO(node-support): this can be used starting from node@6: t.falsy(resultForWhichA.includes(matchingFile))
   t.not(resultForWhichA[0], matchingFile);
+
+  process.env.PATH = pathEnv;
 });
