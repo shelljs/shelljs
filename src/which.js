@@ -25,6 +25,8 @@ function splitPath(p) {
   return p ? p.split(path.delimiter) : [];
 }
 
+// Tests are running all cases for this func but it stays uncovered by codecov due to unknown reason
+/* istanbul ignore next */
 function isExecutable(pathName) {
   try {
     // TODO(node-support): replace with fs.constants.X_OK once remove support for node < v6
