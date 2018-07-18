@@ -64,8 +64,9 @@ test(
   'cannot remove a symbolic link to a directory with trailing slash without -r flag',
   t => {
     utils.skipOnWin(t, () => {
-      // the trailing slash signifies that we want to delete the source
-      // directory and its contents, which can only be done with the -r flag
+      // the trailing slash signifies that we want to delete the contents of the source directory,
+      // without removing the source directory itself or the link, which can only be done with the
+      // -r flag
       const result = shell.rm(`${t.context.tmp}/rm/link_to_a_dir/`);
       t.truthy(shell.error());
       t.is(result.code, 1);
