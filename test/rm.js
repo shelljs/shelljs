@@ -328,7 +328,7 @@ test('rm -rf, symlink to a dir, trailing slash', t => {
 
 test('rm -r, symlink to a dir, no trailing slash', t => {
   utils.skipOnWin(t, () => {
-    const result = shell.rm('-rf', `${t.context.tmp}/rm/link_to_a_dir`);
+    const result = shell.rm('-r', `${t.context.tmp}/rm/link_to_a_dir`);
     t.falsy(shell.error());
     t.is(result.code, 0);
     // The link should be deleted, but the dir and contents remain
