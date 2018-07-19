@@ -7,6 +7,7 @@ common.register('grep', _grep, {
   cmdOptions: {
     'v': 'inverse',
     'l': 'nameOnly',
+    'i': 'ignoreCase',
   },
 });
 
@@ -17,7 +18,8 @@ common.register('grep', _grep, {
 //@ Available options:
 //@
 //@ + `-v`: Invert `regex_filter` (only print non-matching lines).
-//@ + `-l`: Print only filenames of matching files
+//@ + `-l`: Print only filenames of matching files.
+//@ + `-i`: Ignored upper/lower case differences.
 //@
 //@ Examples:
 //@
@@ -48,6 +50,9 @@ function _grep(options, regex, files) {
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
+    if (options.ignoreCase) {
+      regex = new RegExp(regex, 'i');
+    }
     if (options.nameOnly) {
       if (contents.match(regex)) {
         grep.push(file);
