@@ -362,7 +362,8 @@ include the base directories (e.g., `lib/resources/file1` instead of just `file1
 Available options:
 
 + `-v`: Invert `regex_filter` (only print non-matching lines).
-+ `-l`: Print only filenames of matching files
++ `-l`: Print only filenames of matching files.
++ `-i`: Ignore case.
 
 Examples:
 

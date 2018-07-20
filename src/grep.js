@@ -19,7 +19,7 @@ common.register('grep', _grep, {
 //@
 //@ + `-v`: Invert `regex_filter` (only print non-matching lines).
 //@ + `-l`: Print only filenames of matching files.
-//@ + `-i`: Ignored upper/lower case differences.
+//@ + `-i`: Ignore case.
 //@
 //@ Examples:
 //@
