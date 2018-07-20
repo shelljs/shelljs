@@ -138,8 +138,8 @@ test('-l option', t => {
 });
 
 test('-i option', t => {
-  const result = shell.grep('-i', 'test', 'test/resources/case1', 'test/resources/case1.txt',
-    'test/resources/case1.js');
+  const result = shell.grep('-i', 'test', 'test/resources/grep/case1', 'test/resources/grep/case1.txt',
+    'test/resources/grep/case1.js');
   t.falsy(shell.error());
   t.is(result.split('\n').length - 1, 3);
 });
