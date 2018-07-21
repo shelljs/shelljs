@@ -43,6 +43,9 @@ function _grep(options, regex, files) {
   }
 
   var grep = [];
+  if (options.ignoreCase) {
+    regex = new RegExp(regex, 'i');
+  }
   files.forEach(function (file) {
     if (!fs.existsSync(file) && file !== '-') {
       common.error('no such file or directory: ' + file, 2, { continue: true });
@@ -50,9 +53,6 @@ function _grep(options, regex, files) {
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
-    if (options.ignoreCase) {
-      regex = new RegExp(regex, 'i');
-    }
     if (options.nameOnly) {
       if (contents.match(regex)) {
         grep.push(file);
