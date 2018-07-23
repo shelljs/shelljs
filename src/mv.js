@@ -111,7 +111,7 @@ function _mv(options, sources, dest) {
         cp('-r', src, thisDest);
         rm('-rf', src);
       } else {
-          common.error(e.message, { continue: true });
+        common.error(e.message, { continue: true });
       }
     }
   }); // forEach(src)
