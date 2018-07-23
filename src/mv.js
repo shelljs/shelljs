@@ -110,6 +110,8 @@ function _mv(options, sources, dest) {
         // exception to pass up to the top level.
         cp('-r', src, thisDest);
         rm('-rf', src);
+      } else {
+          common.error(e.message, { continue: true });
       }
     }
   }); // forEach(src)
