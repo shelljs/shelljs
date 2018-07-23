@@ -137,6 +137,13 @@ test('-l option', t => {
   t.is(result.split('\n').length - 1, 2);
 });
 
+test('-i option', t => {
+  const result = shell.grep('-i', 'test', 'test/resources/grep/case1', 'test/resources/grep/case1.txt',
+    'test/resources/grep/case1.js');
+  t.falsy(shell.error());
+  t.is(result.split('\n').length - 1, 3);
+});
+
 test('the pattern looks like an option', t => {
   const result = shell.grep('--', '-v', 'test/resources/grep/file2');
   t.falsy(shell.error());
