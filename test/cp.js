@@ -451,6 +451,19 @@ test('-R implies -P', t => {
   });
 });
 
+test('-Ru no longer ignores -u', t => {
+  const [source, dest] = ['foo', 'bar'].map(s => `test/resources/cp/cp-Ru/${s}/file`);
+  // First, update the dest file
+  shell.touch(dest);
+  // Get the old mtime for dest
+  const oldTime = fs.statSync(dest).mtimeMs;
+  // Now, copy the old dir to the new one 
+  shell.cp('-Ru', source, dest);
+  // Get the new mtime for dest
+  const newTime = fs.statSync(dest).mtimeMs;
+  t.is(oldTime, newTime);
+});
+
 test('using -P explicitly works', t => {
   utils.skipOnWin(t, () => {
     shell.cp('-P', 'test/resources/cp/links/sym.lnk', t.context.tmp);
