@@ -457,7 +457,7 @@ test('-Ru no longer ignores -u', t => {
   shell.touch(dest);
   // Get the old mtime for dest
   const oldTime = fs.statSync(dest).mtimeMs;
-  // Now, copy the old dir to the new one 
+  // Now, copy the old dir to the new one
   shell.cp('-Ru', source, dest);
   // Get the new mtime for dest
   const newTime = fs.statSync(dest).mtimeMs;
