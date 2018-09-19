@@ -451,7 +451,7 @@ test('-R implies -P', t => {
   });
 });
 
-test('-Ru no longer ignores -u', t => {
+test('-Ru respects the -u flag recursively', t => {
   const [source, dest] = ['foo', 'bar'].map(s => `test/resources/cp/cp-Ru/${s}/file`);
   // First, update the dest file
   shell.touch(dest);
