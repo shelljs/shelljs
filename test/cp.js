@@ -458,8 +458,8 @@ test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
   const destDir    = `${dir}/new`;
   const destFile   = `${destDir}/file`;
   [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
-  ShellString('foo\n').to(sourceFile);
-  ShellString('bar\n').to(destFile);
+  shell.ShellString('foo\n').to(sourceFile);
+  shell.ShellString('bar\n').to(destFile);
   // Get the old mtime for dest
   const oldTime = fs.statSync(destFile).mtimeMs;
   // Send the old file to two days ago
@@ -477,8 +477,8 @@ test('-Ru respects the -u flag recursively (update older file)', t => {
   const destDir    = `${dir}/new`;
   const destFile   = `${destDir}/file`;
   [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
-  ShellString('foo\n').to(sourceFile);
-  ShellString('bar\n').to(destFile);
+  shell.ShellString('foo\n').to(sourceFile);
+  shell.ShellString('bar\n').to(destFile);
   // Get the old mtime for dest
   const oldTime = fs.statSync(destFile).mtimeMs;
   // Send the source file to two days ahead
