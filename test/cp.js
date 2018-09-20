@@ -453,10 +453,10 @@ test('-R implies -P', t => {
 
 test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
   const dir = `${t.context.tmp}/cp-Ru`;
-  const sourceDir  = `${dir}/old`;
+  const sourceDir = `${dir}/old`;
   const sourceFile = `${sourceDir}/file`;
-  const destDir    = `${dir}/new`;
-  const destFile   = `${destDir}/file`;
+  const destDir = `${dir}/new`;
+  const destFile = `${destDir}/file`;
   [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
   shell.ShellString('foo\n').to(sourceFile);
   shell.ShellString('bar\n').to(destFile);
@@ -472,10 +472,10 @@ test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
 
 test('-Ru respects the -u flag recursively (update older file)', t => {
   const dir = `${t.context.tmp}/cp-Ru`;
-  const sourceDir  = `${dir}/old`;
+  const sourceDir = `${dir}/old`;
   const sourceFile = `${sourceDir}/file`;
-  const destDir    = `${dir}/new`;
-  const destFile   = `${destDir}/file`;
+  const destDir = `${dir}/new`;
+  const destFile = `${destDir}/file`;
   [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
   shell.ShellString('foo\n').to(sourceFile);
   shell.ShellString('bar\n').to(destFile);
