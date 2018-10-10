@@ -18,7 +18,7 @@ install:
   - npm install
 
 matrix:
-  fast_finish: true
+  fast_finish: false
 
 # No need for MSBuild on this project
 build: off
