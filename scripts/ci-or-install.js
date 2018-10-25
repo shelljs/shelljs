@@ -3,6 +3,9 @@ var childProcess = require('child_process');
 // Note: can't use 3P modules or shelljs, because this must run before we
 // download dependencies.
 
+// Also, we must use { shell: true } because `npm` is a batch script on Windows,
+// which must run in-process in the shell.
+
 function Version(components) {
   this.components = components;
 }
@@ -19,10 +22,11 @@ Version.prototype.isAtLeast = function (other) {
   return true;
 };
 
-var npmVersionComponents = childProcess.spawnSync('npm', ['--version'])
-  .stdout.toString().trim().split('.').map(function (str) {
-    return parseInt(str, 10);
-  });
+var npmVersionComponents = childProcess.spawnSync('npm', ['--version'], {
+  shell: true,
+}).stdout.toString().trim().split('.').map(function (str) {
+  return parseInt(str, 10);
+});
 var npmVersion = new Version(npmVersionComponents);
 var minimumVersionWithNpmCi = new Version([5, 7, 0]);
 
@@ -32,4 +36,4 @@ var subcommand = npmVersion.isAtLeast(minimumVersionWithNpmCi) ?
 
 console.log('Executing `npm ' + subcommand + '`');
 // Async. Node waits until this is finished.
-childProcess.spawn('npm', [subcommand], { stdio: 'inherit' });
+childProcess.spawn('npm', [subcommand], { shell: true, stdio: 'inherit' });
