@@ -15,7 +15,7 @@ install:
   - set PATH=%APPDATA%\npm;%PATH%
   - node --version
   - npm --version
-  - npm install
+  - npm run ci-or-install
 
 matrix:
   fast_finish: false

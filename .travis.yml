@@ -18,7 +18,7 @@ install:
   - nvm install $NODE_VERSION
   - node --version
   - npm --version
-  - npm install
+  - npm run ci-or-install
 os:
   - linux
   - osx
