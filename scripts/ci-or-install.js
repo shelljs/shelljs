@@ -36,4 +36,6 @@ var subcommand = npmVersion.isAtLeast(minimumVersionWithNpmCi) ?
 
 console.log('Executing `npm ' + subcommand + '`');
 // Async. Node waits until this is finished.
-childProcess.exec('npm ' + subcommand, { stdio: 'inherit' });
+var c = childProcess.exec('npm ' + subcommand);
+c.stdout.pipe(process.stdout);
+c.stderr.pipe(process.stderr);
