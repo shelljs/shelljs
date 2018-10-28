@@ -452,6 +452,8 @@ test('-R implies -P', t => {
 });
 
 test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
+  // Setup code
+  const TWO_DAYS_IN_MS = 2 * 24 * 60 * 60 * 1000;
   const dir = `${t.context.tmp}/cp-Ru`;
   const sourceDir = `${dir}/old`;
   const sourceFile = `${sourceDir}/file`;
@@ -460,10 +462,12 @@ test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
   [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
   shell.ShellString('Source File Contents\n').to(sourceFile);
   shell.ShellString('Destination File Contents\n').to(destFile);
+  // End setup
+  
   // Get the old mtime for dest
   const oldTime = fs.statSync(destFile).mtimeMs;
-  // Send the source file to be older than the destination file
-  shell.touch('-m', oldTime - (2 * 24 * 60 * 60 * 1000), sourceFile);
+  // Set the source file to be older than the destination file
+  shell.touch('-m', oldTime - TWO_DAYS_IN_MS, sourceFile);
   // Now, copy the old dir to the new one
   shell.cp('-Ru', sourceDir, destDir);
   // Check that dest has not been updated
@@ -471,6 +475,8 @@ test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
 });
 
 test('-Ru respects the -u flag recursively (update older file)', t => {
+  // Setup code
+  const TWO_DAYS_IN_MS = 2 * 24 * 60 * 60 * 1000;
   const dir = `${t.context.tmp}/cp-Ru`;
   const sourceDir = `${dir}/old`;
   const sourceFile = `${sourceDir}/file`;
@@ -479,10 +485,12 @@ test('-Ru respects the -u flag recursively (update older file)', t => {
   [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
   shell.ShellString('Source File Contents\n').to(sourceFile);
   shell.ShellString('Destination File Contents\n').to(destFile);
+  // End setup
+  
   // Get the old mtime for dest
   const oldTime = fs.statSync(destFile).mtimeMs;
-  // Send the source file to two days ahead
-  shell.touch('-m', oldTime + (2 * 24 * 60 * 60 * 1000), sourceFile);
+  // Set the destination file to be older than the source file
+  shell.touch('-m', oldTime + TWO_DAYS_IN_MS, sourceFile);
   // Now, copy the old dir to the new one
   shell.cp('-Ru', sourceDir, destDir);
   // Check that dest has been updated
