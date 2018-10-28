@@ -458,16 +458,16 @@ test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
   const destDir = `${dir}/new`;
   const destFile = `${destDir}/file`;
   [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
-  shell.ShellString('foo\n').to(sourceFile);
-  shell.ShellString('bar\n').to(destFile);
+  shell.ShellString('Source File Contents\n').to(sourceFile);
+  shell.ShellString('Destination File Contents\n').to(destFile);
   // Get the old mtime for dest
   const oldTime = fs.statSync(destFile).mtimeMs;
-  // Send the old file to two days ago
+  // Send the source file to be older than the destination file
   shell.touch('-m', oldTime - (2 * 24 * 60 * 60 * 1000), sourceFile);
   // Now, copy the old dir to the new one
   shell.cp('-Ru', sourceDir, destDir);
   // Check that dest has not been updated
-  t.is(shell.cat(destFile).stdout, 'bar\n');
+  t.is(shell.cat(destFile).stdout, 'Destination File Contents\n');
 });
 
 test('-Ru respects the -u flag recursively (update older file)', t => {
@@ -477,17 +477,16 @@ test('-Ru respects the -u flag recursively (update older file)', t => {
   const destDir = `${dir}/new`;
   const destFile = `${destDir}/file`;
   [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
-  shell.ShellString('foo\n').to(sourceFile);
-  shell.ShellString('bar\n').to(destFile);
+  shell.ShellString('Source File Contents\n').to(sourceFile);
+  shell.ShellString('Destination File Contents\n').to(destFile);
   // Get the old mtime for dest
   const oldTime = fs.statSync(destFile).mtimeMs;
   // Send the source file to two days ahead
   shell.touch('-m', oldTime + (2 * 24 * 60 * 60 * 1000), sourceFile);
   // Now, copy the old dir to the new one
   shell.cp('-Ru', sourceDir, destDir);
-  // Get the new mtime for dest
   // Check that dest has been updated
-  t.is(shell.cat(sourceFile).stdout, 'foo\n');
+  t.is(shell.cat(sourceFile).stdout, 'Source File Contents\n');
 });
 
 test('using -P explicitly works', t => {
