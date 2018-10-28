@@ -463,7 +463,6 @@ test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
   shell.ShellString('Source File Contents\n').to(sourceFile);
   shell.ShellString('Destination File Contents\n').to(destFile);
   // End setup
-  
   // Get the old mtime for dest
   const oldTime = fs.statSync(destFile).mtimeMs;
   // Set the source file to be older than the destination file
@@ -486,7 +485,6 @@ test('-Ru respects the -u flag recursively (update older file)', t => {
   shell.ShellString('Source File Contents\n').to(sourceFile);
   shell.ShellString('Destination File Contents\n').to(destFile);
   // End setup
-  
   // Get the old mtime for dest
   const oldTime = fs.statSync(destFile).mtimeMs;
   // Set the destination file to be older than the source file
