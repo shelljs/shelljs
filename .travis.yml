@@ -28,7 +28,7 @@ script:
   - npm run gendocs
   - npm run after-travis "Make sure to generate docs!"
 after_success:
-  - codecov
+  - npm run codecov -- -f coverage/lcov.info
 
 # Gitter
 notifications:
