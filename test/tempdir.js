@@ -3,6 +3,7 @@ import fs from 'fs';
 import test from 'ava';
 
 import shell from '..';
+import { isCached, clearCache } from '../src/tempdir';
 
 shell.config.silent = true;
 
@@ -18,4 +19,13 @@ test('basic usage', t => {
 
   // It's a directory
   t.truthy(shell.test('-d', tmp));
+});
+
+test('cache', t => {
+  clearCache(); // In case this runs after any test which relies on tempdir().
+  t.falsy(isCached());
+  const tmp1 = shell.tempdir();
+  t.truthy(isCached());
+  const tmp2 = shell.tempdir();
+  t.is(tmp1, tmp2);
 });

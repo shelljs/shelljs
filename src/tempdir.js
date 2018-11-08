@@ -24,6 +24,8 @@ function writeableDir(dir) {
   }
 }
 
+// Variable to cache the tempdir value for successive lookups.
+var cachedTempDir;
 
 //@
 //@ ### tempdir()
@@ -37,10 +39,9 @@ function writeableDir(dir) {
 //@ Searches and returns string containing a writeable, platform-dependent temporary directory.
 //@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.html#tempfile.tempdir).
 function _tempDir() {
-  var state = common.state;
-  if (state.tempDir) return state.tempDir; // from cache
+  if (cachedTempDir) return cachedTempDir;
 
-  state.tempDir = writeableDir(os.tmpdir()) ||
+  cachedTempDir = writeableDir(os.tmpdir()) ||
                   writeableDir(process.env.TMPDIR) ||
                   writeableDir(process.env.TEMP) ||
                   writeableDir(process.env.TMP) ||
@@ -54,6 +55,21 @@ function _tempDir() {
                   writeableDir('/usr/tmp') ||
                   writeableDir('.'); // last resort
 
-  return state.tempDir;
+  return cachedTempDir;
 }
-module.exports = _tempDir;
+
+// Indicates if the tempdir value is currently cached. This is exposed for tests
+// only. The return value should only be tested for truthiness.
+function isCached() {
+  return cachedTempDir;
+}
+
+// Clears the cached tempDir value, if one is cached. This is exposed for tests
+// only.
+function clearCache() {
+  cachedTempDir = undefined;
+}
+
+module.exports.tempDir = _tempDir;
+module.exports.isCached = isCached;
+module.exports.clearCache = clearCache;
