@@ -1,5 +1,5 @@
 var common = require('./common');
-var _tempDir = require('./tempdir');
+var _tempDir = require('./tempdir').tempDir;
 var _pwd = require('./pwd');
 var path = require('path');
 var fs = require('fs');

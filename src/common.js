@@ -42,11 +42,11 @@ var config = {
 config.reset();
 exports.config = config;
 
+// Note: commands should generally consider these as read-only values.
 var state = {
   error: null,
   errorCode: 0,
   currentCmd: 'shell.js',
-  tempDir: null,
 };
 exports.state = state;
 
