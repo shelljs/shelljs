@@ -49,6 +49,13 @@ test('if at least one file is missing, this should be an error', t => {
   t.is(result.code, 2);
 });
 
+test("multiple files, one doesn't exist, one doesn't match", t => {
+  const result = shell.grep(/oogabooga/, 'test/resources/file1.txt',
+    'test/resources/filedoesnotexist.txt');
+  t.truthy(shell.error());
+  t.is(result.code, 2);
+});
+
 //
 // Valids
 //
@@ -125,6 +132,17 @@ test('one file, * in string-regex, make sure * is not globbed', t => {
   const result = shell.grep('l*\\.js', 'test/resources/grep/file');
   t.falsy(shell.error());
   t.is(result.toString(), 'this line ends in.js\nlllllllllllllllll.js\n');
+});
+
+test("one file, pattern doesn't match", t => {
+  const result = shell.grep('notfoundstring', 'test/resources/grep/file');
+  t.truthy(shell.error());
+  t.is(result.toString(), '');
+  t.is(result.stdout, '');
+  // TODO(#900): "grep: " isn't really the correct stderr output, but we need a
+  // non-empty string so `shell.error()` is truthy.
+  t.is(result.stderr, 'grep: ');
+  t.is(result.code, 1);
 });
 
 test('-l option', t => {

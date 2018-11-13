@@ -68,6 +68,10 @@ function _grep(options, regex, files) {
     }
   });
 
+  if (grep.length === 0 && common.state.errorCode !== 2) {
+    // We didn't hit the error above, but pattern didn't match
+    common.error('', { silent: true });
+  }
   return grep.join('\n') + '\n';
 }
 module.exports = _grep;
