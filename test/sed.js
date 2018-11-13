@@ -174,3 +174,9 @@ test('glob file names, with in-place-replacement', t => {
   t.is(shell.cat(`${t.context.tmp}/file1.txt`).toString(), 'hello1\n');
   t.is(shell.cat(`${t.context.tmp}/file2.txt`).toString(), 'hello2\n');
 });
+
+test('empty file', t => {
+  const result = shell.sed('widget', 'wizzle', 'test/resources/sed/empty.txt');
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
