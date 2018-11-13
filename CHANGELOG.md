@@ -1,5 +1,56 @@
 # Change Log
 
+## [Unreleased](https://github.com/shelljs/shelljs/tree/HEAD)
+
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.8.2...HEAD)
+
+**Closed issues:**
+
+- Shelljs print stderr to console even if exec-only "silent" is true [\#905](https://github.com/shelljs/shelljs/issues/905)
+- refactor: remove common.state.tempDir [\#902](https://github.com/shelljs/shelljs/issues/902)
+- Can't suppress stdout for echo [\#899](https://github.com/shelljs/shelljs/issues/899)
+- exec\(\) doesn't apply the arguments correctly [\#895](https://github.com/shelljs/shelljs/issues/895)
+- Travis CI currently broken [\#893](https://github.com/shelljs/shelljs/issues/893)
+- shell.exec\('npm pack'\) painfully slow [\#885](https://github.com/shelljs/shelljs/issues/885)
+- shelljs.exec cannot find app.asar/node\_modules/shelljs/src/exec-child.js [\#881](https://github.com/shelljs/shelljs/issues/881)
+- test infra: mocks and skipOnWin conflict [\#862](https://github.com/shelljs/shelljs/issues/862)
+- Support for shell function completion on IDE [\#859](https://github.com/shelljs/shelljs/issues/859)
+- echo command shows options in stdout [\#855](https://github.com/shelljs/shelljs/issues/855)
+- silent does not always work [\#851](https://github.com/shelljs/shelljs/issues/851)
+- Appveyor installs the latest npm, instead of the latest compatible npm [\#844](https://github.com/shelljs/shelljs/issues/844)
+- Force symbolic link \(ln -sf\) does not overwrite/recreate existing destination [\#830](https://github.com/shelljs/shelljs/issues/830)
+- inconsistent result when trying to echo to a file [\#798](https://github.com/shelljs/shelljs/issues/798)
+- Prevent require\(\)ing executable-only files [\#789](https://github.com/shelljs/shelljs/issues/789)
+- Cannot set property to of \[object String\] which has only a getter [\#752](https://github.com/shelljs/shelljs/issues/752)
+- which\(\) should check executability before returning a value [\#657](https://github.com/shelljs/shelljs/issues/657)
+- Bad encoding experience [\#456](https://github.com/shelljs/shelljs/issues/456)
+- phpcs very slow [\#440](https://github.com/shelljs/shelljs/issues/440)
+- Error shown when triggering a sigint during shelljs.exec if process.on sigint is defined [\#254](https://github.com/shelljs/shelljs/issues/254)
+- `.to\(file\)` does not mute STDIO output [\#146](https://github.com/shelljs/shelljs/issues/146)
+- Escaping shell arguments to exec\(\) [\#143](https://github.com/shelljs/shelljs/issues/143)
+- Allow multiple string arguments for exec\(\) [\#103](https://github.com/shelljs/shelljs/issues/103)
+- cp does not recursively copy from readonly location  [\#98](https://github.com/shelljs/shelljs/issues/98)
+- Handling permissions errors on file I/O [\#64](https://github.com/shelljs/shelljs/issues/64)
+
+**Merged pull requests:**
+
+- refactor: don't expose tempdir in common.state [\#903](https://github.com/shelljs/shelljs/pull/903) ([nfischer](https://github.com/nfischer))
+- chore\(ci\): fix codecov on travis [\#897](https://github.com/shelljs/shelljs/pull/897) ([nfischer](https://github.com/nfischer))
+- chore\(npm\): add ci-or-install script [\#896](https://github.com/shelljs/shelljs/pull/896) ([nfischer](https://github.com/nfischer))
+- Fix silent exec [\#892](https://github.com/shelljs/shelljs/pull/892) ([nfischer](https://github.com/nfischer))
+- chore\(appveyor\): run entire test matrix [\#886](https://github.com/shelljs/shelljs/pull/886) ([nfischer](https://github.com/nfischer))
+- docs: remove gitter badge [\#880](https://github.com/shelljs/shelljs/pull/880) ([nfischer](https://github.com/nfischer))
+- grep includes the i flag [\#876](https://github.com/shelljs/shelljs/pull/876) ([ppsleep](https://github.com/ppsleep))
+- Fix\(which\): match only executable files \(\#657\) [\#874](https://github.com/shelljs/shelljs/pull/874) ([termosa](https://github.com/termosa))
+- chore: rename some tests [\#871](https://github.com/shelljs/shelljs/pull/871) ([nfischer](https://github.com/nfischer))
+- Fix cp from readonly source [\#870](https://github.com/shelljs/shelljs/pull/870) ([nfischer](https://github.com/nfischer))
+- chore: bump dev dependencies and add package-lock [\#864](https://github.com/shelljs/shelljs/pull/864) ([nfischer](https://github.com/nfischer))
+- fix\(mocks\): fix conflict between mocks and skip [\#863](https://github.com/shelljs/shelljs/pull/863) ([nfischer](https://github.com/nfischer))
+- chore: output npm version in travis [\#850](https://github.com/shelljs/shelljs/pull/850) ([nfischer](https://github.com/nfischer))
+- Prevent require-ing bin/shjs [\#848](https://github.com/shelljs/shelljs/pull/848) ([freitagbr](https://github.com/freitagbr))
+- chore\(appveyor\): do not use latest npm [\#847](https://github.com/shelljs/shelljs/pull/847) ([nfischer](https://github.com/nfischer))
+- chore: update shelljs-release version [\#846](https://github.com/shelljs/shelljs/pull/846) ([nfischer](https://github.com/nfischer))
+
 ## [v0.8.2](https://github.com/shelljs/shelljs/tree/v0.8.2) (2018-05-08)
 [Full Changelog](https://github.com/shelljs/shelljs/compare/v0.8.1...v0.8.2)
 
@@ -28,7 +79,6 @@
 **Closed issues:**
 
 - Exec failing with internal error when piping large output [\#818](https://github.com/shelljs/shelljs/issues/818)
-- using sed to replace just the first occurrence of a string [\#813](https://github.com/shelljs/shelljs/issues/813)
 
 **Merged pull requests:**
 
@@ -167,7 +217,6 @@
 - Add support for other file types in rm [\#617](https://github.com/shelljs/shelljs/issues/617)
 - Feature request: ls -L option [\#563](https://github.com/shelljs/shelljs/issues/563)
 - How to send SIGINT signal to child process launched with exec [\#518](https://github.com/shelljs/shelljs/issues/518)
-- exec doesnt seem to be working [\#480](https://github.com/shelljs/shelljs/issues/480)
 - feature request: option to add node\_modules to the path for shelljs scripts [\#469](https://github.com/shelljs/shelljs/issues/469)
 - high cpu usage during synchronous exec [\#167](https://github.com/shelljs/shelljs/issues/167)
 
