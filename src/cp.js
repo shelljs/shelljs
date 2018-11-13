@@ -260,7 +260,7 @@ function _cp(options, sources, dest) {
 
         try {
           common.statFollowLinks(path.dirname(dest));
-          cpdirSyncRecursive(src, newDest, 0, { no_force: options.no_force, followsymlink: options.followsymlink });
+          cpdirSyncRecursive(src, newDest, 0, { no_force: options.no_force, followsymlink: options.followsymlink, update: options.update });
         } catch (e) {
           /* istanbul ignore next */
           common.error("cannot create directory '" + dest + "': No such file or directory");
