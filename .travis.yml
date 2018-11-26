@@ -22,6 +22,7 @@ install:
 os:
   - linux
   - osx
+  - windows
 script:
   - npm test
   # make sure when the docs are generated nothing changes (a.k.a. the docs have already been generated)
