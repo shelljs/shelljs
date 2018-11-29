@@ -8,8 +8,6 @@ node_js:
   - 8
   - 9
 
-install:
-  - npm run ci-or-install
 os:
   - linux
   - osx

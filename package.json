@@ -33,7 +33,6 @@
     "src"
   ],
   "scripts": {
-    "ci-or-install": "node scripts/ci-or-install",
     "posttest": "npm run lint",
     "test": "nyc --reporter=text --reporter=lcov ava test/*.js",
     "test-no-coverage": "ava test/*.js",
