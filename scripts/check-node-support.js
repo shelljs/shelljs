@@ -8,7 +8,7 @@ var yaml = require('js-yaml');
 var shell = require('..');
 
 // This is the authoritative list of supported node versions.
-var MIN_NODE_VERSION = 4;
+var MIN_NODE_VERSION = 6;
 var MAX_NODE_VERSION = 9;
 
 function checkReadme(minNodeVersion) {
