@@ -12,7 +12,7 @@ script's dependency on Unix while still keeping its familiar and powerful
 commands. You can also install it globally so you can run it from outside Node
 projects - say goodbye to those gnarly Bash scripts!
 
-ShellJS is proudly tested on every node release since `v4`!
+ShellJS is proudly tested on every node release since <!-- start minVersion -->`v4`<!-- stop minVersion -->!
 
 The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battle-tested in projects like:
 

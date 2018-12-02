@@ -33,6 +33,7 @@
     "src"
   ],
   "scripts": {
+    "check-node-support": "node scripts/check-node-support",
     "posttest": "npm run lint",
     "test": "nyc --reporter=text --reporter=lcov ava test/*.js",
     "test-no-coverage": "ava test/*.js",
@@ -65,6 +66,7 @@
     "eslint": "^2.0.0",
     "eslint-config-airbnb-base": "^3.0.0",
     "eslint-plugin-import": "^1.11.1",
+    "js-yaml": "^3.12.0",
     "nyc": "^11.3.0",
     "shelljs-changelog": "^0.2.0",
     "shelljs-release": "^0.3.0",
