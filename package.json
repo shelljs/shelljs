@@ -35,8 +35,8 @@
   "scripts": {
     "check-node-support": "node scripts/check-node-support",
     "posttest": "npm run lint",
-    "test": "nyc --reporter=text --reporter=lcov ava test/*.js",
-    "test-no-coverage": "ava test/*.js",
+    "test": "ava test/*.js",
+    "test-with-coverage": "nyc --reporter=text --reporter=lcov ava test/*.js",
     "gendocs": "node scripts/generate-docs",
     "lint": "eslint .",
     "after-travis": "travis-check-changes",

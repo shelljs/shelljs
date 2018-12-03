@@ -22,7 +22,7 @@ matrix:
 build: off
 
 test_script:
-  - npm test
+  - npm run test-with-coverage
 
 on_success:
   - npm run codecov -- -f coverage/lcov.info
