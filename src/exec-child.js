@@ -28,8 +28,6 @@ function isMaxBufferError(err) {
     // >= v10
     // RangeError [ERR_CHILD_PROCESS_STDIO_MAXBUFFER]: stdout maxBuffer length
     // exceeded
-    // TODO(nfischer): remove when we add v10 CI (Github issue #856).
-    /* istanbul ignore next */
     return true;
   }
   return false;
