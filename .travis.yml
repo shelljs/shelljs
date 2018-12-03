@@ -10,7 +10,7 @@ os:
   - linux
   - osx
 script:
-  - npm test
+  - npm run test-with-coverage
   # make sure when the docs are generated nothing changes (a.k.a. the docs have already been generated)
   - npm run gendocs
   - npm run check-node-support
