@@ -133,8 +133,12 @@ test('set maxBuffer (very small)', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, '1234567890' + os.EOL);
-  shell.exec('echo 1234567890', { maxBuffer: 6 });
+  const result2 = shell.exec('echo 1234567890', { maxBuffer: 6 });
   t.truthy(shell.error());
+  t.is(result2.code, 1);
+  t.is(result2.stdout, '1234567890' + os.EOL);
+  const maxBufferErrorPattern = /.*\bmaxBuffer\b.*\bexceeded\b.*/;
+  t.regex(result2.stderr, maxBufferErrorPattern);
 });
 
 test('set timeout option', t => {
