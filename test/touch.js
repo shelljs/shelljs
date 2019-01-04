@@ -119,6 +119,17 @@ test('uses a reference file for mtime', t => {
   );
 });
 
+test('accepts -d flag', t => {
+  const testFile = tmpFile(t);
+  const oldStat = resetUtimes(testFile);
+  const date = new Date('December 17, 1995 03:24:00');
+  const result = shell.touch({'-d': date}, testFile);
+  t.is(result.code, 0);
+  // Compare getTime(), because Date can't be compared with triple-equals.
+  t.is(common.statFollowLinks(testFile).mtime.getTime(), date.getTime());
+  t.is(common.statFollowLinks(testFile).atime.getTime(), date.getTime());
+});
+
 test('sets mtime and atime by default', t => {
   const testFile = tmpFile(t);
   const oldStat = resetUtimes(testFile);

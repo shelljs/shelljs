@@ -20,19 +20,20 @@ common.register('touch', _touch, {
 //@ + `-a`: Change only the access time
 //@ + `-c`: Do not create any files
 //@ + `-m`: Change only the modification time
-//@ + `-d DATE`: Parse `DATE` and use it instead of current time
-//@ + `-r FILE`: Use `FILE`'s times instead of current time
+//@ + `{'-d': date}`: Use `date` (instance of `Date`) instead of current time
+//@ + `{'-r': file}`: Use `file`'s times instead of current time
 //@
 //@ Examples:
 //@
 //@ ```javascript
 //@ touch('source.js');
-//@ touch('-c', '/path/to/some/dir/source.js');
-//@ touch({ '-r': FILE }, '/path/to/some/dir/source.js');
+//@ touch('-c', 'path/to/file.js');
+//@ touch({ '-r': 'referenceFile.txt' }, 'path/to/file.js');
+//@ touch({ '-d': new Date('December 17, 1995 03:24:00') }, 'path/to/file.js');
 //@ ```
 //@
-//@ Update the access and modification times of each `FILE` to the current time.
-//@ A `FILE` argument that does not exist is created empty, unless `-c` is supplied.
+//@ Update the access and modification times of each file to the current time.
+//@ A file argument that does not exist is created empty, unless `-c` is supplied.
 //@ This is a partial implementation of [`touch(1)`](http://linux.die.net/man/1/touch).
 function _touch(opts, files) {
   if (!files) {
