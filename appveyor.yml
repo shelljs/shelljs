@@ -25,6 +25,7 @@ build: off
 
 test_script:
   - npm run test-with-coverage
+  - npm run lint
 
 on_success:
   - npm run codecov -- -f coverage/lcov.info

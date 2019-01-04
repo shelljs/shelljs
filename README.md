@@ -647,8 +647,10 @@ Available options:
 + `-a`: Change only the access time
 + `-c`: Do not create any files
 + `-m`: Change only the modification time
-+ `{'-d': date}`: Use `date` (instance of `Date`) instead of current time
-+ `{'-r': file}`: Use `file`'s times instead of current time
++ `{'-d': someDate}`, `{date: someDate}`: Use `someDate` (instance of
+  `Date`) instead of current time
++ `{'-r': file}`, `{reference: file}`: Use `file`'s times instead of current
+   time
 
 Examples:
 
@@ -656,7 +658,7 @@ Examples:
 touch('source.js');
 touch('-c', 'path/to/file.js');
 touch({ '-r': 'referenceFile.txt' }, 'path/to/file.js');
-touch({ '-d': new Date('December 17, 1995 03:24:00') }, 'path/to/file.js');
+touch({ date: new Date('December 17, 1995 03:24:00') }, 'path/to/file.js');
 ```
 
 Update the access and modification times of each file to the current time.

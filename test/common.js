@@ -4,11 +4,14 @@ import shell from '..';
 import common from '../src/common';
 import utils from './utils/utils';
 
-shell.config.silent = true;
-
 test.beforeEach(() => {
+  shell.config.silent = true;
   common.state.error = null;
   common.state.errorCode = 0;
+});
+
+test.afterEach(() => {
+  common.config.resetForTesting();
 });
 
 //
@@ -34,7 +37,7 @@ test('parseOptions (invalid option in options object)', t => {
       f: 'force',
       r: 'reverse',
     });
-  });
+  }, common.CommandError);
 });
 
 test('parseOptions (without a hyphen in the string)', t => {
@@ -42,7 +45,7 @@ test('parseOptions (without a hyphen in the string)', t => {
     common.parseOptions('f', {
       f: 'force',
     });
-  });
+  }, Error);
 });
 
 test('parseOptions (opt is not a string/object)', t => {
@@ -50,13 +53,13 @@ test('parseOptions (opt is not a string/object)', t => {
     common.parseOptions(1, {
       f: 'force',
     });
-  });
+  }, TypeError);
 });
 
 test('parseOptions (map is not an object)', t => {
   t.throws(() => {
     common.parseOptions('-f', 27);
-  });
+  }, TypeError);
 });
 
 test('parseOptions (errorOptions is not an object)', t => {
@@ -64,7 +67,7 @@ test('parseOptions (errorOptions is not an object)', t => {
     common.parseOptions('-f', {
       f: 'force',
     }, 'not a valid errorOptions');
-  });
+  }, TypeError);
 });
 
 test('parseOptions (unrecognized string option)', t => {
@@ -72,7 +75,7 @@ test('parseOptions (unrecognized string option)', t => {
     common.parseOptions('-z', {
       f: 'force',
     });
-  });
+  }, common.CommandError);
 });
 
 test('parseOptions (unrecognized option in Object)', t => {
@@ -200,7 +203,6 @@ test('common.buffer with different config.bufLength', t => {
   const buf = common.buffer();
   t.truthy(buf instanceof Buffer);
   t.is(buf.length, 20);
-  common.config.reset();
 });
 
 test('common.parseOptions (normal case)', t => {
@@ -264,6 +266,29 @@ test('common.parseOptions throws when passed a string not starting with "-"', t 
   }, Error, "Options string must start with a '-'");
 });
 
+test('common.parseOptions allows long options', t => {
+  const result = common.parseOptions({ value: true }, {
+    v: 'value',
+  });
+  t.truthy(result.value);
+});
+
+test('common.parseOptions allows long options with values', t => {
+  const someObject = {};
+  const result = common.parseOptions({ value: someObject }, {
+    v: 'value',
+  });
+  t.is(result.value, someObject);
+});
+
+test('common.parseOptions throws for unknown long option', t => {
+  t.throws(() => {
+    common.parseOptions({ throws: true }, {
+      v: 'value',
+    });
+  }, common.CommandError);
+});
+
 test('common.parseOptions with -- argument', t => {
   const result = common.parseOptions('--', {
     R: 'recursive',
@@ -306,4 +331,11 @@ test('execPath value makes sense', t => {
 test('Changing shell.config.execPath does not modify process', t => {
   shell.config.execPath = 'foo';
   t.not(shell.config.execPath, process.execPath);
+});
+
+test('CommandError is a subclass of Error', t => {
+  const e = new common.CommandError(new common.ShellString('some value'));
+  t.truthy(e instanceof common.CommandError);
+  t.truthy(e instanceof Error);
+  t.is(e.constructor, common.CommandError);
 });
