@@ -165,12 +165,13 @@ exports.ShellString = ShellString;
 // Throws an error when passed a string that does not start with '-':
 //   parseOptions('a', {'a':'alice'}); // throws
 function parseOptions(opt, map, errorOptions) {
+  errorOptions = errorOptions || {};
   // Validate input
   if (typeof opt !== 'string' && !isObject(opt)) {
     throw new TypeError('options must be strings or key-value pairs');
   } else if (!isObject(map)) {
     throw new TypeError('parseOptions() internal error: map must be an object');
-  } else if (errorOptions && !isObject(errorOptions)) {
+  } else if (!isObject(errorOptions)) {
     throw new TypeError(
         'parseOptions() internal error: errorOptions must be object');
   }
@@ -208,7 +209,7 @@ function parseOptions(opt, map, errorOptions) {
           options[optionName] = true;
         }
       } else {
-        error('option not recognized: ' + c, errorOptions || {});
+        error('option not recognized: ' + c, errorOptions);
       }
     });
   } else { // opt is an Object
@@ -220,15 +221,14 @@ function parseOptions(opt, map, errorOptions) {
           var optionName = map[c];
           options[optionName] = opt[key]; // assign the given value
         } else {
-          error('option not recognized: ' + c, errorOptions || {});
+          error('option not recognized: ' + c, errorOptions);
         }
       } else {
         if (key in options) {
           // key is a "long option", so it should be the same
           options[key] = opt[key];
         } else {
-          error('option not recognized: {' + key + ':...}',
-              errorOptions || {});
+          error('option not recognized: {' + key + ':...}', errorOptions);
         }
       }
     });
