@@ -77,6 +77,15 @@ function convertErrorOutput(msg) {
 }
 exports.convertErrorOutput = convertErrorOutput;
 
+// An exception class to help propagate command errors (e.g., non-zero exit
+// status) up to the top-level. {@param value} should be a ShellString.
+function CommandError(value) {
+  this.returnValue = value;
+}
+CommandError.prototype = Object.create(Error.prototype);
+CommandError.prototype.constructor = CommandError;
+exports.CommandError = CommandError; // visible for testing
+
 // Shows error message. Throws if config.fatal is true
 function error(msg, _code, options) {
   // Validate input
@@ -111,10 +120,7 @@ function error(msg, _code, options) {
   if (msg.length > 0 && !options.silent) log(logEntry);
 
   if (!options.continue) {
-    throw {
-      msg: 'earlyExit',
-      retValue: (new ShellString('', state.error, state.errorCode)),
-    };
+    throw new CommandError(new ShellString('', state.error, state.errorCode));
   }
 }
 exports.error = error;
@@ -159,13 +165,15 @@ exports.ShellString = ShellString;
 // Throws an error when passed a string that does not start with '-':
 //   parseOptions('a', {'a':'alice'}); // throws
 function parseOptions(opt, map, errorOptions) {
+  errorOptions = errorOptions || {};
   // Validate input
   if (typeof opt !== 'string' && !isObject(opt)) {
-    throw new Error('options must be strings or key-value pairs');
+    throw new TypeError('options must be strings or key-value pairs');
   } else if (!isObject(map)) {
-    throw new Error('parseOptions() internal error: map must be an object');
-  } else if (errorOptions && !isObject(errorOptions)) {
-    throw new Error('parseOptions() internal error: errorOptions must be object');
+    throw new TypeError('parseOptions() internal error: map must be an object');
+  } else if (!isObject(errorOptions)) {
+    throw new TypeError(
+        'parseOptions() internal error: errorOptions must be object');
   }
 
   if (opt === '--') {
@@ -201,18 +209,27 @@ function parseOptions(opt, map, errorOptions) {
           options[optionName] = true;
         }
       } else {
-        error('option not recognized: ' + c, errorOptions || {});
+        error('option not recognized: ' + c, errorOptions);
       }
     });
   } else { // opt is an Object
     Object.keys(opt).forEach(function (key) {
-      // key is a string of the form '-r', '-d', etc.
-      var c = key[1];
-      if (c in map) {
-        var optionName = map[c];
-        options[optionName] = opt[key]; // assign the given value
+      if (key[0] === '-') {
+        // key is a string of the form '-r', '-d', etc.
+        var c = key[1];
+        if (c in map) {
+          var optionName = map[c];
+          options[optionName] = opt[key]; // assign the given value
+        } else {
+          error('option not recognized: ' + c, errorOptions);
+        }
       } else {
-        error('option not recognized: ' + c, errorOptions || {});
+        if (key in options) {
+          // key is a "long option", so it should be the same
+          options[key] = opt[key];
+        } else {
+          error('option not recognized: {' + key + ':...}', errorOptions);
+        }
       }
     });
   }
@@ -384,8 +401,8 @@ function wrap(cmd, fn, options) {
           retValue = fn.apply(this, args);
         } catch (e) {
           /* istanbul ignore else */
-          if (e.msg === 'earlyExit') {
-            retValue = e.retValue;
+          if (e instanceof CommandError) {
+            retValue = e.returnValue;
           } else {
             throw e; // this is probably a bug that should be thrown up the call stack
           }
