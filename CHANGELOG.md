@@ -2,7 +2,34 @@
 
 ## [Unreleased](https://github.com/shelljs/shelljs/tree/HEAD)
 
-[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.8.2...HEAD)
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.8.3...HEAD)
+
+**Closed issues:**
+
+- find returns empty array even though directory has files [\#922](https://github.com/shelljs/shelljs/issues/922)
+- exec\(\) should support node v10 \(maxbuffer change\) [\#915](https://github.com/shelljs/shelljs/issues/915)
+- grep exit status and extra newlines [\#900](https://github.com/shelljs/shelljs/issues/900)
+- Travis CI currently broken [\#893](https://github.com/shelljs/shelljs/issues/893)
+- Drop node v4 support [\#873](https://github.com/shelljs/shelljs/issues/873)
+- cp -Ru respects the -R but not the -u [\#808](https://github.com/shelljs/shelljs/issues/808)
+
+**Merged pull requests:**
+
+- feat\(options\): initial support for long options [\#926](https://github.com/shelljs/shelljs/pull/926) ([nfischer](https://github.com/nfischer))
+- test\(touch\): add coverage for -d option [\#925](https://github.com/shelljs/shelljs/pull/925) ([nfischer](https://github.com/nfischer))
+- chore\(node\): add v10 and v11 to CI [\#921](https://github.com/shelljs/shelljs/pull/921) ([nfischer](https://github.com/nfischer))
+- chore\(test\): no coverage by default [\#920](https://github.com/shelljs/shelljs/pull/920) ([nfischer](https://github.com/nfischer))
+- fix\(exec\): consistent error message for maxBuffer [\#919](https://github.com/shelljs/shelljs/pull/919) ([nfischer](https://github.com/nfischer))
+- chore\(node\): drop node v4 and v5 [\#917](https://github.com/shelljs/shelljs/pull/917) ([nfischer](https://github.com/nfischer))
+- chore: script to bump supported node versions [\#913](https://github.com/shelljs/shelljs/pull/913) ([nfischer](https://github.com/nfischer))
+- chore\(npm\): remove lockfile [\#911](https://github.com/shelljs/shelljs/pull/911) ([nfischer](https://github.com/nfischer))
+- ci: change language to node\_js and remove obsolete scripts [\#910](https://github.com/shelljs/shelljs/pull/910) ([DanielRuf](https://github.com/DanielRuf))
+- chore: remove gitter integration [\#907](https://github.com/shelljs/shelljs/pull/907) ([nfischer](https://github.com/nfischer))
+- fix: Exit 1 with empty string if no match [\#901](https://github.com/shelljs/shelljs/pull/901) ([wyardley](https://github.com/wyardley))
+- feat\(cp\): support update flag when recursing [\#889](https://github.com/shelljs/shelljs/pull/889) ([joshi-sh](https://github.com/joshi-sh))
+
+## [v0.8.3](https://github.com/shelljs/shelljs/tree/v0.8.3) (2018-11-13)
+[Full Changelog](https://github.com/shelljs/shelljs/compare/v0.8.2...v0.8.3)
 
 **Closed issues:**
 
@@ -10,7 +37,6 @@
 - refactor: remove common.state.tempDir [\#902](https://github.com/shelljs/shelljs/issues/902)
 - Can't suppress stdout for echo [\#899](https://github.com/shelljs/shelljs/issues/899)
 - exec\(\) doesn't apply the arguments correctly [\#895](https://github.com/shelljs/shelljs/issues/895)
-- Travis CI currently broken [\#893](https://github.com/shelljs/shelljs/issues/893)
 - shell.exec\('npm pack'\) painfully slow [\#885](https://github.com/shelljs/shelljs/issues/885)
 - shelljs.exec cannot find app.asar/node\_modules/shelljs/src/exec-child.js [\#881](https://github.com/shelljs/shelljs/issues/881)
 - test infra: mocks and skipOnWin conflict [\#862](https://github.com/shelljs/shelljs/issues/862)
@@ -34,6 +60,7 @@
 
 **Merged pull requests:**
 
+- Add test case for sed on empty file [\#904](https://github.com/shelljs/shelljs/pull/904) ([wyardley](https://github.com/wyardley))
 - refactor: don't expose tempdir in common.state [\#903](https://github.com/shelljs/shelljs/pull/903) ([nfischer](https://github.com/nfischer))
 - chore\(ci\): fix codecov on travis [\#897](https://github.com/shelljs/shelljs/pull/897) ([nfischer](https://github.com/nfischer))
 - chore\(npm\): add ci-or-install script [\#896](https://github.com/shelljs/shelljs/pull/896) ([nfischer](https://github.com/nfischer))
