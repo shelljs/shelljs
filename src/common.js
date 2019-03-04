@@ -131,11 +131,19 @@ exports.error = error;
 //@ Examples:
 //@
 //@ ```javascript
-//@ var foo = ShellString('hello world');
+//@ var foo = new ShellString('hello world');
 //@ ```
 //@
-//@ Turns a regular string into a string-like object similar to what each
-//@ command returns. This has special methods, like `.to()` and `.toEnd()`.
+//@ This is a dedicated type returned by most ShellJS methods, which wraps a
+//@ string (or array) value. This has all the string (or array) methods, but
+//@ also exposes extra methods: [`.to()`](#shellstringprototypetofile),
+//@ [`.toEnd()`](#shellstringprototypetoendfile), and all the pipe-able methods
+//@ (ex. `.cat()`, `.grep()`, etc.). This can be easily converted into a string
+//@ by calling `.toString()`.
+//@
+//@ This type also exposes the corresponding command's stdout, stderr, and
+//@ return status code via the `.stdout` (string), `.stderr` (string), and
+//@ `.code` (number) properties respectively.
 function ShellString(stdout, stderr, code) {
   var that;
   if (stdout instanceof Array) {

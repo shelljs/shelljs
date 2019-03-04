@@ -36,7 +36,8 @@ function checkRecentCreated(sources, index) {
 //@ mv(['file1', 'file2'], 'dir/'); // same as above
 //@ ```
 //@
-//@ Moves `source` file(s) to `dest`.
+//@ Moves `source` file(s) to `dest`. Returns a [ShellString](#shellstringstr)
+//@ indicating success or failure.
 function _mv(options, sources, dest) {
   // Get sources, dest
   if (arguments.length < 3) {

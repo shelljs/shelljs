@@ -24,8 +24,9 @@ common.register('sed', _sed, {
 //@ sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 //@ ```
 //@
-//@ Reads an input string from `file`s, and performs a JavaScript `replace()` on the input
-//@ using the given `search_regex` and `replacement` string or function. Returns the new string after replacement.
+//@ Reads an input string from `file`s, and performs a JavaScript `replace()` on
+//@ the input using the given `search_regex` and `replacement` string or
+//@ function. Returns the new [ShellString](#shellstringstr) after replacement.
 //@
 //@ Note:
 //@

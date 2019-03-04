@@ -59,6 +59,8 @@ common.register('chmod', _chmod, {
 //@ + In symbolic modes, `a-r` and `-r` are identical.  No consideration is
 //@   given to the `umask`.
 //@ + There is no "quiet" option, since default behavior is to run silent.
+//@
+//@ Returns a [ShellString](#shellstringstr) indicating success or failure.
 function _chmod(options, mode, filePattern) {
   if (!filePattern) {
     if (options.length > 0 && options.charAt(0) === '-') {

@@ -47,7 +47,8 @@ function mkdirSyncRecursive(dir) {
 //@ mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 //@ ```
 //@
-//@ Creates directories.
+//@ Creates directories. Returns a [ShellString](#shellstringstr) indicating
+//@ success or failure.
 function _mkdir(options, dirs) {
   if (!dirs) common.error('no paths given');
 
@@ -96,5 +97,5 @@ function _mkdir(options, dirs) {
     }
   });
   return '';
-} // mkdir
+} // man arraykdir
 module.exports = _mkdir;

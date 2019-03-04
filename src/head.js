@@ -46,7 +46,7 @@ function readSomeLines(file, numLines) {
 //@ var str = head(['file1', 'file2']); // same as above
 //@ ```
 //@
-//@ Read the start of a file.
+//@ Read the start of a `file`. Returns a [ShellString](#shellstringstr).
 function _head(options, files) {
   var head = [];
   var pipe = common.readFromPipe();

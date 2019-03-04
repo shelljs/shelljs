@@ -18,7 +18,8 @@ common.register('to', _to, {
 //@
 //@ Analogous to the redirection operator `>` in Unix, but works with
 //@ `ShellStrings` (such as those returned by `cat`, `grep`, etc.). _Like Unix
-//@ redirections, `to()` will overwrite any existing file!_
+//@ redirections, `to()` will overwrite any existing file!_ Returns the same
+//@ [ShellString](#shellstringstr) this operated on, to support chaining.
 function _to(options, file) {
   if (!file) common.error('wrong arguments');
 

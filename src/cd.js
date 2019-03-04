@@ -7,7 +7,8 @@ common.register('cd', _cd, {});
 //@ ### cd([dir])
 //@
 //@ Changes to directory `dir` for the duration of the script. Changes to home
-//@ directory if no argument is supplied.
+//@ directory if no argument is supplied. Returns a
+//@ [ShellString](#shellstringstr) to indicate success or failure.
 function _cd(options, dir) {
   if (!dir) dir = os.homedir();
 
