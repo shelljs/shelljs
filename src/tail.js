@@ -24,7 +24,7 @@ common.register('tail', _tail, {
 //@ var str = tail(['file1', 'file2']); // same as above
 //@ ```
 //@
-//@ Read the end of a `file`.
+//@ Read the end of a `file`. Returns a [ShellString](#shellstringstr).
 function _tail(options, files) {
   var tail = [];
   var pipe = common.readFromPipe();

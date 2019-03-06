@@ -36,7 +36,8 @@ common.register('uniq', _uniq, {
 //@ uniq('-cd', 'foo.txt', 'bar.txt');
 //@ ```
 //@
-//@ Filter adjacent matching lines from `input`.
+//@ Filter adjacent matching lines from `input`. Returns a
+//@ [ShellString](#shellstringstr).
 function _uniq(options, input, output) {
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe();

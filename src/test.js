@@ -38,7 +38,8 @@ common.register('test', _test, {
 //@ if (!test('-f', path)) continue; // skip if it's a regular file
 //@ ```
 //@
-//@ Evaluates `expression` using the available primaries and returns corresponding value.
+//@ Evaluates `expression` using the available primaries and returns
+//@ corresponding boolean value.
 function _test(options, path) {
   if (!path) common.error('no path given');
 

@@ -40,8 +40,9 @@ common.register('ls', _ls, {
 //@ ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
 //@ ```
 //@
-//@ Returns array of files in the given `path`, or files in
-//@ the current directory if no `path` is  provided.
+//@ Returns a [ShellString](#shellstringstr) (with array-like properties) of all
+//@ the files in the given `path`, or files in the current directory if no
+//@ `path` is  provided.
 function _ls(options, paths) {
   if (options.all_deprecated) {
     // We won't support the -a option as it's hard to image why it's useful

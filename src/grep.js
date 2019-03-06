@@ -28,8 +28,9 @@ common.register('grep', _grep, {
 //@ grep('GLOBAL_VARIABLE', '*.js');
 //@ ```
 //@
-//@ Reads input string from given files and returns a string containing all lines of the
-//@ file that match the given `regex_filter`.
+//@ Reads input string from given files and returns a
+//@ [ShellString](#shellstringstr) containing all lines of the @ file that match
+//@ the given `regex_filter`.
 function _grep(options, regex, files) {
   // Check if this is coming from a pipe
   var pipe = common.readFromPipe();

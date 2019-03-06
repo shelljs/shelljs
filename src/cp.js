@@ -209,7 +209,8 @@ function cpcheckcycle(sourceDir, srcFile) {
 //@ cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 //@ ```
 //@
-//@ Copies files.
+//@ Copies files. Returns a [ShellString](#shellstringstr) indicating success
+//@ or failure.
 function _cp(options, sources, dest) {
   // If we're missing -R, it actually implies -L (unless -P is explicit)
   if (options.followsymlink) {

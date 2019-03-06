@@ -8,7 +8,7 @@ common.register('pwd', _pwd, {
 //@
 //@ ### pwd()
 //@
-//@ Returns the current directory.
+//@ Returns the current directory as a [ShellString](#shellstringstr).
 function _pwd() {
   var pwd = path.resolve(process.cwd());
   return pwd;

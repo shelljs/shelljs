@@ -151,15 +151,16 @@ var str = cat('file1', 'file2');
 var str = cat(['file1', 'file2']); // same as above
 ```
 
-Returns a string containing the given file, or a concatenated string
-containing the files if more than one file is given (a new line character is
-introduced between each file).
+Returns a [ShellString](#shellstringstr) containing the given file, or a
+concatenated string containing the files if more than one file is given (a
+new line character is introduced between each file).
 
 
 ### cd([dir])
 
 Changes to directory `dir` for the duration of the script. Changes to home
-directory if no argument is supplied.
+directory if no argument is supplied. Returns a
+[ShellString](#shellstringstr) to indicate success or failure.
 
 
 ### chmod([options,] octal_mode || octal_string, file)
@@ -189,6 +190,8 @@ Notable exceptions:
   given to the `umask`.
 + There is no "quiet" option, since default behavior is to run silent.
 
+Returns a [ShellString](#shellstringstr) indicating success or failure.
+
 
 ### cp([options,] source [, source ...], dest)
 ### cp([options,] source_array, dest)
@@ -211,7 +214,8 @@ cp('-Rf', '/tmp/*', '/usr/local/*', '/home/tmp');
 cp('-Rf', ['/tmp/*', '/usr/local/*'], '/home/tmp'); // same as above
 ```
 
-Copies files.
+Copies files. Returns a [ShellString](#shellstringstr) indicating success
+or failure.
 
 
 ### pushd([options,] [dir | '-N' | '+N'])
@@ -295,8 +299,7 @@ var str = echo('hello world');
 echo('-n', 'no newline at end');
 ```
 
-Prints `string` to stdout, and returns string with additional utility methods
-like `.to()`.
+Prints `string` to stdout, and returns a [ShellString](#shellstringstr).
 
 
 ### exec(command [, options] [, callback])
@@ -328,10 +331,10 @@ exec('some_long_running_process', function(code, stdout, stderr) {
 });
 ```
 
-Executes the given `command` _synchronously_, unless otherwise specified.  When in synchronous
-mode, this returns a `ShellString` (compatible with ShellJS v0.6.x, which returns an object
-of the form `{ code:..., stdout:... , stderr:... }`). Otherwise, this returns the child process
-object, and the `callback` receives the arguments `(code, stdout, stderr)`.
+Executes the given `command` _synchronously_, unless otherwise specified.
+When in synchronous mode, this returns a [ShellString](#shellstringstr).
+Otherwise, this returns the child process object, and the `callback`
+receives the arguments `(code, stdout, stderr)`.
 
 Not seeing the behavior you want? `exec()` runs everything through `sh`
 by default (or `cmd.exe` on Windows), which differs from `bash`. If you
@@ -349,7 +352,8 @@ find(['src', 'lib']); // same as above
 find('.').filter(function(file) { return file.match(/\.js$/); });
 ```
 
-Returns array of all files (however deep) in the given paths.
+Returns a [ShellString](#shellstringstr) (with array-like properties) of all
+files (however deep) in the given paths.
 
 The main difference from `ls('-R', path)` is that the resulting file names
 include the base directories (e.g., `lib/resources/file1` instead of just `file1`).
@@ -371,8 +375,9 @@ grep('-v', 'GLOBAL_VARIABLE', '*.js');
 grep('GLOBAL_VARIABLE', '*.js');
 ```
 
-Reads input string from given files and returns a string containing all lines of the
-file that match the given `regex_filter`.
+Reads input string from given files and returns a
+[ShellString](#shellstringstr) containing all lines of the @ file that match
+the given `regex_filter`.
 
 
 ### head([{'-n': \<num\>},] file [, file ...])
@@ -390,7 +395,7 @@ var str = head('file1', 'file2');
 var str = head(['file1', 'file2']); // same as above
 ```
 
-Read the start of a file.
+Read the start of a `file`. Returns a [ShellString](#shellstringstr).
 
 
 ### ln([options,] source, dest)
@@ -407,7 +412,9 @@ ln('file', 'newlink');
 ln('-sf', 'file', 'existing');
 ```
 
-Links `source` to `dest`. Use `-f` to force the link, should `dest` already exist.
+Links `source` to `dest`. Use `-f` to force the link, should `dest` already
+exist. Returns a [ShellString](#shellstringstr) indicating success or
+failure.
 
 
 ### ls([options,] [path, ...])
@@ -433,8 +440,9 @@ ls('-R', ['/users/me', '/tmp']); // same as above
 ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
 ```
 
-Returns array of files in the given `path`, or files in
-the current directory if no `path` is  provided.
+Returns a [ShellString](#shellstringstr) (with array-like properties) of all
+the files in the given `path`, or files in the current directory if no
+`path` is  provided.
 
 
 ### mkdir([options,] dir [, dir ...])
@@ -451,7 +459,8 @@ mkdir('-p', '/tmp/a/b/c/d', '/tmp/e/f/g');
 mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
 ```
 
-Creates directories.
+Creates directories. Returns a [ShellString](#shellstringstr) indicating
+success or failure.
 
 
 ### mv([options ,] source [, source ...], dest')
@@ -470,12 +479,13 @@ mv('file1', 'file2', 'dir/');
 mv(['file1', 'file2'], 'dir/'); // same as above
 ```
 
-Moves `source` file(s) to `dest`.
+Moves `source` file(s) to `dest`. Returns a [ShellString](#shellstringstr)
+indicating success or failure.
 
 
 ### pwd()
 
-Returns the current directory.
+Returns the current directory as a [ShellString](#shellstringstr).
 
 
 ### rm([options,] file [, file ...])
@@ -494,7 +504,8 @@ rm('some_file.txt', 'another_file.txt');
 rm(['some_file.txt', 'another_file.txt']); // same as above
 ```
 
-Removes files.
+Removes files. Returns a [ShellString](#shellstringstr) indicating success
+or failure.
 
 
 ### sed([options,] search_regex, replacement, file [, file ...])
@@ -511,8 +522,9 @@ sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js');
 sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 ```
 
-Reads an input string from `file`s, and performs a JavaScript `replace()` on the input
-using the given `search_regex` and `replacement` string or function. Returns the new string after replacement.
+Reads an input string from `file`s, and performs a JavaScript `replace()` on
+the input using the given `search_regex` and `replacement` string or
+function. Returns the new [ShellString](#shellstringstr) after replacement.
 
 Note:
 
@@ -557,8 +569,9 @@ sort('foo.txt', 'bar.txt');
 sort('-r', 'foo.txt');
 ```
 
-Return the contents of the `file`s, sorted line-by-line. Sorting multiple
-files mixes their content (just as unix `sort` does).
+Return the contents of the `file`s, sorted line-by-line as a
+[ShellString](#shellstringstr). Sorting multiple files mixes their content
+(just as unix `sort` does).
 
 
 ### tail([{'-n': \<num\>},] file [, file ...])
@@ -576,7 +589,7 @@ var str = tail('file1', 'file2');
 var str = tail(['file1', 'file2']); // same as above
 ```
 
-Read the end of a `file`.
+Read the end of a `file`. Returns a [ShellString](#shellstringstr).
 
 
 ### tempdir()
@@ -611,7 +624,8 @@ if (test('-d', path)) { /* do something with dir */ };
 if (!test('-f', path)) continue; // skip if it's a regular file
 ```
 
-Evaluates `expression` using the available primaries and returns corresponding value.
+Evaluates `expression` using the available primaries and returns
+corresponding boolean value.
 
 
 ### ShellString.prototype.to(file)
@@ -624,7 +638,8 @@ cat('input.txt').to('output.txt');
 
 Analogous to the redirection operator `>` in Unix, but works with
 `ShellStrings` (such as those returned by `cat`, `grep`, etc.). _Like Unix
-redirections, `to()` will overwrite any existing file!_
+redirections, `to()` will overwrite any existing file!_ Returns the same
+[ShellString](#shellstringstr) this operated on, to support chaining.
 
 
 ### ShellString.prototype.toEnd(file)
@@ -636,7 +651,8 @@ cat('input.txt').toEnd('output.txt');
 ```
 
 Analogous to the redirect-and-append operator `>>` in Unix, but works with
-`ShellStrings` (such as those returned by `cat`, `grep`, etc.).
+`ShellStrings` (such as those returned by `cat`, `grep`, etc.). Returns the
+same [ShellString](#shellstringstr) this operated on, to support chaining.
 
 
 ### touch([options,] file [, file ...])
@@ -663,7 +679,9 @@ touch({ date: new Date('December 17, 1995 03:24:00') }, 'path/to/file.js');
 
 Update the access and modification times of each file to the current time.
 A file argument that does not exist is created empty, unless `-c` is supplied.
-This is a partial implementation of [`touch(1)`](http://linux.die.net/man/1/touch).
+This is a partial implementation of
+[`touch(1)`](http://linux.die.net/man/1/touch). Returns a
+[ShellString](#shellstringstr) indicating success or failure.
 
 
 ### uniq([options,] [input, [output]])
@@ -682,7 +700,8 @@ uniq('-i', 'foo.txt');
 uniq('-cd', 'foo.txt', 'bar.txt');
 ```
 
-Filter adjacent matching lines from `input`.
+Filter adjacent matching lines from `input`. Returns a
+[ShellString](#shellstringstr).
 
 
 ### which(command)
@@ -695,7 +714,8 @@ var nodeExec = which('node');
 
 Searches for `command` in the system's `PATH`. On Windows, this uses the
 `PATHEXT` variable to append the extension if it's not already executable.
-Returns string containing the absolute path to `command`.
+Returns a [ShellString](#shellstringstr) containing the absolute path to
+`command`.
 
 
 ### exit(code)
@@ -717,11 +737,19 @@ the `.stderr` attribute from the last command's return value instead.
 Examples:
 
 ```javascript
-var foo = ShellString('hello world');
+var foo = new ShellString('hello world');
 ```
 
-Turns a regular string into a string-like object similar to what each
-command returns. This has special methods, like `.to()` and `.toEnd()`.
+This is a dedicated type returned by most ShellJS methods, which wraps a
+string (or array) value. This has all the string (or array) methods, but
+also exposes extra methods: [`.to()`](#shellstringprototypetofile),
+[`.toEnd()`](#shellstringprototypetoendfile), and all the pipe-able methods
+(ex. `.cat()`, `.grep()`, etc.). This can be easily converted into a string
+by calling `.toString()`.
+
+This type also exposes the corresponding command's stdout, stderr, and
+return status code via the `.stdout` (string), `.stderr` (string), and
+`.code` (number) properties respectively.
 
 
 ### env['VAR_NAME']

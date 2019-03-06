@@ -22,8 +22,7 @@ common.register('echo', _echo, {
 //@ echo('-n', 'no newline at end');
 //@ ```
 //@
-//@ Prints `string` to stdout, and returns string with additional utility methods
-//@ like `.to()`.
+//@ Prints `string` to stdout, and returns a [ShellString](#shellstringstr).
 function _echo(opts) {
   // allow strings starting with '-', see issue #20
   var messages = [].slice.call(arguments, opts ? 0 : 1);

@@ -53,7 +53,8 @@ function checkPath(pathName) {
 //@
 //@ Searches for `command` in the system's `PATH`. On Windows, this uses the
 //@ `PATHEXT` variable to append the extension if it's not already executable.
-//@ Returns string containing the absolute path to `command`.
+//@ Returns a [ShellString](#shellstringstr) containing the absolute path to
+//@ `command`.
 function _which(options, cmd) {
   if (!cmd) common.error('must specify command');
 
