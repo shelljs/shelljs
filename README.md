@@ -223,7 +223,7 @@ or failure.
 Available options:
 
 + `-n`: Suppresses the normal change of directory when adding directories to the stack, so that only the stack is manipulated.
-+ `-q`: Supresses output to the console.
++ `-q`: Suppresses output to the console.
 
 Arguments:
 
