@@ -33,7 +33,7 @@ test('dir already exists', t => {
   const result = shell.mkdir(t.context.tmp); // dir already exists
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, `mkdir: path already exists: ${t.context.tmp}`);
+  t.is(result.stderr, `mkdir: cannot create directory '${t.context.tmp}': File exists`);
   t.is(common.statFollowLinks(t.context.tmp).mtime.toString(), mtime); // didn't mess with dir
 });
 
@@ -42,7 +42,7 @@ test('Can\'t overwrite a broken link', t => {
   const result = shell.mkdir('test/resources/badlink');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'mkdir: path already exists: test/resources/badlink');
+  t.is(result.stderr, "mkdir: cannot create directory 'test/resources/badlink': File exists");
   t.is(common.statNoFollowLinks('test/resources/badlink').mtime.toString(), mtime); // didn't mess with file
 });
 
@@ -51,7 +51,7 @@ test('root path does not exist', t => {
   const result = shell.mkdir('/asdfasdf/foobar'); // root path does not exist
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'mkdir: no such file or directory: /asdfasdf');
+  t.is(result.stderr, "mkdir: cannot create directory '/asdfasdf/foobar': No such file or directory");
   t.falsy(fs.existsSync('/asdfasdf'));
   t.falsy(fs.existsSync('/asdfasdf/foobar'));
 });
@@ -61,7 +61,7 @@ test('try to overwrite file', t => {
   const result = shell.mkdir('test/resources/file1');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'mkdir: path already exists: test/resources/file1');
+  t.is(result.stderr, "mkdir: cannot create directory 'test/resources/file1': File exists");
   t.truthy(common.statFollowLinks('test/resources/file1').isFile());
 });
 
@@ -70,7 +70,7 @@ test('try to overwrite file, with -p', t => {
   const result = shell.mkdir('-p', 'test/resources/file1');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'mkdir: cannot create directory test/resources/file1: File exists');
+  t.is(result.stderr, "mkdir: cannot create directory 'test/resources/file1': File exists");
   t.truthy(common.statFollowLinks('test/resources/file1').isFile());
 });
 
@@ -79,7 +79,7 @@ test('try to make a subdirectory of a file', t => {
   const result = shell.mkdir('test/resources/file1/subdir');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  t.is(result.stderr, 'mkdir: cannot create directory test/resources/file1/subdir: Not a directory');
+  t.is(result.stderr, "mkdir: cannot create directory 'test/resources/file1/subdir': Not a directory");
   t.truthy(common.statFollowLinks('test/resources/file1').isFile());
   t.falsy(fs.existsSync('test/resources/file1/subdir'));
 });
@@ -95,12 +95,27 @@ test('Check for invalid permissions', t => {
     t.is(result.code, 1);
     t.is(
       result.stderr,
-      'mkdir: cannot create directory nowritedir/foo: Permission denied'
+      "mkdir: cannot create directory 'nowritedir/foo': Permission denied"
     );
     t.truthy(shell.error());
     t.falsy(fs.existsSync(dirName + '/foo'));
     shell.rm('-rf', dirName); // clean up
   });
+});
+
+test('name too long', t => {
+  // Generate a directory name which is more than 255 characters. Luckily, all
+  // major OS's share approximately the same limit (we bump this up to 260 to
+  // be cautious).
+  const longName = new Array(260 + 1).join('a');
+  const dirName = `${t.context.tmp}/${longName}`;
+
+  const result = shell.mkdir(dirName);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr,
+    `mkdir: cannot create directory '${dirName}': File name too long`);
+  t.falsy(fs.existsSync(longName));
 });
 
 //
@@ -142,6 +157,21 @@ test('-p flag', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+  shell.rm('-Rf', `${t.context.tmp}/a`); // revert
+});
+
+test('create same dir twice with -p flag', t => {
+  t.falsy(fs.existsSync(`${t.context.tmp}/a`));
+  const result = shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+
+  const result2 = shell.mkdir('-p', `${t.context.tmp}/a/b/c`);
+  t.falsy(shell.error());
+  t.is(result2.code, 0);
+  t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
+
   shell.rm('-Rf', `${t.context.tmp}/a`); // revert
 });
 
