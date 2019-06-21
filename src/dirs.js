@@ -16,7 +16,7 @@ common.register('popd', _popd, {
 var _dirStack = [];
 
 function _isStackIndex(index) {
-  return (/^[\-+]\d+$/).test(index);
+  return (/^[-+]\d+$/).test(index);
 }
 
 function _parseStackIndex(index) {

@@ -124,7 +124,7 @@ function _chmod(options, mode, filePattern) {
     if (isNaN(parseInt(mode, 8))) {
       // parse options
       mode.split(',').forEach(function (symbolicMode) {
-        var pattern = /([ugoa]*)([=\+-])([rwxXst]*)/i;
+        var pattern = /([ugoa]*)([=+-])([rwxXst]*)/i;
         var matches = pattern.exec(symbolicMode);
 
         if (matches) {
