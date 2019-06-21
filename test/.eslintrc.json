@@ -4,19 +4,19 @@
   },
   "extends": "airbnb-base",
   "rules": {
-    "import/no-mutable-exports": "off",
-    "global-require": "off",
-    "vars-on-top": "off",
-    "spaced-comment": ["error", "always", { "markers": ["@", "@include"], "exceptions": ["@"] }],
-    "no-param-reassign": "off",
-    "no-console": "off",
     "curly": "off",
+    "global-require": "off",
+    "import/no-mutable-exports": "off",
+    "max-len": "off",
+    "no-console": "off",
+    "no-param-reassign": "off",
+    "no-underscore-dangle": "off",
     "no-var": "error",
+    "prefer-arrow-callback": "off",
     "prefer-const": "error",
     "prefer-template": "off",
-    "prefer-arrow-callback": "off",
-    "no-underscore-dangle": "off",
-    "max-len": "off",
+    "spaced-comment": ["error", "always", { "markers": ["@", "@include"], "exceptions": ["@"] }],
+    "vars-on-top": "off",
     "new-cap": ["error", {
       "capIsNewExceptions": [
         "ShellString"
