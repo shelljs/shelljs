@@ -27,7 +27,7 @@ test('invalid permissions', t => {
   let result = shell.chmod('blah');
   t.truthy(shell.error());
   t.is(result.code, 1);
-  result = shell.chmod('893', `${TMP}/chmod`);  // invalid permissions - mode must be in octal
+  result = shell.chmod('893', `${TMP}/chmod`); // invalid permissions - mode must be in octal
   t.truthy(shell.error());
   t.is(result.code, 1);
 });

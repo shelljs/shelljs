@@ -86,7 +86,7 @@ function _which(options, cmd) {
         attempt = attempt.toUpperCase();
       }
 
-      var match = attempt.match(/\.[^<>:"/\|?*.]+$/);
+      var match = attempt.match(/\.[^<>:"/|?*.]+$/);
       if (match && pathExtArray.indexOf(match[0]) >= 0) { // this is Windows-only
         // The user typed a query with the file extension, like
         // `which('node.exe')`

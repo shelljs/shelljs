@@ -7,6 +7,7 @@
     "curly": "off",
     "global-require": "off",
     "import/no-mutable-exports": "off",
+    "indent": "off",
     "max-len": "off",
     "no-console": "off",
     "no-param-reassign": "off",
