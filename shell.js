@@ -31,10 +31,10 @@ require('./commands').forEach(function (command) {
 //@ Exits the current process with the given exit `code`.
 exports.exit = process.exit;
 
-//@include ./src/error
+//@include ./src/error.js
 exports.error = require('./src/error');
 
-//@include ./src/common
+//@include ./src/common.js
 exports.ShellString = common.ShellString;
 
 //@

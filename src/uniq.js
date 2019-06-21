@@ -55,9 +55,9 @@ function _uniq(options, input, output) {
     common.error(output + ': Is a directory');
   }
 
-  var lines = (input ? fs.readFileSync(input, 'utf8') : pipe).
-              trimRight().
-              split('\n');
+  var lines = (input ? fs.readFileSync(input, 'utf8') : pipe)
+              .trimRight()
+              .split('\n');
 
   var compare = function (a, b) {
     return options.ignoreCase ?

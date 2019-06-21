@@ -1,5 +1,7 @@
-// Ignore warning about 'new String()'
-/* eslint no-new-wrappers: 0 */
+// Ignore warning about 'new String()' and use of the Buffer constructor
+/* eslint no-new-wrappers: "off",
+   no-buffer-constructor: "off" */
+
 'use strict';
 
 var os = require('os');
@@ -181,7 +183,8 @@ function parseOptions(opt, map, errorOptions) {
     throw new TypeError('parseOptions() internal error: map must be an object');
   } else if (!isObject(errorOptions)) {
     throw new TypeError(
-        'parseOptions() internal error: errorOptions must be object');
+        'parseOptions() internal error: errorOptions must be object'
+    );
   }
 
   if (opt === '--') {
@@ -231,13 +234,11 @@ function parseOptions(opt, map, errorOptions) {
         } else {
           error('option not recognized: ' + c, errorOptions);
         }
+      } else if (key in options) {
+        // key is a "long option", so it should be the same
+        options[key] = opt[key];
       } else {
-        if (key in options) {
-          // key is a "long option", so it should be the same
-          options[key] = opt[key];
-        } else {
-          error('option not recognized: {' + key + ':...}', errorOptions);
-        }
+        error('option not recognized: {' + key + ':...}', errorOptions);
       }
     });
   }

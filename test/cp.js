@@ -292,8 +292,7 @@ test('recursive, copying one regular file', t => {
   t.is(result.code, 0);
   t.truthy(fs.existsSync(`${t.context.tmp}/file1.txt`));
   t.falsy(common.statFollowLinks(`${t.context.tmp}/file1.txt`).isDirectory()); // don't let it be a dir
-}
-);
+});
 
 test('recursive, everything exists, no force flag', t => {
   const result = shell.cp('-R', 'test/resources/cp', t.context.tmp);

@@ -75,4 +75,3 @@ test('set -f', t => {
   shell.rm(`${t.context.tmp}/*.txt`);
   t.falsy(shell.error()); // globbing works, so rm succeeds
 });
-

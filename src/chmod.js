@@ -121,7 +121,7 @@ function _chmod(options, mode, filePattern) {
 
     var newPerms = perms;
 
-    if (isNaN(parseInt(mode, 8))) {
+    if (Number.isNaN(parseInt(mode, 8))) {
       // parse options
       mode.split(',').forEach(function (symbolicMode) {
         var pattern = /([ugoa]*)([=+-])([rwxXst]*)/i;
