@@ -178,10 +178,10 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ by default (or `cmd.exe` on Windows), which differs from `bash`. If you
 //@ need bash-specific behavior, try out the `{shell: 'path/to/bash'}` option.
 //@
-//@ **Note:** as `shell.exec()` executes an arbitrary string in the system
-//@ shell, it is **critical** to properly sanitize user input to avoid command
-//@ execution. For more context, consult the [Security
-//@ guidelines](https://github.com/shelljs/shelljs/wiki/Security-guidelines).
+//@ **Security note:** as `shell.exec()` executes an arbitrary string in the
+//@ system shell, it is **critical** to properly sanitize user input to avoid
+//@ **command injection**. For more context, consult the [Security
+//@ Guidelines](https://github.com/shelljs/shelljs/wiki/Security-guidelines).
 function _exec(command, options, callback) {
   options = options || {};
   if (!command) common.error('must specify command');
