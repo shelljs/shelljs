@@ -340,6 +340,11 @@ Not seeing the behavior you want? `exec()` runs everything through `sh`
 by default (or `cmd.exe` on Windows), which differs from `bash`. If you
 need bash-specific behavior, try out the `{shell: 'path/to/bash'}` option.
 
+**Note:** as `shell.exec()` executes an arbitrary string in the system
+shell, it is **critical** to properly sanitize user input to avoid command
+execution. For more context, consult the [Security
+guidelines](https://github.com/shelljs/shelljs/wiki/Security-guidelines).
+
 
 ### find(path [, path ...])
 ### find(path_array)
