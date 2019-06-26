@@ -519,11 +519,10 @@ Examples:
 
 ```javascript
 sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js');
-sed(/.*DELETE_THIS_LINE.*\n/, '', 'source.js');
 ```
 
-Reads an input string from `file`s, and performs a JavaScript `replace()` on
-the input using the given `search_regex` and `replacement` string or
+Reads an input string from `file`s, line by line, and performs a JavaScript `replace()` on
+each of the lines from the input string using the given `search_regex` and `replacement` string or
 function. Returns the new [ShellString](#shellstringstr) after replacement.
 
 Note:
@@ -534,6 +533,10 @@ using the `$n` syntax:
 ```javascript
 sed(/(\w+)\s(\w+)/, '$2, $1', 'file.txt');
 ```
+
+Also, like unix `sed`, ShellJS `sed` runs replacements on each line from the input file
+(split by '\n') separately, so `search_regex`es that span more than one line (or inlclude '\n')
+will not match anything and nothing will be replaced.
 
 
 ### set(options)
