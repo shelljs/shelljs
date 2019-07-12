@@ -2,9 +2,11 @@
 /* globals cat, cd, echo, grep, sed, ShellString */
 require('../global');
 
+var path = require('path');
+
 echo('Appending docs to README.md');
 
-cd(__dirname + '/..');
+cd(path.join(__dirname, '..'));
 
 // Extract docs from shell.js
 var docs = grep('^//@', 'shell.js');
@@ -18,9 +20,8 @@ docs = docs.replace(/\/\/@commands\n/g, function () {
 });
 
 // Now extract docs from the remaining src/*.js files
-docs = docs.replace(/\/\/@include (.+)/g, function (match, path) {
-  var file = path.match('.js$') ? path : path + '.js';
-  return grep('^//@', file);
+docs = docs.replace(/\/\/@include (.+)/g, function (match, filename) {
+  return grep('^//@', filename);
 });
 
 // Remove '//@'

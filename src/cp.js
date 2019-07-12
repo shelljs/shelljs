@@ -141,13 +141,10 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
       } else {
         copyFileSync(srcFile, destFile, opts);
       }
+    } else if (fs.existsSync(destFile) && opts.no_force) {
+      common.log('skipping existing file: ' + files[i]);
     } else {
-      /* At this point, we've hit a file actually worth copying... so copy it on over. */
-      if (fs.existsSync(destFile) && opts.no_force) {
-        common.log('skipping existing file: ' + files[i]);
-      } else {
-        copyFileSync(srcFile, destFile, opts);
-      }
+      copyFileSync(srcFile, destFile, opts);
     }
   } // for files
 

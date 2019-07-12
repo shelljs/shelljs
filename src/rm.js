@@ -29,16 +29,15 @@ function rmdirSyncRecursive(dir, force, fromSymlink) {
 
     if (currFile.isDirectory()) { // Recursive function back to the beginning
       rmdirSyncRecursive(file, force);
-    } else { // Assume it's a file - perhaps a try/catch belongs here?
-      if (force || isWriteable(file)) {
-        try {
-          common.unlinkSync(file);
-        } catch (e) {
-          /* istanbul ignore next */
-          common.error('could not remove file (code ' + e.code + '): ' + file, {
-            continue: true,
-          });
-        }
+    } else if (force || isWriteable(file)) {
+      // Assume it's a file - perhaps a try/catch belongs here?
+      try {
+        common.unlinkSync(file);
+      } catch (e) {
+        /* istanbul ignore next */
+        common.error('could not remove file (code ' + e.code + '): ' + file, {
+          continue: true,
+        });
       }
     }
   }

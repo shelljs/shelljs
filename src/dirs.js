@@ -81,12 +81,10 @@ function _pushd(options, dir) {
   } else if (_isStackIndex(dir)) {
     var n = _parseStackIndex(dir);
     dirs = dirs.slice(n).concat(dirs.slice(0, n));
+  } else if (options['no-cd']) {
+    dirs.splice(1, 0, dir);
   } else {
-    if (options['no-cd']) {
-      dirs.splice(1, 0, dir);
-    } else {
-      dirs.unshift(dir);
-    }
+    dirs.unshift(dir);
   }
 
   if (options['no-cd']) {

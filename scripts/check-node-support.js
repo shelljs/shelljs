@@ -16,7 +16,8 @@ function checkReadme(minNodeVersion) {
   var stop = '<!-- stop minVersion -->';
   var formattedMinVersion = '`v' + minNodeVersion + '`';
   var expectedReadmeRegex = new RegExp(
-      start + '\\s*' + formattedMinVersion + '\\s*' + stop, '');
+      start + '\\s*' + formattedMinVersion + '\\s*' + stop, ''
+  );
   var readme = path.join(__dirname, '..', 'README.md');
   var match = shell.grep(expectedReadmeRegex, readme);
   if (!match.toString()) {

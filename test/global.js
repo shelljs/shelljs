@@ -47,4 +47,3 @@ test('String.prototype is modified for global require', t => {
   'bar'.toEnd(`${t.context.tmp}/testfile.txt`);
   t.is('foobar', cat(`${t.context.tmp}/testfile.txt`).toString());
 });
-

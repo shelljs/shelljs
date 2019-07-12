@@ -51,6 +51,5 @@ function _set(options) {
       common.config[key] = options[key];
     }
   });
-  return;
 }
 module.exports = _set;
