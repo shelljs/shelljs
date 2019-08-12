@@ -28,6 +28,7 @@ function execSync(cmd, opts, pipe) {
 
   opts = common.extend({
     silent: common.config.silent,
+    fatal: common.config.fatal,
     cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
@@ -99,7 +100,7 @@ function execSync(cmd, opts, pipe) {
     // Note: `silent` should be unconditionally true to avoid double-printing
     // the command's stderr, and to avoid printing any stderr when the user has
     // set `shell.config.silent`.
-    common.error(stderr, code, { continue: true, silent: true });
+    common.error(stderr, code, { continue: true, silent: true, fatal: opts.fatal });
   }
   var obj = common.ShellString(stdout, stderr, code);
   return obj;
@@ -109,6 +110,7 @@ function execSync(cmd, opts, pipe) {
 function execAsync(cmd, opts, pipe, callback) {
   opts = common.extend({
     silent: common.config.silent,
+    fatal: common.config.fatal,
     cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
@@ -201,6 +203,7 @@ function _exec(command, options, callback) {
 
   options = common.extend({
     silent: common.config.silent,
+    fatal: common.config.fatal,
     async: false,
   }, options);
 
