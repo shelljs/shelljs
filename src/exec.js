@@ -28,7 +28,7 @@ function execSync(cmd, opts, pipe) {
 
   opts = common.extend({
     silent: common.config.silent,
-    fatal: common.config.fatal, // TODO(nfischer)
+    fatal: common.config.fatal, // TODO(nfischer): this and the line above are probably unnecessary
     cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
@@ -110,7 +110,7 @@ function execSync(cmd, opts, pipe) {
 function execAsync(cmd, opts, pipe, callback) {
   opts = common.extend({
     silent: common.config.silent,
-    fatal: common.config.fatal, // TODO(nfischer)
+    fatal: common.config.fatal, // TODO(nfischer): this and the line above are probably unnecessary
     cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
