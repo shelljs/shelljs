@@ -88,7 +88,7 @@ CommandError.prototype = Object.create(Error.prototype);
 CommandError.prototype.constructor = CommandError;
 exports.CommandError = CommandError; // visible for testing
 
-// Shows error message. Throws if config.fatal is true
+// Shows error message. Throws if fatal is true (defaults to config.fatal, overridable with options.fatal)
 function error(msg, _code, options) {
   // Validate input
   if (typeof msg !== 'string') throw new Error('msg must be a string');

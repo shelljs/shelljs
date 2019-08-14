@@ -308,6 +308,7 @@ Available options:
 
 + `async`: Asynchronous execution. If a callback is provided, it will be set to
   `true`, regardless of the passed value (default: `false`).
++ `fatal`: Exit upon error (default: `false`).
 + `silent`: Do not echo program output to console (default: `false`).
 + `encoding`: Character encoding to use. Affects the values returned to stdout and stderr, and
   what is written to stdout and stderr when not in silent mode (default: `'utf8'`).
