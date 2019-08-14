@@ -98,6 +98,7 @@ function error(msg, _code, options) {
     code: 1,
     prefix: state.currentCmd + ': ',
     silent: false,
+    fatal: config.fatal,
   };
 
   if (typeof _code === 'number' && isObject(options)) {
@@ -118,7 +119,7 @@ function error(msg, _code, options) {
   state.error += logEntry;
 
   // Throw an error, or log the entry
-  if (config.fatal && options.fatal !== false) throw new Error(logEntry);
+  if (config.fatal) throw new Error(logEntry);
   if (msg.length > 0 && !options.silent) log(logEntry);
 
   if (!options.continue) {
