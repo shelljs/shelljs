@@ -119,7 +119,7 @@ function error(msg, _code, options) {
   state.error += logEntry;
 
   // Throw an error, or log the entry
-  if (config.fatal) throw new Error(logEntry);
+  if (options.fatal) throw new Error(logEntry);
   if (msg.length > 0 && !options.silent) log(logEntry);
 
   if (!options.continue) {
