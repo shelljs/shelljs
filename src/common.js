@@ -425,7 +425,7 @@ function wrap(cmd, fn, options) {
         e.name = 'ShellJSInternalError';
         throw e;
       }
-      if (config.fatal) throw e;
+      if (config.fatal || options.handlesFatalDynamically) throw e;
     }
 
     if (options.wrapOutput &&
@@ -451,6 +451,7 @@ var DEFAULT_WRAP_OPTIONS = {
   canReceivePipe: false,
   cmdOptions: null,
   globStart: 1,
+  handlesFatalDynamically: false,
   pipeOnly: false,
   wrapOutput: true,
   unix: true,

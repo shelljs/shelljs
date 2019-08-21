@@ -12,13 +12,14 @@ common.register('exec', _exec, {
   unix: false,
   canReceivePipe: true,
   wrapOutput: false,
+  handlesFatalDynamically: true,
 });
 
 // We use this function to run `exec` synchronously while also providing realtime
 // output.
 function execSync(cmd, opts, pipe) {
   if (!common.config.execPath) {
-    common.error('Unable to find a path to the node binary. Please manually set config.execPath');
+    common.error('Unable to find a path to the node binary. Please manually set config.execPath', { continue: true, fatal: opts.fatal });
   }
 
   var tempDir = _tempDir();
@@ -187,7 +188,6 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ Guidelines](https://github.com/shelljs/shelljs/wiki/Security-guidelines).
 function _exec(command, options, callback) {
   options = options || {};
-  if (!command) common.error('must specify command');
 
   var pipe = common.readFromPipe();
 
@@ -207,6 +207,8 @@ function _exec(command, options, callback) {
     fatal: common.config.fatal,
     async: false,
   }, options);
+  
+  if (!command) common.error('must specify command', { continue: true, fatal: options.fatal });
 
   if (options.async) {
     return execAsync(command, options, pipe, callback);
