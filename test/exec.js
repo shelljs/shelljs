@@ -208,7 +208,7 @@ test('options.fatal = false and unknown command', t => {
   const result = shell.exec('asdfasdf', { fatal: false }); // could not find command
   shell.config.fatal = oldFatal;
   t.truthy(shell.error());
-  t.is(result.code, 127);
+  t.is(result.code > 0, true);
 });
 
 //
