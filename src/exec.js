@@ -207,7 +207,7 @@ function _exec(command, options, callback) {
     fatal: common.config.fatal,
     async: false,
   }, options);
-  
+
   if (!command) common.error('must specify command', { continue: true, fatal: options.fatal });
 
   if (options.async) {
