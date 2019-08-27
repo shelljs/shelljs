@@ -51,7 +51,7 @@ test('options.fatal = true and unknown command', t => {
   t.throws(() => {
     shell.exec('asdfasdf', { fatal: true }); // could not find command
   }, /asdfasdf/); // name of command should be in error message
-  shell.config.fatal = oldFatal;
+  shell.config.fatal = oldFatal; // TODO(nfischer): this setting won't get reset if the assertion above fails
 });
 
 test('exec exits gracefully if we cannot find the execPath', t => {
