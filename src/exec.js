@@ -19,8 +19,15 @@ common.register('exec', _exec, {
 // output.
 function execSync(cmd, opts, pipe) {
   if (!common.config.execPath) {
-    common.error('Unable to find a path to the node binary. Please manually set config.execPath', { continue: true, fatal: opts.fatal });
-    return;
+    try {
+        common.error('Unable to find a path to the node binary. Please manually set config.execPath');
+    } catch (e) {
+      if (opts.fatal) {
+        throw e;
+      }
+
+      return;
+    }
   }
 
   var tempDir = _tempDir();
@@ -210,8 +217,15 @@ function _exec(command, options, callback) {
   }, options);
 
   if (!command) {
-    common.error('must specify command', { continue: true, fatal: options.fatal });
-    return;
+    try {
+      common.error('must specify command');
+    } catch (e) {
+      if (options.fatal) {
+        throw e;
+      }
+
+      return;
+    }
   }
 
   if (options.async) {
