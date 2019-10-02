@@ -88,7 +88,7 @@ CommandError.prototype = Object.create(Error.prototype);
 CommandError.prototype.constructor = CommandError;
 exports.CommandError = CommandError; // visible for testing
 
-// Shows error message. Throws if config.fatal is true
+// Shows error message. Throws if fatal is true (defaults to config.fatal, overridable with options.fatal)
 function error(msg, _code, options) {
   // Validate input
   if (typeof msg !== 'string') throw new Error('msg must be a string');
@@ -98,6 +98,7 @@ function error(msg, _code, options) {
     code: 1,
     prefix: state.currentCmd + ': ',
     silent: false,
+    fatal: config.fatal,
   };
 
   if (typeof _code === 'number' && isObject(options)) {
@@ -118,7 +119,7 @@ function error(msg, _code, options) {
   state.error += logEntry;
 
   // Throw an error, or log the entry
-  if (config.fatal) throw new Error(logEntry);
+  if (options.fatal) throw new Error(logEntry);
   if (msg.length > 0 && !options.silent) log(logEntry);
 
   if (!options.continue) {
@@ -424,7 +425,7 @@ function wrap(cmd, fn, options) {
         e.name = 'ShellJSInternalError';
         throw e;
       }
-      if (config.fatal) throw e;
+      if (config.fatal || options.handlesFatalDynamically) throw e;
     }
 
     if (options.wrapOutput &&
@@ -450,6 +451,7 @@ var DEFAULT_WRAP_OPTIONS = {
   canReceivePipe: false,
   cmdOptions: null,
   globStart: 1,
+  handlesFatalDynamically: false,
   pipeOnly: false,
   wrapOutput: true,
   unix: true,

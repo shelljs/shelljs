@@ -12,13 +12,22 @@ common.register('exec', _exec, {
   unix: false,
   canReceivePipe: true,
   wrapOutput: false,
+  handlesFatalDynamically: true,
 });
 
 // We use this function to run `exec` synchronously while also providing realtime
 // output.
 function execSync(cmd, opts, pipe) {
   if (!common.config.execPath) {
-    common.error('Unable to find a path to the node binary. Please manually set config.execPath');
+    try {
+        common.error('Unable to find a path to the node binary. Please manually set config.execPath');
+    } catch (e) {
+      if (opts.fatal) {
+        throw e;
+      }
+
+      return;
+    }
   }
 
   var tempDir = _tempDir();
@@ -28,6 +37,7 @@ function execSync(cmd, opts, pipe) {
 
   opts = common.extend({
     silent: common.config.silent,
+    fatal: common.config.fatal, // TODO(nfischer): this and the line above are probably unnecessary
     cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
@@ -99,7 +109,7 @@ function execSync(cmd, opts, pipe) {
     // Note: `silent` should be unconditionally true to avoid double-printing
     // the command's stderr, and to avoid printing any stderr when the user has
     // set `shell.config.silent`.
-    common.error(stderr, code, { continue: true, silent: true });
+    common.error(stderr, code, { continue: true, silent: true, fatal: opts.fatal });
   }
   var obj = common.ShellString(stdout, stderr, code);
   return obj;
@@ -109,6 +119,7 @@ function execSync(cmd, opts, pipe) {
 function execAsync(cmd, opts, pipe, callback) {
   opts = common.extend({
     silent: common.config.silent,
+    fatal: common.config.fatal, // TODO(nfischer): this and the line above are probably unnecessary
     cwd: _pwd().toString(),
     env: process.env,
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
@@ -146,6 +157,7 @@ function execAsync(cmd, opts, pipe, callback) {
 //@
 //@ + `async`: Asynchronous execution. If a callback is provided, it will be set to
 //@   `true`, regardless of the passed value (default: `false`).
+//@ + `fatal`: Exit upon error (default: `false`).
 //@ + `silent`: Do not echo program output to console (default: `false`).
 //@ + `encoding`: Character encoding to use. Affects the values returned to stdout and stderr, and
 //@   what is written to stdout and stderr when not in silent mode (default: `'utf8'`).
@@ -184,7 +196,6 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ Guidelines](https://github.com/shelljs/shelljs/wiki/Security-guidelines).
 function _exec(command, options, callback) {
   options = options || {};
-  if (!command) common.error('must specify command');
 
   var pipe = common.readFromPipe();
 
@@ -201,8 +212,21 @@ function _exec(command, options, callback) {
 
   options = common.extend({
     silent: common.config.silent,
+    fatal: common.config.fatal,
     async: false,
   }, options);
+
+  if (!command) {
+    try {
+      common.error('must specify command');
+    } catch (e) {
+      if (options.fatal) {
+        throw e;
+      }
+
+      return;
+    }
+  }
 
   if (options.async) {
     return execAsync(command, options, pipe, callback);

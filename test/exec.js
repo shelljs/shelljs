@@ -45,6 +45,15 @@ test('config.fatal and unknown command', t => {
   shell.config.fatal = oldFatal;
 });
 
+test('options.fatal = true and unknown command', t => {
+  const oldFatal = shell.config.fatal;
+  shell.config.fatal = false;
+  t.throws(() => {
+    shell.exec('asdfasdf', { fatal: true }); // could not find command
+  }, /asdfasdf/); // name of command should be in error message
+  shell.config.fatal = oldFatal; // TODO(nfischer): this setting won't get reset if the assertion above fails
+});
+
 test('exec exits gracefully if we cannot find the execPath', t => {
   shell.config.execPath = null;
   shell.exec('echo foo');
@@ -191,6 +200,15 @@ test('encoding option works', t => {
   t.truthy(Buffer.isBuffer(result.stderr));
   t.is(result.stdout.toString(), '1234\n');
   t.is(result.stderr.toString(), '');
+});
+
+test('options.fatal = false and unknown command', t => {
+  const oldFatal = shell.config.fatal;
+  shell.config.fatal = true;
+  const result = shell.exec('asdfasdf', { fatal: false }); // could not find command
+  shell.config.fatal = oldFatal;
+  t.truthy(shell.error());
+  t.truthy(result.code);
 });
 
 //
