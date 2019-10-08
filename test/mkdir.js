@@ -145,7 +145,7 @@ test('-p flag', t => {
   shell.rm('-Rf', `${t.context.tmp}/a`); // revert
 });
 
-test('multiple dirs', t => {
+test('-p flag: multiple dirs', t => {
   const result = shell.mkdir('-p', `${t.context.tmp}/zzza`,
     `${t.context.tmp}/zzzb`, `${t.context.tmp}/zzzc`);
   t.falsy(shell.error());
@@ -155,7 +155,7 @@ test('multiple dirs', t => {
   t.truthy(fs.existsSync(`${t.context.tmp}/zzzc`));
 });
 
-test('multiple dirs, array syntax', t => {
+test('-p flag: multiple dirs, array syntax', t => {
   const result = shell.mkdir('-p', [`${t.context.tmp}/yyya`,
     `${t.context.tmp}/yyyb`, `${t.context.tmp}/yyyc`]);
   t.falsy(shell.error());
