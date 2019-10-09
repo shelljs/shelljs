@@ -421,17 +421,10 @@ test('Make sure hidden files are copied recursively', t => {
 });
 
 test('no-recursive will copy regular files only', t => {
-  const result = shell.cp('test/resources/file1.txt', 'test/resources/ls/', t.context.tmp);
-  t.is(result.code, 1);
-  t.truthy(shell.error());
-  t.falsy(fs.existsSync(`${t.context.tmp}/.hidden_file`)); // doesn't copy dir contents
-  t.falsy(fs.existsSync(`${t.context.tmp}/ls`)); // doesn't copy dir itself
-  t.truthy(fs.existsSync(`${t.context.tmp}/file1.txt`));
-});
-
-test('no-recursive will copy regular files only', t => {
-  const result = shell.cp('test/resources/file1.txt', 'test/resources/file2.txt', 'test/resources/cp',
-    'test/resources/ls/', t.context.tmp);
+  const result = shell.cp(
+    'test/resources/file1.txt', 'test/resources/file2.txt', 'test/resources/cp',
+    'test/resources/ls/', t.context.tmp
+  );
 
   t.is(result.code, 1);
   t.truthy(shell.error());

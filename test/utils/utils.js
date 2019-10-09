@@ -61,7 +61,7 @@ function skipIfTrue(booleanValue, t, closure) {
   if (booleanValue) {
     _processStderrWrite(
       chalk.yellow('Warning: skipping platform-dependent test ') +
-      chalk.bold.white(`'${t._test.title}'`) +
+      chalk.bold.white(`'${t.title}'`) +
       '\n'
     );
     t.truthy(true); // dummy assertion to satisfy ava v0.19+
