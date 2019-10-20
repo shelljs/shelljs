@@ -450,7 +450,7 @@ function _register(name, implementation, wrapOptions) {
   // If an option isn't specified, use the default
   wrapOptions = Object.assign({}, DEFAULT_WRAP_OPTIONS, wrapOptions);
 
-  if (shell[name]) {
+  if (shell.hasOwnProperty(name)) {
     throw new Error('Command `' + name + '` already exists');
   }
 
