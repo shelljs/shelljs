@@ -31,9 +31,9 @@ function execSync(cmd, opts, pipe) {
   }
 
   var tempDir = _tempDir();
-  var paramsFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var stderrFile = path.resolve(tempDir + '/' + common.randomFileName());
-  var stdoutFile = path.resolve(tempDir + '/' + common.randomFileName());
+  var paramsFile = path.join(tempDir, common.randomFileName());
+  var stderrFile = path.join(tempDir, common.randomFileName());
+  var stdoutFile = path.join(tempDir, common.randomFileName());
 
   opts = common.extend({
     silent: common.config.silent,
