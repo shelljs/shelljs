@@ -109,8 +109,8 @@ function _mv(options, sources, dest) {
         // to perform a copy and then clean up the original file. If either the
         // copy or the rm fails with an exception, we should allow this
         // exception to pass up to the top level.
-        cp('-r', src, thisDest);
-        rm('-rf', src);
+        cp({ recursive: true }, src, thisDest);
+        rm({ recursive: true, force: true }, src);
       }
     }
   }); // forEach(src)
