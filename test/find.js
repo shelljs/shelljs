@@ -1,4 +1,5 @@
 import test from 'ava';
+import path from 'path';
 
 import shell from '..';
 
@@ -28,8 +29,8 @@ test('current path', t => {
   const result = shell.find('.');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.indexOf('.hidden') > -1);
-  t.truthy(result.indexOf('dir1/dir11/a_dir11') > -1);
+  t.truthy(result.indexOf(path.normalize('.hidden')) > -1);
+  t.truthy(result.indexOf(path.normalize('dir1/dir11/a_dir11')) > -1);
   t.is(result.length, 11);
   shell.cd('../..');
 });
@@ -38,8 +39,19 @@ test('simple path', t => {
   const result = shell.find('test/resources/find');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.indexOf('test/resources/find/.hidden') > -1);
-  t.truthy(result.indexOf('test/resources/find/dir1/dir11/a_dir11') > -1);
+  t.truthy(result.indexOf(path.normalize('test/resources/find/.hidden')) > -1);
+  t.truthy(result.indexOf(path.normalize('test/resources/find/dir1/dir11/a_dir11')) > -1);
+  t.is(result.length, 11);
+});
+
+test('simple path - current platform delimiters', t => {
+  // Normalize the path argument to test Windows delimiters on Windows,
+  // while not making POSIX platforms encounter them.
+  const result = shell.find(path.normalize('test/resources/find'));
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(result.indexOf(path.normalize('test/resources/find/.hidden')) > -1);
+  t.truthy(result.indexOf(path.normalize('test/resources/find/dir1/dir11/a_dir11')) > -1);
   t.is(result.length, 11);
 });
 
@@ -47,8 +59,8 @@ test('multiple paths - comma', t => {
   const result = shell.find('test/resources/find/dir1', 'test/resources/find/dir2');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.indexOf('test/resources/find/dir1/dir11/a_dir11') > -1);
-  t.truthy(result.indexOf('test/resources/find/dir2/a_dir1') > -1);
+  t.truthy(result.indexOf(path.normalize('test/resources/find/dir1/dir11/a_dir11')) > -1);
+  t.truthy(result.indexOf(path.normalize('test/resources/find/dir2/a_dir1')) > -1);
   t.is(result.length, 6);
 });
 
@@ -56,8 +68,8 @@ test('multiple paths - array', t => {
   const result = shell.find(['test/resources/find/dir1', 'test/resources/find/dir2']);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.indexOf('test/resources/find/dir1/dir11/a_dir11') > -1);
-  t.truthy(result.indexOf('test/resources/find/dir2/a_dir1') > -1);
+  t.truthy(result.indexOf(path.normalize('test/resources/find/dir1/dir11/a_dir11')) > -1);
+  t.truthy(result.indexOf(path.normalize('test/resources/find/dir2/a_dir1')) > -1);
   t.is(result.length, 6);
 });
 

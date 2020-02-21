@@ -30,13 +30,6 @@ function _find(options, paths) {
 
   var list = [];
 
-  function pushFile(file) {
-    if (process.platform === 'win32') {
-      file = file.replace(/\\/g, '/');
-    }
-    list.push(file);
-  }
-
   // why not simply do `ls('-R', paths)`? because the output wouldn't give the base dirs
   // to get the base dir in the output, we need instead `ls('-R', 'dir/*')` for every directory
 
@@ -48,11 +41,14 @@ function _find(options, paths) {
       common.error('no such file or directory: ' + file);
     }
 
-    pushFile(file);
+    // Node's path.join() below will return platform-appropriate paths,
+    // but on Windows paths with POSIX separators may be provided to this function.
+    // So normalize:
+    list.push(path.normalize(file));
 
     if (stat.isDirectory()) {
       _ls({ recursive: true, all: true }, file).forEach(function (subfile) {
-        pushFile(path.join(file, subfile));
+        list.push(path.join(file, subfile));
       });
     }
   });
