@@ -441,6 +441,7 @@ Examples:
 
 ```javascript
 ls('projs/*.js');
+ls('projs/**/*.js'); // Find all js files recursively in projs
 ls('-R', '/users/me', '/tmp');
 ls('-R', ['/users/me', '/tmp']); // same as above
 ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
