@@ -5,7 +5,6 @@ common.register('tail', _tail, {
   canReceivePipe: true,
   cmdOptions: {
     'n': 'numLines',
-	'p': 'plusOption',
   },
 });
 
@@ -25,7 +24,7 @@ common.register('tail', _tail, {
 //@ var str = tail(['file1', 'file2']); // same as above
 //@ ```
 //@
-//@ Read the end of a `file`.
+//@ Read the end of a `file`. Returns a [ShellString](#shellstringstr).
 function _tail(options, files) {
   var tail = [];
   var pipe = common.readFromPipe();
@@ -33,16 +32,21 @@ function _tail(options, files) {
   if (!files && !pipe) common.error('no paths given');
 
   var idx = 1;
+  let plusOption = false;
   
-  if (options.numLines) {
+  if (options.numLines === true) {
     idx = 2;
 	
 	if (arguments[1][0] === '+')
-		options.plusOption = true;
-	
+		plusOption = true;
+
     options.numLines = Number(arguments[1]);
-  } else {
+  } else if (options.numLines === false) {
     options.numLines = 10;
+  } else {
+	// arguments[0] is a json object
+	if (arguments[0].numLines[0] === '+')
+		plusOption = true;
   }
   options.numLines = -1 * Math.abs(options.numLines);
   files = [].slice.call(arguments, idx);
@@ -75,7 +79,7 @@ function _tail(options, files) {
     }
 
     tail = tail.concat(
-		options.plusOption ? 
+		plusOption ? 
 			lines.slice(-options.numLines-1) : 
 			lines.slice(options.numLines)
 	);

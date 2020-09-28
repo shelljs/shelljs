@@ -115,6 +115,19 @@ test('With `\'-n\' <num>` option', t => {
       .join('\n') + '\n');
 });
 
+test('With `\'-n\' +<num>` option', t => {
+  const result = shell.tail('-n', '+48', 'test/resources/head/file2.txt',
+    'test/resources/head/file1.txt');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(),
+    bottomOfFile2
+      .slice(0, 3)
+      .reverse()
+      .concat(bottomOfFile1.slice(0, 3).reverse())
+      .join('\n') + '\n');
+});
+
 test('With `{\'-n\': <num>}` option', t => {
   const result = shell.tail({ '-n': 4 }, 'test/resources/head/file2.txt',
     'test/resources/head/file1.txt');
@@ -125,6 +138,19 @@ test('With `{\'-n\': <num>}` option', t => {
       .slice(0, 4)
       .reverse()
       .concat(bottomOfFile1.slice(0, 4).reverse())
+      .join('\n') + '\n');
+});
+
+test('With `{\'-n\': +<num>}` option', t => {
+  const result = shell.tail({ '-n': '+48' }, 'test/resources/head/file2.txt',
+    'test/resources/head/file1.txt');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(),
+    bottomOfFile2
+      .slice(0, 3)
+      .reverse()
+      .concat(bottomOfFile1.slice(0, 3).reverse())
       .join('\n') + '\n');
 });
 
