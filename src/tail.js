@@ -5,6 +5,7 @@ common.register('tail', _tail, {
   canReceivePipe: true,
   cmdOptions: {
     'n': 'numLines',
+	'p': 'plusOption',
   },
 });
 
@@ -24,7 +25,7 @@ common.register('tail', _tail, {
 //@ var str = tail(['file1', 'file2']); // same as above
 //@ ```
 //@
-//@ Read the end of a `file`. Returns a [ShellString](#shellstringstr).
+//@ Read the end of a `file`.
 function _tail(options, files) {
   var tail = [];
   var pipe = common.readFromPipe();
@@ -32,18 +33,22 @@ function _tail(options, files) {
   if (!files && !pipe) common.error('no paths given');
 
   var idx = 1;
-  if (options.numLines === true) {
+  
+  if (options.numLines) {
     idx = 2;
+	
+	if (arguments[1][0] === '+')
+		options.plusOption = true;
+	
     options.numLines = Number(arguments[1]);
-  } else if (options.numLines === false) {
+  } else {
     options.numLines = 10;
   }
   options.numLines = -1 * Math.abs(options.numLines);
   files = [].slice.call(arguments, idx);
 
-  if (pipe) {
+  if (pipe)
     files.unshift('-');
-  }
 
   var shouldAppendNewline = false;
   files.forEach(function (file) {
@@ -69,12 +74,17 @@ function _tail(options, files) {
       shouldAppendNewline = false;
     }
 
-    tail = tail.concat(lines.slice(options.numLines));
+    tail = tail.concat(
+		options.plusOption ? 
+			lines.slice(-options.numLines-1) : 
+			lines.slice(options.numLines)
+	);
   });
 
-  if (shouldAppendNewline) {
+  if (shouldAppendNewline)
     tail.push(''); // to add a trailing newline once we join
-  }
+  
   return tail.join('\n');
 }
+
 module.exports = _tail;
