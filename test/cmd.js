@@ -132,6 +132,14 @@ test('does not expand windows-style variables', t => {
   t.is(result.stdout, '!FOO!\n');
 });
 
+test('caret character is passed through to the command', t => {
+  // '^' is a special character on Windows, see issue #1015
+  const result = shell.cmd('shx', 'echo', 'shelljs@^0.8.4');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.stdout, 'shelljs@^0.8.4\n');
+});
+
 test('cannot inject multiple commands', t => {
   const injection = '; echo semicolon && echo and || echo or';
   const result = shell.cmd('shx', 'echo', `hi${injection}`);
