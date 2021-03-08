@@ -19,17 +19,18 @@ function mkdirSyncRecursive(dir) {
     common.error('dirname() failed: [' + dir + ']');
   }
 
-  // Base dir exists, no recursion necessary
-  if (fs.existsSync(baseDir)) {
-    fs.mkdirSync(dir, parseInt('0777', 8));
-    return;
+  // Base dir does not exist, go recursive
+  if (!fs.existsSync(baseDir)) {
+    mkdirSyncRecursive(baseDir);
   }
 
-  // Base dir does not exist, go recursive
-  mkdirSyncRecursive(baseDir);
-
-  // Base dir created, can create dir
-  fs.mkdirSync(dir, parseInt('0777', 8));
+  try {
+    // Base dir created, can create dir
+    fs.mkdirSync(dir, parseInt('0777', 8));
+  } catch (e) {
+    // swallow error if dir already exists
+    if (e.code !== 'EEXIST' || common.statNoFollowLinks(dir).isFile()) { throw e; }
+  }
 }
 
 //@
