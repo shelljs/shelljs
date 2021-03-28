@@ -165,6 +165,16 @@ test('-p flag: multiple dirs, array syntax', t => {
   t.truthy(fs.existsSync(`${t.context.tmp}/yyyc`));
 });
 
+test('-p flag: subdirectory already exists', t => {
+  t.falsy(fs.existsSync(`${t.context.tmp}/d1`));
+  shell.mkdir('-p', `${t.context.tmp}/d1/d2/d3`);
+  t.truthy(fs.existsSync(`${t.context.tmp}/d1/d2/d3`));
+  const result = shell.mkdir('-p', `${t.context.tmp}/d1/d2`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync(`${t.context.tmp}/d1/d2/d3`));
+});
+
 test('globbed dir', t => {
   let result = shell.mkdir('-p', `${t.context.tmp}/mydir`);
   t.falsy(shell.error());
