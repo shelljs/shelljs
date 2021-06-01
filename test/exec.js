@@ -65,7 +65,7 @@ test('exec exits gracefully if we cannot find the execPath', t => {
 
 test('cannot require exec-child.js', t => {
   t.throws(() => {
-    require('../src/exec-child.js');
+    require('../src/exec-child');
   }, /This file should not be required/);
 });
 
