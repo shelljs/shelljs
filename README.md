@@ -631,7 +631,7 @@ Examples:
 
 ```javascript
 if (test('-d', path)) { /* do something with dir */ };
-if (!test('-f', path)) continue; // skip if it's a regular file
+if (!test('-f', path)) continue; // skip if it's not a regular file
 ```
 
 Evaluates `expression` using the available primaries and returns
