@@ -56,6 +56,24 @@ test("multiple files, one doesn't exist, one doesn't match", t => {
   t.is(result.code, 2);
 });
 
+test('-r option not provided, but directory is present', t => {
+  t.truthy(fs.existsSync('test/resources'));
+  t.truthy('/test/resources/a.txt');
+  const result = shell.grep(/oogabooga/, 'test/resources', 'test/resources/a.txt');
+  t.truthy(shell.error());
+  t.is(result.stderr, 'grep: test/resources Is a directory');
+  t.is(result.code, 2);
+});
+
+test('atleast one directory or file does not exist', t => {
+  t.truthy(fs.existsSync('test/resources'));
+  t.falsy(fs.existsSync('test/resources/random.txt'));
+  const result = shell.grep('-r', /oogabooga/, 'test/resources', 'test/resources/random.txt');
+  t.truthy(shell.error());
+  t.is(result.code, 2);
+  t.is(result.stderr, 'grep: no such file or directory: test/resources/random.txt');
+});
+
 //
 // Valids
 //
@@ -160,6 +178,30 @@ test('-i option', t => {
     'test/resources/grep/case1.js');
   t.falsy(shell.error());
   t.is(result.split('\n').length - 1, 3);
+});
+
+test('one directory provided with -r option', t => {
+  const result = shell.grep('-r', 'test', 'test/resources');
+  t.falsy(shell.error());
+  t.is(result.split('\n').length, 30);
+});
+
+test('multiple directories or files provided', t => {
+  const result = shell.grep('-r', 'test', 'test/resources', 'test/resources/a.txt', 'test/resources/file2.txt', 'test/utils/');
+  t.falsy(shell.error());
+  t.is(result.split('\n').length, 40);
+});
+
+test('directory provided in glob form', t => {
+  const result = shell.grep('-r', 'test', 'test/r*');
+  t.falsy(shell.error());
+  t.is(result.split('\n').length, 67);
+});
+
+test('works with array syntax', t => {
+  const result = shell.grep('-r', 'test', ['test/r*', 'package.json'], 'scripts');
+  t.falsy(shell.error());
+  t.is(result.split('\n').length, 73);
 });
 
 test('the pattern looks like an option', t => {
