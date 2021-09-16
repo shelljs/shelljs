@@ -68,7 +68,7 @@ function _grep(options, regex, files) {
     } else if (options.recursive && fs.statSync(file).isDirectory()) {
       files = files.concat(getFilesInDir(file));
     } else if (!options.recursive && fs.statSync(file).isDirectory()) {
-      common.error(file + ': Is a directory', 2, { silent: true });
+      common.error(file + ' Is a directory', 2, { silent: true });
       return;
     } else if (fs.statSync(file).isFile()) {
       contents = fs.readFileSync(file, 'utf8');

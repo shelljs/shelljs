@@ -183,25 +183,25 @@ test('-i option', t => {
 test('one directory provided with -r option', t => {
   const result = shell.grep('-r', 'test', 'test/resources');
   t.falsy(shell.error());
-  t.is(result.split('\n').length, 30);
+  t.is(result.split('\n').length - 1, 29);
 });
 
 test('multiple directories or files provided', t => {
   const result = shell.grep('-r', 'test', 'test/resources', 'test/resources/a.txt', 'test/resources/file2.txt', 'test/utils/');
   t.falsy(shell.error());
-  t.is(result.split('\n').length, 40);
+  t.is(result.split('\n').length - 1, 39);
 });
 
 test('directory provided in glob form', t => {
   const result = shell.grep('-r', 'test', 'test/r*');
   t.falsy(shell.error());
-  t.is(result.split('\n').length, 67);
+  t.is(result.split('\n').length - 1, 66);
 });
 
 test('works with array syntax', t => {
   const result = shell.grep('-r', 'test', ['test/r*', 'package.json'], 'scripts');
   t.falsy(shell.error());
-  t.is(result.split('\n').length, 73);
+  t.is(result.split('\n').length - 1, 72);
 });
 
 test('the pattern looks like an option', t => {
