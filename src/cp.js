@@ -168,7 +168,7 @@ function cpcheckcycle(sourceDir, srcFile) {
     // Do cycle check. For example:
     //   $ mkdir -p 1/2/3/4
     //   $ cd  1/2/3/4
-    //   $ ln -s ../../3 link
+    //   $ ln -s .. link
     //   $ cd ../../../..
     //   $ cp -RL 1 copy
     var cyclecheck = common.statFollowLinks(srcFile);
