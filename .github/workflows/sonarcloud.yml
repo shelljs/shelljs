@@ -28,7 +28,7 @@ jobs:
         run: npm run lint
 
       - name: Fix lcov.info paths
-        run: sed -i 's@/home/runner/work/shelljs/shelljs/@/github/workspace/coverage/@g' lcov.info
+        run: sed -i 's@/home/runner/work/shelljs/shelljs/@/github/workspace/@g' lcov.info
         working-directory: ./coverage
 
       - name: SonarCloud Scan
