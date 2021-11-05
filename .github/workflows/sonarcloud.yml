@@ -18,6 +18,9 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       
+      - name: Install packages
+        run: npm install --production=false
+        
       - name: Run tests with coverage
         run: npm run test-with-coverage
         
