@@ -1,7 +1,6 @@
 # ShellJS - Unix shell commands for Node.js
 
-[![Travis](https://img.shields.io/travis/shelljs/shelljs/master.svg?style=flat-square&label=unix)](https://travis-ci.org/shelljs/shelljs)
-[![AppVeyor](https://img.shields.io/appveyor/ci/shelljs/shelljs/master.svg?style=flat-square&label=windows)](https://ci.appveyor.com/project/shelljs/shelljs/branch/master)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fshelljs%2Fshelljs%2Fbadge%3Fref%3Dmaster&style=flat-square)](https://actions-badge.atrox.dev/shelljs/shelljs/goto?ref=master)
 [![Codecov](https://img.shields.io/codecov/c/github/shelljs/shelljs/master.svg?style=flat-square&label=coverage)](https://codecov.io/gh/shelljs/shelljs)
 [![npm version](https://img.shields.io/npm/v/shelljs.svg?style=flat-square)](https://www.npmjs.com/package/shelljs)
 [![npm downloads](https://img.shields.io/npm/dm/shelljs.svg?style=flat-square)](https://www.npmjs.com/package/shelljs)
@@ -14,7 +13,7 @@ projects - say goodbye to those gnarly Bash scripts!
 
 ShellJS is proudly tested on every node release since <!-- start minVersion -->`v8`<!-- stop minVersion -->!
 
-The project is [unit-tested](http://travis-ci.org/shelljs/shelljs) and battle-tested in projects like:
+The project is unit-tested and battle-tested in projects like:
 
 + [Firebug](http://getfirebug.com/) - Firefox's infamous debugger
 + [JSHint](http://jshint.com) & [ESLint](http://eslint.org/) - popular JavaScript linters
