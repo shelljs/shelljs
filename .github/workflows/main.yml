@@ -1,0 +1,39 @@
+name: CI
+on:
+  - push
+  - pull_request
+jobs:
+  test:
+    name: Node.js ${{ matrix.node-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
+          - 14
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm run test-with-coverage
+      - run: npm run lint
+      - run: npm run gendocs
+      - run: npm run check-node-support
+      - name: Check for modified files (skip on Windows)
+        run: npm run after-travis
+        if: matrix.os != 'windows-latest'
+      - uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
