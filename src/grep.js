@@ -21,6 +21,7 @@ common.register('grep', _grep, {
 //@ + `-v`: Invert `regex_filter` (only print non-matching lines).
 //@ + `-l`: Print only filenames of matching files.
 //@ + `-i`: Ignore case.
+//@ + `-n`: Print line numbers.
 //@
 //@ Examples:
 //@
