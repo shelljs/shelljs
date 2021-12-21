@@ -162,6 +162,12 @@ test('-i option', t => {
   t.is(result.split('\n').length - 1, 3);
 });
 
+test('-n option', t => {
+  const result = shell.grep('-n', /alpha*beta/, 'test/resources/grep/file');
+  t.falsy(shell.error());
+  t.is(result.toString(), '1:alphaaaaaaabeta\n3:alphbeta\n');
+});
+
 test('the pattern looks like an option', t => {
   const result = shell.grep('--', '-v', 'test/resources/grep/file2');
   t.falsy(shell.error());
