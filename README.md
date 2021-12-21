@@ -371,6 +371,7 @@ Available options:
 + `-v`: Invert `regex_filter` (only print non-matching lines).
 + `-l`: Print only filenames of matching files.
 + `-i`: Ignore case.
++ `-n`: Print line numbers.
 
 Examples:
 
