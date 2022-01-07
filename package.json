@@ -1,6 +1,6 @@
 {
   "name": "shelljs",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "Portable Unix shell commands for Node.js",
   "keywords": [
     "shelljs",
