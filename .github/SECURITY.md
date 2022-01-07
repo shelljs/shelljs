@@ -21,8 +21,9 @@ Please report security vulnerabilities to ntfschr@gmail.com. I should respond
 within a few days. Although it's not strictly required, it helps me out if you
 can include any proof of concept exploit code, suggested fix, etc.
 
-Please **do not** disclose the nature of the suspected vulnerability publicly.
-I'd like a chance to patch the code before the issue is known to the public.
+**Please do not publicly disclose the suspected vulnerability** until I have a
+chance to review your report. I'd like a chance to patch the code before the
+issue is known to the public.
 
 Please **only** use this email for security issues. It's also OK to use the
 email if you're legitimately unsure if this is a security issue (better safe
