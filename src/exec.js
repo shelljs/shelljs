@@ -48,7 +48,24 @@ function execSync(cmd, opts, pipe) {
     stderrFile: stderrFile,
   };
 
-  fs.writeFileSync(paramsFile, JSON.stringify(paramsToSerialize), 'utf8');
+  // Create the files and ensure these are locked down (for read and write) to
+  // the current user. The main concerns here are:
+  //
+  // * If we execute a command which prints sensitive output, then
+  //   stdoutFile/stderrFile must not be readable by other users.
+  // * paramsFile must not be readable by other users, or else they can read it
+  //   to figure out the path for stdoutFile/stderrFile and create these first
+  //   (locked down to their own access), which will crash exec() when it tries
+  //   to write to the files.
+  function writeFileLockedDown(filePath, data) {
+    fs.writeFileSync(filePath, data, {
+      encoding: 'utf8',
+      mode: parseInt('600', 8),
+    });
+  }
+  writeFileLockedDown(stdoutFile, '');
+  writeFileLockedDown(stderrFile, '');
+  writeFileLockedDown(paramsFile, JSON.stringify(paramsToSerialize));
 
   var execArgs = [
     path.join(__dirname, 'exec-child.js'),
@@ -91,6 +108,7 @@ function execSync(cmd, opts, pipe) {
   }
 
   // No biggie if we can't erase the files now -- they're in a temp dir anyway
+  // and we locked down permissions (see the note above).
   try { common.unlinkSync(paramsFile); } catch (e) {}
   try { common.unlinkSync(stderrFile); } catch (e) {}
   try { common.unlinkSync(stdoutFile); } catch (e) {}
