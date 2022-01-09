@@ -363,15 +363,15 @@ The main difference from `ls('-R', path)` is that the resulting file names
 include the base directories (e.g., `lib/resources/file1` instead of just `file1`).
 
 
-### grep([options,] regex_filter, file [, file ...])
-### grep([options,] regex_filter, file_array)
+### grep([options,] regex_filter, file [ ...file, ...directory])
+### grep([options,] regex_filter, file_array,directory_array)
 
 Available options:
 
 + `-v`: Invert `regex_filter` (only print non-matching lines).
 + `-l`: Print only filenames of matching files.
 + `-i`: Ignore case.
-
++ `-r`: recursive search
 Examples:
 
 ```javascript

@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "execa": "^1.0.0",
+    "fs-readdir-recursive": "^1.1.0",
     "glob": "^7.0.0",
     "interpret": "^1.0.0",
     "rechoir": "^0.6.2"
