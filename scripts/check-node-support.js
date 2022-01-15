@@ -9,7 +9,7 @@ var shell = require('..');
 
 // This is the authoritative list of supported node versions.
 var MIN_NODE_VERSION = 8;
-var MAX_NODE_VERSION = 14;
+var MAX_NODE_VERSION = 16;
 
 function checkReadme(minNodeVersion) {
   var start = '<!-- start minVersion -->';
