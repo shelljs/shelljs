@@ -187,6 +187,10 @@ Notable exceptions:
 + In symbolic modes, `a-r` and `-r` are identical.  No consideration is
   given to the `umask`.
 + There is no "quiet" option, since default behavior is to run silent.
++ Windows OS uses a very different permission model than POSIX. `chmod()`
+  does its best on Windows, but there are limits to how file permissions can
+  be set. Note that WSL (Windows subsystem for Linux) **does** follow POSIX,
+  so cross-platform compatibility should not be a concern there.
 
 Returns a [ShellString](#shellstringstr) indicating success or failure.
 
