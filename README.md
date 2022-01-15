@@ -430,10 +430,14 @@ Available options:
 + `-A`: all files (include files beginning with `.`, except for `.` and `..`)
 + `-L`: follow symlinks
 + `-d`: list directories themselves, not their contents
-+ `-l`: list objects representing each file, each with fields containing `ls
-        -l` output fields. See
-        [`fs.Stats`](https://nodejs.org/api/fs.html#fs_class_fs_stats)
-        for more info
++ `-l`: provides more details for each file. Specifically, each file is
+        represented by a structured object with separate fields for file
+        metadata (see
+        [`fs.Stats`](https://nodejs.org/api/fs.html#fs_class_fs_stats)). The
+        return value also overrides `.toString()` to resemble `ls -l`'s
+        output format for human readability, but programmatic usage should
+        depend on the stable object format rather than the `.toString()`
+        representation.
 
 Examples:
 
