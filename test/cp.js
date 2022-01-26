@@ -808,9 +808,11 @@ test('cp -p should preserve mode, ownership, and timestamp (regular file)', t =>
   // Setup: copy to srcFile and modify mode and timestamp
   const srcFile = `${t.context.tmp}/srcFile`;
   shell.cp('test/resources/cp/file1', srcFile);
-  const newModifyTimeMs = 12345;
+  // Make this a round number of seconds, since the underlying system may not
+  // have millisecond precision.
+  const newModifyTimeMs = 12345000;
+  const newAccessTimeMs = 67890000;
   shell.touch({ '-d': new Date(newModifyTimeMs), '-m': true }, srcFile);
-  const newAccessTimeMs = 67890;
   shell.touch({ '-d': new Date(newAccessTimeMs), '-a': true }, srcFile);
   const mode = '444';
   shell.chmod(mode, srcFile);
@@ -844,9 +846,11 @@ test('cp -p should preserve mode, ownership, and timestamp (symlink)', t => {
     shell.cp('test/resources/cp/file1', `${t.context.tmp}/srcFile`);
     const srcLink = `${t.context.tmp}/srcLink`;
     shell.ln('-s', 'srcFile', `${t.context.tmp}/srcLink`);
-    const newModifyTimeMs = 12345;
+    // Make this a round number of seconds, since the underlying system may not
+    // have millisecond precision.
+    const newModifyTimeMs = 12345000;
+    const newAccessTimeMs = 67890000;
     shell.touch({ '-d': new Date(newModifyTimeMs), '-m': true }, srcLink);
-    const newAccessTimeMs = 67890;
     shell.touch({ '-d': new Date(newAccessTimeMs), '-a': true }, srcLink);
     const mode = '444';
     shell.chmod(mode, srcLink);
