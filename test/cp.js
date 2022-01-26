@@ -804,29 +804,72 @@ test('cp -R should be able to copy a readonly src. issue #98; (Non window platfo
   });
 });
 
-test('cp -p should preserve mode, ownership, and timestamp', t => {
-  const result = shell.cp('-p', 'test/resources/cp/file1', `${t.context.tmp}/preservedFile1`);
-  const stat = common.statFollowLinks('test/resources/cp/file1');
+test('cp -p should preserve mode, ownership, and timestamp (regular file)', t => {
+  // Setup: copy to srcFile and modify mode and timestamp
+  const srcFile = `${t.context.tmp}/srcFile`;
+  shell.cp('test/resources/cp/file1', srcFile);
+  const newModifyTimeMs = 12345;
+  shell.touch({ '-d': new Date(newModifyTimeMs), '-m': true }, srcFile);
+  const newAccessTimeMs = 67890;
+  shell.touch({ '-d': new Date(newAccessTimeMs), '-a': true }, srcFile);
+  const mode = '444';
+  shell.chmod(mode, srcFile);
+
+  // Now re-copy with '-p' and verify metadata.
+  const result = shell.cp('-p', srcFile, `${t.context.tmp}/preservedFile1`);
+  const stat = common.statFollowLinks(srcFile);
   const statOfResult = common.statFollowLinks(`${t.context.tmp}/preservedFile1`);
 
   t.is(result.code, 0);
-  t.is(stat.mtime.getTime(), statOfResult.mtime.getTime());
-  t.is(stat.atime.getTime(), statOfResult.atime.getTime());
-  t.is(stat.mode, statOfResult.mode);
+
+  // Original file should be unchanged:
+  t.is(stat.mtime.getTime(), newModifyTimeMs);
+  // TODO(nfischer): 'cp -p' incorrectly modifies atime of the original file.
+  // t.is(stat.atime.getTime(), newAccessTimeMs);
+  t.is(stat.mode.toString(8), '100' + mode);
+
+  // New file should keep same attributes
+  t.is(statOfResult.mtime.getTime(), newModifyTimeMs);
+  t.is(statOfResult.atime.getTime(), newAccessTimeMs);
+  t.is(statOfResult.mode.toString(8), '100' + mode);
+
   t.is(stat.uid, statOfResult.uid);
   t.is(stat.gid, statOfResult.gid);
 });
 
-test('cp -p should preserve mode, ownership, and timestamp of symlink', t => {
-  const result = shell.cp('-p', 'test/resources/link', `${t.context.tmp}/copiedLink`);
-  utils.sleep(1000);
-  const stat = common.statFollowLinks('test/resources/link');
-  const statOfResult = common.statFollowLinks(`${t.context.tmp}/copiedLink`);
+test('cp -p should preserve mode, ownership, and timestamp (symlink)', t => {
+  // Skip in Windows because symlinks require elevated permissions.
+  utils.skipOnWin(t, () => {
+    // Setup: copy to srcFile, create srcLink, and modify mode and timestamp
+    shell.cp('test/resources/cp/file1', `${t.context.tmp}/srcFile`);
+    const srcLink = `${t.context.tmp}/srcLink`;
+    shell.ln('-s', 'srcFile', `${t.context.tmp}/srcLink`);
+    const newModifyTimeMs = 12345;
+    shell.touch({ '-d': new Date(newModifyTimeMs), '-m': true }, srcLink);
+    const newAccessTimeMs = 67890;
+    shell.touch({ '-d': new Date(newAccessTimeMs), '-a': true }, srcLink);
+    const mode = '444';
+    shell.chmod(mode, srcLink);
 
-  t.is(result.code, 0);
-  t.is(stat.mtime.getTime(), statOfResult.mtime.getTime());
-  t.is(stat.atime.getTime(), statOfResult.atime.getTime());
-  t.is(stat.mode, statOfResult.mode);
-  t.is(stat.uid, statOfResult.uid);
-  t.is(stat.rid, statOfResult.rid);
+    // Now re-copy with '-p' and verify metadata.
+    const result = shell.cp('-p', srcLink, `${t.context.tmp}/preservedLink`);
+    const stat = common.statFollowLinks(srcLink);
+    const statOfResult = common.statFollowLinks(`${t.context.tmp}/preservedLink`);
+
+    t.is(result.code, 0);
+
+    // Original file should be unchanged:
+    t.is(stat.mtime.getTime(), newModifyTimeMs);
+    // TODO(nfischer): 'cp -p' appears to modify atime of the original file.
+    // t.is(stat.atime.getTime(), newAccessTimeMs);
+    t.is(stat.mode.toString(8), '100' + mode);
+
+    // New file should keep same attributes
+    t.is(statOfResult.mtime.getTime(), newModifyTimeMs);
+    t.is(statOfResult.atime.getTime(), newAccessTimeMs);
+    t.is(statOfResult.mode.toString(8), '100' + mode);
+
+    t.is(stat.uid, statOfResult.uid);
+    t.is(stat.gid, statOfResult.gid);
+  });
 });
