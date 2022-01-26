@@ -445,21 +445,22 @@ test('-R implies -P', t => {
 
 test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
   // Setup code
-  const TWO_DAYS_IN_MS = 2 * 24 * 60 * 60 * 1000;
   const dir = `${t.context.tmp}/cp-Ru`;
-  const sourceDir = `${dir}/old`;
+  const sourceDir = `${dir}/original`;
   const sourceFile = `${sourceDir}/file`;
   const destDir = `${dir}/new`;
-  const destFile = `${destDir}/file`;
-  [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
+  const nestedDestDir = `${dir}/new/original`;
+  const destFile = `${nestedDestDir}/file`;
+  [sourceDir, destDir, nestedDestDir].forEach(d => shell.mkdir('-p', d));
   shell.ShellString('Source File Contents\n').to(sourceFile);
   shell.ShellString('Destination File Contents\n').to(destFile);
+  const oldModifyTimeMs = 12345000;
+  const newModifyTimeMs = 67890000;
   // End setup
-  // Get the old mtime for dest
-  const oldTime = fs.statSync(destFile).mtimeMs;
-  // Set the source file to be older than the destination file
-  shell.touch('-m', oldTime - TWO_DAYS_IN_MS, sourceFile);
-  // Now, copy the old dir to the new one
+
+  // Set the source file to be OLDER than the destination file
+  shell.touch({ '-m': true, '-d': new Date(oldModifyTimeMs) }, sourceFile);
+  shell.touch({ '-m': true, '-d': new Date(newModifyTimeMs) }, destFile);
   shell.cp('-Ru', sourceDir, destDir);
   // Check that dest has not been updated
   t.is(shell.cat(destFile).stdout, 'Destination File Contents\n');
@@ -467,24 +468,25 @@ test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
 
 test('-Ru respects the -u flag recursively (update older file)', t => {
   // Setup code
-  const TWO_DAYS_IN_MS = 2 * 24 * 60 * 60 * 1000;
   const dir = `${t.context.tmp}/cp-Ru`;
-  const sourceDir = `${dir}/old`;
+  const sourceDir = `${dir}/original`;
   const sourceFile = `${sourceDir}/file`;
   const destDir = `${dir}/new`;
-  const destFile = `${destDir}/file`;
-  [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
+  const nestedDestDir = `${dir}/new/original`;
+  const destFile = `${nestedDestDir}/file`;
+  [sourceDir, destDir, nestedDestDir].forEach(d => shell.mkdir('-p', d));
   shell.ShellString('Source File Contents\n').to(sourceFile);
   shell.ShellString('Destination File Contents\n').to(destFile);
+  const oldModifyTimeMs = 12345000;
+  const newModifyTimeMs = 67890000;
   // End setup
-  // Get the old mtime for dest
-  const oldTime = fs.statSync(destFile).mtimeMs;
-  // Set the destination file to be older than the source file
-  shell.touch('-m', oldTime + TWO_DAYS_IN_MS, sourceFile);
-  // Now, copy the old dir to the new one
+
+  // Set the source file to be NEWER than the destination file
+  shell.touch({ '-m': true, '-d': new Date(newModifyTimeMs) }, sourceFile);
+  shell.touch({ '-m': true, '-d': new Date(oldModifyTimeMs) }, destFile);
   shell.cp('-Ru', sourceDir, destDir);
-  // Check that dest has been updated
-  t.is(shell.cat(sourceFile).stdout, 'Source File Contents\n');
+  // Check that dest has been overwritten
+  t.is(shell.cat(destFile).stdout, 'Source File Contents\n');
 });
 
 test('using -P explicitly works', t => {
