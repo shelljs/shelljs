@@ -838,6 +838,48 @@ test('cp -p should preserve mode, ownership, and timestamp (regular file)', t =>
   t.is(stat.gid, statOfResult.gid);
 });
 
+test('cp -p should preserve mode, ownership, and timestamp (directory)', t => {
+  // Setup: copy to srcFile and modify mode and timestamp
+  const srcDir = `${t.context.tmp}/srcDir`;
+  const srcFile = `${srcDir}/srcFile`;
+  shell.mkdir(srcDir);
+  shell.cp('test/resources/cp/file1', srcFile);
+  // Make this a round number of seconds, since the underlying system may not
+  // have millisecond precision.
+  const newModifyTimeMs = 12345000;
+  const newAccessTimeMs = 67890000;
+  shell.touch({ '-d': new Date(newModifyTimeMs), '-m': true }, srcFile);
+  shell.touch({ '-d': new Date(newAccessTimeMs), '-a': true }, srcFile);
+  fs.utimesSync(srcDir, new Date(newAccessTimeMs), new Date(newModifyTimeMs));
+  const mode = '444';
+  shell.chmod(mode, srcFile);
+
+  // Now re-copy (the whole dir) with '-p' and verify metadata of file contents.
+  const result = shell.cp('-pr', srcDir, `${t.context.tmp}/preservedDir`);
+  const stat = common.statFollowLinks(srcFile);
+  const statDir = common.statFollowLinks(srcDir);
+  const statOfResult = common.statFollowLinks(`${t.context.tmp}/preservedDir/srcFile`);
+  const statOfResultDir = common.statFollowLinks(`${t.context.tmp}/preservedDir`);
+
+  t.is(result.code, 0);
+
+  // Both original file and original dir should be unchanged:
+  t.is(statDir.mtime.getTime(), newModifyTimeMs);
+  t.is(stat.mtime.getTime(), newModifyTimeMs);
+  // cp appears to update the atime, but only of the srcFile & srcDir
+  t.is(stat.mode.toString(8), '100' + mode);
+
+  // Both new file and new dir should keep same attributes
+  t.is(statOfResultDir.mtime.getTime(), newModifyTimeMs);
+  t.is(statOfResultDir.atime.getTime(), newAccessTimeMs);
+  t.is(statOfResult.mtime.getTime(), newModifyTimeMs);
+  t.is(statOfResult.atime.getTime(), newAccessTimeMs);
+  t.is(statOfResult.mode.toString(8), '100' + mode);
+
+  t.is(stat.uid, statOfResult.uid);
+  t.is(stat.gid, statOfResult.gid);
+});
+
 test('cp -p should preserve mode, ownership, and timestamp (symlink)', t => {
   // Skip in Windows because symlinks require elevated permissions.
   utils.skipOnWin(t, () => {

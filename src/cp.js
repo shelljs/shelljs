@@ -103,8 +103,9 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
 
   var isWindows = process.platform === 'win32';
 
-  // Create the directory where all our junk is moving to; read the mode of the
-  // source directory and mirror it
+  // Create the directory where all our junk is moving to; read the mode/etc. of
+  // the source directory (we'll set this on the destDir at the end).
+  var checkDir = common.statFollowLinks(sourceDir);
   try {
     fs.mkdirSync(destDir);
   } catch (e) {
@@ -157,7 +158,10 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
 
   // finally change the mode for the newly created directory (otherwise, we
   // couldn't add files to a read-only directory).
-  var checkDir = common.statFollowLinks(sourceDir);
+  // var checkDir = common.statFollowLinks(sourceDir);
+  if (opts.preserve) {
+    fs.utimesSync(destDir, checkDir.atime, checkDir.mtime);
+  }
   fs.chmodSync(destDir, checkDir.mode);
 } // cpdirSyncRecursive
 
@@ -266,7 +270,7 @@ function _cp(options, sources, dest) {
 
         try {
           common.statFollowLinks(path.dirname(dest));
-          cpdirSyncRecursive(src, newDest, 0, { no_force: options.no_force, followsymlink: options.followsymlink, update: options.update });
+          cpdirSyncRecursive(src, newDest, 0, options);
         } catch (e) {
           /* istanbul ignore next */
           common.error("cannot create directory '" + dest + "': No such file or directory");
