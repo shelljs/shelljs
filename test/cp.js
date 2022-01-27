@@ -826,8 +826,7 @@ test('cp -p should preserve mode, ownership, and timestamp (regular file)', t =>
 
   // Original file should be unchanged:
   t.is(stat.mtime.getTime(), newModifyTimeMs);
-  // TODO(nfischer): 'cp -p' incorrectly modifies atime of the original file.
-  // t.is(stat.atime.getTime(), newAccessTimeMs);
+  // cp appears to update the atime, but only of the srcFile
   t.is(stat.mode.toString(8), '100' + mode);
 
   // New file should keep same attributes
@@ -864,8 +863,7 @@ test('cp -p should preserve mode, ownership, and timestamp (symlink)', t => {
 
     // Original file should be unchanged:
     t.is(stat.mtime.getTime(), newModifyTimeMs);
-    // TODO(nfischer): 'cp -p' appears to modify atime of the original file.
-    // t.is(stat.atime.getTime(), newAccessTimeMs);
+    // cp appears to update the atime, but only of the srcFile
     t.is(stat.mode.toString(8), '100' + mode);
 
     // New file should keep same attributes
