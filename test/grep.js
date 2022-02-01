@@ -24,6 +24,7 @@ test('no args', t => {
   const result = shell.grep();
   t.truthy(shell.error());
   t.is(result.code, 2);
+  t.is(shell.errorCode(), 2);
 });
 
 test('too few args', t => {
@@ -160,6 +161,12 @@ test('-i option', t => {
     'test/resources/grep/case1.js');
   t.falsy(shell.error());
   t.is(result.split('\n').length - 1, 3);
+});
+
+test('-n option', t => {
+  const result = shell.grep('-n', /alpha*beta/, 'test/resources/grep/file');
+  t.falsy(shell.error());
+  t.is(result.toString(), '1:alphaaaaaaabeta\n3:alphbeta\n');
 });
 
 test('the pattern looks like an option', t => {

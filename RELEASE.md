@@ -10,5 +10,3 @@
   - `$ npm run changelog`
   - Manually verify that the changelog makes sense
   - `$ git push`
-4. Generate the documentup website by visiting
-  http://documentup.com/shelljs/shelljs/__recompile in your browser

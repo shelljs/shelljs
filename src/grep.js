@@ -8,6 +8,7 @@ common.register('grep', _grep, {
     'v': 'inverse',
     'l': 'nameOnly',
     'i': 'ignoreCase',
+    'n': 'lineNumber',
   },
 });
 
@@ -20,6 +21,7 @@ common.register('grep', _grep, {
 //@ + `-v`: Invert `regex_filter` (only print non-matching lines).
 //@ + `-l`: Print only filenames of matching files.
 //@ + `-i`: Ignore case.
+//@ + `-n`: Print line numbers.
 //@
 //@ Examples:
 //@
@@ -60,10 +62,14 @@ function _grep(options, regex, files) {
       }
     } else {
       var lines = contents.split('\n');
-      lines.forEach(function (line) {
+      lines.forEach(function (line, index) {
         var matched = line.match(regex);
         if ((options.inverse && !matched) || (!options.inverse && matched)) {
-          grep.push(line);
+          var result = line;
+          if (options.lineNumber) {
+            result = '' + (index + 1) + ':' + line;
+          }
+          grep.push(result);
         }
       });
     }

@@ -445,21 +445,22 @@ test('-R implies -P', t => {
 
 test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
   // Setup code
-  const TWO_DAYS_IN_MS = 2 * 24 * 60 * 60 * 1000;
   const dir = `${t.context.tmp}/cp-Ru`;
-  const sourceDir = `${dir}/old`;
+  const sourceDir = `${dir}/original`;
   const sourceFile = `${sourceDir}/file`;
   const destDir = `${dir}/new`;
-  const destFile = `${destDir}/file`;
-  [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
+  const nestedDestDir = `${dir}/new/original`;
+  const destFile = `${nestedDestDir}/file`;
+  [sourceDir, destDir, nestedDestDir].forEach(d => shell.mkdir('-p', d));
   shell.ShellString('Source File Contents\n').to(sourceFile);
   shell.ShellString('Destination File Contents\n').to(destFile);
+  const oldModifyTimeMs = 12345000;
+  const newModifyTimeMs = 67890000;
   // End setup
-  // Get the old mtime for dest
-  const oldTime = fs.statSync(destFile).mtimeMs;
-  // Set the source file to be older than the destination file
-  shell.touch('-m', oldTime - TWO_DAYS_IN_MS, sourceFile);
-  // Now, copy the old dir to the new one
+
+  // Set the source file to be OLDER than the destination file
+  shell.touch({ '-m': true, '-d': new Date(oldModifyTimeMs) }, sourceFile);
+  shell.touch({ '-m': true, '-d': new Date(newModifyTimeMs) }, destFile);
   shell.cp('-Ru', sourceDir, destDir);
   // Check that dest has not been updated
   t.is(shell.cat(destFile).stdout, 'Destination File Contents\n');
@@ -467,24 +468,25 @@ test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
 
 test('-Ru respects the -u flag recursively (update older file)', t => {
   // Setup code
-  const TWO_DAYS_IN_MS = 2 * 24 * 60 * 60 * 1000;
   const dir = `${t.context.tmp}/cp-Ru`;
-  const sourceDir = `${dir}/old`;
+  const sourceDir = `${dir}/original`;
   const sourceFile = `${sourceDir}/file`;
   const destDir = `${dir}/new`;
-  const destFile = `${destDir}/file`;
-  [sourceDir, destDir].forEach(d => shell.mkdir('-p', d));
+  const nestedDestDir = `${dir}/new/original`;
+  const destFile = `${nestedDestDir}/file`;
+  [sourceDir, destDir, nestedDestDir].forEach(d => shell.mkdir('-p', d));
   shell.ShellString('Source File Contents\n').to(sourceFile);
   shell.ShellString('Destination File Contents\n').to(destFile);
+  const oldModifyTimeMs = 12345000;
+  const newModifyTimeMs = 67890000;
   // End setup
-  // Get the old mtime for dest
-  const oldTime = fs.statSync(destFile).mtimeMs;
-  // Set the destination file to be older than the source file
-  shell.touch('-m', oldTime + TWO_DAYS_IN_MS, sourceFile);
-  // Now, copy the old dir to the new one
+
+  // Set the source file to be NEWER than the destination file
+  shell.touch({ '-m': true, '-d': new Date(newModifyTimeMs) }, sourceFile);
+  shell.touch({ '-m': true, '-d': new Date(oldModifyTimeMs) }, destFile);
   shell.cp('-Ru', sourceDir, destDir);
-  // Check that dest has been updated
-  t.is(shell.cat(sourceFile).stdout, 'Source File Contents\n');
+  // Check that dest has been overwritten
+  t.is(shell.cat(destFile).stdout, 'Source File Contents\n');
 });
 
 test('using -P explicitly works', t => {
@@ -795,5 +797,119 @@ test('cp -R should be able to copy a readonly src. issue #98; (Non window platfo
     t.is(fs.statSync(`${t.context.tmp}/cp_cp/a`).mode & parseInt('777', 8), parseInt('555', 8));
 
     shell.chmod('-R', '755', t.context.tmp);
+  });
+});
+
+test('cp -p should preserve mode, ownership, and timestamp (regular file)', t => {
+  // Setup: copy to srcFile and modify mode and timestamp
+  const srcFile = `${t.context.tmp}/srcFile`;
+  shell.cp('test/resources/cp/file1', srcFile);
+  // Make this a round number of seconds, since the underlying system may not
+  // have millisecond precision.
+  const newModifyTimeMs = 12345000;
+  const newAccessTimeMs = 67890000;
+  shell.touch({ '-d': new Date(newModifyTimeMs), '-m': true }, srcFile);
+  shell.touch({ '-d': new Date(newAccessTimeMs), '-a': true }, srcFile);
+  const mode = '444';
+  shell.chmod(mode, srcFile);
+
+  // Now re-copy with '-p' and verify metadata.
+  const result = shell.cp('-p', srcFile, `${t.context.tmp}/preservedFile1`);
+  const stat = common.statFollowLinks(srcFile);
+  const statOfResult = common.statFollowLinks(`${t.context.tmp}/preservedFile1`);
+
+  t.is(result.code, 0);
+
+  // Original file should be unchanged:
+  t.is(stat.mtime.getTime(), newModifyTimeMs);
+  // cp appears to update the atime, but only of the srcFile
+  t.is(stat.mode.toString(8), '100' + mode);
+
+  // New file should keep same attributes
+  t.is(statOfResult.mtime.getTime(), newModifyTimeMs);
+  t.is(statOfResult.atime.getTime(), newAccessTimeMs);
+  t.is(statOfResult.mode.toString(8), '100' + mode);
+
+  t.is(stat.uid, statOfResult.uid);
+  t.is(stat.gid, statOfResult.gid);
+});
+
+test('cp -p should preserve mode, ownership, and timestamp (directory)', t => {
+  // Setup: copy to srcFile and modify mode and timestamp
+  const srcDir = `${t.context.tmp}/srcDir`;
+  const srcFile = `${srcDir}/srcFile`;
+  shell.mkdir(srcDir);
+  shell.cp('test/resources/cp/file1', srcFile);
+  // Make this a round number of seconds, since the underlying system may not
+  // have millisecond precision.
+  const newModifyTimeMs = 12345000;
+  const newAccessTimeMs = 67890000;
+  shell.touch({ '-d': new Date(newModifyTimeMs), '-m': true }, srcFile);
+  shell.touch({ '-d': new Date(newAccessTimeMs), '-a': true }, srcFile);
+  fs.utimesSync(srcDir, new Date(newAccessTimeMs), new Date(newModifyTimeMs));
+  const mode = '444';
+  shell.chmod(mode, srcFile);
+
+  // Now re-copy (the whole dir) with '-p' and verify metadata of file contents.
+  const result = shell.cp('-pr', srcDir, `${t.context.tmp}/preservedDir`);
+  const stat = common.statFollowLinks(srcFile);
+  const statDir = common.statFollowLinks(srcDir);
+  const statOfResult = common.statFollowLinks(`${t.context.tmp}/preservedDir/srcFile`);
+  const statOfResultDir = common.statFollowLinks(`${t.context.tmp}/preservedDir`);
+
+  t.is(result.code, 0);
+
+  // Both original file and original dir should be unchanged:
+  t.is(statDir.mtime.getTime(), newModifyTimeMs);
+  t.is(stat.mtime.getTime(), newModifyTimeMs);
+  // cp appears to update the atime, but only of the srcFile & srcDir
+  t.is(stat.mode.toString(8), '100' + mode);
+
+  // Both new file and new dir should keep same attributes
+  t.is(statOfResultDir.mtime.getTime(), newModifyTimeMs);
+  t.is(statOfResultDir.atime.getTime(), newAccessTimeMs);
+  t.is(statOfResult.mtime.getTime(), newModifyTimeMs);
+  t.is(statOfResult.atime.getTime(), newAccessTimeMs);
+  t.is(statOfResult.mode.toString(8), '100' + mode);
+
+  t.is(stat.uid, statOfResult.uid);
+  t.is(stat.gid, statOfResult.gid);
+});
+
+test('cp -p should preserve mode, ownership, and timestamp (symlink)', t => {
+  // Skip in Windows because symlinks require elevated permissions.
+  utils.skipOnWin(t, () => {
+    // Setup: copy to srcFile, create srcLink, and modify mode and timestamp
+    shell.cp('test/resources/cp/file1', `${t.context.tmp}/srcFile`);
+    const srcLink = `${t.context.tmp}/srcLink`;
+    shell.ln('-s', 'srcFile', `${t.context.tmp}/srcLink`);
+    // Make this a round number of seconds, since the underlying system may not
+    // have millisecond precision.
+    const newModifyTimeMs = 12345000;
+    const newAccessTimeMs = 67890000;
+    shell.touch({ '-d': new Date(newModifyTimeMs), '-m': true }, srcLink);
+    shell.touch({ '-d': new Date(newAccessTimeMs), '-a': true }, srcLink);
+    const mode = '444';
+    shell.chmod(mode, srcLink);
+
+    // Now re-copy with '-p' and verify metadata.
+    const result = shell.cp('-p', srcLink, `${t.context.tmp}/preservedLink`);
+    const stat = common.statFollowLinks(srcLink);
+    const statOfResult = common.statFollowLinks(`${t.context.tmp}/preservedLink`);
+
+    t.is(result.code, 0);
+
+    // Original file should be unchanged:
+    t.is(stat.mtime.getTime(), newModifyTimeMs);
+    // cp appears to update the atime, but only of the srcFile
+    t.is(stat.mode.toString(8), '100' + mode);
+
+    // New file should keep same attributes
+    t.is(statOfResult.mtime.getTime(), newModifyTimeMs);
+    t.is(statOfResult.atime.getTime(), newAccessTimeMs);
+    t.is(statOfResult.mode.toString(8), '100' + mode);
+
+    t.is(stat.uid, statOfResult.uid);
+    t.is(stat.gid, statOfResult.gid);
   });
 });
