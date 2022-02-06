@@ -631,7 +631,7 @@ test('Test with cycle symlink', t => {
       shell.cd(`${t.context.tmp}/sub/sub1/sub2/sub3`);
       shell.ln('-s', '..', 'link');
       shell.cd('../../../../');
-      const result = shell.cp('-rL', 'sub', 'new');
+      const result = shell.cp('-rL', 'sub', 'newsub');
       t.falsy(shell.error());
       t.is(result.code, 0);
       t.falsy(result.stderr);
