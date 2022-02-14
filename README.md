@@ -120,6 +120,13 @@ var shell = require('shelljs');
 shell.echo('hello world');
 ```
 
+Alternatively, we also support importing as a module with:
+
+```javascript
+import shell from 'shelljs';
+shell.echo('hello world');
+```
+
 <!-- DO NOT MODIFY BEYOND THIS POINT - IT'S AUTOMATICALLY GENERATED -->
 
 
