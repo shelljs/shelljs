@@ -129,14 +129,14 @@ test('accepts -d flag', t => {
   t.is(common.statFollowLinks(testFile).atime.getTime(), date.getTime());
 });
 
-test('accepts long option (date)', t => {
+test('accepts long option (--date)', t => {
   const testFile = tmpFile(t);
-  const date = new Date('December 17, 1995 03:24:00');
-  const result = shell.touch({ date }, testFile);
+  const someDate = new Date('December 17, 1995 03:24:00');
+  const result = shell.touch({ date: someDate }, testFile);
   t.is(result.code, 0);
   // Compare getTime(), because Date can't be compared with triple-equals.
-  t.is(common.statFollowLinks(testFile).mtime.getTime(), date.getTime());
-  t.is(common.statFollowLinks(testFile).atime.getTime(), date.getTime());
+  t.is(common.statFollowLinks(testFile).mtime.getTime(), someDate.getTime());
+  t.is(common.statFollowLinks(testFile).atime.getTime(), someDate.getTime());
 });
 
 test('sets mtime and atime by default', t => {
