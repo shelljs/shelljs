@@ -38,7 +38,7 @@ test('set -e', t => {
   const result = shell.exec(JSON.stringify(shell.config.execPath) + ` -e "require('./global'); set('-e'); ls('file_doesnt_exist'); echo(1234);"`);
   t.is(result.code, uncaughtErrorExitCode);
   t.is(result.stdout, '');
-  t.truthy(result.stderr.indexOf('Error: ls: no such file or directory: file_doesnt_exist') >= 0);
+  t.truthy(result.stderr.includes('Error: ls: no such file or directory: file_doesnt_exist'));
 });
 
 test('set -v', t => {
@@ -55,9 +55,9 @@ test('set -ev', t => {
   const result = shell.exec(JSON.stringify(shell.config.execPath) + ` -e "require('./global'); set('-ev'); ls('file_doesnt_exist'); echo(1234);"`);
   t.is(result.code, uncaughtErrorExitCode);
   t.is(result.stdout, '');
-  t.truthy(result.stderr.indexOf('Error: ls: no such file or directory: file_doesnt_exist') >= 0);
-  t.truthy(result.stderr.indexOf('ls file_doesnt_exist\n') >= 0);
-  t.is(result.stderr.indexOf('echo 1234\n'), -1);
+  t.truthy(result.stderr.includes('Error: ls: no such file or directory: file_doesnt_exist'));
+  t.truthy(result.stderr.includes('ls file_doesnt_exist\n'));
+  t.falsy(result.stderr.includes('echo 1234\n'));
 });
 
 test('set -e, set +e', t => {

@@ -28,8 +28,8 @@ test('current path', t => {
   const result = shell.find('.');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.indexOf('.hidden') > -1);
-  t.truthy(result.indexOf('dir1/dir11/a_dir11') > -1);
+  t.truthy(result.includes('.hidden'));
+  t.truthy(result.includes('dir1/dir11/a_dir11'));
   t.is(result.length, 12);
   shell.cd('../..');
 });
@@ -38,8 +38,8 @@ test('simple path', t => {
   const result = shell.find('test/resources/find');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.indexOf('test/resources/find/.hidden') > -1);
-  t.truthy(result.indexOf('test/resources/find/dir1/dir11/a_dir11') > -1);
+  t.truthy(result.includes('test/resources/find/.hidden'));
+  t.truthy(result.includes('test/resources/find/dir1/dir11/a_dir11'));
   t.is(result.length, 12);
 });
 
@@ -47,8 +47,8 @@ test('multiple paths - comma', t => {
   const result = shell.find('test/resources/find/dir1', 'test/resources/find/dir2');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.indexOf('test/resources/find/dir1/dir11/a_dir11') > -1);
-  t.truthy(result.indexOf('test/resources/find/dir2/a_dir1') > -1);
+  t.truthy(result.includes('test/resources/find/dir1/dir11/a_dir11'));
+  t.truthy(result.includes('test/resources/find/dir2/a_dir1'));
   t.is(result.length, 6);
 });
 
@@ -56,8 +56,8 @@ test('multiple paths - array', t => {
   const result = shell.find(['test/resources/find/dir1', 'test/resources/find/dir2']);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.indexOf('test/resources/find/dir1/dir11/a_dir11') > -1);
-  t.truthy(result.indexOf('test/resources/find/dir2/a_dir1') > -1);
+  t.truthy(result.includes('test/resources/find/dir1/dir11/a_dir11'));
+  t.truthy(result.includes('test/resources/find/dir2/a_dir1'));
   t.is(result.length, 6);
 });
 
@@ -71,6 +71,6 @@ test('-L flag, folder is symlinked', t => {
   const result = shell.find('-L', 'test/resources/find');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.truthy(result.indexOf('test/resources/find/dir2_link/a_dir1') > -1);
+  t.truthy(result.includes('test/resources/find/dir2_link/a_dir1'));
   t.is(result.length, 13);
 });

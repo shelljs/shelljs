@@ -77,8 +77,8 @@ test('handles globs correctly', t => {
   const result = shell.touch(`${t.context.tmp}/file*`);
   t.is(result.code, 0);
   const files = shell.ls(`${t.context.tmp}/file*`);
-  t.truthy(files.indexOf(`${t.context.tmp}/file.txt`) > -1);
-  t.truthy(files.indexOf(`${t.context.tmp}/file.js`) > -1);
+  t.truthy(files.includes(`${t.context.tmp}/file.txt`));
+  t.truthy(files.includes(`${t.context.tmp}/file.js`));
   t.is(files.length, 2);
 });
 
