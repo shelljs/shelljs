@@ -103,8 +103,8 @@ test('config.globOptions respects dot', t => {
   shell.config.globOptions = { dot: true };
   const result = common.expand(['test/resources/ls/*']);
   t.is(result.length, 8);
-  t.truthy(result.indexOf('test/resources/ls/.hidden_dir') > -1);
-  t.truthy(result.indexOf('test/resources/ls/.hidden_file') > -1);
+  t.truthy(result.includes('test/resources/ls/.hidden_dir'));
+  t.truthy(result.includes('test/resources/ls/.hidden_file'));
 });
 
 test('config.globOptions respects ignore', t => {
@@ -119,7 +119,7 @@ test('config.globOptions respects ignore', t => {
   ];
   t.deepEqual(result, expected);
   // Does not include the result that we chose to ignore
-  t.truthy(result.indexOf('test/resources/external') < 0);
+  t.falsy(result.includes('test/resources/external'));
 });
 
 test('config.globOptions respects absolute', t => {
@@ -153,9 +153,9 @@ test('config.globOptions respects nodir', t => {
   ];
   t.deepEqual(result, expected);
   // Does not include the directories.
-  t.truthy(result.indexOf('test/resources/cat') < 0);
-  t.truthy(result.indexOf('test/resources/head') < 0);
-  t.truthy(result.indexOf('test/resources/external') < 0);
+  t.falsy(result.includes('test/resources/cat'));
+  t.falsy(result.includes('test/resources/head'));
+  t.falsy(result.includes('test/resources/external'));
 });
 
 test('config.globOptions respects mark', t => {

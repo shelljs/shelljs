@@ -90,7 +90,7 @@ test('None executable files does not appear in the result list', t => {
   t.truthy(resultForWhichA);
   t.truthy(resultForWhichA.length);
   t.not(resultForWhich.toString(), matchingFile);
-  t.is(resultForWhichA.indexOf(matchingFile), -1);
+  t.falsy(resultForWhichA.includes(matchingFile));
 
   process.env.PATH = pathEnv;
 });

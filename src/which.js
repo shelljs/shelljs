@@ -64,7 +64,7 @@ function _which(options, cmd) {
   var queryMatches = [];
 
   // No relative/absolute paths provided?
-  if (cmd.indexOf('/') === -1) {
+  if (!cmd.includes('/')) {
     // Assume that there are no extensions to append to queries (this is the
     // case for unix)
     var pathExtArray = [''];
@@ -87,7 +87,7 @@ function _which(options, cmd) {
       }
 
       var match = attempt.match(/\.[^<>:"/|?*.]+$/);
-      if (match && pathExtArray.indexOf(match[0]) >= 0) { // this is Windows-only
+      if (match && pathExtArray.includes(match[0])) { // this is Windows-only
         // The user typed a query with the file extension, like
         // `which('node.exe')`
         if (checkPath(attempt)) {
