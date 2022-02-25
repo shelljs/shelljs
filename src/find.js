@@ -2,7 +2,11 @@ var path = require('path');
 var common = require('./common');
 var _ls = require('./ls');
 
-common.register('find', _find, {});
+common.register('find', _find, {
+  cmdOptions: {
+    'L': 'link',
+  },
+});
 
 //@
 //@ ### find(path [, path ...])
@@ -51,7 +55,7 @@ function _find(options, paths) {
     pushFile(file);
 
     if (stat.isDirectory()) {
-      _ls({ recursive: true, all: true }, file).forEach(function (subfile) {
+      _ls({ recursive: true, all: true, link: options.link }, file).forEach(function (subfile) {
         pushFile(path.join(file, subfile));
       });
     }
