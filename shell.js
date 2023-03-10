@@ -31,7 +31,7 @@ require('./src/dirs');
 require('./src/echo');
 require('./src/error');
 require('./src/errorCode');
-require('./src/exec-child');
+// require('./src/exec-child'); excluded since it is for commandline only
 require('./src/exec');
 require('./src/find');
 require('./src/grep');
@@ -53,7 +53,7 @@ require('./src/test');
 require('./src/to');
 require('./src/toEnd');
 require('./src/touch');
-require('./src/unique');
+require('./src/uniq');
 require('./src/which');
 
 //@
