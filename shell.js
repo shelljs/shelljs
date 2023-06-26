@@ -29,7 +29,20 @@ require('./commands').forEach(function (command) {
 //@ ### exit(code)
 //@
 //@ Exits the current process with the given exit `code`.
-exports.exit = process.exit;
+exports.exit = function exit(code) {
+  if (code) {
+    common.error('exit', {
+      continue: true,
+      code: code,
+      prefix: '',
+      silent: true,
+      fatal: false,
+    });
+    process.exit(code);
+  } else {
+    process.exit();
+  }
+};
 
 //@include ./src/error.js
 exports.error = require('./src/error');
