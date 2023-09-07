@@ -12,7 +12,7 @@ patch releases on top of whatever was most recently shipped.
 
 If breaking changes have already landed on the main development branch, I may
 apply the patch on the relevant release branch (ex.
-[`0.8-release`](https://github.com/shelljs/shelljs/commits/0.8-release) and
+[`0.8-release`](https://github.com/shelljs/shelljs/commits/0.8-release)) and
 create a new release from there.
 
 ## Reporting a Vulnerability
