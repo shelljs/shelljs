@@ -23,6 +23,10 @@
   "license": "BSD-3-Clause",
   "homepage": "http://github.com/shelljs/shelljs",
   "main": "./shell.js",
+  "exports": {
+    ".": "./shell.js",
+    "./make": "./make.js"
+  },
   "files": [
     "commands.js",
     "global.js",
