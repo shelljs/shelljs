@@ -257,7 +257,7 @@ Save the current directory on the top of the directory stack and then `cd` to `d
 Available options:
 
 + `-n`: Suppress the normal directory change when removing directories from the stack, so that only the stack is manipulated.
-+ `-q`: Supresses output to the console.
++ `-q`: Suppresses output to the console.
 
 Arguments:
 
@@ -282,7 +282,7 @@ When no arguments are given, `popd` removes the top directory from the stack and
 Available options:
 
 + `-c`: Clears the directory stack by deleting all of the elements.
-+ `-q`: Supresses output to the console.
++ `-q`: Suppresses output to the console.
 
 Arguments:
 
@@ -557,7 +557,7 @@ sed(/(\w+)\s(\w+)/, '$2, $1', 'file.txt');
 ```
 
 Also, like unix `sed`, ShellJS `sed` runs replacements on each line from the input file
-(split by '\n') separately, so `search_regex`es that span more than one line (or inlclude '\n')
+(split by '\n') separately, so `search_regex`es that span more than one line (or include '\n')
 will not match anything and nothing will be replaced.
 
 
