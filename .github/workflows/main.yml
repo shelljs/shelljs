@@ -33,7 +33,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npm run test-with-coverage
+      - name: test with coverage
+        run: npm run test-with-coverage
+        if: matrix.node-version >= 10
+      - name: test without coverage (coverage broken on node < 10)
+        run: npm run test
+        if: matrix.node-version < 10
       - run: npm run lint
       - run: npm run gendocs
       - run: npm run check-node-support
@@ -41,6 +46,7 @@ jobs:
         run: npm run after-travis
         if: matrix.os != 'windows-latest'
       - name: Upload coverage reports to Codecov
+        if: matrix.node-version >= 10
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
