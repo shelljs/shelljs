@@ -120,10 +120,11 @@ test('quiet mode off', t => {
   try {
     shell.pushd('test/resources/pushd');
     shell.config.silent = false;
-    mocks.init();
+    mocks.stdout.init();
+    mocks.stderr.init();
     const trail = shell.popd();
-    const stdout = mocks.stdout();
-    const stderr = mocks.stderr();
+    const stdout = mocks.stdout.getValue();
+    const stderr = mocks.stderr.getValue();
     t.falsy(shell.error());
     t.is(stdout, '');
     t.is(stderr, `${rootDir}\n`);
@@ -131,7 +132,8 @@ test('quiet mode off', t => {
     t.deepEqual(trail, [rootDir]);
   } finally {
     shell.config.silent = true;
-    mocks.restore();
+    mocks.stdout.restore();
+    mocks.stderr.restore();
   }
 });
 
@@ -139,10 +141,11 @@ test('quiet mode on', t => {
   try {
     shell.pushd('test/resources/pushd');
     shell.config.silent = false;
-    mocks.init();
+    mocks.stdout.init();
+    mocks.stderr.init();
     const trail = shell.popd('-q');
-    const stdout = mocks.stdout();
-    const stderr = mocks.stderr();
+    const stdout = mocks.stdout.getValue();
+    const stderr = mocks.stderr.getValue();
     t.falsy(shell.error());
     t.is(stdout, '');
     t.is(stderr, '');
@@ -150,6 +153,7 @@ test('quiet mode on', t => {
     t.deepEqual(trail, [rootDir]);
   } finally {
     shell.config.silent = true;
-    mocks.restore();
+    mocks.stdout.restore();
+    mocks.stderr.restore();
   }
 });
