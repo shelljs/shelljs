@@ -13,13 +13,15 @@ const ORIG_EXEC_PATH = shell.config.execPath;
 shell.config.silent = true;
 
 test.beforeEach(() => {
-  mocks.init();
+  mocks.stdout.init();
+  mocks.stderr.init();
 });
 
 test.afterEach.always(() => {
   process.chdir(CWD);
   shell.config.execPath = ORIG_EXEC_PATH;
-  mocks.restore();
+  mocks.stdout.restore();
+  mocks.stderr.restore();
 });
 
 //
@@ -102,8 +104,8 @@ test('check if stdout + stderr go to output', t => {
 
 test('check if stdout + stderr should not be printed to console if silent', t => {
   shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.error(1234); console.log(666); process.exit(12);"`, { silent: true });
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.is(stdout, '');
   t.is(stderr, '');
 });
