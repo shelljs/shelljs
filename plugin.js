@@ -1,4 +1,4 @@
-// Various utilties exposed to plugins
+// Various utilities exposed to plugins
 
 require('./shell'); // Create the ShellJS instance (mandatory)
 
