@@ -16,29 +16,53 @@ function wrapWrite(target) {
   };
 }
 
-const _processStdoutWrite = process.stdout.write;
-const _processStderrWrite = process.stderr.write;
-const _stdout = [];
-const _stderr = [];
-const _stdoutWrite = wrapWrite(_stdout);
-const _stderrWrite = wrapWrite(_stderr);
-
-exports.stdout = function stdout() {
-  return joinData(_stdout);
+const stdout = {
+  original: process.stdout.write,
+  value: [],
+  init: function init() {
+    this.value = [];
+    process.stdout.write = wrapWrite(this.value);
+  },
+  restore: function restore() {
+    process.stdout.write = this.original;
+  },
+  getValue: function getValue() {
+    return joinData(this.value);
+  }
 };
 
-exports.stderr = function stderr() {
-  return joinData(_stderr);
+const stderr = {
+  original: process.stderr.write,
+  value: [],
+  init: function init() {
+    this.value = [];
+    process.stderr.write = wrapWrite(this.value);
+  },
+  restore: function restore() {
+    process.stderr.write = this.original;
+  },
+  getValue: function getValue() {
+    return joinData(this.value);
+  }
 };
 
-exports.init = function init() {
-  process.stdout.write = _stdoutWrite;
-  process.stderr.write = _stderrWrite;
+const exit = {
+  original: process.exit,
+  value: undefined,
+  init: function init() {
+    this.value = undefined;
+    process.exit = (newCode) => {
+      this.value = newCode;
+    };
+  },
+  restore: function restore() {
+    process.exit = this.original;
+  },
+  getValue: function getValue() {
+    return this.value;
+  }
 };
 
-exports.restore = function restore() {
-  process.stdout.write = _processStdoutWrite;
-  process.stderr.write = _processStderrWrite;
-  _stdout.splice(0);
-  _stderr.splice(0);
-};
+exports.stdout = stdout;
+exports.stderr = stderr;
+exports.exit = exit;

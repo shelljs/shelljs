@@ -735,7 +735,7 @@ test('copy file to same directory', t => {
   t.is(result.stderr, "cp: 'test/resources/file1' and 'test/resources/file1' are the same file");
 });
 
-test('copy mutliple files to same location', t => {
+test('copy multiple files to same location', t => {
   const result = shell.cp('test/resources/file1', 'test/resources/file2', 'test/resources');
   t.truthy(shell.error());
   t.is(result.code, 1);

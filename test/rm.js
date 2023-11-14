@@ -35,7 +35,7 @@ test('file does not exist', t => {
   t.is(result.stderr, 'rm: no such file or directory: asdfasdf');
 });
 
-test('cannot delete a directoy without recursive flag', t => {
+test('cannot delete a directory without recursive flag', t => {
   const result = shell.rm(`${t.context.tmp}/rm`);
   t.truthy(shell.error());
   t.is(result.code, 1);

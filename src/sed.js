@@ -37,7 +37,7 @@ common.register('sed', _sed, {
 //@ ```
 //@
 //@ Also, like unix `sed`, ShellJS `sed` runs replacements on each line from the input file
-//@ (split by '\n') separately, so `search_regex`es that span more than one line (or inlclude '\n')
+//@ (split by '\n') separately, so `search_regex`es that span more than one line (or include '\n')
 //@ will not match anything and nothing will be replaced.
 function _sed(options, regex, replacement, files) {
   // Check if this is coming from a pipe

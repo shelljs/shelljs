@@ -8,12 +8,14 @@ shell.config.silent = true;
 
 test.beforeEach(t => {
   t.context.tmp = utils.getTempDir();
-  mocks.init();
+  mocks.stdout.init();
+  mocks.stderr.init();
 });
 
 test.afterEach.always(t => {
   shell.rm('-rf', t.context.tmp);
-  mocks.restore();
+  mocks.stdout.restore();
+  mocks.stderr.restore();
 });
 
 //
@@ -22,8 +24,8 @@ test.afterEach.always(t => {
 
 test('simple test with defaults', t => {
   const result = shell.echo('hello', 'world');
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(stdout, 'hello world\n');
@@ -33,8 +35,8 @@ test('simple test with defaults', t => {
 test('allow arguments to begin with a hyphen', t => {
   // Github issue #20
   const result = shell.echo('-asdf', '111');
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(result.code, 1);
   t.is(stdout, '-asdf 111\n');
@@ -43,8 +45,8 @@ test('allow arguments to begin with a hyphen', t => {
 
 test("using null as an explicit argument doesn't crash the function", t => {
   const result = shell.echo(null);
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(stdout, 'null\n');
@@ -53,8 +55,8 @@ test("using null as an explicit argument doesn't crash the function", t => {
 
 test('-e option', t => {
   const result = shell.echo('-e', '\tmessage');
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(stdout, '\tmessage\n');
@@ -72,8 +74,8 @@ test('piping to a file', t => {
   t.falsy(shell.error());
   t.is(resultB.code, 0);
   const result = shell.cat(tmp);
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(stdout, 'A\nB\n');
   t.is(stderr, '');
@@ -82,8 +84,8 @@ test('piping to a file', t => {
 
 test('-n option', t => {
   const result = shell.echo('-n', 'message');
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(stdout, 'message');
@@ -92,8 +94,8 @@ test('-n option', t => {
 
 test('-ne option', t => {
   const result = shell.echo('-ne', 'message');
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(stdout, 'message');
@@ -102,8 +104,8 @@ test('-ne option', t => {
 
 test('-en option', t => {
   const result = shell.echo('-en', 'message');
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(stdout, 'message');
@@ -112,8 +114,8 @@ test('-en option', t => {
 
 test('-en option with escaped characters', t => {
   const result = shell.echo('-en', '\tmessage\n');
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(stdout, '\tmessage\n');
@@ -131,8 +133,8 @@ test('piping to a file with -n', t => {
   t.falsy(shell.error());
   t.is(resultB.code, 0);
   const result = shell.cat(tmp);
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(stdout, 'AB');
   t.is(stderr, '');
@@ -141,8 +143,8 @@ test('piping to a file with -n', t => {
 
 test('stderr with unrecognized options is empty', t => {
   const result = shell.echo('-asdf');
-  const stdout = mocks.stdout();
-  const stderr = mocks.stderr();
+  const stdout = mocks.stdout.getValue();
+  const stderr = mocks.stderr.getValue();
   t.falsy(shell.error());
   t.is(result.code, 1);
   t.falsy(result.stderr);

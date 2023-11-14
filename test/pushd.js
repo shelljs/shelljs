@@ -333,10 +333,11 @@ test('Push without arguments invalid when stack is empty', t => {
 test('quiet mode off', t => {
   try {
     shell.config.silent = false;
-    mocks.init();
+    mocks.stdout.init();
+    mocks.stderr.init();
     const trail = shell.pushd('test/resources/pushd');
-    const stdout = mocks.stdout();
-    const stderr = mocks.stderr();
+    const stdout = mocks.stdout.getValue();
+    const stderr = mocks.stderr.getValue();
     t.falsy(shell.error());
     t.is(stdout, '');
     t.is(stderr, `${path.resolve(rootDir, 'test/resources/pushd')} ${rootDir}\n`);
@@ -347,17 +348,19 @@ test('quiet mode off', t => {
     ]);
   } finally {
     shell.config.silent = true;
-    mocks.restore();
+    mocks.stdout.restore();
+    mocks.stderr.restore();
   }
 });
 
 test('quiet mode on', t => {
   try {
     shell.config.silent = false;
-    mocks.init();
+    mocks.stdout.init();
+    mocks.stderr.init();
     const trail = shell.pushd('-q', 'test/resources/pushd');
-    const stdout = mocks.stdout();
-    const stderr = mocks.stderr();
+    const stdout = mocks.stdout.getValue();
+    const stderr = mocks.stderr.getValue();
     t.falsy(shell.error());
     t.is(stdout, '');
     t.is(stderr, '');
@@ -368,6 +371,7 @@ test('quiet mode on', t => {
     ]);
   } finally {
     shell.config.silent = true;
-    mocks.restore();
+    mocks.stdout.restore();
+    mocks.stderr.restore();
   }
 });

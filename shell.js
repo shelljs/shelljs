@@ -30,6 +30,8 @@ require('./commands').forEach(function (command) {
 //@
 //@ Exits the current process with the given exit `code`.
 exports.exit = function exit(code) {
+  common.state.error = null;
+  common.state.errorCode = 0;
   if (code) {
     common.error('exit', {
       continue: true,

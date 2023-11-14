@@ -106,7 +106,7 @@ exports.pushd = _pushd;
 //@ Available options:
 //@
 //@ + `-n`: Suppress the normal directory change when removing directories from the stack, so that only the stack is manipulated.
-//@ + `-q`: Supresses output to the console.
+//@ + `-q`: Suppresses output to the console.
 //@
 //@ Arguments:
 //@
@@ -160,7 +160,7 @@ exports.popd = _popd;
 //@ Available options:
 //@
 //@ + `-c`: Clears the directory stack by deleting all of the elements.
-//@ + `-q`: Supresses output to the console.
+//@ + `-q`: Suppresses output to the console.
 //@
 //@ Arguments:
 //@
