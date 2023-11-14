@@ -25,7 +25,8 @@
   "main": "./shell.js",
   "exports": {
     ".": "./shell.js",
-    "./make": "./make.js"
+    "./make": "./make.js",
+    "./make.js": "./make.js"
   },
   "files": [
     "commands.js",
