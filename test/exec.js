@@ -178,10 +178,10 @@ test('set shell option (TODO: add tests for Windows)', t => {
     t.is(result.stdout, '/bin/sh\n'); // sh by default
     const bashPath = shell.which('bash').trim();
     if (bashPath) {
-      result = shell.exec('echo $0', { shell: '/bin/bash' });
+      result = shell.exec('echo $0', { shell: bashPath });
       t.falsy(shell.error());
       t.is(result.code, 0);
-      t.is(result.stdout, '/bin/bash\n');
+      t.is(result.stdout, `${bashPath}\n`);
     }
   });
 });

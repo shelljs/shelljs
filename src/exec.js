@@ -71,6 +71,7 @@ function execSync(cmd, opts, pipe) {
     fs.writeFileSync(filePath, data, {
       encoding: 'utf8',
       mode: parseInt('600', 8),
+      flag: 'w',
     });
   }
   writeFileLockedDown(stdoutFile, '');
