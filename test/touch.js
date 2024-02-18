@@ -186,10 +186,10 @@ test('file array', t => {
 
 test('touching broken link creates a new file', t => {
   utils.skipOnWin(t, () => {
-    const result = shell.touch('test/resources/badlink');
+    shell.ln('-s', 'not_existed_file', `${t.context.tmp}/badlink2`);
+    const result = shell.touch(`${t.context.tmp}/badlink2`);
     t.is(result.code, 0);
     t.falsy(shell.error());
-    t.truthy(fs.existsSync('test/resources/not_existed_file'));
-    shell.rm('test/resources/not_existed_file');
+    t.truthy(fs.existsSync(`${t.context.tmp}/not_existed_file`));
   });
 });
