@@ -6,7 +6,7 @@
 
 var os = require('os');
 var fs = require('fs');
-var glob = require('glob');
+var glob = require('fast-glob');
 var shell = require('..');
 
 var shellMethods = Object.create(shell);
@@ -262,7 +262,12 @@ function expand(list) {
     } else {
       var ret;
       try {
-        ret = glob.sync(listEl, {});
+        ret = glob.sync(listEl, {
+          // These options are just to make fast-glob be compatible with POSIX
+          // (bash) wildcard behavior.
+          onlyFiles: false,
+          followSymbolicLinks: false,
+        });
         // if nothing matched, interpret the string literally
         ret = ret.length > 0 ? ret : [listEl];
       } catch (e) {
