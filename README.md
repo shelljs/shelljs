@@ -135,7 +135,7 @@ shell.echo('hello world');
 
 All commands run synchronously, unless otherwise stated.
 All commands accept standard bash globbing characters (`*`, `?`, etc.),
-compatible with the [node `glob` module](https://github.com/isaacs/node-glob).
+compatible with [`fast-glob`](https://www.npmjs.com/package/fast-glob).
 
 For less-commonly used commands and features, please check out our [wiki
 page](https://github.com/shelljs/shelljs/wiki).
@@ -860,6 +860,9 @@ exec echo hello
 Support for this configuration option may be changed or removed in a future
 ShellJS release.
 
+**Breaking change**: ShellJS v0.8.x uses `node-glob`. Starting with ShellJS
+v0.9.x, `config.globOptions` is compatible with `fast-glob`.
+
 Example:
 
 ```javascript
@@ -868,7 +871,7 @@ config.globOptions = {nodir: true};
 
 `config.globOptions` changes how ShellJS expands glob (wildcard)
 expressions. See
-[node-glob](https://github.com/isaacs/node-glob?tab=readme-ov-file#options)
+[fast-glob](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#options-3)
 for available options. Be aware that modifying `config.globOptions` **may
 break ShellJS functionality.**
 

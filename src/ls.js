@@ -1,7 +1,7 @@
 var path = require('path');
 var fs = require('fs');
 var common = require('./common');
-var glob = require('glob');
+var glob = require('fast-glob');
 
 // glob patterns use the UNIX path seperator
 var globPatternRecursive = '/**';
@@ -106,13 +106,20 @@ function _ls(options, paths) {
     if (stat.isDirectory() && !options.directory) {
       if (options.recursive) {
         // use glob, because it's simple
-        glob.sync(p + globPatternRecursive, { dot: options.all, follow: options.link })
-          .forEach(function (item) {
-            // Glob pattern returns the directory itself and needs to be filtered out.
-            if (path.relative(p, item)) {
-              pushFile(item, path.relative(p, item));
-            }
-          });
+        glob.sync(p + globPatternRecursive, {
+          // These options are just to make fast-glob be compatible with POSIX
+          // (bash) wildcard behavior.
+          onlyFiles: false,
+
+          // These options depend on the cmdOptions provided to ls.
+          dot: options.all,
+          followSymbolicLinks: options.link,
+        }).forEach(function (item) {
+          // Glob pattern returns the directory itself and needs to be filtered out.
+          if (path.relative(p, item)) {
+            pushFile(item, path.relative(p, item));
+          }
+        });
       } else if (options.all) {
         // use fs.readdirSync, because it's fast
         fs.readdirSync(p).forEach(function (item) {
