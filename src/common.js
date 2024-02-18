@@ -247,6 +247,12 @@ function parseOptions(opt, map, errorOptions) {
 }
 exports.parseOptions = parseOptions;
 
+function globOptions() {
+  // TODO(nfischer): if this changes glob implementation in the future, convert
+  // options back to node-glob's option format for backward compatibility.
+  return config.globOptions;
+}
+
 // Expands wildcards with matching (ie. existing) file names.
 // For example:
 //   expand(['file*.js']) = ['file1.js', 'file2.js', ...]
@@ -263,7 +269,7 @@ function expand(list) {
     } else {
       var ret;
       try {
-        ret = glob.sync(listEl, config.globOptions);
+        ret = glob.sync(listEl, globOptions());
         // if nothing matched, interpret the string literally
         ret = ret.length > 0 ? ret : [listEl];
       } catch (e) {
