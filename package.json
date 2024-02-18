@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "execa": "^1.0.0",
-    "glob": "^7.0.0",
+    "fast-glob": "^3.3.2",
     "interpret": "^1.0.0",
     "rechoir": "^0.6.2"
   },
