@@ -87,7 +87,7 @@ test('try to make a subdirectory of a file', t => {
 test('Check for invalid permissions', t => {
   utils.skipOnWin(t, () => {
     // This test case only works on unix, but should work on Windows as well
-    const dirName = 'nowritedir';
+    const dirName = `${t.context.tmp}/nowritedir`;
     shell.mkdir(dirName);
     t.falsy(shell.error());
     shell.chmod('-w', dirName);
@@ -95,11 +95,10 @@ test('Check for invalid permissions', t => {
     t.is(result.code, 1);
     t.is(
       result.stderr,
-      'mkdir: cannot create directory nowritedir/foo: Permission denied'
+      `mkdir: cannot create directory ${t.context.tmp}/nowritedir/foo: Permission denied`
     );
     t.truthy(shell.error());
     t.falsy(fs.existsSync(dirName + '/foo'));
-    shell.rm('-rf', dirName); // clean up
   });
 });
 
@@ -142,7 +141,6 @@ test('-p flag', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(fs.existsSync(`${t.context.tmp}/a/b/c`));
-  shell.rm('-Rf', `${t.context.tmp}/a`); // revert
 });
 
 test('-p flag: multiple dirs', t => {
