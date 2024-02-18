@@ -136,7 +136,11 @@ exports.config = common.config;
 //@ ```
 
 //@
-//@ ### config.globOptions
+//@ ### config.globOptions (deprecated)
+//@
+//@ **Deprecated**: we recommend that you do not edit `config.globOptions`.
+//@ Support for this configuration option may be changed or removed in a future
+//@ ShellJS release.
 //@
 //@ Example:
 //@
@@ -144,7 +148,11 @@ exports.config = common.config;
 //@ config.globOptions = {nodir: true};
 //@ ```
 //@
-//@ Use this value for calls to `glob.sync()` instead of the default options.
+//@ `config.globOptions` changes how ShellJS expands glob (wildcard)
+//@ expressions. See
+//@ [node-glob](https://github.com/isaacs/node-glob?tab=readme-ov-file#options)
+//@ for available options. Be aware that modifying `config.globOptions` **may
+//@ break ShellJS functionality.**
 
 //@
 //@ ### config.reset()
