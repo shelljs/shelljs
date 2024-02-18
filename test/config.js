@@ -48,7 +48,7 @@ test.cb('config.fatal = true', t => {
 });
 
 //
-// config.globOptions
+// Default glob expansion behavior
 //
 
 test('Expands to directories by default', t => {
@@ -60,16 +60,3 @@ test('Expands to directories by default', t => {
   t.truthy(result.indexOf('test/resources/head') > -1);
   t.truthy(result.indexOf('test/resources/external') > -1);
 });
-
-test(
-  'Check to make sure options get passed through (nodir is an example)',
-  t => {
-    shell.config.globOptions = { nodir: true };
-    const result = common.expand(['test/resources/*a*']);
-    t.is(result.length, 2);
-    t.truthy(result.indexOf('test/resources/a.txt') > -1);
-    t.truthy(result.indexOf('test/resources/badlink') > -1);
-    t.truthy(result.indexOf('test/resources/cat') < 0);
-    t.truthy(result.indexOf('test/resources/external') < 0);
-  }
-);

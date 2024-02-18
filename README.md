@@ -854,16 +854,6 @@ rm -rf foo.txt bar.txt
 exec echo hello
 ```
 
-### config.globOptions
-
-Example:
-
-```javascript
-config.globOptions = {nodir: true};
-```
-
-Use this value for calls to `glob.sync()` instead of the default options.
-
 ### config.reset()
 
 Example:
@@ -882,7 +872,6 @@ Reset `shell.config` to the defaults:
 ```javascript
 {
   fatal: false,
-  globOptions: {},
   maxdepth: 255,
   noglob: false,
   silent: false,

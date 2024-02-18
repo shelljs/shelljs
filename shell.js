@@ -136,17 +136,6 @@ exports.config = common.config;
 //@ ```
 
 //@
-//@ ### config.globOptions
-//@
-//@ Example:
-//@
-//@ ```javascript
-//@ config.globOptions = {nodir: true};
-//@ ```
-//@
-//@ Use this value for calls to `glob.sync()` instead of the default options.
-
-//@
 //@ ### config.reset()
 //@
 //@ Example:
@@ -165,7 +154,6 @@ exports.config = common.config;
 //@ ```javascript
 //@ {
 //@   fatal: false,
-//@   globOptions: {},
 //@   maxdepth: 255,
 //@   noglob: false,
 //@   silent: false,
