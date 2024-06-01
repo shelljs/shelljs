@@ -25,10 +25,29 @@ jobs:
           - 18
           - 19
           - 20
+          - 21
+          - 22
         os:
           - ubuntu-latest
           - macos-latest
           - windows-latest
+        exclude:
+          - node-version: 8
+            os: macos-latest
+          - node-version: 9
+            os: macos-latest
+          - node-version: 10
+            os: macos-latest
+          - node-version: 11
+            os: macos-latest
+          - node-version: 12
+            os: macos-latest
+          - node-version: 13
+            os: macos-latest
+          - node-version: 14
+            os: macos-latest
+          - node-version: 15
+            os: macos-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
