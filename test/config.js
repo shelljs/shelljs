@@ -138,3 +138,138 @@ test('config.globOptions respects nodir', t => {
   t.truthy(result.indexOf('test/resources/head') < 0);
   t.truthy(result.indexOf('test/resources/external') < 0);
 });
+
+test('config.globOptions respects mark', t => {
+  shell.config.globOptions = { mark: true };
+  const result = common.expand(['test/resources/*a*']);
+  // Directories get a '/' character at the end.
+  const expected = [
+    'test/resources/a.txt',
+    'test/resources/badlink',
+    'test/resources/cat/',
+    'test/resources/external/',
+    'test/resources/head/',
+  ];
+  t.deepEqual(result, expected);
+});
+
+test('config.globOptions respects nobrace', t => {
+  // Default behavior is to expand "file{1..2}.txt" to ["file1.txt",
+  // "file2.txt"].
+  let result = common.expand(['test/resources/file{1..2}.txt']);
+  let expected = [
+    'test/resources/file1.txt',
+    'test/resources/file2.txt',
+  ];
+  t.deepEqual(result, expected);
+
+  // When 'nobrace' is true, brace expressions will expand as literals.
+  shell.config.globOptions = { nobrace: true };
+  result = common.expand(['test/resources/file{1..2}.txt']);
+  expected = [
+    'test/resources/file{1..2}.txt',
+  ];
+  t.deepEqual(result, expected);
+});
+
+test('config.globOptions respects noglobstar', t => {
+  // Default behavior is to expand "**" to match zero or more directories.
+  let result = common.expand(['test/**/file1']);
+  let expected = [
+    'test/resources/cat/file1',
+    'test/resources/chmod/file1',
+    'test/resources/cp/file1',
+    'test/resources/file1',
+    'test/resources/ls/file1',
+    'test/resources/sort/file1',
+    'test/resources/uniq/file1',
+  ];
+  t.deepEqual(result, expected);
+
+  // When 'noglobstar' is true, "**" will behave like a regular "*" and matches
+  // exactly 1 directory.
+  shell.config.globOptions = { noglobstar: true };
+  result = common.expand(['test/**/file1']);
+  expected = [
+    'test/resources/file1',
+  ];
+  t.deepEqual(result, expected);
+});
+
+test('config.globOptions respects noext', t => {
+  // Default behavior is to support fancy glob patterns (like "file1.+(js|txt)").
+  let result = common.expand([
+    'test/resources/file1.+(js|txt)',
+    'test/resources/file2.*',
+  ]);
+  let expected = [
+    'test/resources/file1.js',
+    'test/resources/file1.txt',
+    'test/resources/file2.js',
+    'test/resources/file2.txt',
+  ];
+  t.deepEqual(result, expected);
+
+  // When 'noext' is true, this only matches regular globs (like "file2.*").
+  shell.config.globOptions = { noext: true };
+  result = common.expand([
+    'test/resources/file1.+(js|txt)',
+    'test/resources/file2.*',
+  ]);
+  expected = [
+    'test/resources/file1.+(js|txt)',
+    'test/resources/file2.js',
+    'test/resources/file2.txt',
+  ];
+  t.deepEqual(result, expected);
+});
+
+test('config.globOptions respects nocase', t => {
+  // Default behavior will change depending on macOS, Windows, or Linux. This is
+  // difficult to test in a cross-platform way.
+
+  // When 'nocase' is true, we should be able to match files even if we use the
+  // wrong case in the pattern.
+  shell.config.globOptions = { nocase: true };
+  let result = common.expand(['test/resources/FILE*.TXT']);
+  let expected = [
+    'test/resources/file1.txt',
+    'test/resources/file2.txt',
+  ];
+  t.deepEqual(result, expected);
+
+  // When 'nocase' is false, using the wrong case will fail to match any files.
+  shell.config.globOptions = { nocase: false };
+  result = common.expand(['test/resources/FILE*.TXT']);
+  expected = [
+    'test/resources/FILE*.TXT',
+  ];
+  t.deepEqual(result, expected);
+});
+
+test('config.globOptions respects matchBase', t => {
+  // By default, "*" expressions only match inside of the same directory.
+  shell.config.globOptions = { cwd: 'test/resources' };
+  let result = common.expand(['*ile1']);
+  let expected = [
+    'file1',
+  ];
+  t.deepEqual(result, expected);
+
+  // When 'matchBase' is true (and the pattern contains no slashes), the
+  // pattern is implicitly treated like "**/*" and will expand to
+  // subdirectories.
+  shell.config.globOptions = { cwd: 'test/resources', matchBase: true };
+  result = common.expand(['*ile1']);
+  expected = [
+    'cat/file1',
+    'chmod/file1',
+    'cp/file1',
+    'file1',
+    'head/shortfile1',
+    'ls/file1',
+    'sort/file1',
+    'uniq/file1',
+  ];
+  t.deepEqual(result, expected);
+});
