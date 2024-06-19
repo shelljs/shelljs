@@ -873,7 +873,10 @@ test('cp -p should preserve mode, ownership, and timestamp (directory)', t => {
 
   // Both new file and new dir should keep same attributes
   t.is(statOfResultDir.mtime.getTime(), newModifyTimeMs);
-  t.is(statOfResultDir.atime.getTime(), newAccessTimeMs);
+  utils.skipOnWin(t, () => {
+    // The resultDir atime may be updated on Windows as a side-effect, e.g. chmod().
+    t.is(statOfResultDir.atime.getTime(), newAccessTimeMs);
+  });
   t.is(statOfResult.mtime.getTime(), newModifyTimeMs);
   t.is(statOfResult.atime.getTime(), newAccessTimeMs);
   t.is(statOfResult.mode.toString(8), '100' + mode);

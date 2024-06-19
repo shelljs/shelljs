@@ -3,7 +3,8 @@ var fs = require('fs');
 var common = require('./common');
 var glob = require('fast-glob');
 
-var globPatternRecursive = path.sep + '**';
+// glob patterns use the UNIX path seperator
+var globPatternRecursive = '/**';
 
 common.register('ls', _ls, {
   cmdOptions: {
