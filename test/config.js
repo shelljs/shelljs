@@ -51,7 +51,7 @@ test.cb('config.fatal = true', t => {
 // Default glob expansion behavior
 //
 
-test('Expands to directories by default', t => {
+test('config.globOptions expands directories by default', t => {
   const result = common.expand(['test/resources/*a*']);
   t.is(result.length, 5);
   t.truthy(result.indexOf('test/resources/a.txt') > -1);
