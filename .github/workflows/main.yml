@@ -68,7 +68,7 @@ jobs:
         if: matrix.os != 'windows-latest'
       - name: Upload coverage reports to Codecov
         if: matrix.node-version >= 10
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
