@@ -66,7 +66,7 @@ try {
 
   var githubActionsFileName = path.join(__dirname, '..', '.github', 'workflows',
       'main.yml');
-  var githubActionsYaml = yaml.safeLoad(shell.cat(githubActionsFileName));
+  var githubActionsYaml = yaml.load(shell.cat(githubActionsFileName));
   checkGithubActions(MIN_NODE_VERSION, MAX_NODE_VERSION, githubActionsYaml);
 
   console.log('All files look good (this project supports v'
