@@ -22,7 +22,7 @@ var common = require('./src/common');
 
 // Load all default commands
 require('./commands').forEach(function (command) {
-  require('./src/' + command);
+  require('./src/' + command + '.js');
 });
 
 //@
