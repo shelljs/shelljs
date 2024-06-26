@@ -6,8 +6,23 @@
 
 var os = require('os');
 var fs = require('fs');
-var glob = require('glob');
+var glob = require('fast-glob');
 var shell = require('..');
+
+// Suppress experimental warnings for fast-glob. This only happens on Node v11.
+var originalProcessEmit = process.emit;
+function suppressExperimentalWarnings(event, err) {
+  if (event === 'warning' && err.name === 'ExperimentalWarning') {
+    return false;
+  } else {
+    return originalProcessEmit.apply(process, arguments);
+  }
+}
+var parts = process.versions.node.split('.').map(Number);
+var major = parts[0];
+if (major === 11) {
+  process.emit = suppressExperimentalWarnings;
+}
 
 var shellMethods = Object.create(shell);
 
@@ -248,9 +263,39 @@ function parseOptions(opt, map, errorOptions) {
 exports.parseOptions = parseOptions;
 
 function globOptions() {
-  // TODO(nfischer): if this changes glob implementation in the future, convert
-  // options back to node-glob's option format for backward compatibility.
-  return config.globOptions;
+  // These options are just to make fast-glob be compatible with POSIX (bash)
+  // wildcard behavior.
+  var defaultGlobOptions = {
+    onlyFiles: false,
+    followSymbolicLinks: false,
+  };
+
+  var newGlobOptions = Object.assign({}, config.globOptions);
+  var optionRenames = {
+    // node-glob's 'nodir' is not quote the same as fast-glob's 'onlyFiles'.
+    // Compatibility for this is implemented at the call site.
+    mark: 'markDirectories',
+    matchBase: 'baseNameMatch',
+  };
+  Object.keys(optionRenames).forEach(function (oldKey) {
+    var newKey = optionRenames[oldKey];
+    if (oldKey in config.globOptions) {
+      newGlobOptions[newKey] = config.globOptions[oldKey];
+    }
+  });
+  var invertedOptionRenames = {
+    nobrace: 'braceExpansion',
+    noglobstar: 'globstar',
+    noext: 'extglob',
+    nocase: 'caseSensitiveMatch',
+  };
+  Object.keys(invertedOptionRenames).forEach(function (oldKey) {
+    var newKey = invertedOptionRenames[oldKey];
+    if (oldKey in config.globOptions) {
+      newGlobOptions[newKey] = !config.globOptions[oldKey];
+    }
+  });
+  return Object.assign({}, defaultGlobOptions, newGlobOptions);
 }
 
 // Expands wildcards with matching (ie. existing) file names.
@@ -268,13 +313,19 @@ function expand(list) {
       expanded.push(listEl);
     } else {
       var ret;
+      var globOpts = globOptions();
       try {
-        ret = glob.sync(listEl, globOptions());
-        // if nothing matched, interpret the string literally
-        ret = ret.length > 0 ? ret : [listEl];
+        ret = glob.sync(listEl, globOpts);
       } catch (e) {
         // if glob fails, interpret the string literally
         ret = [listEl];
+      }
+      // if nothing matched, interpret the string literally
+      ret = ret.length > 0 ? ret.sort() : [listEl];
+      if (globOpts.nodir) {
+        ret = ret.filter(function (file) {
+          return !statNoFollowLinks(file).isDirectory();
+        });
       }
       expanded = expanded.concat(ret);
     }

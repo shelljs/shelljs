@@ -11,7 +11,7 @@ var common = require('./src/common');
 //@
 //@ All commands run synchronously, unless otherwise stated.
 //@ All commands accept standard bash globbing characters (`*`, `?`, etc.),
-//@ compatible with the [node `glob` module](https://github.com/isaacs/node-glob).
+//@ compatible with [`fast-glob`](https://www.npmjs.com/package/fast-glob).
 //@
 //@ For less-commonly used commands and features, please check out our [wiki
 //@ page](https://github.com/shelljs/shelljs/wiki).
@@ -150,7 +150,7 @@ exports.config = common.config;
 //@
 //@ `config.globOptions` changes how ShellJS expands glob (wildcard)
 //@ expressions. See
-//@ [node-glob](https://github.com/isaacs/node-glob?tab=readme-ov-file#options)
+//@ [fast-glob](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#options-3)
 //@ for available options. Be aware that modifying `config.globOptions` **may
 //@ break ShellJS functionality.**
 
