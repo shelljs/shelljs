@@ -8,7 +8,7 @@ var yaml = require('js-yaml');
 var shell = require('..');
 
 // This is the authoritative list of supported node versions.
-var MIN_NODE_VERSION = 8;
+var MIN_NODE_VERSION = 18;
 var MAX_NODE_VERSION = 22;
 
 // Ideally this map should be empty, however we can pin node releases to

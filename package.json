@@ -65,19 +65,19 @@
   },
   "devDependencies": {
     "ava": "^1.4.1",
-    "chalk": "^1.1.3",
+    "chalk": "^4.1.2",
     "coffee-script": "^1.12.7",
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.17.3",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.31.0",
     "js-yaml": "^4.1.0",
-    "nyc": "^15.1.0",
+    "nyc": "^17.1.0",
     "shelljs-changelog": "^0.2.6",
     "shelljs-release": "^0.5.2",
     "shx": "^0.3.4",
     "travis-check-changes": "^0.4.0"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=18"
   }
 }

@@ -11,7 +11,7 @@ script's dependency on Unix while still keeping its familiar and powerful
 commands. You can also install it globally so you can run it from outside Node
 projects - say goodbye to those gnarly Bash scripts!
 
-ShellJS is proudly tested on every LTS node release since <!-- start minVersion -->`v8`<!-- stop minVersion -->!
+ShellJS is proudly tested on every LTS node release since <!-- start minVersion -->`v18`<!-- stop minVersion -->!
 
 The project is unit-tested and battle-tested in projects like:
 
