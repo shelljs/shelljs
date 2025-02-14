@@ -1,6 +1,6 @@
 {
   "name": "shelljs",
-  "version": "0.8.6",
+  "version": "0.8.3",
   "description": "Portable Unix shell commands for Node.js",
   "keywords": [
     "shelljs",
@@ -67,7 +67,7 @@
     "ava": "^1.4.1",
     "chalk": "^4.1.2",
     "coffee-script": "^1.12.7",
-    "eslint": "^8.2.0",
+    "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.31.0",
     "js-yaml": "^4.1.0",

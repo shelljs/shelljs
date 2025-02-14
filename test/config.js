@@ -49,6 +49,17 @@ test.cb('config.fatal = true', t => {
   });
 });
 
+test('config.fatal = true with an exec() failure includes a .code on the Error', t => {
+  shell.config.fatal = true;
+  try {
+    t.throws(() => {
+      shell.exec('exit 2');
+    }, { code: 2 });
+  } finally {
+    shell.config.fatal = false;
+  }
+});
+
 //
 // config.globOptions
 //

@@ -121,7 +121,7 @@ function error(msg, _code, options) {
   // Throw an error, or log the entry
   if (options.fatal) {
     var err = new Error(logEntry);
-    err.code = options.code || DEFAULT_OPTIONS.code;
+    err.code = options.code;
     throw err;
   }
   if (msg.length > 0 && !options.silent) log(logEntry);
