@@ -11,6 +11,15 @@ var shell = require('..');
 var MIN_NODE_VERSION = 8;
 var MAX_NODE_VERSION = 22;
 
+// Ideally this map should be empty, however we can pin node releases to
+// specific versions if necessary to workaround bugs. See
+// https://github.com/shelljs/shelljs/issues/1180.
+var pinnedNodeVersions = {
+  // Format:
+  // majorVersionInt: 'full.node.version',
+  22: '22.9.0',
+};
+
 function checkReadme(minNodeVersion) {
   var start = '<!-- start minVersion -->';
   var stop = '<!-- stop minVersion -->';
@@ -53,6 +62,9 @@ function range(start, stop) {
 
 function checkGithubActions(minNodeVersion, maxNodeVersion, githubActionsYaml) {
   var expectedVersions = range(minNodeVersion, maxNodeVersion);
+  expectedVersions = expectedVersions.map(function (majorVersion) {
+    return pinnedNodeVersions[majorVersion] || majorVersion;
+  });
   var msg = 'Check GitHub Actions node_js versions';
   assertDeepEquals(githubActionsYaml.jobs.test.strategy.matrix['node-version'],
       expectedVersions, msg);

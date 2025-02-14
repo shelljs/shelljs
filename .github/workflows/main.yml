@@ -26,7 +26,7 @@ jobs:
           - 19
           - 20
           - 21
-          - 22
+          - '22.9.0'
         os:
           - ubuntu-latest
           - macos-latest
