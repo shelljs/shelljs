@@ -8,6 +8,8 @@
     "consistent-return": "off",
     "curly": ["error", "multi-line"],
     "func-names": "off",
+    "function-call-argument-newline": "off",
+    "function-paren-newline": "off",
     "global-require": "off",
     "indent": "off",
     "max-len": "off",
@@ -29,6 +31,7 @@
     "operator-linebreak": "off",
     "quote-props": "off",
     "spaced-comment": ["error", "always", { "markers": ["@", "@include"], "exceptions": ["@", "@commands"] }],
+    "strict": "off",
     "vars-on-top": "off",
     "new-cap": ["error", {
       "capIsNewExceptions": [
