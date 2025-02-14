@@ -54,7 +54,10 @@ function assertDeepEquals(arr1, arr2, msg) {
 
 function range(start, stop) {
   var ret = [];
-  for (var i = start; i <= stop; i++) {
+  for (var i = start; i <= stop; i += 2) {
+    if (i % 2 !== 0) {
+      console.warn('Warning: testing a non-LTS nodejs release: ' + i);
+    }
     ret.push(i);
   }
   return ret;
@@ -81,7 +84,7 @@ try {
   var githubActionsYaml = yaml.load(shell.cat(githubActionsFileName));
   checkGithubActions(MIN_NODE_VERSION, MAX_NODE_VERSION, githubActionsYaml);
 
-  console.log('All files look good (this project supports v'
+  console.log('All files look good (this project supports LTS releases v'
       + MIN_NODE_VERSION + '-v' + MAX_NODE_VERSION + ')!');
 } catch (e) {
   console.error('Please check the files which declare our Node version');
