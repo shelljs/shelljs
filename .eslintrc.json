@@ -30,7 +30,6 @@
     "no-use-before-define": "off",
     "operator-linebreak": "off",
     "quote-props": "off",
-    "space-infix-ops": "off",
     "spaced-comment": ["error", "always", { "markers": ["@", "@include"], "exceptions": ["@", "@commands"] }],
     "strict": "off",
     "vars-on-top": "off",
