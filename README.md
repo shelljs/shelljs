@@ -938,6 +938,6 @@ Reset `shell.config` to the defaults:
 
 ## Team
 
-| [![Nate Fischer](https://avatars.githubusercontent.com/u/5801521?s=130)](https://github.com/nfischer) | [![Brandon Freitag](https://avatars1.githubusercontent.com/u/5988055?v=3&s=130)](http://github.com/freitagbr) |
-|:---:|:---:|
-| [Nate Fischer](https://github.com/nfischer) | [Brandon Freitag](http://github.com/freitagbr) |
+| [![Nate Fischer](https://avatars.githubusercontent.com/u/5801521?s=130)](https://github.com/nfischer) |
+|:---:|
+| [Nate Fischer](https://github.com/nfischer) |
