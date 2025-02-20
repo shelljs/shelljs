@@ -102,7 +102,7 @@ test('globbed file', t => {
       .join('\n') + '\n');
 });
 
-test('with `\'-n\' <num>` option', t => {
+test("with '-n <num>' option", t => {
   const result = shell.tail('-n', 4, 'test/resources/head/file2.txt',
     'test/resources/head/file1.txt');
   t.falsy(shell.error());
@@ -115,7 +115,7 @@ test('with `\'-n\' <num>` option', t => {
       .join('\n') + '\n');
 });
 
-test('with `\'-n\' +<num>` option', t => {
+test("with '-n +<num>' option", t => {
   const result = shell.tail('-n', '+48', 'test/resources/head/file2.txt',
     'test/resources/head/file1.txt');
   t.falsy(shell.error());
@@ -128,7 +128,7 @@ test('with `\'-n\' +<num>` option', t => {
       .join('\n') + '\n');
 });
 
-test('with `{\'-n\': <num>}` option', t => {
+test("with '{-n: <num>}' option", t => {
   const result = shell.tail({ '-n': 4 }, 'test/resources/head/file2.txt',
     'test/resources/head/file1.txt');
   t.falsy(shell.error());
@@ -141,7 +141,7 @@ test('with `{\'-n\': <num>}` option', t => {
       .join('\n') + '\n');
 });
 
-test('with `{\'-n\': +<num>}` option', t => {
+test("with '{-n: +<num>}' option", t => {
   const result = shell.tail({ '-n': '+48' }, 'test/resources/head/file2.txt',
     'test/resources/head/file1.txt');
   t.falsy(shell.error());

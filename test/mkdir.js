@@ -37,7 +37,7 @@ test('dir already exists', t => {
   t.is(common.statFollowLinks(t.context.tmp).mtime.toString(), mtime); // didn't mess with dir
 });
 
-test('Can\'t overwrite a broken link', t => {
+test("Can't overwrite a broken link", t => {
   const mtime = common.statNoFollowLinks('test/resources/badlink').mtime.toString();
   const result = shell.mkdir('test/resources/badlink');
   t.truthy(shell.error());

@@ -443,7 +443,7 @@ test('-R implies -P', t => {
   });
 });
 
-test('-Ru respects the -u flag recursively (don\'t update newer file)', t => {
+test("-Ru respects the -u flag recursively (don't update newer file)", t => {
   // Setup code
   const dir = `${t.context.tmp}/cp-Ru`;
   const sourceDir = `${dir}/original`;
@@ -521,7 +521,7 @@ test('Recursive, copies entire directory with no symlinks and -L option does not
   });
 });
 
-test('-u flag won\'t overwrite newer files', t => {
+test("-u flag won't overwrite newer files", t => {
   shell.touch(`${t.context.tmp}/file1.js`);
   shell.cp('-u', 'test/resources/file1.js', t.context.tmp);
   t.falsy(shell.error());
@@ -535,7 +535,7 @@ test('-u flag does overwrite older files', t => {
   t.is(shell.cat('test/resources/file1.js').toString(), shell.cat(`${t.context.tmp}/file1.js`).toString());
 });
 
-test('-u flag works even if it\'s not overwriting a file', t => {
+test("-u flag works even if it's not overwriting a file", t => {
   t.falsy(fs.existsSync(`${t.context.tmp}/file1.js`));
   shell.cp('-u', 'test/resources/file1.js', t.context.tmp);
   t.falsy(shell.error());

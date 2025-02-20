@@ -121,7 +121,7 @@ test('too many sources (exist, but dest is file)', t => {
   t.is(result.stderr, 'mv: dest is not a directory (too many sources)');
 });
 
-test('can\'t use wildcard when dest is file', t => {
+test("can't use wildcard when dest is file", t => {
   const result = shell.mv('file*', 'file1');
   t.truthy(shell.error());
   t.truthy(fs.existsSync('file1'));

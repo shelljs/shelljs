@@ -78,14 +78,14 @@ test('Globbed file', t => {
   t.is(result.toString(), doubleSorted);
 });
 
-test('With \'-n\' option', t => {
+test("With '-n' option", t => {
   const result = shell.sort('-n', 'test/resources/sort/file2');
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), shell.cat('test/resources/sort/sortedDashN').toString());
 });
 
-test('With \'-r\' option', t => {
+test("With '-r' option", t => {
   const result = shell.sort('-r', 'test/resources/sort/file2');
   t.falsy(shell.error());
   t.is(result.code, 0);
@@ -96,7 +96,7 @@ test('With \'-r\' option', t => {
     .join('\n') + '\n');
 });
 
-test('With \'-rn\' option', t => {
+test("With '-rn' option", t => {
   const result = shell.sort('-rn', 'test/resources/sort/file2');
   t.falsy(shell.error());
   t.is(result.code, 0);

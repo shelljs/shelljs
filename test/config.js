@@ -34,7 +34,7 @@ test('config.silent can be set to false', t => {
 
 test.cb('config.fatal = false', t => {
   t.falsy(shell.config.fatal);
-  const script = 'require(\'./global.js\'); config.silent=true; config.fatal=false; cp("this_file_doesnt_exist", "."); echo("got here");';
+  const script = `require('./global.js'); config.silent=true; config.fatal=false; cp("this_file_doesnt_exist", "."); echo("got here");`;
   utils.runScript(script, (err, stdout) => {
     t.truthy(stdout.match('got here'));
     t.end();
@@ -42,7 +42,7 @@ test.cb('config.fatal = false', t => {
 });
 
 test.cb('config.fatal = true', t => {
-  const script = 'require(\'./global.js\'); config.silent=true; config.fatal=true; cp("this_file_doesnt_exist", "."); echo("got here");';
+  const script = `require('./global.js'); config.silent=true; config.fatal=true; cp("this_file_doesnt_exist", "."); echo("got here");`;
   utils.runScript(script, (err, stdout) => {
     t.falsy(stdout.match('got here'));
     t.end();

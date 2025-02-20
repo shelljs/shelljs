@@ -20,7 +20,7 @@ test.afterEach.always(t => {
 // Invalids
 //
 
-test('Normal strings don\'t have \'.to()\' anymore', t => {
+test("Normal strings don't have '.to()' anymore", t => {
   const str = 'hello world';
   t.is(str.to, undefined);
 });
