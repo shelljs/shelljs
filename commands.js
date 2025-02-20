@@ -8,6 +8,7 @@ module.exports = [
   'dirs',
   'echo',
   'exec',
+  'exec-child',
   'find',
   'grep',
   'head',

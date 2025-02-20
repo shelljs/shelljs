@@ -15,7 +15,11 @@ var docs = grep('^//@', 'shell.js');
 docs = docs.replace(/\/\/@commands\n/g, function () {
   return require('../commands').map(function (commandName) {
     var file = './src/' + commandName + '.js';
-    return grep('^//@', file) + '\n';
+    var commandDoc = grep('^//@', file).toString();
+    if (commandDoc !== '') {
+      commandDoc += '\n';
+    }
+    return commandDoc;
   }).join('');
 });
 
