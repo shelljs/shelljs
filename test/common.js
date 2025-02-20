@@ -311,7 +311,7 @@ test('Some basic tests on the ShellString type', t => {
 });
 
 test.cb('Commands that fail will still output error messages to stderr', t => {
-  const script = 'require(\'./global\'); ls(\'noexist\'); cd(\'noexist\');';
+  const script = "require('./global'); ls('noexist'); cd('noexist');";
   utils.runScript(script, (err, stdout, stderr) => {
     t.is(stdout, '');
     t.is(

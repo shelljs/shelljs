@@ -100,7 +100,7 @@ test('Globbed file', t => {
     .join('\n') + '\n');
 });
 
-test('With `\'-n\' <num>` option', t => {
+test("With '-n <num>' option", t => {
   const result = shell.head('-n', 4, 'test/resources/head/file2.txt',
     'test/resources/head/file1.txt');
   t.falsy(shell.error());
@@ -111,7 +111,7 @@ test('With `\'-n\' <num>` option', t => {
     .join('\n') + '\n');
 });
 
-test('With `{\'-n\': <num>}` option', t => {
+test("With '{-n: <num>}' option", t => {
   const result = shell.head({ '-n': 4 }, 'test/resources/head/file2.txt',
     'test/resources/head/file1.txt');
   t.falsy(shell.error());

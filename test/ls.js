@@ -36,7 +36,7 @@ test('no such file or dir', t => {
 // Valids
 //
 
-test('it\'s ok to use no arguments', t => {
+test("it's ok to use no arguments", t => {
   const result = shell.ls();
   t.falsy(shell.error());
   t.is(result.code, 0);
@@ -205,7 +205,7 @@ test('wildcard, mid-file with dot (should escape dot for regex)', t => {
   t.truthy(result.indexOf('test/resources/ls/file2.js') > -1);
 });
 
-test('one file that exists, one that doesn\'t', t => {
+test("one file that exists, one that doesn't", t => {
   const result = shell.ls('test/resources/ls/file1.js', 'test/resources/ls/thisdoesntexist');
   t.truthy(shell.error());
   t.is(result.code, 2);
@@ -213,7 +213,7 @@ test('one file that exists, one that doesn\'t', t => {
   t.truthy(result.indexOf('test/resources/ls/file1.js') > -1);
 });
 
-test('one file that exists, one that doesn\'t (other order)', t => {
+test("one file that exists, one that doesn't (other order)", t => {
   const result = shell.ls('test/resources/ls/thisdoesntexist', 'test/resources/ls/file1.js');
   t.truthy(shell.error());
   t.is(result.code, 2);
@@ -364,7 +364,7 @@ test('directory option, single arg', t => {
   t.is(result.length, 1);
 });
 
-test('directory option, single arg with trailing \'/\'', t => {
+test("directory option, single arg with trailing '/'", t => {
   const result = shell.ls('-d', 'test/resources/ls/');
   t.falsy(shell.error());
   t.is(result.code, 0);

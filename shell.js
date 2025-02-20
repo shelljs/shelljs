@@ -69,7 +69,7 @@ exports.env = process.env;
 //@
 //@ ```javascript
 //@ grep('foo', 'file1.txt', 'file2.txt').sed(/o/g, 'a').to('output.txt');
-//@ echo('files with o\'s in the name:\n' + ls().grep('o'));
+//@ echo("files with o's in the name:\n" + ls().grep('o'));
 //@ cat('test.js').exec('node'); // pipe to exec() call
 //@ ```
 //@

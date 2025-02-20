@@ -70,7 +70,7 @@ test('All plugin utils exist', t => {
   t.is(typeof plugin.register, 'function');
 });
 
-test('The plugin does not exist before it\'s registered', t => {
+test("The plugin does not exist before it's registered", t => {
   t.falsy(shell.foo);
 });
 

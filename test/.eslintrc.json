@@ -32,7 +32,11 @@
     "new-cap": ["error", {
       "capIsNewExceptions": [
         "ShellString"
-      ]}
-    ]
+      ]
+    }],
+    "quotes": ["error", "single", {
+      "avoidEscape": true,
+      "allowTemplateLiterals": true
+    }]
   }
 }
