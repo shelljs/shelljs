@@ -119,7 +119,11 @@ function error(msg, _code, options) {
   state.error += logEntry;
 
   // Throw an error, or log the entry
-  if (options.fatal) throw new Error(logEntry);
+  if (options.fatal) {
+    var err = new Error(logEntry);
+    err.code = options.code;
+    throw err;
+  }
   if (msg.length > 0 && !options.silent) log(logEntry);
 
   if (!options.continue) {

@@ -49,6 +49,25 @@ test.cb('config.fatal = true', t => {
   });
 });
 
+test('config.fatal = false with an exec() failure returns, does not throw', t => {
+  const expected = { code: 2 };
+  t.notThrows(() => {
+    const result = shell.exec('exit 2');
+    t.is(result.code, expected.code);
+  });
+});
+
+test('config.fatal = true with an exec() failure includes a .code on the Error', t => {
+  shell.config.fatal = true;
+  try {
+    t.throws(() => {
+      shell.exec('exit 2');
+    }, { code: 2 });
+  } finally {
+    shell.config.fatal = false;
+  }
+});
+
 //
 // config.globOptions
 //
