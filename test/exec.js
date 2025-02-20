@@ -65,10 +65,9 @@ test('exec exits gracefully if we cannot find the execPath', t => {
   );
 });
 
-test('cannot require exec-child.js', t => {
-  t.throws(() => {
-    require('../src/exec-child');
-  }, /This file should not be required/);
+test('exec-child.js should not be imported', t => {
+  const execChild = require('../src/exec-child');
+  t.deepEqual([], Object.keys(execChild));
 });
 
 //
