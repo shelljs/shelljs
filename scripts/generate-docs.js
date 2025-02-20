@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* globals cat, cd, echo, grep, sed, ShellString */
+/* globals cat, cd, echo, grep, ls, sed, ShellString */
 require('../global');
 
 var path = require('path');
@@ -12,9 +12,16 @@ cd(path.join(__dirname, '..'));
 var docs = grep('^//@', 'shell.js');
 
 // Insert the docs for all the registered commands
+var blocklist = [
+  './src/common.js',
+  './src/error.js',
+  './src/errorCode.js',
+];
 docs = docs.replace(/\/\/@commands\n/g, function () {
-  return require('../commands').map(function (commandName) {
-    var file = './src/' + commandName + '.js';
+  return ls('./src/*.js').map(function (file) {
+    if (blocklist.includes(file)) {
+      return '';
+    }
     var commandDoc = grep('^//@', file).toString();
     if (commandDoc !== '') {
       commandDoc += '\n';
