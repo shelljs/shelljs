@@ -4,10 +4,6 @@ import test from 'ava';
 
 import shell from '..';
 
-// TODO(nfischer): remove this when shell.cmd() is finished. For now, load it
-// like any other plugin.
-require('../src/cmd');
-
 const CWD = process.cwd();
 
 test.beforeEach(() => {
