@@ -6,6 +6,7 @@ common.register('rm', _rm, {
     'f': 'force',
     'r': 'recursive',
     'R': 'recursive',
+    'v': 'verbose',
   },
 });
 
@@ -17,7 +18,7 @@ common.register('rm', _rm, {
 //
 // Licensed under the MIT License
 // http://www.opensource.org/licenses/mit-license.php
-function rmdirSyncRecursive(dir, force, fromSymlink) {
+function rmdirSyncRecursive(dir, force, verbose, fromSymlink) {
   var files;
 
   files = fs.readdirSync(dir);
@@ -28,11 +29,14 @@ function rmdirSyncRecursive(dir, force, fromSymlink) {
     var currFile = common.statNoFollowLinks(file);
 
     if (currFile.isDirectory()) { // Recursive function back to the beginning
-      rmdirSyncRecursive(file, force);
+      rmdirSyncRecursive(file, force, verbose);
     } else if (force || isWriteable(file)) {
       // Assume it's a file - perhaps a try/catch belongs here?
       try {
         common.unlinkSync(file);
+        if (verbose) {
+          console.log("removed '" + file + "'");
+        }
       } catch (e) {
         /* istanbul ignore next */
         common.error('could not remove file (code ' + e.code + '): ' + file, {
@@ -59,6 +63,9 @@ function rmdirSyncRecursive(dir, force, fromSymlink) {
       try {
         result = fs.rmdirSync(dir);
         if (fs.existsSync(dir)) throw { code: 'EAGAIN' };
+        if (verbose) {
+          console.log("removed directory'" + dir + "'");
+        }
         break;
       } catch (er) {
         /* istanbul ignore next */
@@ -98,6 +105,9 @@ function handleFile(file, options) {
   if (options.force || isWriteable(file)) {
     // -f was passed, or file is writable, so it can be removed
     common.unlinkSync(file);
+    if (options.verbose) {
+      console.log("removed '" + file + "'");
+    }
   } else {
     common.error('permission denied: ' + file, { continue: true });
   }
@@ -106,43 +116,53 @@ function handleFile(file, options) {
 function handleDirectory(file, options) {
   if (options.recursive) {
     // -r was passed, so directory can be removed
-    rmdirSyncRecursive(file, options.force);
+    rmdirSyncRecursive(file, options.force, options.verbose);
   } else {
     common.error('path is a directory', { continue: true });
   }
 }
 
 function handleSymbolicLink(file, options) {
+  function _unlink() {
+    common.unlinkSync(file);
+    if (options.verbose) {
+      console.log("removed '" + file + "'");
+    }
+  }
+
   var stats;
   try {
     stats = common.statFollowLinks(file);
   } catch (e) {
     // symlink is broken, so remove the symlink itself
-    common.unlinkSync(file);
+    _unlink();
     return;
   }
 
   if (stats.isFile()) {
-    common.unlinkSync(file);
+    _unlink();
   } else if (stats.isDirectory()) {
     if (file[file.length - 1] === '/') {
       // trailing separator, so remove the contents, not the link
       if (options.recursive) {
         // -r was passed, so directory can be removed
         var fromSymlink = true;
-        rmdirSyncRecursive(file, options.force, fromSymlink);
+        rmdirSyncRecursive(file, options.force, options.verbose, fromSymlink);
       } else {
         common.error('path is a directory', { continue: true });
       }
     } else {
       // no trailing separator, so remove the link
-      common.unlinkSync(file);
+      _unlink();
     }
   }
 }
 
-function handleFIFO(file) {
+function handleFIFO(file, options) {
   common.unlinkSync(file);
+  if (options.verbose) {
+    console.log("removed '" + file + "'");
+  }
 }
 
 //@
@@ -193,7 +213,7 @@ function _rm(options, files) {
     } else if (lstats.isSymbolicLink()) {
       handleSymbolicLink(file, options);
     } else if (lstats.isFIFO()) {
-      handleFIFO(file);
+      handleFIFO(file, options);
     }
   }); // forEach(file)
   return '';
