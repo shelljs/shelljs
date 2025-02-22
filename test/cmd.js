@@ -91,14 +91,18 @@ test('interaction with cd', t => {
 
 test('no need to escape quotes', t => {
   const result = shell.cmd(shell.config.execPath, '-e',
-      `console.log("'+'_'+'");`); // eslint-disable-line quotes
+      `console.log("'+'_'+'");`);
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, "'+'_'+'\n");
 });
 
 test('commands can contain newlines', t => {
-  // Github issue #175
+  // GitHub issue #175. This test uses a nodejs script rather than a shell
+  // command because Windows 'echo' doesn't handle \n the same way as Unix
+  // 'echo'. This test case proves the newline is passed correctly to the
+  // underlying program because otherwise node would not parse the two lines as
+  // separate statements and it would throw a JavaScript syntax error.
   const result = shell.cmd(shell.config.execPath, '-e', `
 console.log('line1')
 console.log('line2')
