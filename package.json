@@ -25,8 +25,12 @@
   "main": "./shell.js",
   "exports": {
     ".": "./shell.js",
+    "./global": "./global.js",
+    "./global.js": "./global.js",
     "./make": "./make.js",
-    "./make.js": "./make.js"
+    "./make.js": "./make.js",
+    "./plugin": "./plugin.js",
+    "./plugin.js": "./plugin.js"
   },
   "files": [
     "global.js",
