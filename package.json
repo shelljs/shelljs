@@ -40,8 +40,8 @@
   "scripts": {
     "check-node-support": "node scripts/check-node-support",
     "posttest": "npm run lint",
-    "test": "ava test/*.js",
-    "test-with-coverage": "nyc --reporter=text --reporter=lcov ava test/*.js",
+    "test": "ava",
+    "test-with-coverage": "nyc --reporter=text --reporter=lcov ava",
     "gendocs": "node scripts/generate-docs",
     "lint": "eslint .",
     "after-travis": "travis-check-changes",
@@ -61,10 +61,17 @@
   },
   "ava": {
     "serial": true,
-    "powerAssert": false
+    "powerAssert": false,
+    "files": [
+      "test/*.js"
+    ],
+    "helpers": [
+      "test/resources/**",
+      "test/utils/**"
+    ]
   },
   "devDependencies": {
-    "ava": "^1.4.1",
+    "ava": "^2.4.0",
     "chalk": "^4.1.2",
     "coffee-script": "^1.12.7",
     "eslint": "^8.2.0",
