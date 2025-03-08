@@ -20,19 +20,17 @@ var common = require('./src/common');
 // Include the docs for all the default commands
 //@commands
 
-// Load all default commands
+// Load all default commands. We import these for their side effect of loading
+// using the plugin architecture via `common.register()`.
 require('./src/cat');
 require('./src/cd');
 require('./src/chmod');
 require('./src/cmd');
-require('./src/common');
 require('./src/cp');
 require('./src/dirs');
 require('./src/echo');
-require('./src/error');
-require('./src/errorCode');
-// require('./src/exec-child'); excluded since it is for commandline only
 require('./src/exec');
+require('./src/exec-child'); // A hint to the bundler to keep exec-child.js
 require('./src/find');
 require('./src/grep');
 require('./src/head');
