@@ -29,7 +29,6 @@
     "./make.js": "./make.js"
   },
   "files": [
-    "commands.js",
     "global.js",
     "make.js",
     "plugin.js",
