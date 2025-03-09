@@ -29,6 +29,8 @@
     "./global.js": "./global.js",
     "./make": "./make.js",
     "./make.js": "./make.js",
+    "./package": "./package.json",
+    "./package.json": "./package.json",
     "./plugin": "./plugin.js",
     "./plugin.js": "./plugin.js"
   },
