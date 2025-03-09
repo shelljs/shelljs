@@ -84,6 +84,42 @@ test('config.globOptions expands directories by default', t => {
   t.deepEqual(result, expected);
 });
 
+test('config.globOptions handles non-wildcards by default', t => {
+  const result = common.expand(['test/resources/a.txt']);
+  const expected = [
+    'test/resources/a.txt',
+  ];
+  t.deepEqual(result, expected);
+});
+
+test('config.globOptions expands "?" symbol by default', t => {
+  const result = common.expand(['test/resources/file?.t*']);
+  const expected = [
+    'test/resources/file1.txt',
+    'test/resources/file2.txt',
+  ];
+  t.deepEqual(result, expected);
+});
+
+test('config.globOptions expands "*" in multiple path segments by default', t => {
+  const result = common.expand(['test/r*sources/file?.txt']);
+  const expected = [
+    'test/resources/file1.txt',
+    'test/resources/file2.txt',
+  ];
+  t.deepEqual(result, expected);
+});
+
+// https://github.com/shelljs/shelljs/issues/1197
+test.skip('config.globOptions expands "?" in folder path by default', t => {
+  const result = common.expand(['test/r?sources/file*.txt']);
+  const expected = [
+    'test/resources/file1.txt',
+    'test/resources/file2.txt',
+  ];
+  t.deepEqual(result, expected);
+});
+
 test('config.globOptions respects cwd', t => {
   // Both node-glob and fast-glob call this option 'cwd'.
   shell.config.globOptions = { cwd: 'test' };
