@@ -85,9 +85,9 @@
     "js-yaml": "^4.1.0",
     "nyc": "^17.1.0",
     "shelljs-changelog": "^0.2.6",
-    "shelljs-release": "^0.5.2",
-    "shx": "^0.3.4",
-    "travis-check-changes": "^0.4.0"
+    "shelljs-release": "^0.5.3",
+    "shx": "^0.4.0",
+    "travis-check-changes": "^0.5.1"
   },
   "engines": {
     "node": ">=18"
