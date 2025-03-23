@@ -1,7 +1,7 @@
 # ShellJS - Unix shell commands for Node.js
 
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/shelljs/shelljs/main.yml?style=flat-square&logo=github)](https://github.com/shelljs/shelljs/actions/workflows/main.yml)
-[![Codecov](https://img.shields.io/codecov/c/github/shelljs/shelljs/master.svg?style=flat-square&label=coverage)](https://codecov.io/gh/shelljs/shelljs)
+[![Codecov](https://img.shields.io/codecov/c/github/shelljs/shelljs/main.svg?style=flat-square&label=coverage)](https://codecov.io/gh/shelljs/shelljs)
 [![npm version](https://img.shields.io/npm/v/shelljs.svg?style=flat-square)](https://www.npmjs.com/package/shelljs)
 [![npm downloads](https://img.shields.io/npm/dm/shelljs.svg?style=flat-square)](https://www.npmjs.com/package/shelljs)
 
