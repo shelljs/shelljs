@@ -7,7 +7,9 @@
 var os = require('os');
 var fs = require('fs');
 var glob = require('fast-glob');
-var shell = require('..');
+
+var shell = {};
+exports.shell = shell;
 
 var shellMethods = Object.create(shell);
 

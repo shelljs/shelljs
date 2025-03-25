@@ -7,6 +7,7 @@
 //
 
 var common = require('./src/common');
+module.exports = common.shell;
 
 //@
 //@ All commands run synchronously, unless otherwise stated.
@@ -58,7 +59,7 @@ require('./src/which');
 //@ ### exit(code)
 //@
 //@ Exits the current process with the given exit `code`.
-exports.exit = function exit(code) {
+module.exports.exit = function exit(code) {
   common.state.error = null;
   common.state.errorCode = 0;
   if (code) {
@@ -76,20 +77,20 @@ exports.exit = function exit(code) {
 };
 
 //@include ./src/error.js
-exports.error = require('./src/error');
+module.exports.error = require('./src/error');
 
 //@include ./src/errorCode.js
-exports.errorCode = require('./src/errorCode');
+module.exports.errorCode = require('./src/errorCode');
 
 //@include ./src/common.js
-exports.ShellString = common.ShellString;
+module.exports.ShellString = common.ShellString;
 
 //@
 //@ ### env['VAR_NAME']
 //@
 //@ Object containing environment variables (both getter and setter). Shortcut
 //@ to `process.env`.
-exports.env = process.env;
+module.exports.env = process.env;
 
 //@
 //@ ### Pipes
@@ -110,7 +111,7 @@ exports.env = process.env;
 //@ ## Configuration
 //@
 
-exports.config = common.config;
+module.exports.config = common.config;
 
 //@
 //@ ### config.silent
