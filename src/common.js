@@ -447,7 +447,11 @@ function wrap(cmd, fn, options) {
         // Perform glob-expansion on all arguments after globStart, but preserve
         // the arguments before it (like regexes for sed and grep)
         if (!config.noglob && options.allowGlobbing === true) {
-          args = args.slice(0, options.globStart).concat(expand(args.slice(options.globStart)));
+          var globStart =
+            options.globStart instanceof Function
+              ? options.globStart(args)
+              : options.globStart;
+          args = args.slice(0, globStart).concat(expand(args.slice(globStart)));
         }
 
         try {
@@ -517,9 +521,20 @@ function _register(name, implementation, wrapOptions) {
     if (!DEFAULT_WRAP_OPTIONS.hasOwnProperty(option)) {
       throw new Error("Unknown option '" + option + "'");
     }
-    if (typeof wrapOptions[option] !== typeof DEFAULT_WRAP_OPTIONS[option]) {
-      throw new TypeError("Unsupported type '" + typeof wrapOptions[option] +
-        "' for option '" + option + "'");
+    if (
+      (option === 'globStart' &&
+        typeof wrapOptions[option] !== 'number' &&
+        typeof wrapOptions[option] !== 'function') ||
+      (option !== 'globStart' &&
+        typeof wrapOptions[option] !== typeof DEFAULT_WRAP_OPTIONS[option])
+    ) {
+      throw new TypeError(
+        "Unsupported type '" +
+          typeof wrapOptions[option] +
+          "' for option '" +
+          option +
+          "'"
+      );
     }
   });
 
