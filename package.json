@@ -91,5 +91,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "prettier": {
+    "arrowParens": "avoid"
   }
 }
