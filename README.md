@@ -419,6 +419,8 @@ Available options:
 + `-l`: Print only filenames of matching files.
 + `-i`: Ignore case.
 + `-n`: Print line numbers.
++ `-B <num>`: Show `<num>` lines before each result.
++ `-A <num>`: Show `<num>` lines after each result.
 
 Examples:
 

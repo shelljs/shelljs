@@ -174,3 +174,118 @@ test('the pattern looks like an option', t => {
   t.falsy(shell.error());
   t.is(result.toString(), '-v\n-vv\n');
 });
+
+//
+// Before & after contexts
+//
+const contextOptions = ['test*', 'test/resources/grep/file3'];
+
+// key is expected results and value is an array of arguments to test
+const beforeAndAfterTests = {
+  // before context
+  'line1\nline2 test line\n--\nline1\nline2 test line\nline3 test line\n--\nline7\nline8\nline9\nline10 test line\n--\nline12\nline13\nline14\nline15 test line\n':
+    [['-B3'], ['-B', 3], ['-B3i'], ['-Bi', 3], ['-iB3'], ['-iB', 3]],
+  // before context + line numbers
+  '1-line1\n2:line2 test line\n--\n1-line1\n2-line2 test line\n3:line3 test line\n--\n7-line7\n8-line8\n9-line9\n10:line10 test line\n--\n12-line12\n13-line13\n14-line14\n15:line15 test line\n':
+    [
+      ['-B3n'],
+      ['-Bn', 3],
+      ['-B3ni'],
+      ['-Bni', 3],
+      ['-nB3'],
+      ['-nB', 3],
+      ['-niB3'],
+      ['-niB', 3],
+    ],
+  // after context
+  'line2 test line\nline3 test line\nline4\n--\nline3 test line\nline4\nline5\n--\nline10 test line\nline11\nline12\n--\nline15 test line\n\n':
+    [['-A2'], ['-A', 2], ['-A2i'], ['-Ai', 2], ['-iA2'], ['-iA', 2]],
+  // after context + line numbers
+  '2:line2 test line\n3-line3 test line\n4-line4\n--\n3:line3 test line\n4-line4\n5-line5\n--\n10:line10 test line\n11-line11\n12-line12\n--\n15:line15 test line\n\n':
+    [
+      ['-A2n'],
+      ['-An', 2],
+      ['-A2ni'],
+      ['-Ani', 2],
+      ['-nA2'],
+      ['-nA', 2],
+      ['-niA2'],
+      ['-niA', 2],
+    ],
+  // before + after same value
+  'line1\nline2 test line\nline3 test line\nline4\nline5\n--\nline1\nline2 test line\nline3 test line\nline4\nline5\nline6\n--\nline7\nline8\nline9\nline10 test line\nline11\nline12\nline13\n--\nline12\nline13\nline14\nline15 test line\n\n':
+    [
+      ['-AB3'],
+      ['-AB', 3],
+      ['-BA3'],
+      ['-BA', 3],
+      ['-AB3i'],
+      ['-ABi', 3],
+      ['-BA3i'],
+      ['-BAi', 3],
+      ['-iAB3'],
+      ['-iAB', 3],
+      ['-iBA3'],
+      ['-iBA', 3],
+    ],
+  // before + after different values
+  'line1\nline2 test line\nline3 test line\nline4\n--\nline1\nline2 test line\nline3 test line\nline4\nline5\n--\nline7\nline8\nline9\nline10 test line\nline11\nline12\n--\nline12\nline13\nline14\nline15 test line\n\n':
+    [
+      ['-A2B3'],
+      ['-A2', '-B3'],
+      ['-A', 2, '-B', 3],
+      ['-A2B3i'],
+      ['-A2', '-B3', '-i'],
+      ['-A', 2, '-B', 3, '-i'],
+      ['-iA2B3'],
+      ['-i', '-A2', '-B3'],
+      ['-i', '-A', 2, '-B', 3],
+    ],
+  // before + after + line numbers same value
+  '1-line1\n2:line2 test line\n3-line3 test line\n4-line4\n5-line5\n--\n1-line1\n2-line2 test line\n3:line3 test line\n4-line4\n5-line5\n6-line6\n--\n7-line7\n8-line8\n9-line9\n10:line10 test line\n11-line11\n12-line12\n13-line13\n--\n12-line12\n13-line13\n14-line14\n15:line15 test line\n\n':
+    [
+      ['-AB3n'],
+      ['-nAB3'],
+      ['-n', '-AB3'],
+      ['-n', '-AB', 3],
+      ['-nAB', 3],
+      ['-AB3ni'],
+      ['-niAB3'],
+      ['-ni', '-AB3'],
+      ['-ni', '-AB', 3],
+    ],
+  // before + after + line numbers different values
+  '1-line1\n2:line2 test line\n3-line3 test line\n4-line4\n--\n1-line1\n2-line2 test line\n3:line3 test line\n4-line4\n5-line5\n--\n7-line7\n8-line8\n9-line9\n10:line10 test line\n11-line11\n12-line12\n--\n12-line12\n13-line13\n14-line14\n15:line15 test line\n\n':
+    [
+      ['-A2B3n'],
+      ['-A2', '-B3', '-n'],
+      ['-A', 2, '-B', 3, '-n'],
+      ['-nA2B3'],
+      ['-n', '-A2', '-B3'],
+      ['-n', '-A', 2, '-B', 3],
+      ['-nA2', '-B3'],
+      ['-nA', 2, '-B', 3],
+      ['-A2', '-nB3'],
+      ['-A', 2, '-nB', 3],
+      ['-A2n', '-B3'],
+      ['-An', 2, '-B', 3],
+      ['-A2', '-B3n'],
+      ['-A', 2, '-Bn', 3],
+      ['-A2B3in'],
+      ['-A2', '-B3', '-in'],
+      ['-A', 2, '-B', 3, '-in'],
+      ['-inA2B3'],
+      ['-in', '-A2', '-B3'],
+      ['-in', '-A', 2, '-B', 3],
+    ],
+};
+
+Object.keys(beforeAndAfterTests).forEach(k => {
+  beforeAndAfterTests[k].forEach(v => {
+    test(v.join(' '), t => {
+      const result = shell.grep(...v, ...contextOptions);
+      t.falsy(shell.error());
+      t.is(result.toString(), k);
+    });
+  });
+});

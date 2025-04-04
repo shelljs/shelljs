@@ -2,15 +2,54 @@ var common = require('./common');
 var fs = require('fs');
 
 common.register('grep', _grep, {
-  globStart: 2, // don't glob-expand the regex
+  globStart: _getGlobStart, // don't glob-expand the regex
   canReceivePipe: true,
-  cmdOptions: {
-    'v': 'inverse',
-    'l': 'nameOnly',
-    'i': 'ignoreCase',
-    'n': 'lineNumber',
-  },
 });
+
+// Gets the index of the first argument after `regex_filter`
+function _getGlobStart(args) {
+  return (
+    Array.prototype.findIndex.call(args, function (v) {
+      return (
+        v instanceof RegExp ||
+        (typeof v === 'string' && v !== '' && !v.startsWith('-'))
+      );
+    }) + 1
+  );
+}
+
+// Gets the value of the `beforeContext` or `afterContext` options, removing
+// them from the `options` string
+function _getContextOption(options, option) {
+  var regex = new RegExp('-(\\w*)' + option + '([A-Za-z]*) ?(\\d*)(.*)');
+  var value = null;
+  var replaced = options.replace(regex, function (_, before, after, val, rest) {
+    var result = '';
+    if (before || after || rest) {
+      result = (before + after + rest).trim();
+      if (result && !result.startsWith('-')) {
+        result = '-' + result;
+      }
+    }
+    value = parseInt(val);
+    return result;
+  });
+  return { options: replaced, value: value };
+}
+
+// Gets the value of the `before` and `after` context options
+function _getContextOptions(options) {
+  var before = _getContextOption(options, 'B');
+  var after = _getContextOption(before.options, 'A');
+  if (Number.isNaN(after.value)) {
+    after.value = before.value;
+  }
+  return {
+    before: before.value,
+    after: after.value,
+    options: after.options.trim(),
+  };
+}
 
 //@
 //@ ### grep([options,] regex_filter, file [, file ...])
@@ -22,6 +61,8 @@ common.register('grep', _grep, {
 //@ + `-l`: Print only filenames of matching files.
 //@ + `-i`: Ignore case.
 //@ + `-n`: Print line numbers.
+//@ + `-B <num>`: Show `<num>` lines before each result.
+//@ + `-A <num>`: Show `<num>` lines after each result.
 //@
 //@ Examples:
 //@
@@ -39,11 +80,23 @@ function _grep(options, regex, files) {
 
   if (!files && !pipe) common.error('no paths given', 2);
 
-  files = [].slice.call(arguments, 2);
+  var args = Array.from(arguments);
+  var idx = args[0] === '--' ? 2 : _getGlobStart(args);
+  options = args.slice(0, idx - 1).join(' ');
+  regex = args[idx - 1];
+  files = args.slice(idx);
 
   if (pipe) {
     files.unshift('-');
   }
+
+  var contextOptions = _getContextOptions(options);
+  options = common.parseOptions(contextOptions.options, {
+    v: 'inverse',
+    l: 'nameOnly',
+    i: 'ignoreCase',
+    n: 'lineNumber',
+  });
 
   var grep = [];
   if (options.ignoreCase) {
@@ -69,6 +122,31 @@ function _grep(options, regex, files) {
           if (options.lineNumber) {
             result = '' + (index + 1) + ':' + line;
           }
+          if (contextOptions.before) {
+            var before = Array.from(
+              lines
+                .slice(Math.max(index - contextOptions.before, 0), index)
+                .map(function (v, i, a) {
+                  return options.lineNumber
+                    ? index - a.length + i + 1 + '-' + v
+                    : v;
+                })
+            );
+            result = before.join('\n') + '\n' + result;
+          }
+          if (contextOptions.after) {
+            var after = Array.from(
+              lines
+                .slice(
+                  index + 1,
+                  Math.min(index + contextOptions.after + 1, lines.length - 1)
+                )
+                .map(function (v, i) {
+                  return options.lineNumber ? index + 1 + (i + 1) + '-' + v : v;
+                })
+            );
+            result += '\n' + after.join('\n');
+          }
           grep.push(result);
         }
       });
@@ -79,6 +157,11 @@ function _grep(options, regex, files) {
     // We didn't hit the error above, but pattern didn't match
     common.error('', { silent: true });
   }
-  return grep.join('\n') + '\n';
+
+  var separator = '\n';
+  if (contextOptions.before || contextOptions.after) {
+    separator = '\n--\n';
+  }
+  return grep.join(separator) + '\n';
 }
 module.exports = _grep;
