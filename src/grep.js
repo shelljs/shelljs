@@ -8,14 +8,14 @@ common.register('grep', _grep, {
 
 // Gets the index of the first argument after `regex_filter`
 function _getGlobStart(args) {
-  return (
-    Array.prototype.findIndex.call(args, function (v) {
-      return (
-        v instanceof RegExp ||
-        (typeof v === 'string' && v !== '' && !v.startsWith('-'))
-      );
-    }) + 1
-  );
+  return args[0] === '--'
+    ? 2
+    : Array.prototype.findIndex.call(args, function (v) {
+        return (
+          v instanceof RegExp ||
+          (typeof v === 'string' && v !== '' && !v.startsWith('-'))
+        );
+      }) + 1;
 }
 
 // Gets the value of the `beforeContext` or `afterContext` options, removing
@@ -81,7 +81,7 @@ function _grep(options, regex, files) {
   if (!files && !pipe) common.error('no paths given', 2);
 
   var args = Array.from(arguments);
-  var idx = args[0] === '--' ? 2 : _getGlobStart(args);
+  var idx = _getGlobStart(args);
   options = args.slice(0, idx - 1).join(' ');
   regex = args[idx - 1];
   files = args.slice(idx);
