@@ -9,6 +9,8 @@ common.register('grep', _grep, {
     'l': 'nameOnly',
     'i': 'ignoreCase',
     'n': 'lineNumber',
+    'B': 'beforeContext',
+    'A': 'afterContext',
   },
 });
 
@@ -22,12 +24,15 @@ common.register('grep', _grep, {
 //@ + `-l`: Print only filenames of matching files.
 //@ + `-i`: Ignore case.
 //@ + `-n`: Print line numbers.
+//@ + `-B <num>`: Show `<num>` lines before each result.
+//@ + `-A <num>`: Show `<num>` lines after each result.
 //@
 //@ Examples:
 //@
 //@ ```javascript
 //@ grep('-v', 'GLOBAL_VARIABLE', '*.js');
 //@ grep('GLOBAL_VARIABLE', '*.js');
+//@ grep('-B', 3, 'GLOBAL_VARIABLE', '*.js');
 //@ ```
 //@
 //@ Reads input string from given files and returns a
@@ -39,7 +44,17 @@ function _grep(options, regex, files) {
 
   if (!files && !pipe) common.error('no paths given', 2);
 
-  files = [].slice.call(arguments, 2);
+  var idx = 2;
+  if (options.beforeContext === true) {
+    idx = 3;
+    options.beforeContext = Number(arguments[1]);
+  }
+  if (options.afterContext === true) {
+    idx = 3;
+    options.afterContext = Number(arguments[1]);
+  }
+  regex = arguments[idx - 1];
+  files = [].slice.call(arguments, idx);
 
   if (pipe) {
     files.unshift('-');
@@ -69,6 +84,31 @@ function _grep(options, regex, files) {
           if (options.lineNumber) {
             result = '' + (index + 1) + ':' + line;
           }
+          if (options.beforeContext) {
+            var before = Array.from(
+              lines
+                .slice(Math.max(index - options.beforeContext, 0), index)
+                .map(function (v, i, a) {
+                  return options.lineNumber
+                    ? index - a.length + i + 1 + '-' + v
+                    : v;
+                })
+            );
+            result = before.join('\n') + '\n' + result;
+          }
+          if (options.afterContext) {
+            var after = Array.from(
+              lines
+                .slice(
+                  index + 1,
+                  Math.min(index + options.afterContext + 1, lines.length - 1)
+                )
+                .map(function (v, i) {
+                  return options.lineNumber ? index + 1 + (i + 1) + '-' + v : v;
+                })
+            );
+            result += '\n' + after.join('\n');
+          }
           grep.push(result);
         }
       });
@@ -79,6 +119,11 @@ function _grep(options, regex, files) {
     // We didn't hit the error above, but pattern didn't match
     common.error('', { silent: true });
   }
-  return grep.join('\n') + '\n';
+
+  var separator = '\n';
+  if (options.beforeContext || options.afterContext) {
+    separator = '\n--\n';
+  }
+  return grep.join(separator) + '\n';
 }
 module.exports = _grep;
