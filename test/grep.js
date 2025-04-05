@@ -178,10 +178,8 @@ test('the pattern looks like an option', t => {
 //
 // Before & after contexts
 //
-const contextOptions = ['test*', 'test/resources/grep/file3'];
-
 test('-B option', t => {
-  const result = shell.grep('-B', 3, ...contextOptions);
+  const result = shell.grep('-B', 3, 'test*', 'test/resources/grep/file3');
   t.falsy(shell.error());
   t.is(
     result.toString(),
@@ -205,7 +203,7 @@ test('-B option', t => {
 });
 
 test('-B option, -n option', t => {
-  const result = shell.grep('-nB', 3, ...contextOptions);
+  const result = shell.grep('-nB', 3, 'test*', 'test/resources/grep/file3');
   t.falsy(shell.error());
   t.is(
     result.toString(),
@@ -229,7 +227,7 @@ test('-B option, -n option', t => {
 });
 
 test('-A option, separated', t => {
-  const result = shell.grep('-A', 2, ...contextOptions);
+  const result = shell.grep('-A', 2, 'test*', 'test/resources/grep/file3');
   t.falsy(shell.error());
   t.is(
     result.toString(),
@@ -250,7 +248,7 @@ test('-A option, separated', t => {
 });
 
 test('-A option, -n option', t => {
-  const result = shell.grep('-nA', 2, ...contextOptions);
+  const result = shell.grep('-nA', 2, 'test*', 'test/resources/grep/file3');
   t.falsy(shell.error());
   t.is(
     result.toString(),
@@ -271,7 +269,7 @@ test('-A option, -n option', t => {
 });
 
 test('-AB option, separated, same', t => {
-  const result = shell.grep('-AB', 3, ...contextOptions);
+  const result = shell.grep('-AB', 3, 'test*', 'test/resources/grep/file3');
   t.falsy(shell.error());
   t.is(
     result.toString(),
@@ -304,7 +302,7 @@ test('-AB option, separated, same', t => {
 });
 
 test('-AB option, separated, different', t => {
-  const result = shell.grep({ '-A': 2, '-B': 3 }, ...contextOptions);
+  const result = shell.grep({ '-A': 2, '-B': 3 }, 'test*', 'test/resources/grep/file3');
   t.falsy(shell.error());
   t.is(
     result.toString(),
@@ -334,7 +332,7 @@ test('-AB option, separated, different', t => {
 });
 
 test('-AB option, -n option, separated, same', t => {
-  const result = shell.grep('-nAB', 3, ...contextOptions);
+  const result = shell.grep('-nAB', 3, 'test*', 'test/resources/grep/file3');
   t.falsy(shell.error());
   t.is(
     result.toString(),
@@ -369,7 +367,7 @@ test('-AB option, -n option, separated, same', t => {
 test('-AB option, -n option, separated, different', t => {
   const result = shell.grep(
     { '-n': true, '-A': 2, '-B': 3 },
-    ...contextOptions
+    'test*', 'test/resources/grep/file3'
   );
   t.falsy(shell.error());
   t.is(
