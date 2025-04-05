@@ -2,54 +2,17 @@ var common = require('./common');
 var fs = require('fs');
 
 common.register('grep', _grep, {
-  globStart: _getGlobStart, // don't glob-expand the regex
+  globStart: 2, // don't glob-expand the regex
   canReceivePipe: true,
+  cmdOptions: {
+    'v': 'inverse',
+    'l': 'nameOnly',
+    'i': 'ignoreCase',
+    'n': 'lineNumber',
+    'B': 'beforeContext',
+    'A': 'afterContext',
+  },
 });
-
-// Gets the index of the first argument after `regex_filter`
-function _getGlobStart(args) {
-  return args[0] === '--'
-    ? 2
-    : Array.prototype.findIndex.call(args, function (v) {
-        return (
-          v instanceof RegExp ||
-          (typeof v === 'string' && v !== '' && !v.startsWith('-'))
-        );
-      }) + 1;
-}
-
-// Gets the value of the `beforeContext` or `afterContext` options, removing
-// them from the `options` string
-function _getContextOption(options, option) {
-  var regex = new RegExp('-(\\w*)' + option + '([A-Za-z]*) ?(\\d*)(.*)');
-  var value = null;
-  var replaced = options.replace(regex, function (_, before, after, val, rest) {
-    var result = '';
-    if (before || after || rest) {
-      result = (before + after + rest).trim();
-      if (result && !result.startsWith('-')) {
-        result = '-' + result;
-      }
-    }
-    value = parseInt(val);
-    return result;
-  });
-  return { options: replaced, value: value };
-}
-
-// Gets the value of the `before` and `after` context options
-function _getContextOptions(options) {
-  var before = _getContextOption(options, 'B');
-  var after = _getContextOption(before.options, 'A');
-  if (Number.isNaN(after.value)) {
-    after.value = before.value;
-  }
-  return {
-    before: before.value,
-    after: after.value,
-    options: after.options.trim(),
-  };
-}
 
 //@
 //@ ### grep([options,] regex_filter, file [, file ...])
@@ -69,6 +32,7 @@ function _getContextOptions(options) {
 //@ ```javascript
 //@ grep('-v', 'GLOBAL_VARIABLE', '*.js');
 //@ grep('GLOBAL_VARIABLE', '*.js');
+//@ grep('-B', 3, 'GLOBAL_VARIABLE', '*.js');
 //@ ```
 //@
 //@ Reads input string from given files and returns a
@@ -80,23 +44,21 @@ function _grep(options, regex, files) {
 
   if (!files && !pipe) common.error('no paths given', 2);
 
-  var args = Array.from(arguments);
-  var idx = _getGlobStart(args);
-  options = args.slice(0, idx - 1).join(' ');
-  regex = args[idx - 1];
-  files = args.slice(idx);
+  var idx = 2;
+  if (options.beforeContext === true) {
+    idx = 3;
+    options.beforeContext = Number(arguments[1]);
+  }
+  if (options.afterContext === true) {
+    idx = 3;
+    options.afterContext = Number(arguments[1]);
+  }
+  regex = arguments[idx - 1];
+  files = [].slice.call(arguments, idx);
 
   if (pipe) {
     files.unshift('-');
   }
-
-  var contextOptions = _getContextOptions(options);
-  options = common.parseOptions(contextOptions.options, {
-    v: 'inverse',
-    l: 'nameOnly',
-    i: 'ignoreCase',
-    n: 'lineNumber',
-  });
 
   var grep = [];
   if (options.ignoreCase) {
@@ -122,10 +84,10 @@ function _grep(options, regex, files) {
           if (options.lineNumber) {
             result = '' + (index + 1) + ':' + line;
           }
-          if (contextOptions.before) {
+          if (options.beforeContext) {
             var before = Array.from(
               lines
-                .slice(Math.max(index - contextOptions.before, 0), index)
+                .slice(Math.max(index - options.beforeContext, 0), index)
                 .map(function (v, i, a) {
                   return options.lineNumber
                     ? index - a.length + i + 1 + '-' + v
@@ -134,12 +96,12 @@ function _grep(options, regex, files) {
             );
             result = before.join('\n') + '\n' + result;
           }
-          if (contextOptions.after) {
+          if (options.afterContext) {
             var after = Array.from(
               lines
                 .slice(
                   index + 1,
-                  Math.min(index + contextOptions.after + 1, lines.length - 1)
+                  Math.min(index + options.afterContext + 1, lines.length - 1)
                 )
                 .map(function (v, i) {
                   return options.lineNumber ? index + 1 + (i + 1) + '-' + v : v;
@@ -159,7 +121,7 @@ function _grep(options, regex, files) {
   }
 
   var separator = '\n';
-  if (contextOptions.before || contextOptions.after) {
+  if (options.beforeContext || options.afterContext) {
     separator = '\n--\n';
   }
   return grep.join(separator) + '\n';
