@@ -428,6 +428,7 @@ Examples:
 grep('-v', 'GLOBAL_VARIABLE', '*.js');
 grep('GLOBAL_VARIABLE', '*.js');
 grep('-B', 3, 'GLOBAL_VARIABLE', '*.js');
+grep({ '-B': 3 }, 'GLOBAL_VARIABLE', '*.js');
 ```
 
 Reads input string from given files and returns a
