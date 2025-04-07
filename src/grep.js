@@ -46,6 +46,7 @@ function _grep(options, regex, files) {
   if (!files && !pipe) common.error('no paths given', 2);
 
   var idx = 2;
+  // If the option has been found but not read, copy value from arguments
   if (options.beforeContext === true) {
     idx = 3;
     options.beforeContext = Number(arguments[1]);
