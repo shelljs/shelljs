@@ -79,41 +79,79 @@ function _grep(options, regex, files) {
       }
     } else {
       var lines = contents.split('\n');
+      var matches = [];
+
       lines.forEach(function (line, index) {
         var matched = line.match(regex);
         if ((options.inverse && !matched) || (!options.inverse && matched)) {
-          var result = line;
-          if (options.lineNumber) {
-            result = '' + (index + 1) + ':' + line;
-          }
-          if (options.beforeContext) {
-            var before = Array.from(
-              lines
-                .slice(Math.max(index - options.beforeContext, 0), index)
-                .map(function (v, i, a) {
-                  return options.lineNumber
-                    ? index - a.length + i + 1 + '-' + v
-                    : v;
-                })
+          var lineNumber = index + 1;
+          var result = {};
+          if (matches.length > 0) {
+            // If the last result intersects, combine them
+            var last = matches[matches.length - 1];
+            var minimumLineNumber = Math.max(
+              1,
+              lineNumber - options.beforeContext - 1
             );
-            result = before.join('\n') + '\n' + result;
+            if (
+              last.hasOwnProperty('' + lineNumber) ||
+              last.hasOwnProperty('' + minimumLineNumber)
+            ) {
+              result = last;
+            }
           }
-          if (options.afterContext) {
-            var after = Array.from(
-              lines
-                .slice(
-                  index + 1,
-                  Math.min(index + options.afterContext + 1, lines.length - 1)
-                )
-                .map(function (v, i) {
-                  return options.lineNumber ? index + 1 + (i + 1) + '-' + v : v;
-                })
-            );
-            result += '\n' + after.join('\n');
+          result[lineNumber] = {
+            line: line,
+            match: true,
+          };
+          if (options.beforeContext > 0) {
+            // Store the lines with their line numbers to check for overlap
+            lines
+              .slice(Math.max(index - options.beforeContext, 0), index)
+              .forEach(function (v, i, a) {
+                var lineNum = '' + (index - a.length + i + 1);
+                if (!result.hasOwnProperty(lineNum)) {
+                  result[lineNum] = { line: v, match: false };
+                }
+              });
           }
-          grep.push(result);
+          if (options.afterContext > 0) {
+            // Store the lines with their line numbers to check for overlap
+            lines
+              .slice(
+                index + 1,
+                Math.min(index + options.afterContext + 1, lines.length - 1)
+              )
+              .forEach(function (v, i) {
+                var lineNum = '' + (index + 1 + i + 1);
+                if (!result.hasOwnProperty(lineNum)) {
+                  result[lineNum] = { line: v, match: false };
+                }
+              });
+          }
+          // Only add the result if it's new
+          if (!matches.includes(result)) {
+            matches.push(result);
+          }
         }
       });
+
+      // Loop through the matches and add them to the output
+      Array.prototype.push.apply(
+        grep,
+        matches.map(function (result) {
+          return Object.entries(result)
+            .map(function (entry) {
+              var lineNumber = entry[0];
+              var line = entry[1].line;
+              var match = entry[1].match;
+              return options.lineNumber
+                ? lineNumber + (match ? ':' : '-') + line
+                : line;
+            })
+            .join('\n');
+        })
+      );
     }
   });
 

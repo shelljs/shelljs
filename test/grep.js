@@ -185,9 +185,6 @@ test('-B option', t => {
     result.toString(),
     'line1\n' +
       'line2 test line\n' +
-      '--\n' +
-      'line1\n' +
-      'line2 test line\n' +
       'line3 test line\n' +
       '--\n' +
       'line7\n' +
@@ -209,9 +206,6 @@ test('-B option, -n option', t => {
     result.toString(),
     '1-line1\n' +
       '2:line2 test line\n' +
-      '--\n' +
-      '1-line1\n' +
-      '2-line2 test line\n' +
       '3:line3 test line\n' +
       '--\n' +
       '7-line7\n' +
@@ -226,7 +220,7 @@ test('-B option, -n option', t => {
   );
 });
 
-test('-A option, separated', t => {
+test('-A option', t => {
   const result = shell.grep('-A', 2, 'test*', 'test/resources/grep/file3');
   t.falsy(shell.error());
   t.is(
@@ -234,84 +228,26 @@ test('-A option, separated', t => {
     'line2 test line\n' +
       'line3 test line\n' +
       'line4\n' +
-      '--\n' +
-      'line3 test line\n' +
-      'line4\n' +
       'line5\n' +
       '--\n' +
       'line10 test line\n' +
       'line11\n' +
       'line12\n' +
       '--\n' +
-      'line15 test line\n\n'
+      'line15 test line\n'
   );
 });
 
-test('-A option, -n option', t => {
-  const result = shell.grep('-nA', 2, 'test*', 'test/resources/grep/file3');
-  t.falsy(shell.error());
-  t.is(
-    result.toString(),
-    '2:line2 test line\n' +
-      '3-line3 test line\n' +
-      '4-line4\n' +
-      '--\n' +
-      '3:line3 test line\n' +
-      '4-line4\n' +
-      '5-line5\n' +
-      '--\n' +
-      '10:line10 test line\n' +
-      '11-line11\n' +
-      '12-line12\n' +
-      '--\n' +
-      '15:line15 test line\n\n'
+test('-A option, -B option', t => {
+  const result = shell.grep(
+    { '-A': 2, '-B': 3 },
+    'test*',
+    'test/resources/grep/file3'
   );
-});
-
-test('-AB option, separated, same', t => {
-  const result = shell.grep('-AB', 3, 'test*', 'test/resources/grep/file3');
   t.falsy(shell.error());
   t.is(
     result.toString(),
     'line1\n' +
-      'line2 test line\n' +
-      'line3 test line\n' +
-      'line4\n' +
-      'line5\n' +
-      '--\n' +
-      'line1\n' +
-      'line2 test line\n' +
-      'line3 test line\n' +
-      'line4\n' +
-      'line5\n' +
-      'line6\n' +
-      '--\n' +
-      'line7\n' +
-      'line8\n' +
-      'line9\n' +
-      'line10 test line\n' +
-      'line11\n' +
-      'line12\n' +
-      'line13\n' +
-      '--\n' +
-      'line12\n' +
-      'line13\n' +
-      'line14\n' +
-      'line15 test line\n\n'
-  );
-});
-
-test('-AB option, separated, different', t => {
-  const result = shell.grep({ '-A': 2, '-B': 3 }, 'test*', 'test/resources/grep/file3');
-  t.falsy(shell.error());
-  t.is(
-    result.toString(),
-    'line1\n' +
-      'line2 test line\n' +
-      'line3 test line\n' +
-      'line4\n' +
-      '--\n' +
-      'line1\n' +
       'line2 test line\n' +
       'line3 test line\n' +
       'line4\n' +
@@ -323,62 +259,23 @@ test('-AB option, separated, different', t => {
       'line10 test line\n' +
       'line11\n' +
       'line12\n' +
-      '--\n' +
-      'line12\n' +
       'line13\n' +
       'line14\n' +
-      'line15 test line\n\n'
+      'line15 test line\n'
   );
 });
 
-test('-AB option, -n option, separated, same', t => {
-  const result = shell.grep('-nAB', 3, 'test*', 'test/resources/grep/file3');
-  t.falsy(shell.error());
-  t.is(
-    result.toString(),
-    '1-line1\n' +
-      '2:line2 test line\n' +
-      '3-line3 test line\n' +
-      '4-line4\n' +
-      '5-line5\n' +
-      '--\n' +
-      '1-line1\n' +
-      '2-line2 test line\n' +
-      '3:line3 test line\n' +
-      '4-line4\n' +
-      '5-line5\n' +
-      '6-line6\n' +
-      '--\n' +
-      '7-line7\n' +
-      '8-line8\n' +
-      '9-line9\n' +
-      '10:line10 test line\n' +
-      '11-line11\n' +
-      '12-line12\n' +
-      '13-line13\n' +
-      '--\n' +
-      '12-line12\n' +
-      '13-line13\n' +
-      '14-line14\n' +
-      '15:line15 test line\n\n'
-  );
-});
-
-test('-AB option, -n option, separated, different', t => {
+test('-A option, -B option, -n option', t => {
   const result = shell.grep(
     { '-n': true, '-A': 2, '-B': 3 },
-    'test*', 'test/resources/grep/file3'
+    'test*',
+    'test/resources/grep/file3'
   );
   t.falsy(shell.error());
   t.is(
     result.toString(),
     '1-line1\n' +
       '2:line2 test line\n' +
-      '3-line3 test line\n' +
-      '4-line4\n' +
-      '--\n' +
-      '1-line1\n' +
-      '2-line2 test line\n' +
       '3:line3 test line\n' +
       '4-line4\n' +
       '5-line5\n' +
@@ -389,10 +286,8 @@ test('-AB option, -n option, separated, different', t => {
       '10:line10 test line\n' +
       '11-line11\n' +
       '12-line12\n' +
-      '--\n' +
-      '12-line12\n' +
       '13-line13\n' +
       '14-line14\n' +
-      '15:line15 test line\n\n'
+      '15:line15 test line\n'
   );
 });
