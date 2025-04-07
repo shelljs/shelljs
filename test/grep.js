@@ -291,3 +291,49 @@ test('-A option, -B option, -n option', t => {
       '15:line15 test line\n'
   );
 });
+
+test('-C option', t => {
+  const result = shell.grep('-C', 3, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line1\n' +
+      'line2 test line\n' +
+      'line3 test line\n' +
+      'line4\n' +
+      'line5\n' +
+      'line6\n' +
+      'line7\n' +
+      'line8\n' +
+      'line9\n' +
+      'line10 test line\n' +
+      'line11\n' +
+      'line12\n' +
+      'line13\n' +
+      'line14\n' +
+      'line15 test line\n'
+  );
+});
+
+test('-C option, -n option', t => {
+  const result = shell.grep('-nC', 3, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    '1-line1\n' +
+      '2:line2 test line\n' +
+      '3:line3 test line\n' +
+      '4-line4\n' +
+      '5-line5\n' +
+      '6-line6\n' +
+      '7-line7\n' +
+      '8-line8\n' +
+      '9-line9\n' +
+      '10:line10 test line\n' +
+      '11-line11\n' +
+      '12-line12\n' +
+      '13-line13\n' +
+      '14-line14\n' +
+      '15:line15 test line\n'
+  );
+});

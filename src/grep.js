@@ -11,6 +11,7 @@ common.register('grep', _grep, {
     'n': 'lineNumber',
     'B': 'beforeContext',
     'A': 'afterContext',
+    'C': 'context',
   },
 });
 
@@ -26,6 +27,7 @@ common.register('grep', _grep, {
 //@ + `-n`: Print line numbers.
 //@ + `-B <num>`: Show `<num>` lines before each result.
 //@ + `-A <num>`: Show `<num>` lines after each result.
+//@ + `-C <num>`: Show `<num>` lines before and after each result. -B and -A override this option.
 //@
 //@ Examples:
 //@
@@ -34,6 +36,7 @@ common.register('grep', _grep, {
 //@ grep('GLOBAL_VARIABLE', '*.js');
 //@ grep('-B', 3, 'GLOBAL_VARIABLE', '*.js');
 //@ grep({ '-B': 3 }, 'GLOBAL_VARIABLE', '*.js');
+//@ grep({ '-B': 3, '-C': 2 }, 'GLOBAL_VARIABLE', '*.js');
 //@ ```
 //@
 //@ Reads input string from given files and returns a
@@ -54,6 +57,10 @@ function _grep(options, regex, files) {
   if (options.afterContext === true) {
     idx = 3;
     options.afterContext = Number(arguments[1]);
+  }
+  if (options.context === true) {
+    idx = 3;
+    options.context = Number(arguments[1]);
   }
   regex = arguments[idx - 1];
   files = [].slice.call(arguments, idx);
@@ -80,6 +87,16 @@ function _grep(options, regex, files) {
     } else {
       var lines = contents.split('\n');
       var matches = [];
+
+      //  If before or after not given but context is, update values
+      if (options.context) {
+        if (options.beforeContext === false) {
+          options.beforeContext = options.context;
+        }
+        if (options.afterContext === false) {
+          options.afterContext = options.context;
+        }
+      }
 
       lines.forEach(function (line, index) {
         var matched = line.match(regex);
