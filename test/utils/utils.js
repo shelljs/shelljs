@@ -1,5 +1,6 @@
 const child = require('child_process');
 const path = require('path');
+const { promisify } = require('node:util');
 
 const chalk = require('chalk');
 
@@ -33,8 +34,9 @@ function skipOnWinForEPERM(action, testCase) {
 }
 exports.skipOnWinForEPERM = skipOnWinForEPERM;
 
-function runScript(script, cb) {
-  child.execFile(common.config.execPath, ['-e', script], cb);
+function runScript(script) {
+  const promiseExec = promisify(child.execFile);
+  return promiseExec(common.config.execPath, ['-e', script]);
 }
 exports.runScript = runScript;
 

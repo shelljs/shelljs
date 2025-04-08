@@ -310,16 +310,14 @@ test('Some basic tests on the ShellString type', t => {
   t.truthy(result.toEnd);
 });
 
-test.cb('Commands that fail will still output error messages to stderr', t => {
+test('Commands that fail will still output error messages to stderr', async t => {
   const script = "require('./global'); ls('noexist'); cd('noexist');";
-  utils.runScript(script, (err, stdout, stderr) => {
-    t.is(stdout, '');
-    t.is(
-      stderr,
-      'ls: no such file or directory: noexist\ncd: no such file or directory: noexist\n'
-    );
-    t.end();
-  });
+  const result = await utils.runScript(script);
+  t.is(result.stdout, '');
+  t.is(
+    result.stderr,
+    'ls: no such file or directory: noexist\ncd: no such file or directory: noexist\n'
+  );
 });
 
 test('execPath value makes sense', t => {
