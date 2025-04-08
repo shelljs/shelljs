@@ -216,56 +216,53 @@ test('options.fatal = false and unknown command', t => {
 // async
 //
 
-test.cb('no callback', t => {
+function execAsync(...execArgs) {
+  return new Promise((resolve) => {
+    shell.exec(...execArgs, (code, stdout, stderr) => {
+      resolve({ code, stdout, stderr });
+    });
+  });
+}
+
+test('no callback', t => {
   const c = shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(1234)"`, { async: true });
   t.falsy(shell.error());
   t.truthy('stdout' in c, 'async exec returns child process object');
-  t.end();
 });
 
-test.cb('callback as 2nd argument', t => {
-  shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(5678);"`, (code, stdout, stderr) => {
-    t.is(code, 0);
-    t.is(stdout, '5678\n');
-    t.is(stderr, '');
-    t.end();
-  });
+test('callback as 2nd argument', async t => {
+  const result = await execAsync(`${JSON.stringify(shell.config.execPath)} -e "console.log(5678);"`);
+  t.is(result.code, 0);
+  t.is(result.stdout, '5678\n');
+  t.is(result.stderr, '');
 });
 
-test.cb('callback as end argument', t => {
-  shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(5566);"`, { async: true }, (code, stdout, stderr) => {
-    t.is(code, 0);
-    t.is(stdout, '5566\n');
-    t.is(stderr, '');
-    t.end();
-  });
+test('callback as end argument', async t => {
+  const result = await execAsync(`${JSON.stringify(shell.config.execPath)} -e "console.log(5566);"`, { async: true });
+  t.is(result.code, 0);
+  t.is(result.stdout, '5566\n');
+  t.is(result.stderr, '');
 });
 
-test.cb('callback as 3rd argument (silent:true)', t => {
-  shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(5678);"`, { silent: true }, (code, stdout, stderr) => {
-    t.is(code, 0);
-    t.is(stdout, '5678\n');
-    t.is(stderr, '');
-    t.end();
-  });
+test('callback as 3rd argument (silent:true)', async t => {
+  const result = await execAsync(`${JSON.stringify(shell.config.execPath)} -e "console.log(5678);"`, { silent: true });
+  t.is(result.code, 0);
+  t.is(result.stdout, '5678\n');
+  t.is(result.stderr, '');
 });
 
-test.cb('command that fails', t => {
-  shell.exec('shx cp onlyOneCpArgument.txt', { silent: true }, (code, stdout, stderr) => {
-    t.is(code, 1);
-    t.is(stdout, '');
-    t.is(stderr, 'cp: missing <source> and/or <dest>\n');
-    t.end();
-  });
+test('command that fails', async t => {
+  const result = await execAsync('shx cp onlyOneCpArgument.txt', { silent: true });
+  t.is(result.code, 1);
+  t.is(result.stdout, '');
+  t.is(result.stderr, 'cp: missing <source> and/or <dest>\n');
 });
 
-test.cb('encoding option works with async', t => {
-  shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(5566);"`, { async: true, encoding: 'buffer' }, (code, stdout, stderr) => {
-    t.is(code, 0);
-    t.truthy(Buffer.isBuffer(stdout));
-    t.truthy(Buffer.isBuffer(stderr));
-    t.is(stdout.toString(), '5566\n');
-    t.is(stderr.toString(), '');
-    t.end();
-  });
+test('encoding option works with async', async t => {
+  const result = await execAsync(`${JSON.stringify(shell.config.execPath)} -e "console.log(5566);"`, { async: true, encoding: 'buffer' });
+  t.is(result.code, 0);
+  t.truthy(Buffer.isBuffer(result.stdout));
+  t.truthy(Buffer.isBuffer(result.stderr));
+  t.is(result.stdout.toString(), '5566\n');
+  t.is(result.stderr.toString(), '');
 });
