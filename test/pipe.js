@@ -65,10 +65,16 @@ test('Synchronous exec', t => {
   t.is(result.toString(), 'alphaaaaaaabeta\nalphbeta\n');
 });
 
-test.cb('Asynchronous exec', t => {
-  shell.cat('test/resources/grep/file').exec('shx grep "alpha*beta"', (code, stdout) => {
-    t.is(code, 0);
-    t.is(stdout, 'alphaaaaaaabeta\nalphbeta\n');
-    t.end();
+test('Asynchronous exec', async t => {
+  const promise = new Promise(resolve => {
+    shell.cat('test/resources/grep/file')
+      .exec('shx grep "alpha*beta"', (code, stdout, stderr) => {
+        resolve({ code, stdout, stderr });
+      });
   });
+
+  const result = await promise;
+  t.is(result.code, 0);
+  t.is(result.stdout, 'alphaaaaaaabeta\nalphbeta\n');
+  t.is(result.stderr, '');
 });
