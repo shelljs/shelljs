@@ -1,7 +1,7 @@
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import utils from './utils/utils';
+const shell = require('..');
+const utils = require('./utils/utils');
 
 const oldConfigSilent = shell.config.silent;
 const uncaughtErrorExitCode = 1;

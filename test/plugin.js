@@ -1,8 +1,8 @@
-import test from 'ava';
+const test = require('ava');
 
 // This is the supported order for importing these files
-import plugin from '../plugin';
-import shell from '..';
+const plugin = require('../plugin');
+const shell = require('..');
 
 let data = 0;
 let fname;

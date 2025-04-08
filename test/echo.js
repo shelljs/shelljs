@@ -1,8 +1,8 @@
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import utils from './utils/utils';
-import mocks from './utils/mocks';
+const shell = require('..');
+const utils = require('./utils/utils');
+const mocks = require('./utils/mocks');
 
 shell.config.silent = true;
 

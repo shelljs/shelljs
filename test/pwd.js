@@ -1,9 +1,9 @@
-import path from 'path';
+const path = require('path');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import utils from './utils/utils';
+const shell = require('..');
+const utils = require('./utils/utils');
 
 const cur = process.cwd();
 

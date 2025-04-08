@@ -1,9 +1,9 @@
-import path from 'path';
+const path = require('path');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import mocks from './utils/mocks';
+const shell = require('..');
+const mocks = require('./utils/mocks');
 
 const rootDir = path.resolve();
 

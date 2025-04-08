@@ -1,10 +1,10 @@
-import fs from 'fs';
+const fs = require('fs');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import common from '../src/common';
-import utils from './utils/utils';
+const shell = require('..');
+const common = require('../src/common');
+const utils = require('./utils/utils');
 
 const CWD = process.cwd();
 
