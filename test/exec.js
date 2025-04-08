@@ -1,12 +1,12 @@
-import os from 'os';
-import path from 'path';
-import util from 'util';
+const os = require('os');
+const path = require('path');
+const util = require('util');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import utils from './utils/utils';
-import mocks from './utils/mocks';
+const shell = require('..');
+const utils = require('./utils/utils');
+const mocks = require('./utils/mocks');
 
 const CWD = process.cwd();
 const ORIG_EXEC_PATH = shell.config.execPath;

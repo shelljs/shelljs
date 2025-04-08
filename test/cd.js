@@ -1,11 +1,11 @@
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import utils from './utils/utils';
+const shell = require('..');
+const utils = require('./utils/utils');
 
 const cur = shell.pwd().toString();
 

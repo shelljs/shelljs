@@ -1,9 +1,9 @@
-import fs from 'fs';
+const fs = require('fs');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import { isCached, clearCache } from '../src/tempdir';
+const shell = require('..');
+const { isCached, clearCache } = require('../src/tempdir');
 
 shell.config.silent = true;
 
