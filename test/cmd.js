@@ -30,7 +30,7 @@ test('config.fatal and unknown command', t => {
   shell.config.fatal = true;
   t.throws(() => {
     shell.cmd('asdfasdf'); // could not find command
-  }, /.*command not found.*/);
+  }, { message: /.*command not found.*/ });
 });
 
 // TODO(nfischer): enable only if we implement realtime output + captured

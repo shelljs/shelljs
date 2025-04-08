@@ -48,7 +48,7 @@ test('Unable to register a plugin with unknown options', t => {
     plugin.register('foo', fooImplementation, {
       foobar: true,
     });
-  }, Error);
+  }, { instanceOf: Error });
 });
 
 test('Unable to register a plugin with wrong option types', t => {
@@ -56,7 +56,7 @@ test('Unable to register a plugin with wrong option types', t => {
     plugin.register('foo', fooImplementation, {
       wrapOutput: 'true', // should be a boolean
     });
-  }, TypeError);
+  }, { instanceOf: TypeError });
 });
 
 //
@@ -162,6 +162,6 @@ test('Cannot overwrite an existing command', t => {
   const oldCat = shell.cat;
   t.throws(() => {
     plugin.register('cat', fooImplementation);
-  }, 'Command `cat` already exists');
+  }, { message: 'Command `cat` already exists' });
   t.is(shell.cat, oldCat);
 });
