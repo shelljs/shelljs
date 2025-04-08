@@ -1,7 +1,7 @@
 var path = require('path');
 var fs = require('fs');
-var common = require('./common');
 var glob = require('fast-glob');
+var common = require('./common');
 
 // glob patterns use the UNIX path seperator
 var globPatternRecursive = '/**';

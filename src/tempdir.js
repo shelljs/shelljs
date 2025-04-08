@@ -1,6 +1,6 @@
-var common = require('./common');
 var os = require('os');
 var fs = require('fs');
+var common = require('./common');
 
 common.register('tempdir', _tempDir, {
   allowGlobbing: false,

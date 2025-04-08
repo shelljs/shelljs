@@ -2,7 +2,7 @@
   "env": {
     "node": true
   },
-  "extends": "airbnb-base/legacy",
+  "extends": "airbnb-base",
   "rules": {
     "comma-dangle": ["error", "always-multiline"],
     "consistent-return": "off",
@@ -11,6 +11,7 @@
     "function-call-argument-newline": "off",
     "function-paren-newline": "off",
     "global-require": "off",
+    "import/no-unresolved": "off",
     "indent": "off",
     "max-len": "off",
     "newline-per-chained-call": "off",
@@ -28,7 +29,15 @@
     "no-throw-literal": "off",
     "no-underscore-dangle": "off",
     "no-use-before-define": "off",
+    "no-var": "off",
     "operator-linebreak": "off",
+    "prefer-arrow-callback": "off",
+    "prefer-destructuring": "off",
+    "prefer-numeric-literals": "off",
+    "prefer-object-spread": "off",
+    "prefer-rest-params": "off",
+    "prefer-spread": "off",
+    "prefer-template": "off",
     "quote-props": "off",
     "spaced-comment": ["error", "always", { "markers": ["@", "@include"], "exceptions": ["@", "@commands"] }],
     "strict": "off",
