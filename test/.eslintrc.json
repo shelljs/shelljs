@@ -12,6 +12,7 @@
     "global-require": "off",
     "import/no-dynamic-require": "off",
     "import/no-mutable-exports": "off",
+    "import/no-unresolved": "off",
     "indent": "off",
     "max-len": "off",
     "no-bitwise": "off",
