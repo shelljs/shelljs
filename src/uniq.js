@@ -1,5 +1,5 @@
-var common = require('./common');
 var fs = require('fs');
+var common = require('./common');
 
 // add c spaces to the left of str
 function lpad(c, str) {

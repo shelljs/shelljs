@@ -1,9 +1,9 @@
-var common = require('./common');
-var _tempDir = require('./tempdir').tempDir;
-var _pwd = require('./pwd');
 var path = require('path');
 var fs = require('fs');
 var child = require('child_process');
+var common = require('./common');
+var _tempDir = require('./tempdir').tempDir;
+var _pwd = require('./pwd');
 
 var DEFAULT_MAXBUFFER_SIZE = 20 * 1024 * 1024;
 var DEFAULT_ERROR_CODE = 1;
@@ -53,9 +53,9 @@ function execSync(cmd, opts, pipe) {
   var paramsToSerialize = {
     command: cmd,
     execOptions: opts,
-    pipe: pipe,
-    stdoutFile: stdoutFile,
-    stderrFile: stderrFile,
+    pipe,
+    stdoutFile,
+    stderrFile,
   };
 
   // Create the files and ensure these are locked down (for read and write) to

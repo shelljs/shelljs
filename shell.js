@@ -7,6 +7,7 @@
 //
 
 var common = require('./src/common');
+
 module.exports = common.shell;
 
 //@
@@ -65,7 +66,7 @@ module.exports.exit = function exit(code) {
   if (code) {
     common.error('exit', {
       continue: true,
-      code: code,
+      code,
       prefix: '',
       silent: true,
       fatal: false,

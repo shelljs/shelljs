@@ -1,6 +1,6 @@
-var common = require('./common');
 var fs = require('fs');
 var path = require('path');
+var common = require('./common');
 
 common.register('which', _which, {
   allowGlobbing: false,

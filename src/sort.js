@@ -1,5 +1,5 @@
-var common = require('./common');
 var fs = require('fs');
+var common = require('./common');
 
 common.register('sort', _sort, {
   canReceivePipe: true,

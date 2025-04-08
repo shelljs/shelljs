@@ -31,13 +31,13 @@ var DEFAULT_CONFIG = {
 };
 
 var config = {
-  reset: function () {
+  reset() {
     Object.assign(this, DEFAULT_CONFIG);
     if (!isElectron) {
       this.execPath = process.execPath;
     }
   },
-  resetForTesting: function () {
+  resetForTesting() {
     this.reset();
     this.silent = true;
   },
@@ -190,7 +190,7 @@ function parseOptions(opt, map, errorOptions) {
     throw new TypeError('parseOptions() internal error: map must be an object');
   } else if (!isObject(errorOptions)) {
     throw new TypeError(
-        'parseOptions() internal error: errorOptions must be object'
+        'parseOptions() internal error: errorOptions must be object',
     );
   }
 

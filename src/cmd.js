@@ -1,5 +1,5 @@
-var common = require('./common');
 var execa = require('execa');
+var common = require('./common');
 
 var DEFAULT_MAXBUFFER_SIZE = 20 * 1024 * 1024;
 var COMMAND_NOT_FOUND_ERROR_CODE = 127;
