@@ -43,7 +43,7 @@ test('config.fatal and unknown command', t => {
   shell.config.fatal = true;
   t.throws(() => {
     shell.exec('asdfasdf'); // could not find command
-  }, /asdfasdf/); // name of command should be in error message
+  }, { message: /asdfasdf/ }); // name of command should be in error message
   shell.config.fatal = oldFatal;
 });
 
@@ -52,7 +52,7 @@ test('options.fatal = true and unknown command', t => {
   shell.config.fatal = false;
   t.throws(() => {
     shell.exec('asdfasdf', { fatal: true }); // could not find command
-  }, /asdfasdf/); // name of command should be in error message
+  }, { message: /asdfasdf/ }); // name of command should be in error message
   shell.config.fatal = oldFatal; // TODO(nfischer): this setting won't get reset if the assertion above fails
 });
 
