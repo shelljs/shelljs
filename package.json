@@ -59,6 +59,7 @@
     "shjs": "./bin/shjs"
   },
   "dependencies": {
+    "audit": "^0.0.6",
     "execa": "^1.0.0",
     "fast-glob": "^3.3.2",
     "interpret": "^1.0.0",
@@ -66,6 +67,7 @@
   },
   "ava": {
     "serial": true,
+    "workerThreads": false,
     "powerAssert": false,
     "files": [
       "test/*.js"
@@ -76,7 +78,7 @@
     ]
   },
   "devDependencies": {
-    "ava": "^2.4.0",
+    "ava": "^6.2.0",
     "chalk": "^4.1.2",
     "coffee-script": "^1.12.7",
     "eslint": "^8.2.0",
