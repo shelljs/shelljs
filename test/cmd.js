@@ -178,20 +178,26 @@ test('set cwd', t => {
 });
 
 test('set maxBuffer (very small)', t => {
-  const result = shell.cmd('shx', 'echo', '1234567890'); // default maxBuffer is ok
+  let result = shell.cmd('shx', 'echo', '1234567890'); // default maxBuffer is ok
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, '1234567890\n');
-  shell.cmd('shx', 'echo', '1234567890', { maxBuffer: 6 });
+  result = shell.cmd('shx', 'echo', '1234567890', { maxBuffer: 6 });
   t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stdout, '1234567890\n');
 });
 
 test('set timeout option', t => {
-  const result = shell.cmd(shell.config.execPath, 'test/resources/exec/slow.js', '100'); // default timeout is ok
+  let result = shell.cmd(shell.config.execPath, 'test/resources/exec/slow.js', '100'); // default timeout is ok
   t.falsy(shell.error());
+  t.is(result.stdout, 'fast\nslow\n');
   t.is(result.code, 0);
-  shell.cmd(shell.config.execPath, 'test/resources/exec/slow.js', '2000', { timeout: 1000 }); // times out
+  result = shell.cmd(shell.config.execPath, 'test/resources/exec/slow.js', '2000', { timeout: 1000 }); // times out
   t.truthy(shell.error());
+  t.is(result.stdout, 'fast\n');
+  t.truthy(result.stderr);
+  t.is(result.code, 1);
 });
 
 test('check process.env works', t => {
