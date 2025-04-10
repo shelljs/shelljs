@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "audit": "^0.0.6",
-    "execa": "^1.0.0",
+    "execa": "^5.1.1",
     "fast-glob": "^3.3.2",
     "interpret": "^1.0.0",
     "rechoir": "^0.6.2"
