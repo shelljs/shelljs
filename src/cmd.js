@@ -3,7 +3,7 @@ var common = require('./common');
 
 var DEFAULT_MAXBUFFER_SIZE = 20 * 1024 * 1024;
 var COMMAND_NOT_FOUND_ERROR_CODE = 127;
-var UNKNOWN_ERROR_CODE = 999;
+var UNKNOWN_ERROR_CODE = 1;
 
 common.register('cmd', _cmd, {
   cmdOptions: null,
