@@ -125,7 +125,7 @@ function _cmd(options, command, commandArgs, userOptions) {
     code = typeof result.exitCode === 'number' ? result.exitCode : UNKNOWN_ERROR_CODE;
   }
 
-  // Pass `continue: true` so  we can specify a value for stdout.
+  // Pass `continue: true` so we can specify a value for stdout.
   if (code) common.error(stderr, code, { silent: true, continue: true });
   return new common.ShellString(stdout, stderr, code);
 }
