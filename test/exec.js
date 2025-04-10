@@ -152,11 +152,14 @@ test('set maxBuffer (very small)', t => {
 });
 
 test('set timeout option', t => {
-  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`); // default timeout is ok
+  let result = shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 100`); // default timeout is ok
   t.falsy(shell.error());
   t.is(result.code, 0);
-  shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 2000`, { timeout: 1000 }); // times out
+  t.is(result.stdout, 'fast\nslow\n');
+  result = shell.exec(`${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 2000`, { timeout: 1000 }); // times out
   t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stdout, 'fast\n');
 });
 
 test('check process.env works', t => {

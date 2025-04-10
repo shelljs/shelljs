@@ -116,10 +116,20 @@ function _cmd(options, command, commandArgs, userOptions) {
     stdout = '';
     stderr = "'" + command + "': command not found";
     code = COMMAND_NOT_FOUND_ERROR_CODE;
-  } else {
+  } else if (typeof result.stdout === 'string' &&
+             typeof result.stderr === 'string' &&
+             typeof result.code === 'number') {
+    // Normal exit: execa was able to execute `command` and get a return value.
     stdout = result.stdout.toString();
     stderr = result.stderr.toString();
     code = result.code;
+  } else {
+    // Catch-all: execa tried to run `command` but it encountered some error
+    // (ex. maxBuffer, timeout).
+    stdout = result.stdout || '';
+    stderr = result.stderr ||
+             `'${command}' encountered an error during execution`;
+    code = result.code > 0 ? result.code : 1;
   }
 
   // Pass `continue: true` so we can specify a value for stdout.
