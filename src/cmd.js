@@ -120,7 +120,7 @@ function _cmd(options, command, commandArgs, userOptions) {
   } else {
     stdout = result.stdout.toString();
     stderr = result.stderr.toString();
-    code = result.exitCode;
+    code = result.exitCode || result.errno || 0;
   }
 
   // Pass `continue: true` so we can specify a value for stdout.

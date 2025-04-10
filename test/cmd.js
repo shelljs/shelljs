@@ -56,7 +56,7 @@ test('check if stdout goes to output', t => {
   const result = shell.cmd('shx', 'echo', 'this is stdout');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, 'this is stdout\n');
+  t.is(result.stdout, 'this is stdout');
 });
 
 test('check if stderr goes to output', t => {
@@ -64,15 +64,15 @@ test('check if stderr goes to output', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, '');
-  t.is(result.stderr, '1234\n');
+  t.is(result.stderr, '1234');
 });
 
 test('check if stdout + stderr go to output', t => {
   const result = shell.cmd(shell.config.execPath, '-e', 'console.error(1234); console.log(666);');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, '666\n');
-  t.is(result.stderr, '1234\n');
+  t.is(result.stdout, '666');
+  t.is(result.stderr, '1234');
 });
 
 test('check exit code', t => {
@@ -86,7 +86,7 @@ test('interaction with cd', t => {
   const result = shell.cmd(shell.config.execPath, 'node_script.js');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, 'node_script_1234\n');
+  t.is(result.stdout, 'node_script_1234');
 });
 
 test('no need to escape quotes', t => {
@@ -94,7 +94,7 @@ test('no need to escape quotes', t => {
       `console.log("'+'_'+'");`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, "'+'_'+'\n");
+  t.is(result.stdout, "'+'_'+'");
 });
 
 test('commands can contain newlines', t => {
@@ -109,7 +109,7 @@ console.log('line2')
 `);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, 'line1\nline2\n');
+  t.is(result.stdout, 'line1\nline2');
 });
 
 test('does not expand shell-style variables', t => {
@@ -117,7 +117,7 @@ test('does not expand shell-style variables', t => {
   const result = shell.cmd('shx', 'echo', '$FOO');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, '$FOO\n');
+  t.is(result.stdout, '$FOO');
 });
 
 test('does not expand windows-style variables', t => {
@@ -125,11 +125,11 @@ test('does not expand windows-style variables', t => {
   let result = shell.cmd('shx', 'echo', '%FOO%');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, '%FOO%\n');
+  t.is(result.stdout, '%FOO%');
   result = shell.cmd('shx', 'echo', '!FOO!');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, '!FOO!\n');
+  t.is(result.stdout, '!FOO!');
 });
 
 test('caret character is passed through to the command', t => {
@@ -137,7 +137,7 @@ test('caret character is passed through to the command', t => {
   const result = shell.cmd('shx', 'echo', 'shelljs@^0.8.4');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, 'shelljs@^0.8.4\n');
+  t.is(result.stdout, 'shelljs@^0.8.4');
 });
 
 test('cannot inject multiple commands', t => {
@@ -145,7 +145,7 @@ test('cannot inject multiple commands', t => {
   const result = shell.cmd('shx', 'echo', `hi${injection}`);
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, `hi${injection}\n`);
+  t.is(result.stdout, `hi${injection}`);
 });
 
 test('supports globbing by default', t => {
@@ -159,7 +159,7 @@ test('supports globbing by default', t => {
     'test/resources/file1.txt',
     'test/resources/file2.txt',
   ];
-  t.is(result.stdout, `${expectedFiles.join(' ')}\n`);
+  t.is(result.stdout, `${expectedFiles.join(' ')}`);
 });
 
 test('globbing respects config.noglob', t => {
@@ -167,21 +167,21 @@ test('globbing respects config.noglob', t => {
   const result = shell.cmd('shx', 'echo', 'test/resources/*.txt');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, 'test/resources/*.txt\n');
+  t.is(result.stdout, 'test/resources/*.txt');
 });
 
 test('set cwd', t => {
   const result = shell.cmd('shx', 'pwd', { cwd: '..' });
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, path.resolve('..') + '\n');
+  t.is(result.stdout, path.resolve('..'));
 });
 
 test('set maxBuffer (very small)', t => {
   const result = shell.cmd('shx', 'echo', '1234567890'); // default maxBuffer is ok
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, '1234567890\n');
+  t.is(result.stdout, '1234567890');
   shell.cmd('shx', 'echo', '1234567890', { maxBuffer: 6 });
   t.truthy(shell.error());
 });
@@ -201,7 +201,7 @@ test('check process.env works', t => {
     shell.cmd(shell.config.execPath, '-p', 'process.env.FOO');
   t.falsy(shell.error());
   t.is(result.code, 0);
-  t.is(result.stdout, 'Hello world\n');
+  t.is(result.stdout, 'Hello world');
   t.is(result.stderr, '');
 });
 
@@ -236,7 +236,7 @@ test.skip('no callback', t => {
 test.skip('callback as 2nd argument', async t => {
   const result = await cmdAsync(shell.config.execPath, '-e', 'console.log(5678);');
   t.is(result.code, 0);
-  t.is(result.stdout, '5678\n');
+  t.is(result.stdout, '5678');
   t.is(result.stderr, '');
 });
 
@@ -244,7 +244,7 @@ test.skip('callback as 2nd argument', async t => {
 test.skip('callback as end argument', async t => {
   const result = await cmdAsync(shell.config.execPath, '-e', 'console.log(5566);', { async: true });
   t.is(result.code, 0);
-  t.is(result.stdout, '5566\n');
+  t.is(result.stdout, '5566');
   t.is(result.stderr, '');
 });
 
@@ -252,7 +252,7 @@ test.skip('callback as end argument', async t => {
 test.skip('callback as 3rd argument (silent:true)', async t => {
   const result = await cmdAsync(shell.config.execPath, '-e', 'console.log(5678);', { silent: true });
   t.is(result.code, 0);
-  t.is(result.stdout, '5678\n');
+  t.is(result.stdout, '5678');
   t.is(result.stderr, '');
 });
 
