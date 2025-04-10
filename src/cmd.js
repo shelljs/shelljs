@@ -18,7 +18,7 @@ function isNullOrUndefined(val) {
 function commandNotFound(execaResult) {
   if (process.platform === 'win32') {
     var str = 'is not recognized as an internal or external command';
-    return execaResult.code && execaResult.stderr.includes(str);
+    return execaResult.exitCode && execaResult.stderr.includes(str);
   } else {
     // On node <= 22.9.0, stdout/stderr are 'null'.
     // On node >= 22.10, stdout/stderr are 'undefined'.
@@ -110,6 +110,7 @@ function _cmd(options, command, commandArgs, userOptions) {
   var stdout;
   var stderr;
   var code;
+
   if (commandNotFound(result)) {
     // This can happen if `command` is not an executable binary, or possibly
     // under other conditions.
@@ -119,7 +120,7 @@ function _cmd(options, command, commandArgs, userOptions) {
   } else {
     stdout = result.stdout.toString();
     stderr = result.stderr.toString();
-    code = result.code;
+    code = result.exitCode;
   }
 
   // Pass `continue: true` so we can specify a value for stdout.
