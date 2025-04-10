@@ -18,7 +18,8 @@ var MAX_NODE_VERSION = 22;
 var pinnedNodeVersions = {
   // Format:
   // majorVersionInt: 'full.node.version',
-  22: '22.9.0',
+  // Example:
+  // 22: '22.9.0',
 };
 
 function checkReadme(minNodeVersion) {
