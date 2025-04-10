@@ -83,11 +83,12 @@ exports.convertErrorOutput = convertErrorOutput;
 
 // An exception class to help propagate command errors (e.g., non-zero exit
 // status) up to the top-level. {@param value} should be a ShellString.
-function CommandError(value) {
-  this.returnValue = value;
+class CommandError extends Error {
+  constructor(value) {
+    super(value.toString());
+    this.returnValue = value;
+  }
 }
-CommandError.prototype = Object.create(Error.prototype);
-CommandError.prototype.constructor = CommandError;
 exports.CommandError = CommandError; // visible for testing
 
 // Shows error message. Throws if fatal is true (defaults to config.fatal, overridable with options.fatal)
