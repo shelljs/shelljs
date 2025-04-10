@@ -11,20 +11,21 @@ common.register('cmd', _cmd, {
   wrapOutput: true,
 });
 
-function isNullOrUndefined(val) {
-  return val === null || val === undefined;
+function isNullOrUndefinedOrEmptyString(val) {
+  return val === null || val === undefined || val === '';
 }
 
 function commandNotFound(execaResult) {
   if (process.platform === 'win32') {
     var str = 'is not recognized as an internal or external command';
-    return execaResult.code && execaResult.stderr.includes(str);
+    return execaResult.exitCode && execaResult.stderr.includes(str);
   } else {
     // On node <= 22.9.0, stdout/stderr are 'null'.
     // On node >= 22.10, stdout/stderr are 'undefined'.
-    return execaResult.code &&
-      isNullOrUndefined(execaResult.stdout) &&
-      isNullOrUndefined(execaResult.stderr);
+    return execaResult.failed &&
+      execaResult.code === 'ENOENT' &&
+      isNullOrUndefinedOrEmptyString(execaResult.stdout) &&
+      isNullOrUndefinedOrEmptyString(execaResult.stderr);
   }
 }
 
@@ -101,6 +102,7 @@ function _cmd(options, command, commandArgs, userOptions) {
   var requiredOptions = {
     input: pipe,
     shell: false,
+    stripFinalNewline: false,
   };
 
   var execaOptions =
@@ -110,6 +112,7 @@ function _cmd(options, command, commandArgs, userOptions) {
   var stdout;
   var stderr;
   var code;
+
   if (commandNotFound(result)) {
     // This can happen if `command` is not an executable binary, or possibly
     // under other conditions.
@@ -122,14 +125,14 @@ function _cmd(options, command, commandArgs, userOptions) {
     // Normal exit: execa was able to execute `command` and get a return value.
     stdout = result.stdout.toString();
     stderr = result.stderr.toString();
-    code = result.code;
+    code = result.exitCode;
   } else {
     // Catch-all: execa tried to run `command` but it encountered some error
     // (ex. maxBuffer, timeout).
     stdout = result.stdout || '';
     stderr = result.stderr ||
              `'${command}' encountered an error during execution`;
-    code = result.code > 0 ? result.code : 1;
+    code = result.exitCode > 0 ? result.exitCode : 1;
   }
 
   // Pass `continue: true` so we can specify a value for stdout.
