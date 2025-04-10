@@ -3,6 +3,7 @@ var common = require('./common');
 
 var DEFAULT_MAXBUFFER_SIZE = 20 * 1024 * 1024;
 var COMMAND_NOT_FOUND_ERROR_CODE = 127;
+var UNKNOWN_ERROR_CODE = 999;
 
 common.register('cmd', _cmd, {
   cmdOptions: null,
@@ -101,6 +102,7 @@ function _cmd(options, command, commandArgs, userOptions) {
   var requiredOptions = {
     input: pipe,
     shell: false,
+    stripFinalNewline: false,
   };
 
   var execaOptions =
@@ -120,10 +122,10 @@ function _cmd(options, command, commandArgs, userOptions) {
   } else {
     stdout = result.stdout.toString();
     stderr = result.stderr.toString();
-    code = result.exitCode || result.errno || 0;
+    code = typeof result.exitCode === 'number' ? result.exitCode : UNKNOWN_ERROR_CODE;
   }
 
-  // Pass `continue: true` so we can specify a value for stdout.
+  // Pass `continue: true` so  we can specify a value for stdout.
   if (code) common.error(stderr, code, { silent: true, continue: true });
   return new common.ShellString(stdout, stderr, code);
 }
