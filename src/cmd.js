@@ -12,8 +12,8 @@ common.register('cmd', _cmd, {
   wrapOutput: true,
 });
 
-function isNullOrUndefined(val) {
-  return val === null || val === undefined;
+function isNullOrUndefinedOrEmptyString(val) {
+  return val === null || val === undefined || val === '';
 }
 
 function commandNotFound(execaResult) {
@@ -23,9 +23,10 @@ function commandNotFound(execaResult) {
   } else {
     // On node <= 22.9.0, stdout/stderr are 'null'.
     // On node >= 22.10, stdout/stderr are 'undefined'.
-    return execaResult.code &&
-      isNullOrUndefined(execaResult.stdout) &&
-      isNullOrUndefined(execaResult.stderr);
+    return execaResult.failed &&
+      execaResult.code === 'ENOENT' &&
+      isNullOrUndefinedOrEmptyString(execaResult.stdout) &&
+      isNullOrUndefinedOrEmptyString(execaResult.stderr);
   }
 }
 
