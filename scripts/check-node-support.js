@@ -3,6 +3,7 @@
 var assert = require('assert');
 var path = require('path');
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 var yaml = require('js-yaml');
 
 var shell = require('..');
@@ -17,7 +18,8 @@ var MAX_NODE_VERSION = 22;
 var pinnedNodeVersions = {
   // Format:
   // majorVersionInt: 'full.node.version',
-  22: '22.9.0',
+  // Example:
+  // 22: '22.9.0',
 };
 
 function checkReadme(minNodeVersion) {
@@ -25,7 +27,7 @@ function checkReadme(minNodeVersion) {
   var stop = '<!-- stop minVersion -->';
   var formattedMinVersion = '`v' + minNodeVersion + '`';
   var expectedReadmeRegex = new RegExp(
-      start + '\\s*' + formattedMinVersion + '\\s*' + stop, ''
+      start + '\\s*' + formattedMinVersion + '\\s*' + stop, '',
   );
   var readme = path.join(__dirname, '..', 'README.md');
   var match = shell.grep(expectedReadmeRegex, readme);
@@ -36,9 +38,9 @@ function checkReadme(minNodeVersion) {
   }
 }
 
-function checkEngines(minNodeVersion, package) {
+function checkEngines(minNodeVersion, packageJson) {
   var expectedEnginesNode = '>=' + minNodeVersion;
-  if (package.engines.node !== expectedEnginesNode) {
+  if (packageJson.engines.node !== expectedEnginesNode) {
     var msg = 'Update package.json to fix the "engines" attribute';
     throw new Error(msg);
   }
@@ -76,8 +78,8 @@ function checkGithubActions(minNodeVersion, maxNodeVersion, githubActionsYaml) {
 try {
   checkReadme(MIN_NODE_VERSION);
 
-  var package = require('../package.json');
-  checkEngines(MIN_NODE_VERSION, package);
+  var packageJson = require('../package.json');
+  checkEngines(MIN_NODE_VERSION, packageJson);
 
   var githubActionsFileName = path.join(__dirname, '..', '.github', 'workflows',
       'main.yml');

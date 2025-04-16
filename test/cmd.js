@@ -1,8 +1,8 @@
-import path from 'path';
+const path = require('path');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
+const shell = require('..');
 
 const CWD = process.cwd();
 
@@ -30,7 +30,7 @@ test('config.fatal and unknown command', t => {
   shell.config.fatal = true;
   t.throws(() => {
     shell.cmd('asdfasdf'); // could not find command
-  }, /.*command not found.*/);
+  }, { message: /.*command not found.*/ });
 });
 
 // TODO(nfischer): enable only if we implement realtime output + captured
@@ -217,50 +217,49 @@ test('cmd returns a ShellString', t => {
 // async
 //
 
+function cmdAsync(...commandArgs) {
+  return new Promise((resolve) => {
+    shell.cmd(...commandArgs, (code, stdout, stderr) => {
+      resolve({ code, stdout, stderr });
+    });
+  });
+}
+
 // TODO(nfischer): enable after we implement async.
-test.cb.skip('no callback', t => {
+test.skip('no callback', t => {
   const c = shell.cmd(shell.config.execPath, '-e', 'console.log(1234)', { async: true });
   t.falsy(shell.error());
   t.truthy('stdout' in c, 'async exec returns child process object');
-  t.end();
 });
 
 // TODO(nfischer): enable after we implement async.
-test.cb.skip('callback as 2nd argument', t => {
-  shell.cmd(shell.config.execPath, '-e', 'console.log(5678);', (code, stdout, stderr) => {
-    t.is(code, 0);
-    t.is(stdout, '5678\n');
-    t.is(stderr, '');
-    t.end();
-  });
+test.skip('callback as 2nd argument', async t => {
+  const result = await cmdAsync(shell.config.execPath, '-e', 'console.log(5678);');
+  t.is(result.code, 0);
+  t.is(result.stdout, '5678\n');
+  t.is(result.stderr, '');
 });
 
 // TODO(nfischer): enable after we implement async.
-test.cb.skip('callback as end argument', t => {
-  shell.cmd(shell.config.execPath, '-e', 'console.log(5566);', { async: true }, (code, stdout, stderr) => {
-    t.is(code, 0);
-    t.is(stdout, '5566\n');
-    t.is(stderr, '');
-    t.end();
-  });
+test.skip('callback as end argument', async t => {
+  const result = await cmdAsync(shell.config.execPath, '-e', 'console.log(5566);', { async: true });
+  t.is(result.code, 0);
+  t.is(result.stdout, '5566\n');
+  t.is(result.stderr, '');
 });
 
 // TODO(nfischer): enable after we implement async.
-test.cb.skip('callback as 3rd argument (silent:true)', t => {
-  shell.cmd(shell.config.execPath, '-e', 'console.log(5678);', { silent: true }, (code, stdout, stderr) => {
-    t.is(code, 0);
-    t.is(stdout, '5678\n');
-    t.is(stderr, '');
-    t.end();
-  });
+test.skip('callback as 3rd argument (silent:true)', async t => {
+  const result = await cmdAsync(shell.config.execPath, '-e', 'console.log(5678);', { silent: true });
+  t.is(result.code, 0);
+  t.is(result.stdout, '5678\n');
+  t.is(result.stderr, '');
 });
 
 // TODO(nfischer): enable after we implement async.
-test.cb.skip('command that fails', t => {
-  shell.cmd('shx', 'cp', 'onlyOneCpArgument.txt', { silent: true }, (code, stdout, stderr) => {
-    t.is(code, 1);
-    t.is(stdout, '');
-    t.is(stderr, 'cp: missing <source> and/or <dest>\n');
-    t.end();
-  });
+test.skip('command that fails', async t => {
+  const result = await cmdAsync('shx', 'cp', 'onlyOneCpArgument.txt', { silent: true });
+  t.is(result.code, 1);
+  t.is(result.stdout, '');
+  t.is(result.stderr, 'cp: missing <source> and/or <dest>\n');
 });

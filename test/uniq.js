@@ -1,9 +1,9 @@
-import fs from 'fs';
+const fs = require('fs');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import common from '../src/common';
+const shell = require('..');
+const common = require('../src/common');
 
 shell.config.silent = true;
 

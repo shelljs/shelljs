@@ -1,10 +1,10 @@
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import utils from './utils/utils';
+const shell = require('..');
+const utils = require('./utils/utils');
 
 test.beforeEach(t => {
   t.context.tmp = utils.getTempDir();

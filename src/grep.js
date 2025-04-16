@@ -1,5 +1,5 @@
-var common = require('./common');
 var fs = require('fs');
+var common = require('./common');
 
 common.register('grep', _grep, {
   globStart: 2, // don't glob-expand the regex

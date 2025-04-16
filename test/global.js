@@ -1,10 +1,10 @@
 /* globals cat, config, cp, env, error, mkdir, rm */
-import fs from 'fs';
+const fs = require('fs');
 
-import test from 'ava';
+const test = require('ava');
 
-import '../global';
-import utils from './utils/utils';
+require('../global');
+const utils = require('./utils/utils');
 
 test.beforeEach(t => {
   t.context.tmp = utils.getTempDir();

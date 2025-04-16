@@ -1,8 +1,8 @@
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
+const shell = require('..');
 
-import mocks from './utils/mocks';
+const mocks = require('./utils/mocks');
 
 //
 // Valids

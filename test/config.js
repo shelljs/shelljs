@@ -1,10 +1,10 @@
-import path from 'path';
+const path = require('path');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import common from '../src/common';
-import utils from './utils/utils';
+const shell = require('..');
+const common = require('../src/common');
+const utils = require('./utils/utils');
 
 //
 // Valids
@@ -32,21 +32,17 @@ test('config.silent can be set to false', t => {
 // config.fatal
 //
 
-test.cb('config.fatal = false', t => {
+test('config.fatal = false', async t => {
   t.falsy(shell.config.fatal);
   const script = `require('./global.js'); config.silent=true; config.fatal=false; cp("this_file_doesnt_exist", "."); echo("got here");`;
-  utils.runScript(script, (err, stdout) => {
-    t.truthy(stdout.match('got here'));
-    t.end();
-  });
+  const result = await utils.runScript(script);
+  t.truthy(result.stdout.match('got here'));
 });
 
-test.cb('config.fatal = true', t => {
+test('config.fatal = true', async t => {
   const script = `require('./global.js'); config.silent=true; config.fatal=true; cp("this_file_doesnt_exist", "."); echo("got here");`;
-  utils.runScript(script, (err, stdout) => {
-    t.falsy(stdout.match('got here'));
-    t.end();
-  });
+  await t.throwsAsync(utils.runScript(script),
+    { message: /this_file_doesnt_exist/ });
 });
 
 test('config.fatal = false with an exec() failure returns, does not throw', t => {

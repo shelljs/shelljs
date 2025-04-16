@@ -1,6 +1,6 @@
+var path = require('path');
 var common = require('./common');
 var _cd = require('./cd');
-var path = require('path');
 
 common.register('dirs', _dirs, {
   wrapOutput: false,

@@ -1,8 +1,8 @@
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
-import common from '../src/common';
-import utils from './utils/utils';
+const shell = require('..');
+const common = require('../src/common');
+const utils = require('./utils/utils');
 
 test.beforeEach(() => {
   shell.config.silent = true;
@@ -21,13 +21,13 @@ test.afterEach(() => {
 test('too few args', t => {
   t.throws(() => {
     common.expand();
-  }, TypeError);
+  }, { instanceOf: TypeError });
 });
 
 test('should be a list', t => {
   t.throws(() => {
     common.expand('test/resources');
-  }, TypeError);
+  }, { instanceOf: TypeError });
 });
 
 test('parseOptions (invalid option in options object)', t => {
@@ -37,7 +37,7 @@ test('parseOptions (invalid option in options object)', t => {
       f: 'force',
       r: 'reverse',
     });
-  }, common.CommandError);
+  }, { instanceOf: common.CommandError });
 });
 
 test('parseOptions (without a hyphen in the string)', t => {
@@ -45,7 +45,7 @@ test('parseOptions (without a hyphen in the string)', t => {
     common.parseOptions('f', {
       f: 'force',
     });
-  }, Error);
+  }, { instanceOf: Error });
 });
 
 test('parseOptions (opt is not a string/object)', t => {
@@ -53,13 +53,13 @@ test('parseOptions (opt is not a string/object)', t => {
     common.parseOptions(1, {
       f: 'force',
     });
-  }, TypeError);
+  }, { instanceOf: TypeError });
 });
 
 test('parseOptions (map is not an object)', t => {
   t.throws(() => {
     common.parseOptions('-f', 27);
-  }, TypeError);
+  }, { instanceOf: TypeError });
 });
 
 test('parseOptions (errorOptions is not an object)', t => {
@@ -67,7 +67,7 @@ test('parseOptions (errorOptions is not an object)', t => {
     common.parseOptions('-f', {
       f: 'force',
     }, 'not a valid errorOptions');
-  }, TypeError);
+  }, { instanceOf: TypeError });
 });
 
 test('parseOptions (unrecognized string option)', t => {
@@ -75,7 +75,7 @@ test('parseOptions (unrecognized string option)', t => {
     common.parseOptions('-z', {
       f: 'force',
     });
-  }, common.CommandError);
+  }, { instanceOf: common.CommandError });
 });
 
 test('parseOptions (unrecognized option in Object)', t => {
@@ -99,17 +99,17 @@ test('parseOptions (invalid type)', t => {
 test('convertErrorOutput: no args', t => {
   t.throws(() => {
     common.convertErrorOutput();
-  }, TypeError);
+  }, { instanceOf: TypeError });
 });
 
 test('convertErrorOutput: input must be a vanilla string', t => {
   t.throws(() => {
     common.convertErrorOutput(3);
-  }, TypeError);
+  }, { instanceOf: TypeError });
 
   t.throws(() => {
     common.convertErrorOutput({});
-  }, TypeError);
+  }, { instanceOf: TypeError });
 });
 
 //
@@ -263,7 +263,7 @@ test('common.parseOptions using an object to hold options', t => {
 test('common.parseOptions throws when passed a string not starting with "-"', t => {
   t.throws(() => {
     common.parseOptions('a', { '-a': 'throws' });
-  }, Error, "Options string must start with a '-'");
+  }, { instanceOf: Error }, "Options string must start with a '-'");
 });
 
 test('common.parseOptions allows long options', t => {
@@ -286,7 +286,7 @@ test('common.parseOptions throws for unknown long option', t => {
     common.parseOptions({ throws: true }, {
       v: 'value',
     });
-  }, common.CommandError);
+  }, { instanceOf: common.CommandError });
 });
 
 test('common.parseOptions with -- argument', t => {
@@ -310,16 +310,14 @@ test('Some basic tests on the ShellString type', t => {
   t.truthy(result.toEnd);
 });
 
-test.cb('Commands that fail will still output error messages to stderr', t => {
+test('Commands that fail will still output error messages to stderr', async t => {
   const script = "require('./global'); ls('noexist'); cd('noexist');";
-  utils.runScript(script, (err, stdout, stderr) => {
-    t.is(stdout, '');
-    t.is(
-      stderr,
-      'ls: no such file or directory: noexist\ncd: no such file or directory: noexist\n'
-    );
-    t.end();
-  });
+  const result = await utils.runScript(script);
+  t.is(result.stdout, '');
+  t.is(
+    result.stderr,
+    'ls: no such file or directory: noexist\ncd: no such file or directory: noexist\n'
+  );
 });
 
 test('execPath value makes sense', t => {

@@ -1,6 +1,6 @@
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
+const shell = require('..');
 
 const CWD = process.cwd();
 

@@ -1,6 +1,6 @@
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
+const shell = require('..');
 
 shell.config.silent = true;
 

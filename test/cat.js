@@ -1,8 +1,8 @@
-import fs from 'fs';
+const fs = require('fs');
 
-import test from 'ava';
+const test = require('ava');
 
-import shell from '..';
+const shell = require('..');
 
 shell.config.silent = true;
 

@@ -1,5 +1,5 @@
-var common = require('./common');
 var execa = require('execa');
+var common = require('./common');
 
 var DEFAULT_MAXBUFFER_SIZE = 20 * 1024 * 1024;
 var COMMAND_NOT_FOUND_ERROR_CODE = 127;
@@ -11,13 +11,20 @@ common.register('cmd', _cmd, {
   wrapOutput: true,
 });
 
+function isNullOrUndefined(val) {
+  return val === null || val === undefined;
+}
+
 function commandNotFound(execaResult) {
   if (process.platform === 'win32') {
     var str = 'is not recognized as an internal or external command';
     return execaResult.code && execaResult.stderr.includes(str);
   } else {
+    // On node <= 22.9.0, stdout/stderr are 'null'.
+    // On node >= 22.10, stdout/stderr are 'undefined'.
     return execaResult.code &&
-      execaResult.stdout === null && execaResult.stderr === null;
+      isNullOrUndefined(execaResult.stdout) &&
+      isNullOrUndefined(execaResult.stderr);
   }
 }
 
