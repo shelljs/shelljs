@@ -216,7 +216,7 @@ test('-B option', t => {
       'line12\n' +
       'line13\n' +
       'line14\n' +
-      'line15 test line\n'
+      'line15 test line\n',
   );
 });
 
@@ -237,7 +237,7 @@ test('-B option, -n option', t => {
       '12-line12\n' +
       '13-line13\n' +
       '14-line14\n' +
-      '15:line15 test line\n'
+      '15:line15 test line\n',
   );
 });
 
@@ -255,7 +255,7 @@ test('-A option', t => {
       'line11\n' +
       'line12\n' +
       '--\n' +
-      'line15 test line\n'
+      'line15 test line\n',
   );
 });
 
@@ -263,7 +263,7 @@ test('-A option, -B option', t => {
   const result = shell.grep(
     { '-A': 2, '-B': 3 },
     'test*',
-    'test/resources/grep/file3'
+    'test/resources/grep/file3',
   );
   t.falsy(shell.error());
   t.is(
@@ -282,7 +282,7 @@ test('-A option, -B option', t => {
       'line12\n' +
       'line13\n' +
       'line14\n' +
-      'line15 test line\n'
+      'line15 test line\n',
   );
 });
 
@@ -290,7 +290,7 @@ test('-A option, -B option, -n option', t => {
   const result = shell.grep(
     { '-n': true, '-A': 2, '-B': 3 },
     'test*',
-    'test/resources/grep/file3'
+    'test/resources/grep/file3',
   );
   t.falsy(shell.error());
   t.is(
@@ -309,7 +309,7 @@ test('-A option, -B option, -n option', t => {
       '12-line12\n' +
       '13-line13\n' +
       '14-line14\n' +
-      '15:line15 test line\n'
+      '15:line15 test line\n',
   );
 });
 
@@ -332,7 +332,7 @@ test('-C option', t => {
       'line12\n' +
       'line13\n' +
       'line14\n' +
-      'line15 test line\n'
+      'line15 test line\n',
   );
 });
 
@@ -351,7 +351,7 @@ test('-C option, small value', t => {
       'line11\n' +
       '--\n' +
       'line14\n' +
-      'line15 test line\n'
+      'line15 test line\n',
   );
 });
 
@@ -374,7 +374,7 @@ test('-C option, large value', t => {
       'line12\n' +
       'line13\n' +
       'line14\n' +
-      'line15 test line\n'
+      'line15 test line\n',
   );
 });
 
@@ -388,7 +388,7 @@ test('-C option, add line separators', t => {
       '--\n' +
       'line10 test line\n' +
       '--\n' +
-      'line15 test line\n'
+      'line15 test line\n',
   );
 });
 
@@ -411,6 +411,6 @@ test('-C option, -n option', t => {
       '12-line12\n' +
       '13-line13\n' +
       '14-line14\n' +
-      '15:line15 test line\n'
+      '15:line15 test line\n',
   );
 });

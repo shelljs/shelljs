@@ -117,7 +117,7 @@ function _grep(options, regex, files) {
             var last = matches[matches.length - 1];
             var minimumLineNumber = Math.max(
               1,
-              lineNumber - options.beforeContext - 1
+              lineNumber - options.beforeContext - 1,
             );
             if (
               last.hasOwnProperty('' + lineNumber) ||
@@ -127,7 +127,7 @@ function _grep(options, regex, files) {
             }
           }
           result[lineNumber] = {
-            line: line,
+            line,
             match: true,
           };
           if (options.beforeContext > 0) {
@@ -146,7 +146,7 @@ function _grep(options, regex, files) {
             lines
               .slice(
                 index + 1,
-                Math.min(index + options.afterContext + 1, lines.length - 1)
+                Math.min(index + options.afterContext + 1, lines.length - 1),
               )
               .forEach(function (v, i) {
                 var lineNum = '' + (index + 1 + i + 1);
@@ -176,7 +176,7 @@ function _grep(options, regex, files) {
                 : line;
             })
             .join('\n');
-        })
+        }),
       );
     }
   });
