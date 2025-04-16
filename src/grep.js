@@ -49,21 +49,31 @@ function _grep(options, regex, files) {
   if (!files && !pipe) common.error('no paths given', 2);
 
   var idx = 2;
+  var contextError = ': invalid context length argument';
   // If the option has been found but not read, copy value from arguments
   if (options.beforeContext === true) {
     idx = 3;
     options.beforeContext = Number(arguments[1]);
+    if (options.beforeContext < 0) {
+      common.error(options.beforeContext + contextError, 2);
+    }
   }
   if (options.afterContext === true) {
     idx = 3;
     options.afterContext = Number(arguments[1]);
+    if (options.afterContext < 0) {
+      common.error(options.afterContext + contextError, 2);
+    }
   }
   if (options.context === true) {
     idx = 3;
     options.context = Number(arguments[1]);
+    if (options.context < 0) {
+      common.error(options.context + contextError, 2);
+    }
   }
   //  If before or after not given but context is, update values
-  if (options.context) {
+  if (typeof options.context === 'number') {
     if (options.beforeContext === false) {
       options.beforeContext = options.context;
     }
@@ -177,7 +187,10 @@ function _grep(options, regex, files) {
   }
 
   var separator = '\n';
-  if (options.beforeContext || options.afterContext) {
+  if (
+    typeof options.beforeContext === 'number' ||
+    typeof options.afterContext === 'number'
+  ) {
     separator = '\n--\n';
   }
   return grep.join(separator) + '\n';

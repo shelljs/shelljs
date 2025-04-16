@@ -57,6 +57,27 @@ test("multiple files, one doesn't exist, one doesn't match", t => {
   t.is(result.code, 2);
 });
 
+test('-A option, negative value', t => {
+  const result = shell.grep('-A', -2, 'test*', 'test/resources/grep/file3');
+  t.truthy(shell.error());
+  t.is(result.code, 2);
+  t.is(result.stderr, 'grep: -2: invalid context length argument');
+});
+
+test('-B option, negative value', t => {
+  const result = shell.grep('-B', -3, 'test*', 'test/resources/grep/file3');
+  t.truthy(shell.error());
+  t.is(result.code, 2);
+  t.is(result.stderr, 'grep: -3: invalid context length argument');
+});
+
+test('-C option, negative value', t => {
+  const result = shell.grep('-C', -1, 'test*', 'test/resources/grep/file3');
+  t.truthy(shell.error());
+  t.is(result.code, 2);
+  t.is(result.stderr, 'grep: -1: invalid context length argument');
+});
+
 //
 // Valids
 //
@@ -311,6 +332,62 @@ test('-C option', t => {
       'line12\n' +
       'line13\n' +
       'line14\n' +
+      'line15 test line\n'
+  );
+});
+
+test('-C option, small value', t => {
+  const result = shell.grep('-C', 1, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line1\n' +
+      'line2 test line\n' +
+      'line3 test line\n' +
+      'line4\n' +
+      '--\n' +
+      'line9\n' +
+      'line10 test line\n' +
+      'line11\n' +
+      '--\n' +
+      'line14\n' +
+      'line15 test line\n'
+  );
+});
+
+test('-C option, large value', t => {
+  const result = shell.grep('-C', 100, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line1\n' +
+      'line2 test line\n' +
+      'line3 test line\n' +
+      'line4\n' +
+      'line5\n' +
+      'line6\n' +
+      'line7\n' +
+      'line8\n' +
+      'line9\n' +
+      'line10 test line\n' +
+      'line11\n' +
+      'line12\n' +
+      'line13\n' +
+      'line14\n' +
+      'line15 test line\n'
+  );
+});
+
+test('-C option, add line separators', t => {
+  const result = shell.grep('-C', 0, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line2 test line\n' +
+      'line3 test line\n' +
+      '--\n' +
+      'line10 test line\n' +
+      '--\n' +
       'line15 test line\n'
   );
 });
