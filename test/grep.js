@@ -57,6 +57,27 @@ test("multiple files, one doesn't exist, one doesn't match", t => {
   t.is(result.code, 2);
 });
 
+test('-A option, negative value', t => {
+  const result = shell.grep('-A', -2, 'test*', 'test/resources/grep/file3');
+  t.truthy(shell.error());
+  t.is(result.code, 2);
+  t.is(result.stderr, 'grep: -2: invalid context length argument');
+});
+
+test('-B option, negative value', t => {
+  const result = shell.grep('-B', -3, 'test*', 'test/resources/grep/file3');
+  t.truthy(shell.error());
+  t.is(result.code, 2);
+  t.is(result.stderr, 'grep: -3: invalid context length argument');
+});
+
+test('-C option, negative value', t => {
+  const result = shell.grep('-C', -1, 'test*', 'test/resources/grep/file3');
+  t.truthy(shell.error());
+  t.is(result.code, 2);
+  t.is(result.stderr, 'grep: -1: invalid context length argument');
+});
+
 //
 // Valids
 //
@@ -173,4 +194,223 @@ test('the pattern looks like an option', t => {
   const result = shell.grep('--', '-v', 'test/resources/grep/file2');
   t.falsy(shell.error());
   t.is(result.toString(), '-v\n-vv\n');
+});
+
+//
+// Before & after contexts
+//
+test('-B option', t => {
+  const result = shell.grep('-B', 3, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line1\n' +
+      'line2 test line\n' +
+      'line3 test line\n' +
+      '--\n' +
+      'line7\n' +
+      'line8\n' +
+      'line9\n' +
+      'line10 test line\n' +
+      '--\n' +
+      'line12\n' +
+      'line13\n' +
+      'line14\n' +
+      'line15 test line\n',
+  );
+});
+
+test('-B option, -n option', t => {
+  const result = shell.grep('-nB', 3, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    '1-line1\n' +
+      '2:line2 test line\n' +
+      '3:line3 test line\n' +
+      '--\n' +
+      '7-line7\n' +
+      '8-line8\n' +
+      '9-line9\n' +
+      '10:line10 test line\n' +
+      '--\n' +
+      '12-line12\n' +
+      '13-line13\n' +
+      '14-line14\n' +
+      '15:line15 test line\n',
+  );
+});
+
+test('-A option', t => {
+  const result = shell.grep('-A', 2, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line2 test line\n' +
+      'line3 test line\n' +
+      'line4\n' +
+      'line5\n' +
+      '--\n' +
+      'line10 test line\n' +
+      'line11\n' +
+      'line12\n' +
+      '--\n' +
+      'line15 test line\n',
+  );
+});
+
+test('-A option, -B option', t => {
+  const result = shell.grep(
+    { '-A': 2, '-B': 3 },
+    'test*',
+    'test/resources/grep/file3',
+  );
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line1\n' +
+      'line2 test line\n' +
+      'line3 test line\n' +
+      'line4\n' +
+      'line5\n' +
+      '--\n' +
+      'line7\n' +
+      'line8\n' +
+      'line9\n' +
+      'line10 test line\n' +
+      'line11\n' +
+      'line12\n' +
+      'line13\n' +
+      'line14\n' +
+      'line15 test line\n',
+  );
+});
+
+test('-A option, -B option, -n option', t => {
+  const result = shell.grep(
+    { '-n': true, '-A': 2, '-B': 3 },
+    'test*',
+    'test/resources/grep/file3',
+  );
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    '1-line1\n' +
+      '2:line2 test line\n' +
+      '3:line3 test line\n' +
+      '4-line4\n' +
+      '5-line5\n' +
+      '--\n' +
+      '7-line7\n' +
+      '8-line8\n' +
+      '9-line9\n' +
+      '10:line10 test line\n' +
+      '11-line11\n' +
+      '12-line12\n' +
+      '13-line13\n' +
+      '14-line14\n' +
+      '15:line15 test line\n',
+  );
+});
+
+test('-C option', t => {
+  const result = shell.grep('-C', 3, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line1\n' +
+      'line2 test line\n' +
+      'line3 test line\n' +
+      'line4\n' +
+      'line5\n' +
+      'line6\n' +
+      'line7\n' +
+      'line8\n' +
+      'line9\n' +
+      'line10 test line\n' +
+      'line11\n' +
+      'line12\n' +
+      'line13\n' +
+      'line14\n' +
+      'line15 test line\n',
+  );
+});
+
+test('-C option, small value', t => {
+  const result = shell.grep('-C', 1, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line1\n' +
+      'line2 test line\n' +
+      'line3 test line\n' +
+      'line4\n' +
+      '--\n' +
+      'line9\n' +
+      'line10 test line\n' +
+      'line11\n' +
+      '--\n' +
+      'line14\n' +
+      'line15 test line\n',
+  );
+});
+
+test('-C option, large value', t => {
+  const result = shell.grep('-C', 100, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line1\n' +
+      'line2 test line\n' +
+      'line3 test line\n' +
+      'line4\n' +
+      'line5\n' +
+      'line6\n' +
+      'line7\n' +
+      'line8\n' +
+      'line9\n' +
+      'line10 test line\n' +
+      'line11\n' +
+      'line12\n' +
+      'line13\n' +
+      'line14\n' +
+      'line15 test line\n',
+  );
+});
+
+test('-C option, add line separators', t => {
+  const result = shell.grep('-C', 0, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    'line2 test line\n' +
+      'line3 test line\n' +
+      '--\n' +
+      'line10 test line\n' +
+      '--\n' +
+      'line15 test line\n',
+  );
+});
+
+test('-C option, -n option', t => {
+  const result = shell.grep('-nC', 3, 'test*', 'test/resources/grep/file3');
+  t.falsy(shell.error());
+  t.is(
+    result.toString(),
+    '1-line1\n' +
+      '2:line2 test line\n' +
+      '3:line3 test line\n' +
+      '4-line4\n' +
+      '5-line5\n' +
+      '6-line6\n' +
+      '7-line7\n' +
+      '8-line8\n' +
+      '9-line9\n' +
+      '10:line10 test line\n' +
+      '11-line11\n' +
+      '12-line12\n' +
+      '13-line13\n' +
+      '14-line14\n' +
+      '15:line15 test line\n',
+  );
 });

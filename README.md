@@ -419,12 +419,18 @@ Available options:
 + `-l`: Print only filenames of matching files.
 + `-i`: Ignore case.
 + `-n`: Print line numbers.
++ `-B <num>`: Show `<num>` lines before each result.
++ `-A <num>`: Show `<num>` lines after each result.
++ `-C <num>`: Show `<num>` lines before and after each result. -B and -A override this option.
 
 Examples:
 
 ```javascript
 grep('-v', 'GLOBAL_VARIABLE', '*.js');
 grep('GLOBAL_VARIABLE', '*.js');
+grep('-B', 3, 'GLOBAL_VARIABLE', '*.js');
+grep({ '-B': 3 }, 'GLOBAL_VARIABLE', '*.js');
+grep({ '-B': 3, '-C': 2 }, 'GLOBAL_VARIABLE', '*.js');
 ```
 
 Reads input string from given files and returns a
