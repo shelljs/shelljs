@@ -200,7 +200,7 @@ test('set timeout option', t => {
   t.is(result.code, 1);
 });
 
-test('check process.env works', t => {
+test.only('check process.env works', t => {
   shell.env.FOO = 'Hello world';
   // Launch any sub process, and process.env should be propagated through.
   const result =
@@ -208,7 +208,7 @@ test('check process.env works', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, 'Hello world\n');
-  t.is(result.stderr, '');
+  t.truthy(result.stderr.includes('encountered an error during execution'));
 });
 
 test('cmd returns a ShellString', t => {

@@ -132,7 +132,7 @@ function _cmd(options, command, commandArgs, userOptions) {
     stdout = result.stdout || '';
     stderr = result.stderr ||
              `'${command}' encountered an error during execution`;
-    code = result.exitCode > 0 ? result.exitCode : 1;
+    code = result.exitCode !== undefined ? result.exitCode : 1;
   }
 
   // Pass `continue: true` so we can specify a value for stdout.
