@@ -208,7 +208,7 @@ test('check process.env works', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.stdout, 'Hello world\n');
-  t.truthy(result.stderr.includes('encountered an error during execution'));
+  t.is(result.stderr, '');
 });
 
 test('cmd returns a ShellString', t => {

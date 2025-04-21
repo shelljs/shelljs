@@ -121,7 +121,7 @@ function _cmd(options, command, commandArgs, userOptions) {
     code = COMMAND_NOT_FOUND_ERROR_CODE;
   } else if (typeof result.stdout === 'string' &&
              typeof result.stderr === 'string' &&
-             typeof result.code === 'number') {
+             typeof result.exitCode === 'number') {
     // Normal exit: execa was able to execute `command` and get a return value.
     stdout = result.stdout.toString();
     stderr = result.stderr.toString();
@@ -135,7 +135,7 @@ function _cmd(options, command, commandArgs, userOptions) {
     code = result.exitCode !== undefined ? result.exitCode : 1;
   }
 
-  // Pass `continue: true` so we can specify a value for stdout.
+  // Pass `continue: true;` so we can specify a value for stdout.
   if (code) common.error(stderr, code, { silent: true, continue: true });
   return new common.ShellString(stdout, stderr, code);
 }
