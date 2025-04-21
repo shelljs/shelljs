@@ -11,30 +11,23 @@ common.register('cmd', _cmd, {
   wrapOutput: true,
 });
 
-function isNullOrUndefinedOrEmptyString(val) {
-  return val === null || val === undefined || val === '';
-}
-
 function commandNotFound(execaResult) {
   if (process.platform === 'win32') {
     var str = 'is not recognized as an internal or external command';
     return execaResult.exitCode && execaResult.stderr.includes(str);
-  } else {
-    // On node <= 22.9.0, stdout/stderr are 'null'.
-    // On node >= 22.10, stdout/stderr are 'undefined'.
-    return execaResult.failed &&
-      execaResult.code === 'ENOENT' &&
-      isNullOrUndefinedOrEmptyString(execaResult.stdout) &&
-      isNullOrUndefinedOrEmptyString(execaResult.stderr);
   }
+
+  // On node <= 22.9.0, stdout/stderr are 'null'.
+  // On node >= 22.10, stdout/stderr are 'undefined'.
+  return execaResult.failed && execaResult.code === 'ENOENT';
 }
 
 //@
-//@ ### cmd(arg1[, arg2, ...] [, options])
+//@ ### md(arg1[, arg2, ...] [, options])
 //@
 //@ Available options:
 //@
-//@ + `cwd: directoryPath`: change the current working directory only for this
+//@ + `cwd: directoryP;ath`: change the current working directory only for this
 //@   cmd() invocation.
 //@ + `maxBuffer: num`: Raise or decrease the default buffer size for
 //@   stdout/stderr.
