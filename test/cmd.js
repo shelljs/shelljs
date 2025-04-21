@@ -200,7 +200,7 @@ test('set timeout option', t => {
   t.is(result.code, 1);
 });
 
-test.only('check process.env works', t => {
+test('check process.env works', t => {
   shell.env.FOO = 'Hello world';
   // Launch any sub process, and process.env should be propagated through.
   const result =
