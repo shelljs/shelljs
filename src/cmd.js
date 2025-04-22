@@ -27,7 +27,7 @@ function commandNotFound(execaResult) {
 //@
 //@ Available options:
 //@
-//@ + `cwd: directoryP;ath`: change the current working directory only for this
+//@ + `cwd: directoryPath`: change the current working directory only for this
 //@   cmd() invocation.
 //@ + `maxBuffer: num`: Raise or decrease the default buffer size for
 //@   stdout/stderr.
