@@ -20,7 +20,7 @@ function commandNotFound(execaResult) {
 }
 
 //@
-//@ ### md(arg1[, arg2, ...] [, options])
+//@ ### cmd(arg1[, arg2, ...] [, options])
 //@
 //@ Available options:
 //@
