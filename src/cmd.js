@@ -16,9 +16,6 @@ function commandNotFound(execaResult) {
     var str = 'is not recognized as an internal or external command';
     return execaResult.exitCode && execaResult.stderr.includes(str);
   }
-
-  // On node <= 22.9.0, stdout/stderr are 'null'.
-  // On node >= 22.10, stdout/stderr are 'undefined'.
   return execaResult.failed && execaResult.code === 'ENOENT';
 }
 
