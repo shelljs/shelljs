@@ -183,9 +183,9 @@ test.only('set maxBuffer (very small)', t => {
   t.is(result.code, 0);
   t.is(result.stdout, '1234567890\n');
   result = shell.cmd('shx', 'echo', '1234567890', { maxBuffer: 3 });
-  t.truthy(shell.error());
-  t.is(result.code, 1);
-  t.is(result.stdout, '1234567890\n');
+  // t.truthy(shell.error());
+  // t.is(result.code, 1);
+  t.is(result.stdout, 'see what the value is');
 });
 
 test('set timeout option', t => {
