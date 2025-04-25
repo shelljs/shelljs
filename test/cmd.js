@@ -177,6 +177,14 @@ test('set cwd', t => {
   t.is(result.stdout, path.resolve('..') + '\n');
 });
 
+test('command fails silently with non-zero status', t => {
+  const result = shell.cmd('shx', 'false');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stdout, '');
+  t.is(result.stderr, '');
+});
+
 test('set maxBuffer (very small)', t => {
   let result = shell.cmd('shx', 'echo', '1234567890'); // default maxBuffer is ok
   t.falsy(shell.error());
