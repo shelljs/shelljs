@@ -106,6 +106,8 @@ function _cmd(options, command, commandArgs, userOptions) {
   var stderr;
   var code;
 
+  console.log(result);
+  throw new Error('stop the test early\n' + JSON.stringify(result, undefined, 2));
   if (commandNotFound(result)) {
     // This can happen if `command` is not an executable binary, or possibly
     // under other conditions.

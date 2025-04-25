@@ -178,14 +178,15 @@ test('set cwd', t => {
 });
 
 test.only('set maxBuffer (very small)', t => {
-  let result = shell.cmd('shx', 'echo', '1234567890'); // default maxBuffer is ok
-  t.falsy(shell.error());
-  t.is(result.code, 0);
+  let result;
+  // result = shell.cmd('shx', 'echo', '1234567890'); // default maxBuffer is ok
+  // t.falsy(shell.error());
+  // t.is(result.code, 0);
+  // t.is(result.stdout, '1234567890\n');
+  result = shell.cmd('shx', 'echo', '1234567890', { maxBuffer: 6 });
+  t.truthy(shell.error());
+  t.is(result.code, 1);
   t.is(result.stdout, '1234567890\n');
-  result = shell.cmd('shx', 'echo', '1234567890', { maxBuffer: 3 });
-  // t.truthy(shell.error());
-  // t.is(result.code, 1);
-  t.is(result.stdout, 'see what the value is');
 });
 
 test('set timeout option', t => {
