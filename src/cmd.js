@@ -106,8 +106,6 @@ function _cmd(options, command, commandArgs, userOptions) {
   var stderr;
   var code;
 
-  console.log(result);
-  throw new Error('stop the test early\n' + JSON.stringify(result, undefined, 2));
   if (commandNotFound(result)) {
     // This can happen if `command` is not an executable binary, or possibly
     // under other conditions.
@@ -116,7 +114,8 @@ function _cmd(options, command, commandArgs, userOptions) {
     code = COMMAND_NOT_FOUND_ERROR_CODE;
   } else if (typeof result.stdout === 'string' &&
              typeof result.stderr === 'string' &&
-             typeof result.exitCode === 'number') {
+             typeof result.exitCode === 'number' &&
+             !(result.exitCode === 0 && result.failed)) {
     // Normal exit: execa was able to execute `command` and get a return value.
     stdout = result.stdout.toString();
     stderr = result.stderr.toString();
@@ -127,7 +126,7 @@ function _cmd(options, command, commandArgs, userOptions) {
     stdout = result.stdout || '';
     stderr = result.stderr ||
              `'${command}' encountered an error during execution`;
-    code = result.exitCode !== undefined ? result.exitCode : 1;
+    code = result.exitCode ? result.exitCode : 1;
   }
 
   // Pass `continue: true;` so we can specify a value for stdout.
