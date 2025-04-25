@@ -84,6 +84,7 @@ function _cmd(options, command, commandArgs, userOptions) {
   var defaultOptions = {
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
     stripEof: false, // Preserve trailing newlines for consistency with unix.
+    stripFinalNewline: false,
     reject: false, // Use ShellJS's error handling system.
   };
 
@@ -92,7 +93,6 @@ function _cmd(options, command, commandArgs, userOptions) {
   var requiredOptions = {
     input: pipe,
     shell: false,
-    stripFinalNewline: false,
   };
 
   var execaOptions =
