@@ -11,28 +11,19 @@ common.register('cmd', _cmd, {
   wrapOutput: true,
 });
 
-function isNullOrUndefined(val) {
-  return val === null || val === undefined;
-}
-
 function isCommandNotFound(execaResult) {
   if (process.platform === 'win32') {
     var str = 'is not recognized as an internal or external command';
-    return execaResult.code && execaResult.stderr.includes(str);
-  } else {
-    // On node <= 22.9.0, stdout/stderr are 'null'.
-    // On node >= 22.10, stdout/stderr are 'undefined'.
-    return execaResult.code &&
-      isNullOrUndefined(execaResult.stdout) &&
-      isNullOrUndefined(execaResult.stderr);
+    return execaResult.exitCode && execaResult.stderr.includes(str);
   }
+  return execaResult.failed && execaResult.code === 'ENOENT';
 }
 
 function isExecaInternalError(result) {
   if (typeof result.stdout !== 'string') return true;
   if (typeof result.stderr !== 'string') return true;
-  if (typeof result.code !== 'number') return true;
-  if (result.code === 0 && result.failed) return true;
+  if (typeof result.exitCode !== 'number') return true;
+  if (result.exitCode === 0 && result.failed) return true;
   // Otherwise assume this executed correctly. The command may still have exited
   // with non-zero status, but that's not due to anything execa did.
   return false;
@@ -102,7 +93,7 @@ function _cmd(options, command, commandArgs, userOptions) {
   // by the user.
   var defaultOptions = {
     maxBuffer: DEFAULT_MAXBUFFER_SIZE,
-    stripEof: false, // Preserve trailing newlines for consistency with unix.
+    stripFinalNewline: false, // Preserve trailing newlines for consistency with unix.
     reject: false, // Use ShellJS's error handling system.
   };
 
@@ -132,12 +123,12 @@ function _cmd(options, command, commandArgs, userOptions) {
     stdout = result.stdout || '';
     stderr = result.stderr ||
              `'${command}' encountered an error during execution`;
-    code = typeof result.code === 'number' && result.code > 0 ? result.code : 1;
+    code = result.exitCode !== undefined && result.exitCode > 0 ? result.exitCode : 1;
   } else {
     // Normal exit: execa was able to execute `command` and get a return value.
     stdout = result.stdout.toString();
     stderr = result.stderr.toString();
-    code = result.code;
+    code = result.exitCode;
   }
 
   // Pass `continue: true` so we can specify a value for stdout.
