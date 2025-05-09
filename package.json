@@ -39,7 +39,6 @@
     "make.js",
     "plugin.js",
     "shell.js",
-    "bin",
     "src"
   ],
   "scripts": {
@@ -55,14 +54,9 @@
     "release:minor": "shelljs-release minor",
     "release:patch": "shelljs-release patch"
   },
-  "bin": {
-    "shjs": "./bin/shjs"
-  },
   "dependencies": {
     "execa": "^5.1.1",
-    "fast-glob": "^3.3.2",
-    "interpret": "^1.0.0",
-    "rechoir": "^0.6.2"
+    "fast-glob": "^3.3.2"
   },
   "ava": {
     "serial": true,
