@@ -43,6 +43,15 @@ test('simple path', t => {
   t.is(result.length, 12);
 });
 
+test('absolute path', t => {
+  const result = shell.find(`${process.cwd()}/test/resources/find`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(result.includes(`${process.cwd()}/test/resources/find/.hidden`));
+  t.truthy(result.includes(`${process.cwd()}/test/resources/find/dir1/dir11/a_dir11`));
+  t.is(result.length, 12);
+});
+
 test('multiple paths - comma', t => {
   const result = shell.find('test/resources/find/dir1', 'test/resources/find/dir2');
   t.falsy(shell.error());
