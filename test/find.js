@@ -43,7 +43,7 @@ test('simple path', t => {
   t.is(result.length, 12);
 });
 
-test('absolute path', t => {
+test('absolute path (directory)', t => {
   const result = shell.find(`${process.cwd()}/test/resources/find`);
   t.falsy(shell.error());
   t.is(result.code, 0);
