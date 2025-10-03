@@ -129,3 +129,101 @@ test('-L option fails for missing files', t => {
     t.falsy(result);
   });
 });
+
+//
+// String comparison tests
+//
+
+test('string equality with = operator', t => {
+  const result = shell.test('hello', '=', 'hello');
+  t.falsy(shell.error());
+  t.truthy(result);
+});
+
+test('string equality fails when strings differ', t => {
+  const result = shell.test('hello', '=', 'world');
+  t.falsy(shell.error());
+  t.falsy(result);
+});
+
+test('string inequality with != operator', t => {
+  const result = shell.test('hello', '!=', 'world');
+  t.falsy(shell.error());
+  t.truthy(result);
+});
+
+test('string inequality fails when strings are equal', t => {
+  const result = shell.test('hello', '!=', 'hello');
+  t.falsy(shell.error());
+  t.falsy(result);
+});
+
+test('-n option succeeds for non-empty string', t => {
+  const result = shell.test('-n', 'hello');
+  t.falsy(shell.error());
+  t.truthy(result);
+});
+
+test('-n option fails for empty string', t => {
+  const result = shell.test('-n', '');
+  t.falsy(shell.error());
+  t.falsy(result);
+});
+
+test('-z option succeeds for empty string', t => {
+  const result = shell.test('-z', '');
+  t.falsy(shell.error());
+  t.truthy(result);
+});
+
+test('-z option fails for non-empty string', t => {
+  const result = shell.test('-z', 'hello');
+  t.falsy(shell.error());
+  t.falsy(result);
+});
+
+test('environment variable equality check', t => {
+  process.env.TEST_VAR = 'production';
+  const result = shell.test(process.env.TEST_VAR, '=', 'production');
+  t.falsy(shell.error());
+  t.truthy(result);
+  delete process.env.TEST_VAR;
+});
+
+test('environment variable inequality check', t => {
+  process.env.TEST_VAR = 'development';
+  const result = shell.test(process.env.TEST_VAR, '!=', 'production');
+  t.falsy(shell.error());
+  t.truthy(result);
+  delete process.env.TEST_VAR;
+});
+
+test('environment variable non-zero length check', t => {
+  process.env.TEST_VAR = 'some_value';
+  const result = shell.test('-n', process.env.TEST_VAR);
+  t.falsy(shell.error());
+  t.truthy(result);
+  delete process.env.TEST_VAR;
+});
+
+test('empty strings are equal', t => {
+  const result = shell.test('', '=', '');
+  t.falsy(shell.error());
+  t.truthy(result);
+});
+
+test('string with spaces equality', t => {
+  const result = shell.test('hello world', '=', 'hello world');
+  t.falsy(shell.error());
+  t.truthy(result);
+});
+
+test('error when operator is at beginning', t => {
+  shell.test('=', 'hello', 'world');
+  t.truthy(shell.error());
+});
+
+test('error for invalid expression with three strings', t => {
+  shell.test('hello', 'world', 'test');
+  t.truthy(shell.error());
+});

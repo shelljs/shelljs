@@ -683,11 +683,20 @@ Available expression primaries:
 + `'-p', 'path'`: true if path is a pipe (FIFO)
 + `'-S', 'path'`: true if path is a socket
 
+String expression primaries:
+
++ `'-n', 'string'`: true if string length is non-zero
++ `'-z', 'string'`: true if string length is zero
++ `'string1', '=', 'string2'`: true if the strings are equal
++ `'string1', '!=', 'string2'`: true if the strings are not equal
+
 Examples:
 
 ```javascript
 if (test('-d', path)) { /* do something with dir */ };
 if (!test('-f', path)) continue; // skip if it's not a regular file
+if (test(process.env.NODE_ENV, '=', 'production')) { /* production mode */ };
+if (test('-n', process.env.API_KEY)) { /* API key is set */ };
 ```
 
 Evaluates `expression` using the available primaries and returns
