@@ -290,6 +290,42 @@ function globOptions() {
   return Object.assign({}, defaultGlobOptions, newGlobOptions);
 }
 
+
+// Workaround for https://github.com/shelljs/shelljs/issues/1197
+// fast-glob's dependency glob-parent does not recognize the '?' wildcard in
+// non-final path segments, causing those patterns to be treated as literal
+// directory names. Replace standalone '?' with the equivalent character class
+// '[^/]' which glob-parent handles correctly.
+function convertQuestionMarkForGlob(pattern) {
+  if (pattern.indexOf('?') === -1) {
+    return pattern;
+  }
+  var result = '';
+  var inBracket = false;
+  for (var i = 0; i < pattern.length; i++) {
+    var ch = pattern[i];
+    if (ch === '\\' && i + 1 < pattern.length) {
+      // Escaped character: keep as-is
+      result += ch + pattern[i + 1];
+      i++;
+    } else if (ch === '[' && !inBracket) {
+      inBracket = true;
+      result += ch;
+    } else if (ch === ']' && inBracket) {
+      inBracket = false;
+      result += ch;
+    } else if (ch === '?' && !inBracket && pattern[i + 1] === '(') {
+      // Extglob pattern ?(...)  keep as-is
+      result += ch;
+    } else if (ch === '?' && !inBracket) {
+      result += '[^/]';
+    } else {
+      result += ch;
+    }
+  }
+  return result;
+}
+
 // Expands wildcards with matching (ie. existing) file names.
 // For example:
 //   expand(['file*.js']) = ['file1.js', 'file2.js', ...]
@@ -307,7 +343,7 @@ function expand(list) {
       var ret;
       var globOpts = globOptions();
       try {
-        ret = glob.sync(listEl, globOpts);
+        ret = glob.sync(convertQuestionMarkForGlob(listEl), globOpts);
       } catch (e) {
         // if glob fails, interpret the string literally
         ret = [listEl];

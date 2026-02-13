@@ -107,7 +107,7 @@ test('config.globOptions expands "*" in multiple path segments by default', t =>
 });
 
 // https://github.com/shelljs/shelljs/issues/1197
-test.skip('config.globOptions expands "?" in folder path by default', t => {
+test('config.globOptions expands "?" in folder path by default', t => {
   const result = common.expand(['test/r?sources/file*.txt']);
   const expected = [
     'test/resources/file1.txt',
