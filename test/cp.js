@@ -922,3 +922,59 @@ test('cp -p should preserve mode, ownership, and timestamp (symlink)', t => {
     t.is(stat.gid, statOfResult.gid);
   });
 });
+
+test('copy directory to its parent dir (same location) should not erase content', t => {
+  // Setup: create a directory with a file inside t.context.tmp
+  shell.mkdir(`${t.context.tmp}/srcdir`);
+  shell.ShellString('deadbeef').to(`${t.context.tmp}/srcdir/lol`);
+
+  // Verify setup
+  t.is(shell.cat(`${t.context.tmp}/srcdir/lol`).toString(), 'deadbeef');
+
+  // This should error, not silently erase the file contents
+  const result = shell.cp('-R', `${t.context.tmp}/srcdir`, t.context.tmp);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.truthy(result.stderr.match(/are the same file/));
+
+  // Most importantly: file content must be preserved (no data loss)
+  t.is(shell.cat(`${t.context.tmp}/srcdir/lol`).toString(), 'deadbeef');
+});
+
+test('copy directory to same location with trailing slash should not erase content', t => {
+  // Setup: create a directory with a file inside t.context.tmp
+  shell.mkdir(`${t.context.tmp}/srcdir`);
+  shell.ShellString('deadbeef').to(`${t.context.tmp}/srcdir/lol`);
+
+  // Verify setup
+  t.is(shell.cat(`${t.context.tmp}/srcdir/lol`).toString(), 'deadbeef');
+
+  // cp -R /path/srcdir /path/ should detect same directory
+  const result = shell.cp('-R', `${t.context.tmp}/srcdir`, `${t.context.tmp}/`);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.truthy(result.stderr.match(/are the same file/));
+
+  // File content must be preserved
+  t.is(shell.cat(`${t.context.tmp}/srcdir/lol`).toString(), 'deadbeef');
+});
+
+test('copy multiple dirs where one is to same location should error for that one and continue', t => {
+  // Setup: two source dirs in t.context.tmp
+  shell.mkdir(`${t.context.tmp}/src1`);
+  shell.mkdir(`${t.context.tmp}/src2`);
+  shell.ShellString('content1').to(`${t.context.tmp}/src1/file`);
+  shell.ShellString('content2').to(`${t.context.tmp}/src2/file`);
+
+  // Also create a separate dest dir
+  shell.mkdir(`${t.context.tmp}/dest`);
+
+  // Copy src1 to dest (should succeed) and src1 to its own parent (should fail)
+  const result = shell.cp('-R', `${t.context.tmp}/src1`, `${t.context.tmp}/src2`, t.context.tmp);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+
+  // Both directories' contents should be preserved
+  t.is(shell.cat(`${t.context.tmp}/src1/file`).toString(), 'content1');
+  t.is(shell.cat(`${t.context.tmp}/src2/file`).toString(), 'content2');
+});
