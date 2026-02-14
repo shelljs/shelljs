@@ -10,7 +10,7 @@ var shell = require('..');
 
 // This is the authoritative list of supported node versions.
 var MIN_NODE_VERSION = 18;
-var MAX_NODE_VERSION = 22;
+var MAX_NODE_VERSION = 24;
 
 // Ideally this map should be empty, however we can pin node releases to
 // specific versions if necessary to workaround bugs. See
