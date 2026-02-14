@@ -12,6 +12,7 @@ common.register('cp', _cp, {
     'L': 'followsymlink',
     'P': 'noFollowsymlink',
     'p': 'preserve',
+    'v': 'verbose',
   },
   wrapOutput: false,
 });
@@ -84,6 +85,10 @@ function copyFileSync(srcFile, destFile, options) {
     fs.closeSync(fdr);
     fs.closeSync(fdw);
   }
+
+  if (options.verbose) {
+    console.log("copied '" + srcFile + "' -> '" + destFile + "'");
+  }
 }
 
 // Recursively copies 'sourceDir' into 'destDir'
@@ -108,6 +113,9 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
   var checkDir = common.statFollowLinks(sourceDir);
   try {
     fs.mkdirSync(destDir);
+    if (opts.verbose) {
+      console.log("created directory '" + sourceDir + "' -> '" + destDir + "'");
+    }
   } catch (e) {
     // if the directory already exists, that's okay
     if (e.code !== 'EEXIST') throw e;
