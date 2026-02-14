@@ -168,6 +168,26 @@ test('broken links still expand', t => {
   t.deepEqual(result, ['test/resources/badlink']);
 });
 
+test('glob syntax, ? for single char in directory name', t => {
+  const result = common.expand(['test/r?sources/file1.txt']);
+  t.deepEqual(result, ['test/resources/file1.txt']);
+});
+
+test('glob syntax, ? for single char in directory name with * in file name', t => {
+  const result = common.expand(['test/r?sources/file*.txt']);
+  t.deepEqual(result.sort(), ['test/resources/file1.txt', 'test/resources/file2.txt'].sort());
+});
+
+test('glob syntax, ? in multiple path segments', t => {
+  const result = common.expand(['test/r?sources/file?.txt']);
+  t.deepEqual(result.sort(), ['test/resources/file1.txt', 'test/resources/file2.txt'].sort());
+});
+
+test('glob syntax, ? in file name still works', t => {
+  const result = common.expand(['test/resources/file?.txt']);
+  t.deepEqual(result.sort(), ['test/resources/file1.txt', 'test/resources/file2.txt'].sort());
+});
+
 test('empty array', t => {
   const result = common.expand([]);
   t.deepEqual(result, []);
