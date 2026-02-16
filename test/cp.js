@@ -960,18 +960,19 @@ test('copy directory to same location with trailing slash should not erase conte
 });
 
 test('copy multiple dirs where one is to same location should error for that one and continue', t => {
-  // Setup: two source dirs in t.context.tmp
+  // Setup: src1 in tmp root, src2 inside destination
   shell.mkdir(`${t.context.tmp}/src1`);
-  shell.mkdir(`${t.context.tmp}/src2`);
+  shell.mkdir('-p', `${t.context.tmp}/destination/src2`);
   shell.ShellString('content1').to(`${t.context.tmp}/src1/file`);
-  shell.ShellString('content2').to(`${t.context.tmp}/src2/file`);
+  shell.ShellString('content2').to(`${t.context.tmp}/destination/src2/file`);
 
-  // Copy both dirs to their own parent (both should fail with same-file error, but not lose data)
-  const result = shell.cp('-R', `${t.context.tmp}/src1`, `${t.context.tmp}/src2`, t.context.tmp);
+  // src1 copy should succeed, src2 copy should fail (but the original src2 is still intact)
+  const result = shell.cp('-R', `${t.context.tmp}/src1`, `${t.context.tmp}/destination/src2`, `${t.context.tmp}/destination`);
   t.truthy(shell.error());
   t.is(result.code, 1);
 
-  // Both directories' contents should be preserved
-  t.is(shell.cat(`${t.context.tmp}/src1/file`).toString(), 'content1');
-  t.is(shell.cat(`${t.context.tmp}/src2/file`).toString(), 'content2');
+  // src1 was copied successfully into destination
+  t.is(shell.cat(`${t.context.tmp}/destination/src1/file`).toString(), 'content1');
+  // src2's original content is preserved (not lost due to same-file copy)
+  t.is(shell.cat(`${t.context.tmp}/destination/src2/file`).toString(), 'content2');
 });
