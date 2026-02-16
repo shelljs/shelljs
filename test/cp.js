@@ -966,10 +966,7 @@ test('copy multiple dirs where one is to same location should error for that one
   shell.ShellString('content1').to(`${t.context.tmp}/src1/file`);
   shell.ShellString('content2').to(`${t.context.tmp}/src2/file`);
 
-  // Also create a separate dest dir
-  shell.mkdir(`${t.context.tmp}/dest`);
-
-  // Copy src1 to dest (should succeed) and src1 to its own parent (should fail)
+  // Copy both dirs to their own parent (both should fail with same-file error, but not lose data)
   const result = shell.cp('-R', `${t.context.tmp}/src1`, `${t.context.tmp}/src2`, t.context.tmp);
   t.truthy(shell.error());
   t.is(result.code, 1);
