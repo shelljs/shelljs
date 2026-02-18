@@ -976,3 +976,20 @@ test('copy multiple dirs where one is to same location should error for that one
   // src2's original content is preserved (not lost due to same-file copy)
   t.is(shell.cat(`${t.context.tmp}/destination/src2/file`).toString(), 'content2');
 });
+
+test('copy single file to itself should not erase content', t => {
+  // Setup: create a file in t.context.tmp
+  shell.ShellString('important data').to(`${t.context.tmp}/myfile.txt`);
+
+  // Verify setup
+  t.is(shell.cat(`${t.context.tmp}/myfile.txt`).toString(), 'important data');
+
+  // Copying a file to itself should error but preserve data
+  const result = shell.cp(`${t.context.tmp}/myfile.txt`, `${t.context.tmp}/myfile.txt`);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.truthy(result.stderr.match(/are the same file/));
+
+  // File content must be preserved (no data loss)
+  t.is(shell.cat(`${t.context.tmp}/myfile.txt`).toString(), 'important data');
+});
