@@ -24,6 +24,12 @@ function copyFileSync(srcFile, destFile, options) {
     common.error('copyFileSync: no such file or directory: ' + srcFile);
   }
 
+  // Bail if src and dest are the same file to avoid data loss
+  if (path.relative(srcFile, destFile) === '') {
+    common.error("'" + destFile + "' and '" + srcFile + "' are the same file", { continue: true });
+    return;
+  }
+
   var isWindows = process.platform === 'win32';
 
   // Check the mtimes of the files if the '-u' flag is provided
@@ -268,6 +274,12 @@ function _cp(options, sources, dest) {
             path.join(dest, path.basename(src)) :
             dest;
 
+        if (path.relative(src, newDest) === '') {
+          // a directory cannot be copied into itself, but we want to continue copying other sources
+          common.error("'" + newDest + "' and '" + src + "' are the same file", { continue: true });
+          return;
+        }
+
         try {
           common.statFollowLinks(path.dirname(dest));
           cpdirSyncRecursive(src, newDest, 0, options);
@@ -297,12 +309,6 @@ function _cp(options, sources, dest) {
 
       if (thisDestExists && options.no_force) {
         return; // skip file
-      }
-
-      if (path.relative(src, thisDest) === '') {
-        // a file cannot be copied to itself, but we want to continue copying other files
-        common.error("'" + thisDest + "' and '" + src + "' are the same file", { continue: true });
-        return;
       }
 
       copyFileSync(src, thisDest, options);
