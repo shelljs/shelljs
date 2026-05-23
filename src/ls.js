@@ -106,7 +106,10 @@ function _ls(options, paths) {
     if (stat.isDirectory() && !options.directory) {
       if (options.recursive) {
         // use glob, because it's simple
-        glob.sync(p + globPatternRecursive, {
+        var globPattern = process.platform === 'win32' ?
+          p.replace(/\\/g, '/') + globPatternRecursive :
+          p + globPatternRecursive;
+        glob.sync(globPattern, {
           // These options are just to make fast-glob be compatible with POSIX
           // (bash) wildcard behavior.
           onlyFiles: false,
