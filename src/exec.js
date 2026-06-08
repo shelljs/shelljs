@@ -202,7 +202,7 @@ function execAsync(cmd, opts, pipe, callback) {
 //@ Executes the given `command` _synchronously_, unless otherwise specified.
 //@ When in synchronous mode, this returns a [ShellString](#shellstringstr).
 //@ Otherwise, this returns the child process object, and the `callback`
-//@ receives the arguments `(code, stdout, stderr)`.
+//@ receives the arguments `(code, stdout, stderr)` when the process terminates.
 //@
 //@ Not seeing the behavior you want? `exec()` runs everything through `sh`
 //@ by default (or `cmd.exe` on Windows), which differs from `bash`. If you
