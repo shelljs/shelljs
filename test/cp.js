@@ -993,3 +993,14 @@ test('copy single file to itself should not erase content', t => {
   // File content must be preserved (no data loss)
   t.is(shell.cat(`${t.context.tmp}/myfile.txt`).toString(), 'important data');
 });
+
+test('cp with Windows-style backslash and glob pattern', (t) => {
+  utils.skipOnUnix(t, () => {
+    const result = shell.cp('test\\resources\\file*.txt', t.context.tmp);
+      t.falsy(shell.error());
+      t.falsy(result.stderr);
+      t.is(result.code, 0);
+      t.truthy(fs.existsSync(`${t.context.tmp}/file1.txt`));
+      t.truthy(fs.existsSync(`${t.context.tmp}/file2.txt`));
+    });
+});

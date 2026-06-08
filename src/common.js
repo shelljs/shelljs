@@ -343,7 +343,9 @@ function expand(list) {
       var ret;
       var globOpts = globOptions();
       try {
-        ret = glob.sync(convertQuestionMarkForGlob(listEl), globOpts);
+        // Call convertPathToPattern to handle paths with backslashes
+        // See https://github.com/mrmlnc/fast-glob#convertpathtopatternpath
+        ret = glob.sync(glob.convertPathToPattern(convertQuestionMarkForGlob(listEl)), globOpts);
       } catch (e) {
         // if glob fails, interpret the string literally
         ret = [listEl];
