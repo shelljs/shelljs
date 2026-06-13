@@ -201,3 +201,24 @@ test('non-normalized paths are still ok with -p', t => {
   t.is(result.code, 0);
   t.truthy(fs.existsSync(`${t.context.tmp}/asdf`));
 });
+
+test('-p flag: existing directory', t => {
+  shell.mkdir(`${t.context.tmp}/existing`);
+  t.falsy(shell.error());
+  t.truthy(fs.existsSync(`${t.context.tmp}/existing`));
+  const result = shell.mkdir('-p', `${t.context.tmp}/existing`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync(`${t.context.tmp}/existing`));
+});
+
+test('-p flag: create new subdirectory within existing tree', t => {
+  shell.mkdir('-p', `${t.context.tmp}/grandparent`);
+  t.falsy(shell.error());
+  t.truthy(fs.existsSync(`${t.context.tmp}/grandparent`));
+  const result = shell.mkdir('-p', `${t.context.tmp}/grandparent/parent/child`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync(`${t.context.tmp}/grandparent/parent`));
+  t.truthy(fs.existsSync(`${t.context.tmp}/grandparent/parent/child`));
+});
