@@ -5,6 +5,12 @@ var common = require('./common');
 var _tempDir = require('./tempdir').tempDir;
 var _pwd = require('./pwd');
 
+// Resolve exec-child.js path at module load time using require.resolve() so that
+// bundlers (e.g. Next.js/webpack) do not break the path by replacing __dirname
+// with the bundled output directory. require.resolve() always returns the real
+// filesystem path of the module, regardless of bundler transformations.
+var EXEC_CHILD_PATH = require.resolve('./exec-child.js');
+
 var DEFAULT_MAXBUFFER_SIZE = 20 * 1024 * 1024;
 var DEFAULT_ERROR_CODE = 1;
 
@@ -78,7 +84,7 @@ function execSync(cmd, opts, pipe) {
   writeFileLockedDown(paramsFile, JSON.stringify(paramsToSerialize));
 
   var execArgs = [
-    path.join(__dirname, 'exec-child.js'),
+    EXEC_CHILD_PATH,
     paramsFile,
   ];
 
