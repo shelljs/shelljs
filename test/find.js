@@ -1,4 +1,5 @@
 const test = require('ava');
+const path = require('path');
 
 const shell = require('..');
 
@@ -36,6 +37,15 @@ test('current path', t => {
 
 test('simple path', t => {
   const result = shell.find('test/resources/find');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(result.includes('test/resources/find/.hidden'));
+  t.truthy(result.includes('test/resources/find/dir1/dir11/a_dir11'));
+  t.is(result.length, 12);
+});
+
+test('simple path from path.join', t => {
+  const result = shell.find(path.join('test', 'resources', 'find'));
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.truthy(result.includes('test/resources/find/.hidden'));
