@@ -326,6 +326,20 @@ function convertQuestionMarkForGlob(pattern) {
   return result;
 }
 
+/**
+ * Normalizes Windows-style paths with `\\`, converting them to `/`
+ * @param {string} pattern The path to normalize
+ * @returns A path normalized with forward slashes
+ */
+function normalizeWindowsPath(pattern) {
+  if (process.platform !== 'win32') {
+    return pattern;
+  }
+
+  return pattern.replace(/\\/g, '/');
+}
+
+
 // Expands wildcards with matching (ie. existing) file names.
 // For example:
 //   expand(['file*.js']) = ['file1.js', 'file2.js', ...]
@@ -343,9 +357,8 @@ function expand(list) {
       var ret;
       var globOpts = globOptions();
       try {
-        // Call convertPathToPattern to handle paths with backslashes
-        // See https://github.com/mrmlnc/fast-glob#convertpathtopatternpath
-        ret = glob.sync(glob.convertPathToPattern(convertQuestionMarkForGlob(listEl)), globOpts);
+        var pattern = convertQuestionMarkForGlob(normalizeWindowsPath(listEl));
+        ret = glob.sync(pattern, globOpts);
       } catch (e) {
         // if glob fails, interpret the string literally
         ret = [listEl];
