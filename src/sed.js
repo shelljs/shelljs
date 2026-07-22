@@ -89,7 +89,9 @@ function _sed(options, regex, replacement, files) {
   if (options.inplace) {
     return '';
   } else {
-    return sed.join('\n');
+    // Concatenate like unix sed/cat: do not insert an extra newline between files.
+    // Each file's own trailing newline (if any) is already preserved by split/join above.
+    return sed.join('');
   }
 }
 module.exports = _sed;
