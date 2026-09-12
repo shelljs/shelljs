@@ -262,8 +262,8 @@ function _cp(options, sources, dest) {
       common.error('no such file or directory: ' + src, { continue: true });
       return; // skip file
     }
-    var srcStat = common.statFollowLinks(src);
-    if (!options.noFollowsymlink && srcStat.isDirectory()) {
+    var srcStat = options.noFollowsymlink ? common.statNoFollowLinks(src) : common.statFollowLinks(src);
+    if (srcStat.isDirectory()) {
       if (!options.recursive) {
         // Non-Recursive
         common.error("omitting directory '" + src + "'", { continue: true });
