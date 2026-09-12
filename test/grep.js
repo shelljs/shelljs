@@ -259,6 +259,26 @@ test('-A option', t => {
   );
 });
 
+['-A', '-C'].forEach(option => {
+  ['', '\n'].forEach(ending => {
+    test(`${option} option, final context line ending ${JSON.stringify(ending)}`, t => {
+      const file = `${t.context.tmp}/context.txt`;
+      fs.writeFileSync(file, 'before\nmatch\nafter' + ending);
+      const result = shell.grep({ [option]: 1, '-n': true }, 'match', file);
+      t.falsy(shell.error());
+      t.is(result.code, 0);
+      t.is(result.stdout, (option === '-C' ? '1-before\n' : '') + '2:match\n3-after\n');
+    });
+  });
+});
+
+test('-A option, final blank context line', t => {
+  const result = shell.ShellString('match\n\n').grep('-A', 1, 'match');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.stdout, 'match\n\n');
+});
+
 test('-A option, -B option', t => {
   const result = shell.grep(
     { '-A': 2, '-B': 3 },
