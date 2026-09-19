@@ -29,13 +29,11 @@ function _tail(options, files) {
   var tail = [];
   var pipe = common.readFromPipe();
 
-  if (!files && !pipe) common.error('no paths given');
-
   var idx = 1;
   var plusOption = false;
   if (options.numLines === true) {
     idx = 2;
-    if (arguments[1][0] === '+') {
+    if (arguments[1] && arguments[1][0] === '+') {
       plusOption = true;
     }
     options.numLines = Number(arguments[1]);
@@ -48,6 +46,7 @@ function _tail(options, files) {
   }
   options.numLines = -1 * Math.abs(options.numLines);
   files = [].slice.call(arguments, idx);
+  if (!files.length && !pipe) common.error('no paths given');
 
   if (pipe) {
     files.unshift('-');
@@ -68,6 +67,9 @@ function _tail(options, files) {
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
+    if (options.numLines === 0 && !plusOption) {
+      return;
+    }
 
     var lines = contents.split('\n');
     if (lines[lines.length - 1] === '') {
@@ -77,7 +79,9 @@ function _tail(options, files) {
       shouldAppendNewline = false;
     }
 
-    tail = tail.concat(plusOption ? lines.slice(-options.numLines - 1) : lines.slice(options.numLines));
+    tail = tail.concat(plusOption
+      ? lines.slice(Math.max(-options.numLines - 1, 0))
+      : lines.slice(options.numLines));
   });
 
   if (shouldAppendNewline) {
