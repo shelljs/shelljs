@@ -76,8 +76,20 @@ function _mv(options, sources, dest) {
     // When copying to '/path/dir':
     //    thisDest = '/path/dir/file1'
     var thisDest = dest;
+    var destEndsWithDirSep = /[\\/]$/.test(dest);
     if (fs.existsSync(dest) && common.statFollowLinks(dest).isDirectory()) {
       thisDest = path.normalize(dest + '/' + path.basename(src));
+    } else if (destEndsWithDirSep) {
+      var destDir = dest.replace(/[\\/]+$/, '');
+      var srcStat = common.statFollowLinks(src);
+      if (srcStat.isDirectory()) {
+        thisDest = destDir;
+      } else if (!fs.existsSync(destDir) || !common.statFollowLinks(destDir).isDirectory()) {
+        common.error("cannot move '" + src + "' to '" + dest + "': No such file or directory", { continue: true });
+        return;
+      } else {
+        thisDest = path.normalize(destDir + '/' + path.basename(src));
+      }
     }
 
     var thisDestExists = fs.existsSync(thisDest);
@@ -111,6 +123,8 @@ function _mv(options, sources, dest) {
         // exception to pass up to the top level.
         cp({ recursive: true }, src, thisDest);
         rm({ recursive: true, force: true }, src);
+      } else {
+        common.error("cannot move '" + src + "' to '" + thisDest + "': No such file or directory", { continue: true });
       }
     }
   }); // forEach(src)
