@@ -17,6 +17,12 @@ test('no args', t => {
   t.is(result.code, 1);
 });
 
+test('line count option without a value or files', t => {
+  const result = shell.tail('-n');
+  t.is(result.code, 1);
+  t.is(result.stderr, 'tail: no paths given');
+});
+
 test('file does not exist', t => {
   t.falsy(fs.existsSync('/asdfasdf')); // sanity check
   const result = shell.tail('/asdfasdf');
@@ -50,6 +56,50 @@ test('simple', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), bottomOfFile1.slice(0, 10).reverse().join('\n') + '\n');
+});
+
+test('zero lines from multiple files', t => {
+  const result = shell.tail({ '-n': 0 }, 'test/resources/head/shortfile1',
+    'test/resources/file1');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('zero lines with separate option', t => {
+  const result = shell.tail('-n', 0, 'test/resources/head/shortfile1');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('zero lines from a pipe', t => {
+  [0, '0', '-0'].forEach(numLines => {
+    const result = shell.ShellString('first\nlast\n').tail({ '-n': numLines });
+    t.falsy(shell.error());
+    t.is(result.code, 0);
+    t.is(result.toString(), '');
+  });
+});
+
+test('zero lines still reports missing files', t => {
+  const result = shell.tail({ '-n': 0 }, '/asdfasdf');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+});
+
+test('positive zero starts at the first line with separate option', t => {
+  const result = shell.tail('-n', '+0', 'test/resources/head/file1.txt');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), fs.readFileSync('test/resources/head/file1.txt', 'utf8'));
+});
+
+test('positive zero starts at the first line with object option', t => {
+  const result = shell.ShellString('first\nlast').tail({ '-n': '+0' });
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), 'first\nlast');
 });
 
 test('multiple files', t => {
