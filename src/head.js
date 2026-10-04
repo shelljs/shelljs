@@ -51,8 +51,6 @@ function _head(options, files) {
   var head = [];
   var pipe = common.readFromPipe();
 
-  if (!files && !pipe) common.error('no paths given');
-
   var idx = 1;
   if (options.numLines === true) {
     idx = 2;
@@ -61,6 +59,7 @@ function _head(options, files) {
     options.numLines = 10;
   }
   files = [].slice.call(arguments, idx);
+  if (!files.length && !pipe) common.error('no paths given');
 
   if (pipe) {
     files.unshift('-');
