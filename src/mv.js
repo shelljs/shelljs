@@ -85,7 +85,7 @@ function _mv(options, sources, dest) {
       if (srcStat.isDirectory()) {
         thisDest = destDir;
       } else if (!fs.existsSync(destDir) || !common.statFollowLinks(destDir).isDirectory()) {
-        common.error("cannot move '" + src + "' to '" + dest + "': No such file or directory", { continue: true });
+        common.error("cannot move '" + src + "' to '" + dest + "': Not a directory", { continue: true });
         return;
       } else {
         thisDest = path.normalize(destDir + '/' + path.basename(src));

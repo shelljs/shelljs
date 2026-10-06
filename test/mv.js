@@ -72,7 +72,7 @@ test('missing destination directory when dest ends with a slash', t => {
   t.is(result.code, 1);
   t.is(
     result.stderr,
-    "mv: cannot move 'file1' to 'no/such/dir/': No such file or directory"
+    "mv: cannot move 'file1' to 'no/such/dir/': Not a directory"
   );
 });
 
