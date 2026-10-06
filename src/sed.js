@@ -89,9 +89,14 @@ function _sed(options, regex, replacement, files) {
   if (options.inplace) {
     return '';
   } else {
-    // Concatenate like unix sed/cat: do not insert an extra newline between files.
-    // Each file's own trailing newline (if any) is already preserved by split/join above.
-    return sed.join('');
+    // Separate file outputs with a single newline (unix sed). Do not insert an
+    // extra separator when a file already ends with '\n' (avoids blank lines).
+    return sed.map(function (chunk, i) {
+      if (i === sed.length - 1) {
+        return chunk;
+      }
+      return chunk.endsWith('\n') ? chunk : chunk + '\n';
+    }).join('');
   }
 }
 module.exports = _sed;
