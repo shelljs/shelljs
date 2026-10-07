@@ -59,7 +59,7 @@ function _head(options, files) {
     options.numLines = 10;
   }
   files = [].slice.call(arguments, idx);
-  if (!files.length && !pipe) common.error('no paths given');
+  if (files.length === 0 && !pipe) common.error('no paths given');
 
   if (pipe) {
     files.unshift('-');
