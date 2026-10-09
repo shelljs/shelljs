@@ -11,8 +11,8 @@ common.register('sort', _sort, {
 
 // parse out the number prefix of a line
 function parseNumber(str) {
-  var match = str.match(/^\s*(\d*)\s*(.*)$/);
-  return { num: Number(match[1]), value: match[2] };
+  var match = str.match(/^\s*(-?(?:\d+(?:\.\d*)?|\.\d+))?\s*(.*)$/);
+  return { num: Number(match[1] || 0), value: match[2] };
 }
 
 // compare two strings case-insensitively, but examine case for strings that are
