@@ -139,6 +139,7 @@ test('make sure * in string-regex is not globbed (matches something)', t => {
 });
 
 test('multiple file names', t => {
+  // file1/file2 have no trailing newline; unix sed inserts one newline between them
   const result = shell.sed('test', 'hello', `${t.context.tmp}/file1`,
     `${t.context.tmp}/file2`);
   t.falsy(shell.error());
@@ -152,6 +153,15 @@ test('array of file names (and try it out with a simple regex)', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'hello1\nhello2');
+});
+
+test('multiple files with trailing newlines do not get an extra separator', t => {
+  // Regression for #1068: joining with '\n' produced hello1\n\nhello2\n
+  const result = shell.sed('test', 'hello', `${t.context.tmp}/file1.txt`,
+    `${t.context.tmp}/file2.txt`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), 'hello1\nhello2\n');
 });
 
 test('multiple file names, with in-place-replacement', t => {

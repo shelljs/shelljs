@@ -89,7 +89,14 @@ function _sed(options, regex, replacement, files) {
   if (options.inplace) {
     return '';
   } else {
-    return sed.join('\n');
+    // Separate file outputs with a single newline (unix sed). Do not insert an
+    // extra separator when a file already ends with '\n' (avoids blank lines).
+    return sed.map(function (chunk, i) {
+      if (i === sed.length - 1) {
+        return chunk;
+      }
+      return chunk.endsWith('\n') ? chunk : chunk + '\n';
+    }).join('');
   }
 }
 module.exports = _sed;
