@@ -23,12 +23,22 @@ test('line count option without a value or files', t => {
   t.is(result.stderr, 'head: no paths given');
 });
 
-test('line count option still requires files or piped input', t => {
-  [0, 1, -1].forEach(numLines => {
-    const result = shell.head('-n', numLines);
-    t.is(result.code, 1);
-    t.is(result.stderr, 'head: no paths given');
-  });
+test('zero line count still requires files or piped input', t => {
+  const result = shell.head('-n', 0);
+  t.is(result.code, 1);
+  t.is(result.stderr, 'head: no paths given');
+});
+
+test('positive line count still requires files or piped input', t => {
+  const result = shell.head('-n', 1);
+  t.is(result.code, 1);
+  t.is(result.stderr, 'head: no paths given');
+});
+
+test('negative line count still requires files or piped input', t => {
+  const result = shell.head('-n', -1);
+  t.is(result.code, 1);
+  t.is(result.stderr, 'head: no paths given');
 });
 
 test('file does not exist', t => {
@@ -98,13 +108,32 @@ test('zero lines with object option', t => {
   t.is(result.toString(), '');
 });
 
-test('zero lines from a pipe', t => {
-  [0, '0', '-0', '+0'].forEach(numLines => {
-    const result = shell.ShellString('first\nlast\n').head('-n', numLines);
-    t.falsy(shell.error());
-    t.is(result.code, 0);
-    t.is(result.toString(), '');
-  });
+test('numeric zero lines from a pipe', t => {
+  const result = shell.ShellString('first\nlast\n').head('-n', 0);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('string zero lines from a pipe', t => {
+  const result = shell.ShellString('first\nlast\n').head('-n', '0');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('negative string zero lines from a pipe', t => {
+  const result = shell.ShellString('first\nlast\n').head('-n', '-0');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('positive string zero lines from a pipe', t => {
+  const result = shell.ShellString('first\nlast\n').head('-n', '+0');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
 });
 
 test('zero lines still reports missing files', t => {
