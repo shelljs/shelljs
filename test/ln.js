@@ -96,7 +96,7 @@ test('With glob', t => {
 });
 
 test('-s option', t => {
-  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', 'file2', `${t.context.tmp}/linkfile2`), () => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', 'file2', `${t.context.tmp}/linkfile2`), t, () => {
     t.truthy(fs.existsSync(`${t.context.tmp}/linkfile2`));
     t.is(
       fs.readFileSync(`${t.context.tmp}/file2`).toString(),
@@ -150,7 +150,7 @@ test('-f option', t => {
 });
 
 test('-sf option', t => {
-  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-sf', 'file1.txt', `${t.context.tmp}/file2.txt`), () => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-sf', 'file1.txt', `${t.context.tmp}/file2.txt`), t, () => {
     t.truthy(fs.existsSync(`${t.context.tmp}/file2.txt`));
     t.is(
       fs.readFileSync(`${t.context.tmp}/file1.txt`).toString(),
@@ -162,7 +162,7 @@ test('-sf option', t => {
 });
 
 test('Abspath regression', t => {
-  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-sf', 'file1', path.resolve(`${t.context.tmp}/abspath`)), () => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-sf', 'file1', path.resolve(`${t.context.tmp}/abspath`)), t, () => {
     t.truthy(fs.existsSync(`${t.context.tmp}/abspath`));
     t.is(
       fs.readFileSync(`${t.context.tmp}/file1`).toString(),
@@ -174,7 +174,7 @@ test('Abspath regression', t => {
 });
 
 test('Relative regression', t => {
-  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-sf', 'file1.txt', `${t.context.tmp}/file2.txt`), () => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-sf', 'file1.txt', `${t.context.tmp}/file2.txt`), t, () => {
     shell.mkdir('-p', `${t.context.tmp}/new`);
     // Move the symlink first, as the reverse confuses `mv`.
     shell.mv(`${t.context.tmp}/file2.txt`, `${t.context.tmp}/new/file2.txt`);
