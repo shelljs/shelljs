@@ -1,12 +1,19 @@
 const test = require('ava');
 
 const shell = require('..');
+const utils = require('./utils/utils');
 
 const CWD = process.cwd();
 
-test.beforeEach(() => {
+test.beforeEach(t => {
+  t.context.tmp = utils.getTempDir();
   shell.config.resetForTesting();
+  shell.mkdir(t.context.tmp);
   process.chdir(CWD);
+});
+
+test.afterEach.always(t => {
+  shell.rm('-rf', t.context.tmp);
 });
 
 //
@@ -73,4 +80,21 @@ test('-L flag, folder is symlinked', t => {
   t.is(result.code, 0);
   t.truthy(result.includes('test/resources/find/dir2_link/a_dir1'));
   t.is(result.length, 13);
+});
+
+test('skips directories without read permission', t => {
+  utils.skipOnWin(t, () => {
+    const root = `${t.context.tmp}/find-eperm`;
+    shell.mkdir('-p', `${root}/accessible`);
+    shell.touch(`${root}/accessible/file.txt`);
+    shell.mkdir(`${root}/blocked`);
+    shell.chmod('000', `${root}/blocked`);
+
+    const result = shell.find(root);
+    t.is(result.code, 1);
+    t.is(shell.error(), `find: permission denied: ${root}/blocked`);
+    t.truthy(result.includes(`${root}/accessible/file.txt`));
+
+    shell.chmod('700', `${root}/blocked`);
+  });
 });
