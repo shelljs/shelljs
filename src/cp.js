@@ -34,7 +34,7 @@ function copyFileSync(srcFile, destFile, options) {
 
   // Check the mtimes of the files if the '-u' flag is provided
   try {
-    if (options.update && common.statFollowLinks(srcFile).mtime < fs.statSync(destFile).mtime) {
+    if (options.update && common.statFollowLinks(srcFile).mtime <= fs.statSync(destFile).mtime) {
       return;
     }
   } catch (e) {

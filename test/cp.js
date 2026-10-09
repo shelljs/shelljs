@@ -521,6 +521,39 @@ test('Recursive, copies entire directory with no symlinks and -L option does not
   });
 });
 
+['direct', 'recursive'].forEach(mode => {
+  ['equal', 'newer', 'older', 'missing'].forEach(destination => {
+    test(`-u timestamp boundary: ${mode}, ${destination} destination`, t => {
+      const sourceDir = `${t.context.tmp}/source`;
+      const destDir = `${t.context.tmp}/dest`;
+      const nestedDest = mode === 'recursive' ? `${destDir}/source` : destDir;
+      shell.mkdir('-p', sourceDir, nestedDest);
+      const sourceFile = `${sourceDir}/file`;
+      const destFile = `${nestedDest}/file`;
+      const sourceTime = 12345000;
+      fs.writeFileSync(sourceFile, 'source contents');
+      fs.utimesSync(sourceFile, new Date(sourceTime), new Date(sourceTime));
+      if (destination !== 'missing') {
+        const destTime = sourceTime + ({ equal: 0, newer: 10000, older: -10000 })[destination];
+        fs.writeFileSync(destFile, 'destination contents');
+        fs.utimesSync(destFile, new Date(destTime), new Date(destTime));
+      }
+      const before = destination === 'missing' ? null : fs.statSync(destFile).mtimeMs;
+      const result = mode === 'recursive' ?
+        shell.cp('-Ru', sourceDir, destDir) : shell.cp('-u', sourceFile, destFile);
+      t.is(result.code, 0);
+      t.falsy(result.stderr);
+      t.falsy(shell.error());
+      if (destination === 'equal' || destination === 'newer') {
+        t.is(fs.readFileSync(destFile, 'utf8'), 'destination contents');
+        t.is(fs.statSync(destFile).mtimeMs, before);
+      } else {
+        t.is(fs.readFileSync(destFile, 'utf8'), 'source contents');
+      }
+    });
+  });
+});
+
 test("-u flag won't overwrite newer files", t => {
   shell.touch(`${t.context.tmp}/file1.js`);
   shell.cp('-u', 'test/resources/file1.js', t.context.tmp);
