@@ -55,9 +55,11 @@ function _uniq(options, input, output) {
     common.error(output + ': Is a directory');
   }
 
-  var lines = (input ? fs.readFileSync(input, 'utf8') : pipe)
-              .trimRight()
-              .split('\n');
+  var lines = (input ? fs.readFileSync(input, 'utf8') : pipe).split('\n');
+  // A terminating newline is not an extra line, but preceding blank lines are.
+  if (lines.length > 1 && lines[lines.length - 1] === '') {
+    lines.pop();
+  }
 
   var compare = function (a, b) {
     return options.ignoreCase ?
