@@ -105,6 +105,7 @@ function _grep(options, regex, files) {
       }
     } else {
       var lines = contents.split('\n');
+      var lineCount = lines.length - (contents.endsWith('\n') ? 1 : 0);
       var matches = [];
 
       lines.forEach(function (line, index) {
@@ -146,7 +147,7 @@ function _grep(options, regex, files) {
             lines
               .slice(
                 index + 1,
-                Math.min(index + options.afterContext + 1, lines.length - 1),
+                Math.min(index + options.afterContext + 1, lineCount),
               )
               .forEach(function (v, i) {
                 var lineNum = '' + (index + 1 + i + 1);

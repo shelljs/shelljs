@@ -259,6 +259,45 @@ test('-A option', t => {
   );
 });
 
+function checkBehaviorForLineEndings(t, option, lineEnding) {
+  const file = `${t.context.tmp}/context.txt`;
+  fs.writeFileSync(file, 'before\nmatch\nafter' + lineEnding);
+  const result = shell.grep({ [option]: 1, '-n': true }, 'match', file);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.stdout, (option === '-C' ? '1-before\n' : '') + '2:match\n3-after\n');
+}
+
+test('-A option, final context line ending with newline', t => {
+  checkBehaviorForLineEndings(t, '-A', '\n');
+});
+
+test('-A option, final context line ending without newline', t => {
+  checkBehaviorForLineEndings(t, '-A', '');
+});
+
+test('-C option, final context line ending with newline', t => {
+  checkBehaviorForLineEndings(t, '-C', '\n');
+});
+
+test('-C option, final context line ending without newline', t => {
+  checkBehaviorForLineEndings(t, '-C', '');
+});
+
+test('-A option, final blank context line', t => {
+  const result = shell.ShellString('match\n\n').grep('-A', 1, 'match');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.stdout, 'match\n\n');
+});
+
+test('-C option, final blank context line', t => {
+  const result = shell.ShellString('before\nmatch\n\n').grep('-C', 1, 'match');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.stdout, 'before\nmatch\n\n');
+});
+
 test('-A option, -B option', t => {
   const result = shell.grep(
     { '-A': 2, '-B': 3 },
