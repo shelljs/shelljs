@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const test = require('ava');
 
@@ -975,6 +976,71 @@ test('copy multiple dirs where one is to same location should error for that one
   t.is(shell.cat(`${t.context.tmp}/destination/src1/file`).toString(), 'content1');
   // src2's original content is preserved (not lost due to same-file copy)
   t.is(shell.cat(`${t.context.tmp}/destination/src2/file`).toString(), 'content2');
+});
+
+// Directory symlinks use junctions on Windows, which do not need admin rights
+function linkDir(target, linkPath) {
+  fs.symlinkSync(path.resolve(target), linkPath, 'junction');
+}
+
+test('copy directory into a link to its own parent should not erase content', t => {
+  // real/parent/foo/x.txt, and real/link_parent -> real/parent
+  shell.mkdir('-p', `${t.context.tmp}/real/parent/foo`);
+  shell.ShellString('important data').to(`${t.context.tmp}/real/parent/foo/x.txt`);
+  linkDir(`${t.context.tmp}/real/parent`, `${t.context.tmp}/real/link_parent`);
+
+  // The paths differ textually but are the same directory on disk
+  const result = shell.cp('-R', `${t.context.tmp}/real/parent/foo`, `${t.context.tmp}/real/link_parent`);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.truthy(result.stderr.match(/are the same file/));
+
+  // File content must be preserved (no truncation)
+  t.is(shell.cat(`${t.context.tmp}/real/parent/foo/x.txt`).toString(), 'important data');
+});
+
+test('copy file to itself through a linked directory should not erase content', t => {
+  shell.mkdir('-p', `${t.context.tmp}/real/dir`);
+  shell.ShellString('important data').to(`${t.context.tmp}/real/dir/file`);
+  linkDir(`${t.context.tmp}/real/dir`, `${t.context.tmp}/real/link_dir`);
+
+  const result = shell.cp(`${t.context.tmp}/real/dir/file`, `${t.context.tmp}/real/link_dir/file`);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.truthy(result.stderr.match(/are the same file/));
+  t.is(shell.cat(`${t.context.tmp}/real/dir/file`).toString(), 'important data');
+});
+
+test('copy file to a hard link of itself should not erase content', t => {
+  shell.ShellString('important data').to(`${t.context.tmp}/myfile.txt`);
+  fs.linkSync(`${t.context.tmp}/myfile.txt`, `${t.context.tmp}/hardlink.txt`);
+
+  const result = shell.cp(`${t.context.tmp}/myfile.txt`, `${t.context.tmp}/hardlink.txt`);
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.truthy(result.stderr.match(/are the same file/));
+  t.is(shell.cat(`${t.context.tmp}/myfile.txt`).toString(), 'important data');
+});
+
+test('cp -P of a symlink onto another symlink with the same target is not a same-file error', t => {
+  const target = path.resolve(`${t.context.tmp}/target.txt`);
+  shell.ShellString('important data').to(target);
+  try {
+    fs.symlinkSync(target, `${t.context.tmp}/link1`);
+    fs.symlinkSync(target, `${t.context.tmp}/link2`);
+  } catch (e) {
+    // On Windows, file symlinks need admin permissions
+    if (process.platform === 'win32' && e.code === 'EPERM') {
+      t.pass('cannot create symlinks without admin permissions, skipping');
+      return;
+    }
+    throw e;
+  }
+
+  const result = shell.cp('-P', `${t.context.tmp}/link1`, `${t.context.tmp}/link2`);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(shell.cat(target).toString(), 'important data');
 });
 
 test('copy single file to itself should not erase content', t => {
