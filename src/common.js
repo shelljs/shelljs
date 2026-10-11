@@ -54,8 +54,6 @@ var state = {
 };
 exports.state = state;
 
-delete process.env.OLDPWD; // initially, there's no previous directory
-
 // Reliably test if something is any sort of javascript object
 function isObject(a) {
   return typeof a === 'object' && a !== null;

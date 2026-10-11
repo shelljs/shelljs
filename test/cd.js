@@ -42,7 +42,16 @@ test('file not dir', t => {
 });
 
 test('no previous dir', t => {
-  const result = shell.cd('-'); // Haven't changed yet, so there is no previous directory
+  const oldpwd = process.env.OLDPWD;
+  delete process.env.OLDPWD;
+  t.teardown(() => {
+    if (oldpwd === undefined) {
+      delete process.env.OLDPWD;
+    } else {
+      process.env.OLDPWD = oldpwd;
+    }
+  });
+  const result = shell.cd('-');
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(result.stderr, 'cd: could not find previous directory');
