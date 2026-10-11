@@ -88,6 +88,34 @@ test('basic', t => {
   t.is(result.split('\n').length - 1, 4);
 });
 
+test('-vl selects files with non-matching lines', t => {
+  const all = `${t.context.tmp}/all-matching`;
+  const none = `${t.context.tmp}/none-matching`;
+  const mixed = `${t.context.tmp}/mixed-matching`;
+  fs.writeFileSync(all, 'match\nmatch\n');
+  fs.writeFileSync(none, 'other\n');
+  fs.writeFileSync(mixed, 'match\nother\n');
+
+  const result = shell.grep('-vl', 'match', [all, none, mixed]);
+  t.is(result.code, 0);
+  t.is(result.stdout, `${none}\n${mixed}\n`);
+});
+
+test('-vl does not select empty files', t => {
+  const file = `${t.context.tmp}/empty`;
+  fs.writeFileSync(file, '');
+  const result = shell.grep('-vl', 'match', file);
+  t.is(result.code, 1);
+});
+
+test('-vl selects a file containing a real blank line', t => {
+  const file = `${t.context.tmp}/blank`;
+  fs.writeFileSync(file, '\n');
+  const result = shell.grep('-vl', 'match', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, `${file}\n`);
+});
+
 test('-v option', t => {
   const result = shell.grep('-v', 'line', 'test/resources/a.txt');
   t.falsy(shell.error());
