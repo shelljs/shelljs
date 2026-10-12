@@ -1,4 +1,5 @@
 var fs = require('fs');
+var StringDecoder = require('string_decoder').StringDecoder;
 var common = require('./common');
 
 common.register('head', _head, {
@@ -18,16 +19,17 @@ function readSomeLines(file, numLines) {
   var fdr = fs.openSync(file, 'r');
   var numLinesRead = 0;
   var ret = '';
+  var decoder = new StringDecoder('utf8');
   while (bytesRead === bufLength && numLinesRead < numLines) {
     bytesRead = fs.readSync(fdr, buf, 0, bufLength, pos);
-    var bufStr = buf.toString('utf8', 0, bytesRead);
+    var bufStr = decoder.write(buf.subarray(0, bytesRead));
     numLinesRead += bufStr.split('\n').length - 1;
     ret += bufStr;
     pos += bytesRead;
   }
 
   fs.closeSync(fdr);
-  return ret;
+  return ret + decoder.end();
 }
 
 //@
