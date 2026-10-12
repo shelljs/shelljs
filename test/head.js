@@ -1,4 +1,6 @@
 const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 const test = require('ava');
 
@@ -51,6 +53,62 @@ test('simple', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), topOfFile1.slice(0, 10).join('\n') + '\n');
+});
+
+function writeInput(t, contents) {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'shelljs-head-'));
+  t.teardown(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const file = path.join(directory, 'input');
+  fs.writeFileSync(file, contents);
+  return file;
+}
+
+['é', '€', '😀'].forEach(character => {
+  for (let split = 1; split < Buffer.byteLength(character); split++) {
+    [false, true].forEach(trailingNewline => {
+      test(`UTF-8 ${character} split after byte ${split}, trailing newline ${trailingNewline}`, t => {
+        const oldBufLength = shell.config.bufLength;
+        shell.config.bufLength = 8;
+        t.teardown(() => { shell.config.bufLength = oldBufLength; });
+        const firstLine = 'a'.repeat(8 - split) + character;
+        const contents = firstLine + (trailingNewline ? '\nsecond\n' : '');
+        const result = shell.head({ '-n': 1 }, writeInput(t, contents));
+        t.is(result.code, 0);
+        t.is(result.stdout, firstLine + (trailingNewline ? '\n' : ''));
+      });
+    });
+  }
+});
+
+test('UTF-8 crossing the default buffer boundary', t => {
+  const firstLine = 'a'.repeat(shell.config.bufLength - 1) + 'é';
+  const result = shell.head({ '-n': 1 }, writeInput(t, firstLine + '\nsecond\n'));
+  t.is(result.code, 0);
+  t.is(result.stdout, firstLine + '\n');
+});
+
+test('UTF-8 with one-byte read buffers', t => {
+  const oldBufLength = shell.config.bufLength;
+  shell.config.bufLength = 1;
+  t.teardown(() => { shell.config.bufLength = oldBufLength; });
+  const result = shell.head({ '-n': 1 }, writeInput(t, 'é€😀\nsecond\n'));
+  t.is(result.code, 0);
+  t.is(result.stdout, 'é€😀\n');
+});
+
+test('incomplete UTF-8 at end of file is replaced', t => {
+  const contents = Buffer.from([0x61, 0xe2, 0x82]);
+  const result = shell.head({ '-n': 1 }, writeInput(t, contents));
+  t.is(result.code, 0);
+  t.is(result.stdout, contents.toString('utf8'));
+});
+
+test('UTF-8 decoder state is not shared across files', t => {
+  const first = writeInput(t, Buffer.from([0xe2]));
+  const second = writeInput(t, 'second\n');
+  const result = shell.head({ '-n': 1 }, first, second);
+  t.is(result.code, 0);
+  t.is(result.stdout, '\ufffd\nsecond\n');
 });
 
 test('multiple files', t => {
