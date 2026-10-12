@@ -43,9 +43,85 @@ test('only an option', t => {
 });
 
 test('destination already exists', t => {
+  const original = fs.readFileSync(`${t.context.tmp}/file2`, 'utf8');
   const result = shell.ln(`${t.context.tmp}/file1`, `${t.context.tmp}/file2`);
   t.truthy(shell.error());
   t.is(result.code, 1);
+  t.is(fs.readFileSync(`${t.context.tmp}/file2`, 'utf8'), original);
+});
+
+test('-s does not replace an existing regular file without -f', t => {
+  const dest = `${t.context.tmp}/file2`;
+  const original = fs.readFileSync(dest, 'utf8');
+  const result = shell.ln('-s', 'file1', dest);
+  t.is(result.code, 1);
+  t.is(result.stderr, 'ln: Destination file exists');
+  t.false(fs.lstatSync(dest).isSymbolicLink());
+  t.is(fs.readFileSync(dest, 'utf8'), original);
+});
+
+[false, true].forEach(symbolic => {
+  const options = symbolic ? '-s' : '--';
+  const name = symbolic ? 'symbolic link' : 'hard link';
+
+  test(`${name} preserves an existing destination symlink without -f`, t => {
+    utils.skipOnWin(t, () => {
+      const dest = `${t.context.tmp}/existing-link`;
+      fs.symlinkSync('file2', dest);
+      const target = fs.readFileSync(`${t.context.tmp}/file2`, 'utf8');
+      const source = path.resolve(`${t.context.tmp}/file1`);
+      const result = shell.ln(options, source, dest);
+      t.is(result.code, 1);
+      t.is(result.stderr, 'ln: Destination file exists');
+      t.true(fs.lstatSync(dest).isSymbolicLink());
+      t.is(fs.readlinkSync(dest), 'file2');
+      t.is(fs.readFileSync(dest, 'utf8'), target);
+      t.is(fs.readFileSync(`${t.context.tmp}/file2`, 'utf8'), target);
+    });
+  });
+
+  test(`${name} does not remove a source that is also the destination`, t => {
+    const file = path.resolve(`${t.context.tmp}/file1`);
+    const original = fs.readFileSync(file, 'utf8');
+    const result = shell.ln(options, file, file);
+    t.is(result.code, 1);
+    t.true(fs.existsSync(file));
+    t.false(fs.lstatSync(file).isSymbolicLink());
+    t.is(fs.readFileSync(file, 'utf8'), original);
+    t.is(result.stderr, 'ln: Destination file exists');
+  });
+
+  test(`${name} preserves an existing destination when the source is missing`, t => {
+    const dest = `${t.context.tmp}/file2`;
+    const original = fs.readFileSync(dest, 'utf8');
+    const result = shell.ln(options, path.resolve(`${t.context.tmp}/missing`), dest);
+    t.is(result.code, 1);
+    t.true(fs.existsSync(dest));
+    t.false(fs.lstatSync(dest).isSymbolicLink());
+    t.is(fs.readFileSync(dest, 'utf8'), original);
+    t.is(result.stderr, 'ln: Destination file exists');
+  });
+});
+
+test('fatal mode preserves an existing destination', t => {
+  const dest = `${t.context.tmp}/file2`;
+  const original = fs.readFileSync(dest, 'utf8');
+  shell.config.fatal = true;
+  t.throws(() => shell.ln(`${t.context.tmp}/file1`, dest), {
+    message: 'ln: Destination file exists',
+  });
+  t.is(fs.readFileSync(dest, 'utf8'), original);
+});
+
+test('without -f an existing dangling symlink remains unchanged', t => {
+  utils.skipOnWin(t, () => {
+    const dest = `${t.context.tmp}/dangling-link`;
+    fs.symlinkSync('missing-target', dest);
+    const result = shell.ln(`${t.context.tmp}/file1`, dest);
+    t.is(result.code, 1);
+    t.true(fs.lstatSync(dest).isSymbolicLink());
+    t.is(fs.readlinkSync(dest), 'missing-target');
+  });
 });
 
 test('non-existent source', t => {
