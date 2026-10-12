@@ -73,6 +73,9 @@ function touchFile(opts, file) {
   // not truncate the file
   fs.closeSync(fs.openSync(file, 'a'));
 
+  // Newly created files also have a timestamp to preserve for -a or -m.
+  stat = stat || common.statFollowLinks(file);
+
   //
   // Set timestamps
   //
