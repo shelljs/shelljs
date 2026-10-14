@@ -22,12 +22,20 @@ exports.getTempDir = getTempDir;
 
 // On Windows, symlinks for files need admin permissions. This helper
 // skips certain tests if we are on Windows and got an EPERM error
-function skipOnWinForEPERM(action, testCase) {
+function skipOnWinForEPERM(action, t, testCase) {
   const ret = action();
-  const error = ret.code;
+  // ret.code is the numeric exit code; the EPERM message text is on
+  // ret.stderr (see ShellString in src/common.js). Testing the regex
+  // against ret.code meant this never actually matched, so affected
+  // tests never skipped on a non-admin Windows environment, they just
+  // ran testCase() against a symlink that was never created.
+  const error = ret.stderr;
   const isWindows = process.platform === 'win32';
   if (isWindows && error && /EPERM:/.test(error)) {
     _processStderrWrite('Got EPERM when testing symlinks on Windows. Assuming non-admin environment and skipping test.\n');
+    // AVA fails a test that finishes without any assertions, which a
+    // silent skip would otherwise do.
+    t.pass();
   } else {
     testCase();
   }
