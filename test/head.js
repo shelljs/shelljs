@@ -17,6 +17,30 @@ test('no args', t => {
   t.is(result.code, 1);
 });
 
+test('line count option without a value or files', t => {
+  const result = shell.head('-n');
+  t.is(result.code, 1);
+  t.is(result.stderr, 'head: no paths given');
+});
+
+test('zero line count still requires files or piped input', t => {
+  const result = shell.head('-n', 0);
+  t.is(result.code, 1);
+  t.is(result.stderr, 'head: no paths given');
+});
+
+test('positive line count still requires files or piped input', t => {
+  const result = shell.head('-n', 1);
+  t.is(result.code, 1);
+  t.is(result.stderr, 'head: no paths given');
+});
+
+test('negative line count still requires files or piped input', t => {
+  const result = shell.head('-n', -1);
+  t.is(result.code, 1);
+  t.is(result.stderr, 'head: no paths given');
+});
+
 test('file does not exist', t => {
   t.falsy(fs.existsSync('/asdfasdf')); // sanity check
   const result = shell.head('/asdfasdf'); // file does not exist
@@ -51,6 +75,79 @@ test('simple', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), topOfFile1.slice(0, 10).join('\n') + '\n');
+});
+
+test('zero lines with separate option', t => {
+  const result = shell.head('-n', 0, 'test/resources/head/shortfile1');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('zero lines from multiple files', t => {
+  const result = shell.head('-n', 0, 'test/resources/head/shortfile1',
+    'test/resources/file1');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('zero lines with array syntax', t => {
+  const result = shell.head('-n', 0, ['test/resources/head/shortfile1',
+    'test/resources/file1']);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('zero lines with object option', t => {
+  const result = shell.head({ '-n': 0 }, 'test/resources/head/shortfile1',
+    'test/resources/file1');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('numeric zero lines from a pipe', t => {
+  const result = shell.ShellString('first\nlast\n').head('-n', 0);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('string zero lines from a pipe', t => {
+  const result = shell.ShellString('first\nlast\n').head('-n', '0');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('negative string zero lines from a pipe', t => {
+  const result = shell.ShellString('first\nlast\n').head('-n', '-0');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('positive string zero lines from a pipe', t => {
+  const result = shell.ShellString('first\nlast\n').head('-n', '+0');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.is(result.toString(), '');
+});
+
+test('zero lines still reports missing files', t => {
+  const result = shell.head('-n', 0, '/asdfasdf');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, 'head: no such file or directory: /asdfasdf');
+});
+
+test('zero lines still reports directories', t => {
+  const result = shell.head('-n', 0, 'test/resources/');
+  t.truthy(shell.error());
+  t.is(result.code, 1);
+  t.is(result.stderr, "head: error reading 'test/resources/': Is a directory");
 });
 
 test('multiple files', t => {
