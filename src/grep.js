@@ -100,7 +100,17 @@ function _grep(options, regex, files) {
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
     if (options.nameOnly) {
-      if (contents.match(regex)) {
+      var matchesFile;
+      if (options.inverse) {
+        var fileLines = contents ? contents.split('\n') : [];
+        if (contents.endsWith('\n')) fileLines.pop();
+        matchesFile = fileLines.some(function (line) {
+          return !line.match(regex);
+        });
+      } else {
+        matchesFile = contents.match(regex);
+      }
+      if (matchesFile) {
         grep.push(file);
       }
     } else {
