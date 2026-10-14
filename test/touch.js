@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const fs = require('fs');
+const path = require('path');
 
 const test = require('ava');
 
@@ -192,4 +193,100 @@ test('touching broken link creates a new file', t => {
     t.falsy(shell.error());
     t.truthy(fs.existsSync(`${t.context.tmp}/not_existed_file`));
   });
+});
+
+['a', 'm'].forEach(flag => {
+  const selectedTime = flag === 'a' ? 'atime' : 'mtime';
+  const preservedTime = flag === 'a' ? 'mtime' : 'atime';
+
+  test(`-${flag} creates a missing file`, t => {
+    const file = tmpFile(t, true);
+    const before = Date.now();
+    const result = shell.touch(`-${flag}`, file);
+    const stat = fs.statSync(file);
+    t.is(result.code, 0);
+    t.falsy(shell.error());
+    t.is(stat.size, 0);
+    t.true(stat.atime.getTime() >= before - 2000);
+    t.true(stat.mtime.getTime() >= before - 2000);
+    t.true(stat.atime.getTime() <= Date.now() + 2000);
+    t.true(stat.mtime.getTime() <= Date.now() + 2000);
+  });
+
+  test(`-${flag} with a date preserves the other new-file timestamp`, t => {
+    const file = tmpFile(t, true);
+    const date = new Date('2000-01-02T03:04:05Z');
+    const before = Date.now();
+    const result = shell.touch({ [`-${flag}`]: true, '-d': date }, file);
+    const stat = fs.statSync(file);
+    t.is(result.code, 0);
+    t.falsy(shell.error());
+    t.is(stat[selectedTime].getTime(), date.getTime());
+    t.true(stat[preservedTime].getTime() >= before - 2000);
+    t.true(stat[preservedTime].getTime() <= Date.now() + 2000);
+  });
+
+  test(`-${flag} uses reference times when creating a file`, t => {
+    const file = tmpFile(t, true);
+    const reference = tmpFile(t);
+    fs.utimesSync(reference, new Date('2000-01-02T03:04:05Z'), new Date('2001-02-03T04:05:06Z'));
+    const referenceStat = fs.statSync(reference);
+    const before = Date.now();
+    const result = shell.touch({ [`-${flag}`]: true, '-r': reference }, file);
+    const stat = fs.statSync(file);
+    t.is(result.code, 0);
+    t.falsy(shell.error());
+    t.is(stat[selectedTime].getTime(), referenceStat[selectedTime].getTime());
+    t.true(stat[preservedTime].getTime() >= before - 2000);
+    t.true(stat[preservedTime].getTime() <= Date.now() + 2000);
+  });
+
+  test(`-${flag} handles missing and existing files in one call`, t => {
+    const missing = tmpFile(t, true);
+    const existing = tmpFile(t);
+    fs.writeFileSync(existing, 'keep this content');
+    const oldStat = resetUtimes(existing);
+    const date = new Date('2010-01-02T03:04:05Z');
+    const result = shell.touch({ [`-${flag}`]: true, '-d': date }, [missing, existing]);
+    t.is(result.code, 0);
+    t.falsy(shell.error());
+    t.is(fs.statSync(missing)[selectedTime].getTime(), date.getTime());
+    t.is(fs.statSync(existing)[selectedTime].getTime(), date.getTime());
+    t.is(fs.statSync(existing)[preservedTime].getTime(), oldStat[preservedTime].getTime());
+    t.is(fs.readFileSync(existing, 'utf8'), 'keep this content');
+  });
+
+  test(`-${flag} with -c still leaves missing files absent`, t => {
+    const file = tmpFile(t, true);
+    const result = shell.touch(`-${flag}c`, file);
+    t.is(result.code, 0);
+    t.falsy(shell.error());
+    t.false(fs.existsSync(file));
+  });
+
+  test(`-${flag} creates the target of a dangling symlink`, t => {
+    utils.skipOnWin(t, () => {
+      const target = tmpFile(t, true);
+      const link = tmpFile(t, true);
+      fs.symlinkSync(path.resolve(target), link);
+      const date = new Date('2000-01-02T03:04:05Z');
+      const result = shell.touch({ [`-${flag}`]: true, '-d': date }, link);
+      t.is(result.code, 0);
+      t.falsy(shell.error());
+      t.true(fs.lstatSync(link).isSymbolicLink());
+      t.is(fs.statSync(target).size, 0);
+      t.is(fs.statSync(target)[selectedTime].getTime(), date.getTime());
+    });
+  });
+});
+
+test('-am sets both timestamps when creating a file', t => {
+  const file = tmpFile(t, true);
+  const date = new Date('2000-01-02T03:04:05Z');
+  const result = shell.touch({ '-a': true, '-m': true, '-d': date }, file);
+  const stat = fs.statSync(file);
+  t.is(result.code, 0);
+  t.falsy(shell.error());
+  t.is(stat.atime.getTime(), date.getTime());
+  t.is(stat.mtime.getTime(), date.getTime());
 });
