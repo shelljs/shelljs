@@ -1,4 +1,6 @@
 const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 const test = require('ava');
 
@@ -55,6 +57,70 @@ test('simple #2', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), shell.cat('test/resources/sort/sorted').toString());
+});
+
+[
+  ['trailing space without a final newline', 'b\na ', 'a \nb\n'],
+  ['trailing tab without a final newline', 'b\na\t', 'a\t\nb\n'],
+  ['trailing whitespace with a final newline', 'b\na \t\n', 'a \t\nb\n'],
+  ['trailing blank lines', 'b\na\n\n\n', '\n\na\nb\n'],
+  ['only blank lines', '\n\n\n', '\n\n\n'],
+  ['whitespace-only final line', 'b\na\n \t', ' \t\na\nb\n'],
+  ['a single final newline', 'b\na\n', 'a\nb\n'],
+  ['no final newline', 'b\na', 'a\nb\n'],
+  ['CRLF line content', 'b\r\na\r\n', 'a\r\nb\r\n'],
+].forEach(([name, input, expected]) => {
+  test('piped sort preserves ' + name, t => {
+    const result = shell.ShellString(input).sort();
+    t.is(result.code, 0);
+    t.is(result.stdout, expected);
+  });
+});
+
+test('multiple files and a pipe preserve whitespace and blank lines', t => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'shelljs-sort-'));
+  t.teardown(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const first = path.join(directory, 'first');
+  const second = path.join(directory, 'second');
+  fs.writeFileSync(first, 'b\na \n\n');
+  fs.writeFileSync(second, 'd\nc\t');
+  const files = shell.sort(first, second);
+  t.is(files.code, 0);
+  t.is(files.stdout, '\na \nb\nc\t\nd\n');
+  const piped = shell.ShellString('f\ne \n\n').sort(first, second);
+  t.is(piped.code, 0);
+  t.is(piped.stdout, '\n\na \nb\nc\t\nd\ne \nf\n');
+});
+
+test('empty files keep the existing output', t => {
+  const result = shell.sort('test/resources/sed/empty.txt');
+  t.is(result.code, 0);
+  t.is(result.stdout, '\n');
+});
+
+test('reverse sort preserves trailing whitespace and blank lines', t => {
+  const result = shell.ShellString('b\na \n\n').sort('-r');
+  t.is(result.code, 0);
+  t.is(result.stdout, 'b\na \n\n');
+});
+
+test('numerical sort preserves trailing whitespace and blank lines', t => {
+  const result = shell.ShellString('2\n1\t\n\n').sort('-n');
+  t.is(result.code, 0);
+  t.is(result.stdout, '\n1\t\n2\n');
+  const reversed = shell.ShellString('2\n1\t\n\n').sort('-rn');
+  t.is(reversed.code, 0);
+  t.is(reversed.stdout, '2\n1\t\n\n');
+});
+
+test('numerical sort preserves carriage returns in nonnumeric suffixes', t => {
+  const input = 'b\na\r\n';
+  const result = shell.ShellString(input).sort('-n');
+  t.is(result.code, 0);
+  t.is(result.stdout, 'a\r\nb\n');
+  const reversed = shell.ShellString(input).sort('-rn');
+  t.is(reversed.code, 0);
+  t.is(reversed.stdout, 'b\na\r\n');
 });
 
 test('multiple files', t => {
