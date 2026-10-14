@@ -672,7 +672,7 @@ Follows Python's [tempfile algorithm](http://docs.python.org/library/tempfile.ht
 
 ### test(expression)
 
-Available expression primaries:
+Available expression primaries include:
 
 + `'-b', 'path'`: true if path is a block device
 + `'-c', 'path'`: true if path is a character device
@@ -682,12 +682,24 @@ Available expression primaries:
 + `'-L', 'path'`: true if path is a symbolic link
 + `'-p', 'path'`: true if path is a pipe (FIFO)
 + `'-S', 'path'`: true if path is a socket
++ `'-n', 'string'`: true if the string is not empty
++ `'-z', 'string'`: true if the string is empty
++ `'string1', '=', 'string2'`: true if both strings are equal
++ `'string1', '!=', 'string2'`: true if both strings are not equal
++ `'integer1', '-eq', 'integer2'`: true if both integers are equal
++ `'integer1', '-ne', 'integer2'`: true if both integers are not equal
++ `'integer1', '-gt', 'integer2'`: true if integer1 is greater than integer2
++ `'integer1', '-ge', 'integer2'`: true if integer1 is greater than or equal to integer2
++ `'integer1', '-lt', 'integer2'`: true if integer1 is less than integer2
++ `'integer1', '-le', 'integer2'`: true if integer1 is less than or equal to integer2
 
 Examples:
 
 ```javascript
 if (test('-d', path)) { /* do something with dir */ };
 if (!test('-f', path)) continue; // skip if it's not a regular file
+if (test(process.env.NODE_ENV || '', '=', 'production')) { /* production */ };
+if (test(process.env.BUILD_NUMBER || '0', '-gt', '100')) { /* milestone */ };
 ```
 
 Evaluates `expression` using the available primaries and returns
