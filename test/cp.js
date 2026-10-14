@@ -496,6 +496,53 @@ test('using -P explicitly works', t => {
   });
 });
 
+test('-P without recursion omits an ordinary directory', t => {
+  const source = `${t.context.tmp}/source`;
+  const dest = `${t.context.tmp}/dest`;
+  fs.mkdirSync(source);
+  fs.writeFileSync(`${source}/file`, 'contents');
+
+  const result = shell.cp('-P', source, dest);
+
+  t.is(result.code, 1);
+  t.regex(result.stderr, /omitting directory/);
+  t.falsy(fs.existsSync(dest));
+  t.is(fs.readFileSync(`${source}/file`, 'utf8'), 'contents');
+});
+
+test('-RP copies an ordinary directory recursively', t => {
+  const source = `${t.context.tmp}/source`;
+  const dest = `${t.context.tmp}/dest`;
+  fs.mkdirSync(source);
+  fs.mkdirSync(`${source}/nested`);
+  fs.writeFileSync(`${source}/nested/file`, 'contents');
+
+  const result = shell.cp('-RP', source, dest);
+
+  t.is(result.code, 0);
+  t.falsy(result.stderr);
+  t.falsy(shell.error());
+  t.is(fs.readFileSync(`${dest}/nested/file`, 'utf8'), 'contents');
+});
+
+test('-RP preserves symlinks inside an ordinary directory', t => {
+  utils.skipOnWin(t, () => {
+    const source = `${t.context.tmp}/source`;
+    const dest = `${t.context.tmp}/dest`;
+    fs.mkdirSync(source);
+    fs.writeFileSync(`${source}/file`, 'contents');
+    fs.symlinkSync('file', `${source}/link`);
+
+    const result = shell.cp('-RP', source, dest);
+
+    t.is(result.code, 0);
+    t.falsy(result.stderr);
+    t.truthy(fs.lstatSync(`${dest}/link`).isSymbolicLink());
+    t.is(fs.readlinkSync(`${dest}/link`), 'file');
+    t.is(fs.readFileSync(`${dest}/link`, 'utf8'), 'contents');
+  });
+});
+
 test('using -PR on a link to a folder does not follow the link', t => {
   utils.skipOnWin(t, () => {
     shell.cp('-PR', 'test/resources/cp/symFolder', t.context.tmp);
