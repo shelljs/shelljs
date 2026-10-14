@@ -1,6 +1,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { Worker } = require('worker_threads');
 
 const test = require('ava');
 
@@ -39,6 +40,40 @@ test('file not dir', t => {
   t.truthy(shell.error());
   t.is(result.code, 1);
   t.is(result.stderr, 'cd: not a directory: test/resources/file1');
+});
+
+test('reports process.chdir() errors for existing directories', async t => {
+  const repoDir = path.resolve(__dirname, '..');
+  const result = await new Promise((resolve, reject) => {
+    let message;
+    const worker = new Worker(`
+      const { parentPort } = require('worker_threads');
+      const shell = require(${JSON.stringify(repoDir)});
+      shell.config.resetForTesting();
+      const result = shell.cd(${JSON.stringify(repoDir)});
+      parentPort.postMessage({
+        code: result.code,
+        stderr: result.stderr,
+        error: shell.error(),
+      });
+    `, { eval: true });
+
+    worker.once('message', value => {
+      message = value;
+    });
+    worker.once('error', reject);
+    worker.once('exit', code => {
+      if (code !== 0) {
+        reject(new Error(`Worker stopped with exit code ${code}`));
+      } else {
+        resolve(message);
+      }
+    });
+  });
+
+  t.is(result.code, 1);
+  t.regex(result.stderr, /^cd: process\.chdir\(\) is not supported in workers$/);
+  t.is(result.error, result.stderr);
 });
 
 test('no previous dir', t => {
