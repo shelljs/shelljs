@@ -8,6 +8,7 @@ common.register('mv', _mv, {
   cmdOptions: {
     'f': '!no_force',
     'n': 'no_force',
+    'v': 'verbose',
   },
 });
 
@@ -102,6 +103,9 @@ function _mv(options, sources, dest) {
 
     try {
       fs.renameSync(src, thisDest);
+      if (options.verbose) {
+        console.log("renamed '" + src + "' -> '" + thisDest + "'");
+      }
     } catch (e) {
       /* istanbul ignore next */
       if (e.code === 'EXDEV') {
@@ -109,8 +113,8 @@ function _mv(options, sources, dest) {
         // to perform a copy and then clean up the original file. If either the
         // copy or the rm fails with an exception, we should allow this
         // exception to pass up to the top level.
-        cp({ recursive: true }, src, thisDest);
-        rm({ recursive: true, force: true }, src);
+        cp({ recursive: true, verbose: options.verbose }, src, thisDest);
+        rm({ recursive: true, force: true, verbose: options.verbose }, src);
       }
     }
   }); // forEach(src)
