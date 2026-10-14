@@ -133,7 +133,7 @@ function execSync(cmd, opts, pipe) {
     // Note: `silent` should be unconditionally true to avoid double-printing
     // the command's stderr, and to avoid printing any stderr when the user has
     // set `shell.config.silent`.
-    common.error(stderr, code, { continue: true, silent: true, fatal: opts.fatal });
+    common.error(stderr.toString(), code, { continue: true, silent: true, fatal: opts.fatal });
   }
   var obj = common.ShellString(stdout, stderr, code);
   return obj;
@@ -159,7 +159,8 @@ function execAsync(cmd, opts, pipe, callback) {
         /* istanbul ignore next */
         callback(1, stdout, stderr);
       } else {
-        callback(err.code, stdout, stderr);
+        // A signal-terminated command has no exit code, but did not succeed.
+        callback(err.code === null ? DEFAULT_ERROR_CODE : err.code, stdout, stderr);
       }
     }
   });

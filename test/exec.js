@@ -115,6 +115,77 @@ test('check exit code', t => {
   t.is(result.code, 12);
 });
 
+['TERM', 'KILL'].forEach(signal => {
+  test(`signal ${signal} is a failed command`, t => {
+    utils.skipOnWin(t, () => {
+      const result = shell.exec(`printf before; printf error >&2; kill -${signal} $$`);
+      t.is(result.code, 1);
+      t.is(result.stdout, 'before');
+      t.is(result.stderr, 'error');
+      t.truthy(shell.error());
+      t.is(shell.errorCode(), 1);
+    });
+  });
+});
+
+test('signal termination honors options.fatal', t => {
+  utils.skipOnWin(t, () => {
+    t.throws(() => {
+      shell.exec('kill -TERM $$', { fatal: true });
+    }, { code: 1 });
+  });
+});
+
+test('signal termination honors config.fatal', t => {
+  utils.skipOnWin(t, () => {
+    const oldFatal = shell.config.fatal;
+    shell.config.fatal = true;
+    try {
+      t.throws(() => {
+        shell.exec('kill -TERM $$');
+      }, { code: 1 });
+    } finally {
+      shell.config.fatal = oldFatal;
+    }
+  });
+});
+
+test('signal termination preserves buffer output', t => {
+  utils.skipOnWin(t, () => {
+    const result = shell.exec('printf before; printf error >&2; kill -TERM $$', {
+      encoding: 'buffer',
+    });
+    t.is(result.code, 1);
+    t.truthy(Buffer.isBuffer(result.stdout));
+    t.truthy(Buffer.isBuffer(result.stderr));
+    t.is(result.stdout.toString(), 'before');
+    t.is(result.stderr.toString(), 'error');
+    t.is(shell.error(), 'exec: error');
+  });
+});
+
+test('signal termination honors fatal with buffer output', t => {
+  utils.skipOnWin(t, () => {
+    t.throws(() => {
+      shell.exec('printf error >&2; kill -TERM $$', {
+        encoding: 'buffer', fatal: true,
+      });
+    }, { code: 1, message: 'exec: error' });
+  });
+});
+
+test('nonzero exit code preserves buffer output', t => {
+  const result = shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(1234); console.error(5678); process.exit(12);"`, {
+    encoding: 'buffer',
+  });
+  t.is(result.code, 12);
+  t.truthy(Buffer.isBuffer(result.stdout));
+  t.truthy(Buffer.isBuffer(result.stderr));
+  t.is(result.stdout.toString(), '1234\n');
+  t.is(result.stderr.toString(), '5678\n');
+  t.is(shell.error(), 'exec: 5678\n');
+});
+
 test('interaction with cd', t => {
   shell.cd('test/resources/external');
   const result = shell.exec(`${JSON.stringify(shell.config.execPath)} node_script.js`);
@@ -221,11 +292,65 @@ test('options.fatal = false and unknown command', t => {
 
 function execAsync(...execArgs) {
   return new Promise((resolve) => {
-    shell.exec(...execArgs, (code, stdout, stderr) => {
-      resolve({ code, stdout, stderr });
+    const child = shell.exec(...execArgs, (code, stdout, stderr) => {
+      resolve({
+        code, stdout, stderr, child,
+      });
     });
   });
 }
+
+['TERM', 'KILL'].forEach(signal => {
+  test(`async signal ${signal} is a failed command`, async t => {
+    if (process.platform === 'win32') {
+      t.pass('POSIX signals are not available on Windows');
+      return;
+    }
+    const result = await execAsync(`printf before; printf error >&2; kill -${signal} $$`);
+    t.is(result.code, 1);
+    t.is(result.stdout, 'before');
+    t.is(result.stderr, 'error');
+    t.is(result.child.signalCode, `SIG${signal}`);
+    t.is(result.child.exitCode, null);
+  });
+});
+
+test('async signal termination preserves buffer output', async t => {
+  if (process.platform === 'win32') {
+    t.pass('POSIX signals are not available on Windows');
+    return;
+  }
+  const result = await execAsync('printf before; printf error >&2; kill -TERM $$', {
+    encoding: 'buffer',
+  });
+  t.is(result.code, 1);
+  t.truthy(Buffer.isBuffer(result.stdout));
+  t.truthy(Buffer.isBuffer(result.stderr));
+  t.is(result.stdout.toString(), 'before');
+  t.is(result.stderr.toString(), 'error');
+});
+
+test('async timeout is a failed command', async t => {
+  if (process.platform === 'win32') {
+    t.pass('POSIX exec is not available on Windows');
+    return;
+  }
+  const result = await execAsync(`exec ${JSON.stringify(shell.config.execPath)} test/resources/exec/slow.js 2000`, {
+    timeout: 1000,
+  });
+  t.is(result.code, 1);
+  t.is(result.stdout, 'fast\n');
+  t.is(result.stderr, '');
+  t.is(result.child.signalCode, 'SIGTERM');
+});
+
+test('async check exit code', async t => {
+  const result = await execAsync(`${JSON.stringify(shell.config.execPath)} -e "console.log(1234); process.exit(12);"`);
+  t.is(result.code, 12);
+  t.is(result.stdout, '1234\n');
+  t.is(result.stderr, '');
+  t.is(result.child.signalCode, null);
+});
 
 test('no callback', t => {
   const c = shell.exec(`${JSON.stringify(shell.config.execPath)} -e "console.log(1234)"`, { async: true });

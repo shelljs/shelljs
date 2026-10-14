@@ -50,7 +50,8 @@ function main() {
       /* istanbul ignore next */
       appendError('Unknown issue', 1);
     } else {
-      process.exitCode = err.code;
+      // Node reports a null exit code when a signal terminates the command.
+      process.exitCode = err.code === null ? 1 : err.code;
     }
   });
 
