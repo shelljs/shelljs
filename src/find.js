@@ -1,6 +1,6 @@
+var fs = require('fs');
 var path = require('path');
 var common = require('./common');
-var _ls = require('./ls');
 
 common.register('find', _find, {
   cmdOptions: {
@@ -41,8 +41,40 @@ function _find(options, paths) {
     list.push(file);
   }
 
-  // why not simply do `ls('-R', paths)`? because the output wouldn't give the base dirs
-  // to get the base dir in the output, we need instead `ls('-R', 'dir/*')` for every directory
+  function walkDir(root, dir, lsOptions) {
+    var entries;
+    try {
+      entries = fs.readdirSync(dir);
+    } catch (e) {
+      if (e.code === 'EPERM' || e.code === 'EACCES') {
+        common.error('permission denied: ' + dir, { continue: true });
+        return;
+      }
+      throw e;
+    }
+
+    entries.forEach(function (name) {
+      if (!lsOptions.all && name[0] === '.') {
+        return;
+      }
+
+      var abs = path.join(dir, name);
+      var rel = path.relative(root, abs);
+      var stat;
+      try {
+        stat = lsOptions.link ? common.statFollowLinks(abs) : common.statNoFollowLinks(abs);
+      } catch (e) {
+        pushFile(path.join(root, rel));
+        return;
+      }
+
+      pushFile(path.join(root, rel));
+
+      if (stat.isDirectory()) {
+        walkDir(root, abs, lsOptions);
+      }
+    });
+  }
 
   paths.forEach(function (file) {
     var stat;
@@ -55,9 +87,7 @@ function _find(options, paths) {
     pushFile(file);
 
     if (stat.isDirectory()) {
-      _ls({ recursive: true, all: true, link: options.link }, file).forEach(function (subfile) {
-        pushFile(path.join(file, subfile));
-      });
+      walkDir(file, file, { all: true, link: options.link });
     }
   });
 
