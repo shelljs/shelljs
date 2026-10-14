@@ -41,11 +41,20 @@ test('file not dir', t => {
   t.is(result.stderr, 'cd: not a directory: test/resources/file1');
 });
 
-test('no previous dir', t => {
-  const result = shell.cd('-'); // Haven't changed yet, so there is no previous directory
-  t.truthy(shell.error());
-  t.is(result.code, 1);
-  t.is(result.stderr, 'cd: could not find previous directory');
+test('no previous dir', async t => {
+  const result = await utils.runScript(`
+    delete process.env.OLDPWD;
+    const shell = require(${JSON.stringify(path.resolve(__dirname, '..'))});
+    shell.config.silent = true;
+    const result = shell.cd('-');
+    console.log(JSON.stringify({
+      code: result.code,
+      stderr: result.stderr,
+    }));
+  `);
+  const output = JSON.parse(result.stdout);
+  t.is(output.code, 1);
+  t.is(output.stderr, 'cd: could not find previous directory');
 });
 
 //
