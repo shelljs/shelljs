@@ -623,26 +623,20 @@ test('Test max depth.', t => {
   // Check last directory to exist is below maxdepth.
   t.truthy(shell.test('-d', `${t.context.tmp}/copytestdepth${directory32deep}`));
   t.falsy(shell.test('-d', `${t.context.tmp}/copytestdepth${directory32deep}/32`));
-  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
-    if (!shell.test('-L', `${t.context.tmp}/symlinktest`)) {
-      t.fail();
-    }
+});
 
-    // Create symlinks to check for cycle.
-    shell.cd(`${t.context.tmp}/0/1/2/3/4`);
-    t.falsy(shell.error());
-    shell.ln('-s', '../../../2', 'link');
-    t.falsy(shell.error());
-    shell.ln('-s', './5/6/7', 'link1');
-    t.falsy(shell.error());
-    shell.cd('../../../../../..');
-    t.falsy(shell.error());
-    t.truthy(shell.test('-d', t.context.tmp));
-
-    shell.cp('-r', `${t.context.tmp}/0/1`, `${t.context.tmp}/copytestdepth`);
-    t.falsy(shell.error());
-    t.truthy(shell.test('-d', `${t.context.tmp}/copytestdepth/1/2/3/4/link/3/4/link/3/4`));
-  });
+test('Test with cycle symlink', t => {
+    utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
+      shell.mkdir('-p', `${t.context.tmp}/sub/sub1/sub2/sub3`);
+      shell.cd(`${t.context.tmp}/sub/sub1/sub2/sub3`);
+      shell.ln('-s', '..', 'link');
+      shell.cd('../../../../');
+      const result = shell.cp('-rL', 'sub', 'newsub');
+      t.falsy(shell.error());
+      t.is(result.code, 0);
+      t.falsy(result.stderr);
+      t.truthy(shell.test('-d', 'sub/sub1/sub2/sub3/link/sub3/link/sub3/link/sub3/link'));
+    });
 });
 
 test('cp -L follows symlinks', t => {
