@@ -64,6 +64,28 @@ test('source does not exist', t => {
   t.is(result.stderr, 'mv: no such file or directory: asdfasdf');
 });
 
+test('missing destination directory when dest ends with a slash', t => {
+  t.truthy(fs.existsSync('file1'));
+  const result = shell.mv('file1', 'no/such/dir/');
+  t.truthy(shell.error());
+  t.truthy(fs.existsSync('file1'));
+  t.is(result.code, 1);
+  t.is(
+    result.stderr,
+    "mv: cannot move 'file1' to 'no/such/dir/': Not a directory"
+  );
+});
+
+test('move directory to a new name when dest ends with a slash', t => {
+  shell.mkdir('srcdir');
+  fs.writeFileSync('srcdir/a', 'x');
+  const result = shell.mv('srcdir', 'newdir/');
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.truthy(fs.existsSync('newdir/a'));
+  t.falsy(fs.existsSync('srcdir'));
+});
+
 test('sources do not exist', t => {
   const result = shell.mv('asdfasdf1', 'asdfasdf2', '..');
   t.truthy(shell.error());
