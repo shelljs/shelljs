@@ -63,7 +63,9 @@ test('all matches preserves an explicit relative path', t => {
 
 test('explicit absolute path is unchanged', t => {
   const { file } = executableFixture(t);
-  const cmd = path.resolve(file);
+  // Explicit-path handling recognizes `/`, including on Windows. Keep this
+  // fixture on that path instead of testing PATHEXT lookup for backslashes.
+  const cmd = path.resolve(file).split(path.sep).join('/');
   t.is(shell.which(cmd).stdout, cmd);
   t.deepEqual(Array.from(shell.which('-a', cmd)), [cmd]);
 });
