@@ -54,7 +54,8 @@ function checkPath(pathName) {
 //@ Searches for `command` in the system's `PATH`. On Windows, this uses the
 //@ `PATHEXT` variable to append the extension if it's not already executable.
 //@ Returns a [ShellString](#shellstringstr) containing the absolute path to
-//@ `command`.
+//@ `command` when searching `PATH`. If `command` contains a `/`, it is checked
+//@ directly and returned unchanged when executable.
 function _which(options, cmd) {
   if (!cmd) common.error('must specify command');
 
@@ -108,7 +109,7 @@ function _which(options, cmd) {
       }
     }
   } else if (checkPath(cmd)) { // a valid absolute or relative path
-    queryMatches.push(path.resolve(cmd));
+    queryMatches.push(cmd);
   }
 
   if (queryMatches.length > 0) {
