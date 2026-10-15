@@ -27,6 +27,64 @@ test('command does not exist in the path', t => {
 // Valids
 //
 
+function executableFixture(t) {
+  const dir = utils.getTempDir();
+  fs.mkdirSync(dir);
+  const file = dir + '/command';
+  fs.writeFileSync(file, '');
+  fs.chmodSync(file, 0o755);
+  t.teardown(() => fs.rmSync(dir, { recursive: true, force: true }));
+  return { dir, file };
+}
+
+test('explicit relative path is returned without resolving it', t => {
+  const { file } = executableFixture(t);
+  const cmd = './' + file;
+  const result = shell.which(cmd);
+  t.is(result.stdout, cmd);
+  t.is(result.code, 0);
+  t.falsy(result.stderr);
+});
+
+test('explicit path keeps parent segments', t => {
+  const { dir, file } = executableFixture(t);
+  fs.mkdirSync(dir + '/child');
+  const cmd = './' + dir + '/child/../command';
+  t.is(shell.which(cmd).stdout, cmd);
+  t.deepEqual(Array.from(shell.which('-a', cmd)), [cmd]);
+  t.true(fs.existsSync(file));
+});
+
+test('all matches preserves an explicit relative path', t => {
+  const { file } = executableFixture(t);
+  t.deepEqual(Array.from(shell.which('-a', file)), [file]);
+  t.falsy(shell.error());
+});
+
+test('explicit absolute path is unchanged', t => {
+  const { file } = executableFixture(t);
+  const cmd = path.resolve(file);
+  t.is(shell.which(cmd).stdout, cmd);
+  t.deepEqual(Array.from(shell.which('-a', cmd)), [cmd]);
+});
+
+test('explicit missing paths and directories are not commands', t => {
+  const { dir } = executableFixture(t);
+  t.is(shell.which('./' + dir + '/missing'), null);
+  t.is(shell.which('./' + dir), null);
+  t.deepEqual(Array.from(shell.which('-a', './' + dir)), []);
+  t.falsy(shell.error());
+});
+
+test('explicit non-executable file is not a command on Unix', t => {
+  utils.skipOnWin(t, () => {
+    const { file } = executableFixture(t);
+    fs.chmodSync(file, 0o644);
+    t.is(shell.which('./' + file), null);
+    t.deepEqual(Array.from(shell.which('-a', './' + file)), []);
+  });
+});
+
 // TODO(nate): make sure this does not have a false negative if 'git' is missing
 test('basic usage', t => {
   const git = shell.which('git');
