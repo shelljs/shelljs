@@ -21,9 +21,20 @@ function _cd(options, dir) {
   }
 
   try {
-    var curDir = process.cwd();
+    var curDir;
+    try {
+      curDir = process.cwd();
+    } catch (cwdError) {
+      // A deleted working directory must not prevent changing to a valid one.
+      if (cwdError.code !== 'ENOENT') throw cwdError;
+    }
     process.chdir(dir);
-    process.env.OLDPWD = curDir;
+    if (curDir) {
+      process.env.OLDPWD = curDir;
+    } else {
+      // Do not leave a stale previous directory when the old cwd is unknown.
+      delete process.env.OLDPWD;
+    }
   } catch (e) {
     // something went wrong, let's figure out the error
     var err;
