@@ -39,7 +39,7 @@ function _ln(options, source, dest) {
 
   if (fs.existsSync(dest)) {
     if (!options.force) {
-      common.error('Destination file exists', { continue: true });
+      common.error('Destination file exists');
     }
 
     fs.unlinkSync(dest);
