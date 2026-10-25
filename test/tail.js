@@ -1,4 +1,6 @@
 const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 const test = require('ava');
 
@@ -100,6 +102,50 @@ test('positive zero starts at the first line with object option', t => {
   t.falsy(shell.error());
   t.is(result.code, 0);
   t.is(result.toString(), 'first\nlast');
+});
+
+function writeInputs(t, contents) {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'shelljs-tail-'));
+  t.teardown(() => fs.rmSync(directory, { recursive: true, force: true }));
+  return contents.map((content, index) => {
+    const file = path.join(directory, String(index));
+    fs.writeFileSync(file, content);
+    return file;
+  });
+}
+
+[false, true].forEach(arraySyntax => {
+  ['', 'header', 'header\n'].forEach(lastInput => {
+    test(`unselected final input preserves preceding newline: ${JSON.stringify(lastInput)}, array ${arraySyntax}`, t => {
+      const files = writeInputs(t, ['header\nvalue\n', lastInput]);
+      const result = arraySyntax
+        ? shell.tail({ '-n': '+2' }, files)
+        : shell.tail('-n', '+2', ...files);
+      t.is(result.code, 0);
+      t.falsy(result.stderr);
+      t.is(result.stdout, 'value\n');
+    });
+  });
+});
+
+test('empty final file preserves preceding newline with ordinary counts', t => {
+  const result = shell.tail(writeInputs(t, ['value\n', '']));
+  t.is(result.code, 0);
+  t.is(result.stdout, 'value\n');
+});
+
+test('unselected final input does not add a newline to unterminated output', t => {
+  const result = shell.tail({ '-n': '+2' },
+    writeInputs(t, ['header\nvalue', 'header\n']));
+  t.is(result.code, 0);
+  t.is(result.stdout, 'value');
+});
+
+test('a selected blank line still controls the trailing newline', t => {
+  const result = shell.tail({ '-n': '+2' },
+    writeInputs(t, ['header\nvalue', 'header\n\n']));
+  t.is(result.code, 0);
+  t.is(result.stdout, 'value\n\n');
 });
 
 test('multiple files', t => {

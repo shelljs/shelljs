@@ -74,14 +74,15 @@ function _tail(options, files) {
     var lines = contents.split('\n');
     if (lines[lines.length - 1] === '') {
       lines.pop();
-      shouldAppendNewline = true;
-    } else {
-      shouldAppendNewline = false;
     }
 
-    tail = tail.concat(plusOption
+    var selected = plusOption
       ? lines.slice(Math.max(-options.numLines - 1, 0))
-      : lines.slice(options.numLines));
+      : lines.slice(options.numLines);
+    if (selected.length > 0) {
+      shouldAppendNewline = contents.endsWith('\n');
+      tail = tail.concat(selected);
+    }
   });
 
   if (shouldAppendNewline) {
