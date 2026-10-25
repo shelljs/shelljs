@@ -37,7 +37,15 @@ function _ln(options, source, dest) {
   var isAbsolute = (path.resolve(source) === sourcePath);
   dest = path.resolve(process.cwd(), String(dest));
 
-  if (fs.existsSync(dest)) {
+  var destExists = false;
+  try {
+    common.statNoFollowLinks(dest); // lstat, so broken symlinks count as existing
+    destExists = true;
+  } catch (e) {
+    // dest does not exist
+  }
+
+  if (destExists) {
     if (!options.force) {
       common.error('Destination file exists', { continue: true });
     }

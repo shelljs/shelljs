@@ -161,6 +161,18 @@ test('-sf option', t => {
   });
 });
 
+test('-sf option on existing broken symlink', t => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-sf', 'file1.txt', `${t.context.tmp}/badlink`), () => {
+    t.falsy(shell.error());
+    t.truthy(fs.existsSync(`${t.context.tmp}/badlink`));
+    t.is(fs.readlinkSync(`${t.context.tmp}/badlink`), 'file1.txt');
+    t.is(
+      fs.readFileSync(`${t.context.tmp}/file1.txt`).toString(),
+      fs.readFileSync(`${t.context.tmp}/badlink`).toString()
+    );
+  });
+});
+
 test('Abspath regression', t => {
   utils.skipOnWinForEPERM(shell.ln.bind(shell, '-sf', 'file1', path.resolve(`${t.context.tmp}/abspath`)), () => {
     t.truthy(fs.existsSync(`${t.context.tmp}/abspath`));
