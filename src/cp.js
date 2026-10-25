@@ -16,6 +16,25 @@ common.register('cp', _cp, {
   wrapOutput: false,
 });
 
+// Returns true if a and b are the same file on disk, even when they are
+// reached through different paths (symlinked or junctioned directories, hard
+// links). path.relative() only compares the strings, so it cannot tell.
+// If followLinks is false, a and b are compared as directory entries (lstat).
+function isSameFile(a, b, followLinks) {
+  try {
+    var statFn = followLinks ? fs.statSync : fs.lstatSync;
+    var statA = statFn(a, { bigint: true });
+    var statB = statFn(b, { bigint: true });
+    // Some filesystems report ino 0, which says nothing about identity
+    if (Number(statA.ino) !== 0 && statA.dev === statB.dev && statA.ino === statB.ino) {
+      return true;
+    }
+    return followLinks && fs.realpathSync(a) === fs.realpathSync(b);
+  } catch (e) {
+    return false; // e.g., dest does not exist yet
+  }
+}
+
 // Buffered file copy, synchronous
 // (Using readFileSync() + writeFileSync() could easily cause a memory overflow
 //  with large files)
@@ -26,6 +45,15 @@ function copyFileSync(srcFile, destFile, options) {
 
   // Bail if src and dest are the same file to avoid data loss
   if (path.relative(srcFile, destFile) === '') {
+    common.error("'" + destFile + "' and '" + srcFile + "' are the same file", { continue: true });
+    return;
+  }
+
+  var copiesSymlink = common.statNoFollowLinks(srcFile).isSymbolicLink() && !options.followsymlink;
+  // The check above is purely lexical. Also catch two different paths that
+  // reach the same file (e.g., through a symlinked directory), otherwise
+  // opening dest for writing would truncate src.
+  if (isSameFile(srcFile, destFile, !copiesSymlink)) {
     common.error("'" + destFile + "' and '" + srcFile + "' are the same file", { continue: true });
     return;
   }
@@ -274,7 +302,7 @@ function _cp(options, sources, dest) {
             path.join(dest, path.basename(src)) :
             dest;
 
-        if (path.relative(src, newDest) === '') {
+        if (path.relative(src, newDest) === '' || isSameFile(src, newDest, true)) {
           // a directory cannot be copied into itself, but we want to continue copying other sources
           common.error("'" + newDest + "' and '" + src + "' are the same file", { continue: true });
           return;
