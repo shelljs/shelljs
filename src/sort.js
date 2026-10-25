@@ -11,7 +11,7 @@ common.register('sort', _sort, {
 
 // parse out the number prefix of a line
 function parseNumber(str) {
-  var match = str.match(/^\s*(-?(?:\d+(?:\.\d*)?|\.\d+))?\s*(.*)$/);
+  var match = str.match(/^\s*(-?(?:\d+(?:\.\d*)?|\.\d+))?\s*(.*)$/s);
   return { num: Number(match[1] || 0), value: match[2] };
 }
 
@@ -83,7 +83,10 @@ function _sort(options, files) {
     }
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
-    return accum.concat(contents.trimRight().split('\n'));
+    var fileLines = contents.split('\n');
+    // A terminal newline ends the last line; it does not add another line.
+    if (contents.endsWith('\n')) fileLines.pop();
+    return accum.concat(fileLines);
   }, []);
 
   var sorted = lines.sort(options.numerical ? numericalCmp : unixCmp);
