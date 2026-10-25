@@ -782,7 +782,8 @@ var nodeExec = which('node');
 Searches for `command` in the system's `PATH`. On Windows, this uses the
 `PATHEXT` variable to append the extension if it's not already executable.
 Returns a [ShellString](#shellstringstr) containing the absolute path to
-`command`.
+`command` when searching `PATH`. If `command` contains a `/`, it is checked
+directly and returned unchanged when executable.
 
 
 ### exit(code)
