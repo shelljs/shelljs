@@ -623,7 +623,7 @@ test('Test max depth.', t => {
   // Check last directory to exist is below maxdepth.
   t.truthy(shell.test('-d', `${t.context.tmp}/copytestdepth${directory32deep}`));
   t.falsy(shell.test('-d', `${t.context.tmp}/copytestdepth${directory32deep}/32`));
-  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), t, () => {
     if (!shell.test('-L', `${t.context.tmp}/symlinktest`)) {
       t.fail();
     }
@@ -646,7 +646,7 @@ test('Test max depth.', t => {
 });
 
 test('cp -L follows symlinks', t => {
-  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), t, () => {
     shell.mkdir('-p', `${t.context.tmp}/sub`);
     shell.mkdir('-p', `${t.context.tmp}/new`);
     shell.cp('-f', 'test/resources/file1.txt', `${t.context.tmp}/sub/file.txt`);
@@ -669,7 +669,7 @@ test('cp -L follows symlinks', t => {
 });
 
 test('Test with recursive option and symlinks.', t => {
-  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), () => {
+  utils.skipOnWinForEPERM(shell.ln.bind(shell, '-s', `${t.context.tmp}/0`, `${t.context.tmp}/symlinktest`), t, () => {
     shell.mkdir('-p', `${t.context.tmp}/sub/sub1`);
     shell.cp('-f', 'test/resources/file1.txt', `${t.context.tmp}/sub/file.txt`);
     shell.cp('-f', 'test/resources/file1.txt', `${t.context.tmp}/sub/sub1/file.txt`);
