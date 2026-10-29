@@ -185,6 +185,105 @@ test('glob file names, with in-place-replacement', t => {
   t.is(shell.cat(`${t.context.tmp}/file2.txt`).toString(), 'hello2\n');
 });
 
+test('line anchors do not replace the split sentinel after a final newline', t => {
+  const file = `${t.context.tmp}/anchors.txt`;
+
+  fs.writeFileSync(file, 'one\n');
+  let result = shell.sed(/^/, '> ', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '> one\n');
+
+  fs.writeFileSync(file, 'one\n\n');
+  result = shell.sed(/^/, '> ', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '> one\n> \n');
+
+  fs.writeFileSync(file, '\n');
+  result = shell.sed(/^/, '> ', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '> \n');
+
+  fs.writeFileSync(file, 'one\r\n');
+  result = shell.sed(/^/, '> ', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '> one\r\n');
+
+  fs.writeFileSync(file, 'one');
+  result = shell.sed(/^/, '> ', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '> one');
+});
+
+test('replacement callbacks only see actual lines, including blank lines', t => {
+  const file = `${t.context.tmp}/callback.txt`;
+  fs.writeFileSync(file, 'one\n\n');
+  const seen = [];
+  const result = shell.sed(/^.*$/, line => {
+    seen.push(line);
+    return `[${line}]`;
+  }, file);
+  t.deepEqual(seen, ['one', '']);
+  t.is(result.stdout, '[one]\n[]\n');
+});
+
+test('in-place anchored replacements preserve the final newline', t => {
+  const file = `${t.context.tmp}/inplace.txt`;
+  fs.writeFileSync(file, 'one\n');
+  const result = shell.sed('-i', /$/, '!', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '');
+  t.is(fs.readFileSync(file, 'utf8'), 'one!\n');
+});
+
+test('piped anchored replacements preserve the final newline', t => {
+  const result = shell.ShellString('one\n').sed(/^/, '> ');
+  t.is(result.code, 0);
+  t.is(result.stdout, '> one\n');
+});
+
+test('sticky regex state is preserved across files ending in a newline', t => {
+  const first = `${t.context.tmp}/sticky-first.txt`;
+  const second = `${t.context.tmp}/sticky-second.txt`;
+  fs.writeFileSync(first, 'alpha\n');
+  fs.writeFileSync(second, 'alpha\n');
+  const regex = /alpha/y;
+  t.is(shell.sed(regex, 'X', [first, second]).stdout, 'X\nX\n');
+  t.is(regex.lastIndex, 0);
+});
+
+test('sticky regex state is preserved across calls ending in a newline', t => {
+  const file = `${t.context.tmp}/sticky.txt`;
+  fs.writeFileSync(file, 'alpha\n');
+  const regex = /alpha/y;
+  t.is(shell.sed(regex, 'X', file).stdout, 'X\n');
+  t.is(regex.lastIndex, 0);
+  t.is(shell.sed(regex, 'X', file).stdout, 'X\n');
+  t.is(regex.lastIndex, 0);
+});
+
+test('sticky regex without a final newline retains its lastIndex', t => {
+  const file = `${t.context.tmp}/sticky.txt`;
+  fs.writeFileSync(file, 'alpha');
+  const regex = /alpha/y;
+  t.is(shell.sed(regex, 'X', file).stdout, 'X');
+  t.is(regex.lastIndex, 5);
+  t.is(shell.sed(regex, 'X', file).stdout, 'alpha');
+  t.is(regex.lastIndex, 0);
+});
+
+test('sticky callbacks do not see the final split sentinel', t => {
+  const file = `${t.context.tmp}/sticky.txt`;
+  fs.writeFileSync(file, 'alpha\n\n');
+  const regex = /^/y;
+  const seen = [];
+  t.is(shell.sed(regex, line => {
+    seen.push(line);
+    return 'X';
+  }, file).stdout, 'Xalpha\nX\n');
+  t.deepEqual(seen, ['', '']);
+  t.is(regex.lastIndex, 0);
+});
+
 test('empty file', t => {
   const result = shell.sed('widget', 'wizzle', 'test/resources/sed/empty.txt');
   t.is(result.code, 0);

@@ -75,9 +75,21 @@ function _sed(options, regex, replacement, files) {
 
     var contents = file === '-' ? pipe : fs.readFileSync(file, 'utf8');
     var lines = contents.split('\n');
+    var hasTrailingNewline = contents.endsWith('\n');
+    if (hasTrailingNewline) {
+      lines.pop(); // The final split element is not an input line.
+    }
     var result = lines.map(function (line) {
       return line.replace(regex, replacement);
     }).join('\n');
+    if (hasTrailingNewline) {
+      // The removed split sentinel used to leave sticky regexes at index zero.
+      // Preserve that state across files/calls without another replacement.
+      if (regex && regex.sticky) {
+        regex.lastIndex = 0;
+      }
+      result += '\n';
+    }
 
     sed.push(result);
 
