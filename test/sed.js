@@ -187,19 +187,31 @@ test('glob file names, with in-place-replacement', t => {
 
 test('line anchors do not replace the split sentinel after a final newline', t => {
   const file = `${t.context.tmp}/anchors.txt`;
-  const cases = [
-    ['one\n', '> one\n'],
-    ['one\n\n', '> one\n> \n'],
-    ['\n', '> \n'],
-    ['one\r\n', '> one\r\n'],
-    ['one', '> one'],
-  ];
-  cases.forEach(([input, expected]) => {
-    fs.writeFileSync(file, input);
-    const result = shell.sed(/^/, '> ', file);
-    t.is(result.code, 0);
-    t.is(result.stdout, expected);
-  });
+
+  fs.writeFileSync(file, 'one\n');
+  let result = shell.sed(/^/, '> ', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '> one\n');
+
+  fs.writeFileSync(file, 'one\n\n');
+  result = shell.sed(/^/, '> ', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '> one\n> \n');
+
+  fs.writeFileSync(file, '\n');
+  result = shell.sed(/^/, '> ', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '> \n');
+
+  fs.writeFileSync(file, 'one\r\n');
+  result = shell.sed(/^/, '> ', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '> one\r\n');
+
+  fs.writeFileSync(file, 'one');
+  result = shell.sed(/^/, '> ', file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '> one');
 });
 
 test('replacement callbacks only see actual lines, including blank lines', t => {
