@@ -118,6 +118,9 @@ function _grep(options, regex, files) {
       var matches = [];
 
       lines.forEach(function (line, index) {
+        // The empty element after a terminating newline is not an input line.
+        if (index === lines.length - 1 && line === '') return;
+
         var matched = line.match(regex);
         if ((options.inverse && !matched) || (!options.inverse && matched)) {
           var lineNumber = index + 1;
