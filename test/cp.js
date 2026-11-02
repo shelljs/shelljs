@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const test = require('ava');
 
@@ -132,6 +133,58 @@ test('-nR does not overwrite an existing file at the destination', t => {
   t.is(result.code, 0);
   t.falsy(result.stderr);
   t.is(shell.cat(`${dest}/a`).toString(), oldContents);
+});
+
+test('-nR preserves an existing file when the source entry is a directory link', t => {
+  const source = `${t.context.tmp}/source`;
+  const destination = `${t.context.tmp}/destination`;
+  const target = `${t.context.tmp}/target`;
+  shell.mkdir('-p', source, `${destination}/source`, target);
+  fs.symlinkSync(path.resolve(target), `${source}/link`, 'junction');
+  fs.writeFileSync(`${destination}/source/link`, 'keep this file');
+
+  const result = shell.cp('-nR', source, destination);
+  t.is(result.code, 0);
+  t.true(fs.lstatSync(`${destination}/source/link`).isFile());
+  t.is(fs.readFileSync(`${destination}/source/link`, 'utf8'), 'keep this file');
+});
+
+test('-nRL preserves an existing file when following a source file link', t => {
+  const source = `${t.context.tmp}/source`;
+  const destination = `${t.context.tmp}/destination`;
+  const target = `${t.context.tmp}/target`;
+  shell.mkdir('-p', source, `${destination}/source`);
+  fs.writeFileSync(target, 'source content');
+  try {
+    fs.symlinkSync(path.resolve(target), `${source}/link`, 'file');
+  } catch (err) {
+    if (process.platform === 'win32' && err.code === 'EPERM') {
+      t.pass('File symlinks require elevated permissions on this Windows host');
+      return;
+    }
+    throw err;
+  }
+  fs.writeFileSync(`${destination}/source/link`, 'keep this file');
+
+  const result = shell.cp('-nRL', source, destination);
+  t.is(result.code, 0);
+  t.is(fs.readFileSync(`${destination}/source/link`, 'utf8'), 'keep this file');
+});
+
+test('-nRL still merges directories reached through source links', t => {
+  const source = `${t.context.tmp}/source`;
+  const destination = `${t.context.tmp}/destination`;
+  const target = `${t.context.tmp}/target`;
+  shell.mkdir('-p', source, `${destination}/source/link`, target);
+  fs.symlinkSync(path.resolve(target), `${source}/link`, 'junction');
+  fs.writeFileSync(`${target}/existing`, 'source content');
+  fs.writeFileSync(`${target}/new`, 'new content');
+  fs.writeFileSync(`${destination}/source/link/existing`, 'keep this file');
+
+  const result = shell.cp('-nRL', source, destination);
+  t.is(result.code, 0);
+  t.is(fs.readFileSync(`${destination}/source/link/existing`, 'utf8'), 'keep this file');
+  t.is(fs.readFileSync(`${destination}/source/link/new`, 'utf8'), 'new content');
 });
 
 test('-n does not overwrite an existing file if the destination is a directory', t => {
