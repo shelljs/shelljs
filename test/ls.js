@@ -294,6 +294,24 @@ test('recursive, path given', t => {
   t.is(result.length, 9);
 });
 
+['(draft)', '{first,second}'].forEach(name => {
+  test(`recursive listing treats the existing directory ${name} literally`, t => {
+    const directory = `${t.context.tmp}/${name}`;
+    fs.mkdirSync(directory);
+    fs.mkdirSync(`${directory}/nested`);
+    fs.writeFileSync(`${directory}/nested/file.txt`, 'contents');
+
+    const result = shell.ls('-R', directory);
+    t.is(result.code, 0);
+    t.deepEqual(Array.from(result).sort(), ['nested', 'nested/file.txt']);
+
+    const details = shell.ls('-Rl', directory);
+    t.is(details.code, 0);
+    t.deepEqual(details.map(entry => entry.name).sort(), ['nested', 'nested/file.txt']);
+    t.is(details.find(entry => entry.name === 'nested/file.txt').size, 8);
+  });
+});
+
 test('-RA flag, path given', t => {
   const result = shell.ls('-RA', 'test/resources/ls');
   t.falsy(shell.error());
