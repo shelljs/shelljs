@@ -75,6 +75,44 @@ test('symbolic mode, without group', t => {
   });
 });
 
+test('symbolic assignment preserves permissions of unselected classes', t => {
+  const originalStat = common.statFollowLinks;
+  const originalChmod = fs.chmodSync;
+  const cases = [
+    ['755', 'u=r', '455'],
+    ['755', 'g=w', '725'],
+    ['755', 'o=', '750'],
+    ['754', 'ug=rw', '664'],
+    ['754', 'go=r', '744'],
+    ['644', 'u=rw,g=r,o=', '640'],
+    ['755', 'a=r', '444'],
+    ['6755', 'u=r', '2455'],
+    ['6755', 'g=r', '4745'],
+    ['1755', 'u=r', '1455'],
+    ['1755', 'o=r', '754'],
+    ['6755', 'u=r', '6455', true],
+    ['6755', 'g=r', '6745', true],
+    ['6755', 'a=r', '6444', true],
+  ];
+
+  try {
+    cases.forEach(([initial, expression, expected, directory = false]) => {
+      // Capture the mode passed to the filesystem on every platform, including
+      // Windows where chmod cannot represent all POSIX permission classes.
+      let mode = parseInt(directory ? '40000' : '100000', 8) | parseInt(initial, 8);
+      common.statFollowLinks = () => ({ mode, isDirectory: () => directory });
+      fs.chmodSync = (file, value) => { mode = value; };
+
+      const result = shell.chmod(expression, `${TMP}/chmod/file1`);
+      t.is(result.code, 0, expression);
+      t.is(mode & parseInt('7777', 8), parseInt(expected, 8), expression);
+    });
+  } finally {
+    common.statFollowLinks = originalStat;
+    fs.chmodSync = originalChmod;
+  }
+});
+
 test('Test setuid', t => {
   utils.skipOnWin(t, () => {
     let result = shell.chmod('u+s', `${TMP}/chmod/file1`);
