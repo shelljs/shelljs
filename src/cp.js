@@ -126,6 +126,24 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
     var destFile = destDir + '/' + files[i];
     var srcFileStat = common.statNoFollowLinks(srcFile);
 
+    var destFileExists = opts.no_force && fs.existsSync(destFile);
+    if (opts.no_force && srcFileStat.isSymbolicLink() && !opts.followsymlink) {
+      try {
+        // Copying the link itself must also preserve dangling destination links.
+        destFileExists = Boolean(common.statNoFollowLinks(destFile));
+      } catch (e) {
+        // No destination entry to preserve.
+      }
+    }
+    if (destFileExists) {
+      var sourceIsDirectory = srcFileStat.isDirectory() ||
+        (opts.followsymlink && srcFileStat.isSymbolicLink() && common.statFollowLinks(srcFile).isDirectory());
+      if (!sourceIsDirectory) {
+        common.log('skipping existing file: ' + files[i]);
+        continue;
+      }
+    }
+
     var symlinkFull;
     if (opts.followsymlink) {
       if (cpcheckcycle(sourceDir, srcFile)) {
@@ -155,8 +173,6 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
       } else {
         copyFileSync(srcFile, destFile, opts);
       }
-    } else if (fs.existsSync(destFile) && opts.no_force) {
-      common.log('skipping existing file: ' + files[i]);
     } else {
       copyFileSync(srcFile, destFile, opts);
     }
