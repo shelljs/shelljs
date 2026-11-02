@@ -59,16 +59,23 @@ function _mkdir(options, dirs) {
   // if it's array leave it as it is
 
   dirs.forEach(function (dir) {
+    var stat;
     try {
-      var stat = common.statNoFollowLinks(dir);
+      stat = common.statNoFollowLinks(dir);
+      if (options.fullpath && stat.isSymbolicLink()) {
+        stat = common.statFollowLinks(dir);
+      }
+    } catch (e) {
+      // Keep lstat's result when an existing link does not resolve.
+    }
+
+    if (stat) {
       if (!options.fullpath) {
         common.error('path already exists: ' + dir, { continue: true });
-      } else if (stat.isFile()) {
+      } else if (!stat.isDirectory()) {
         common.error('cannot create directory ' + dir + ': File exists', { continue: true });
       }
       return; // skip dir
-    } catch (e) {
-      // do nothing
     }
 
     // Base dir does not exist, and no -p option given

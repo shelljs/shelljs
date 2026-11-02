@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const test = require('ava');
 
@@ -72,6 +73,65 @@ test('try to overwrite file, with -p', t => {
   t.is(result.code, 1);
   t.is(result.stderr, 'mkdir: cannot create directory test/resources/file1: File exists');
   t.truthy(common.statFollowLinks('test/resources/file1').isFile());
+});
+
+test('-p rejects a link to a file', t => {
+  const target = `${t.context.tmp}/target`;
+  const link = `${t.context.tmp}/link`;
+  fs.writeFileSync(target, 'keep this file');
+  try {
+    fs.symlinkSync(path.resolve(target), link, 'file');
+  } catch (err) {
+    if (process.platform === 'win32' && err.code === 'EPERM') {
+      t.pass('File symlinks require elevated permissions on this Windows host');
+      return;
+    }
+    throw err;
+  }
+
+  const result = shell.mkdir('-p', link);
+  t.is(result.code, 1);
+  t.is(result.stderr, `mkdir: cannot create directory ${link}: File exists`);
+  t.true(fs.lstatSync(link).isSymbolicLink());
+  t.is(fs.readFileSync(target, 'utf8'), 'keep this file');
+});
+
+test('-p rejects a dangling link and continues with other directories', t => {
+  const target = `${t.context.tmp}/absent`;
+  const link = `${t.context.tmp}/link`;
+  const directory = `${t.context.tmp}/created`;
+  fs.symlinkSync(path.resolve(target), link, 'junction');
+  const originalTarget = fs.readlinkSync(link);
+
+  const result = shell.mkdir('-p', link, directory);
+  t.is(result.code, 1);
+  t.is(result.stderr, `mkdir: cannot create directory ${link}: File exists`);
+  t.is(fs.readlinkSync(link), originalTarget);
+  t.false(fs.existsSync(target));
+  t.true(fs.statSync(directory).isDirectory());
+});
+
+test('-p accepts a link to an existing directory', t => {
+  const target = `${t.context.tmp}/target`;
+  const link = `${t.context.tmp}/link`;
+  fs.mkdirSync(target);
+  fs.symlinkSync(path.resolve(target), link, 'junction');
+  const originalTarget = fs.readlinkSync(link);
+
+  const result = shell.mkdir('-p', link);
+  t.is(result.code, 0);
+  t.is(fs.readlinkSync(link), originalTarget);
+  t.true(fs.statSync(link).isDirectory());
+});
+
+test('-p respects fatal errors for a dangling destination link', t => {
+  const link = `${t.context.tmp}/link`;
+  fs.symlinkSync(path.resolve(`${t.context.tmp}/absent`), link, 'junction');
+  shell.config.fatal = true;
+
+  const error = t.throws(() => shell.mkdir('-p', link));
+  t.is(error.code, 1);
+  t.is(error.message, `mkdir: cannot create directory ${link}: File exists`);
 });
 
 test('try to make a subdirectory of a file', t => {
