@@ -119,7 +119,47 @@ test('-vl selects a file containing a real blank line', t => {
 test('-v option', t => {
   const result = shell.grep('-v', 'line', 'test/resources/a.txt');
   t.falsy(shell.error());
-  t.is(result.split('\n').length - 1, 8);
+  t.is(result.split('\n').length - 1, 7);
+});
+
+test('a terminating newline does not create a blank matching line', t => {
+  const result = shell.ShellString('text\n').grep(/^$/);
+  t.is(result.code, 1);
+  t.is(result.stdout, '');
+});
+
+test('inverted matches do not include a terminating newline as a line', t => {
+  const result = shell.ShellString('match\n').grep('-v', 'match');
+  t.is(result.code, 1);
+  t.is(result.stdout, '');
+});
+
+test('blank-line matches preserve real final blank lines and their numbers', t => {
+  const result = shell.ShellString('text\n\n\n').grep('-n', /^$/);
+  t.is(result.code, 0);
+  t.is(result.stdout, '2:\n3:\n');
+});
+
+test('empty files have no matching lines', t => {
+  const file = `${t.context.tmp}/empty`;
+  fs.writeFileSync(file, '');
+  const result = shell.grep(/^$/, file);
+  t.is(result.code, 1);
+  t.is(result.stdout, '');
+});
+
+test('a file containing a newline has one blank matching line', t => {
+  const file = `${t.context.tmp}/blank`;
+  fs.writeFileSync(file, '\n');
+  const result = shell.grep('-n', /^$/, file);
+  t.is(result.code, 0);
+  t.is(result.stdout, '1:\n');
+});
+
+test('context does not turn a terminating newline into a match', t => {
+  const result = shell.ShellString('before\n\nlast\n').grep('-nC', 1, /^$/);
+  t.is(result.code, 0);
+  t.is(result.stdout, '1-before\n2:\n3-last\n');
 });
 
 test('matches one line', t => {
