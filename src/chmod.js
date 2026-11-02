@@ -177,7 +177,17 @@ function _chmod(options, mode, filePattern) {
               break;
 
             case '=':
-              newPerms = type + mask;
+              var clearMask = 0;
+              if (changeOwner) {
+                clearMask |= PERMS.OWNER_READ | PERMS.OWNER_WRITE | PERMS.OWNER_EXEC | PERMS.SETUID;
+              }
+              if (changeGroup) {
+                clearMask |= PERMS.GROUP_READ | PERMS.GROUP_WRITE | PERMS.GROUP_EXEC | PERMS.SETGID;
+              }
+              if (changeOther) {
+                clearMask |= PERMS.OTHER_READ | PERMS.OTHER_WRITE | PERMS.OTHER_EXEC | PERMS.STICKY;
+              }
+              newPerms = (newPerms & ~clearMask) | mask;
 
               // According to POSIX, when using = to explicitly set the
               // permissions, setuid and setgid can never be cleared.
