@@ -126,7 +126,16 @@ function cpdirSyncRecursive(sourceDir, destDir, currentDepth, opts) {
     var destFile = destDir + '/' + files[i];
     var srcFileStat = common.statNoFollowLinks(srcFile);
 
-    if (opts.no_force && fs.existsSync(destFile)) {
+    var destFileExists = opts.no_force && fs.existsSync(destFile);
+    if (opts.no_force && srcFileStat.isSymbolicLink() && !opts.followsymlink) {
+      try {
+        // Copying the link itself must also preserve dangling destination links.
+        destFileExists = Boolean(common.statNoFollowLinks(destFile));
+      } catch (e) {
+        // No destination entry to preserve.
+      }
+    }
+    if (destFileExists) {
       var sourceIsDirectory = srcFileStat.isDirectory() ||
         (opts.followsymlink && srcFileStat.isSymbolicLink() && common.statFollowLinks(srcFile).isDirectory());
       if (!sourceIsDirectory) {

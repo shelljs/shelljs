@@ -149,6 +149,22 @@ test('-nR preserves an existing file when the source entry is a directory link',
   t.is(fs.readFileSync(`${destination}/source/link`, 'utf8'), 'keep this file');
 });
 
+test('-nR preserves a dangling destination link when copying a source link', t => {
+  const source = `${t.context.tmp}/source`;
+  const destination = `${t.context.tmp}/destination`;
+  const target = `${t.context.tmp}/target`;
+  shell.mkdir('-p', source, `${destination}/source`, target);
+  fs.symlinkSync(path.resolve(target), `${source}/link`, 'junction');
+  fs.symlinkSync(path.resolve(`${t.context.tmp}/absent`), `${destination}/source/link`, 'junction');
+  const originalTarget = fs.readlinkSync(`${destination}/source/link`);
+  t.false(fs.existsSync(`${destination}/source/link`));
+
+  const result = shell.cp('-nR', source, destination);
+  t.is(result.code, 0);
+  t.is(fs.readlinkSync(`${destination}/source/link`), originalTarget);
+  t.false(fs.existsSync(`${destination}/source/link`));
+});
+
 test('-nRL preserves an existing file when following a source file link', t => {
   const source = `${t.context.tmp}/source`;
   const destination = `${t.context.tmp}/destination`;
