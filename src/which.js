@@ -108,7 +108,7 @@ function _which(options, cmd) {
       }
     }
   } else if (checkPath(cmd)) { // a valid absolute or relative path
-    queryMatches.push(path.resolve(cmd));
+    queryMatches.push(cmd);
   }
 
   if (queryMatches.length > 0) {
