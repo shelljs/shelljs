@@ -94,3 +94,14 @@ test('None executable files does not appear in the result list', t => {
 
   process.env.PATH = pathEnv;
 });
+
+test('path given with a slash is returned as given', t => {
+  const abs = process.execPath;
+  t.is(shell.which(abs).toString(), abs);
+  const rel = path.relative(process.cwd(), abs);
+  if (!path.isAbsolute(rel)) { // not the case across drives on Windows
+    const cmd = rel.includes(path.sep) ? rel : '.' + path.sep + rel;
+    t.is(shell.which(cmd).toString(), cmd);
+  }
+  t.falsy(shell.error());
+});
