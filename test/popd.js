@@ -92,6 +92,30 @@ test('Using -1 option', t => {
   t.deepEqual(trail, [rootDir]);
 });
 
+test('Using -N option with more than two directories on the stack', t => {
+  const pushdDir = path.resolve(rootDir, 'test/resources/pushd');
+  shell.pushd('test/resources/pushd');
+  shell.pushd('a');
+  shell.pushd('../b');
+  // The stack is b, a, pushd, rootDir. -0 is rootDir.
+  let trail = shell.popd('-0');
+  t.falsy(shell.error());
+  t.is(process.cwd(), trail[0]);
+  t.deepEqual(trail, [
+    path.resolve(pushdDir, 'b'),
+    path.resolve(pushdDir, 'a'),
+    pushdDir,
+  ]);
+  // The stack is b, a, pushd. -1 is a.
+  trail = shell.popd('-1');
+  t.falsy(shell.error());
+  t.is(process.cwd(), trail[0]);
+  t.deepEqual(trail, [
+    path.resolve(pushdDir, 'b'),
+    pushdDir,
+  ]);
+});
+
 test('Using -n option', t => {
   shell.pushd('test/resources/pushd');
   const trail = shell.popd('-n');

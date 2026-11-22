@@ -141,7 +141,7 @@ function _popd(options, index) {
 
   index = _parseStackIndex(index || '+0');
 
-  if (options['no-cd'] || index > 0 || _dirStack.length + index === 0) {
+  if (options['no-cd'] || (index !== 0 && index !== -(_dirStack.length + 1))) {
     index = index > 0 ? index - 1 : index;
     _dirStack.splice(index, 1);
   } else {
