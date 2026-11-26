@@ -28,8 +28,12 @@ function _cd(options, dir) {
     // something went wrong, let's figure out the error
     var err;
     try {
-      common.statFollowLinks(dir); // if this succeeds, it must be some sort of file
-      err = 'not a directory: ' + dir;
+      var stat = common.statFollowLinks(dir);
+      if (!stat.isDirectory()) {
+        err = 'not a directory: ' + dir;
+      } else {
+        err = e.message;
+      }
     } catch (e2) {
       err = 'no such file or directory: ' + dir;
     }
