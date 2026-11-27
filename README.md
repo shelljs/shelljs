@@ -492,6 +492,8 @@ Available options:
         output format for human readability, but programmatic usage should
         depend on the stable object format rather than the `.toString()`
         representation.
++ `-t`: sort the returned list by modification time, newest first, then by
+        name when times are equal. With `-R`, sort the full recursive list.
 
 Examples:
 
@@ -501,6 +503,7 @@ ls('projs/**/*.js'); // Find all js files recursively in projs
 ls('-R', '/users/me', '/tmp');
 ls('-R', ['/users/me', '/tmp']); // same as above
 ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
+ls('-t', 'logs'); // List the most recently modified entries first
 ```
 
 Returns a [ShellString](#shellstringstr) (with array-like properties) of all

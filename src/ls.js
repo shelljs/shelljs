@@ -14,6 +14,7 @@ common.register('ls', _ls, {
     'a': 'all_deprecated',
     'd': 'directory',
     'l': 'long',
+    't': 'time',
   },
 });
 
@@ -35,6 +36,8 @@ common.register('ls', _ls, {
 //@         output format for human readability, but programmatic usage should
 //@         depend on the stable object format rather than the `.toString()`
 //@         representation.
+//@ + `-t`: sort the returned list by modification time, newest first, then by
+//@         name when times are equal. With `-R`, sort the full recursive list.
 //@
 //@ Examples:
 //@
@@ -44,6 +47,7 @@ common.register('ls', _ls, {
 //@ ls('-R', '/users/me', '/tmp');
 //@ ls('-R', ['/users/me', '/tmp']); // same as above
 //@ ls('-l', 'file.txt'); // { name: 'file.txt', mode: 33188, nlink: 1, ...}
+//@ ls('-t', 'logs'); // List the most recently modified entries first
 //@ ```
 //@
 //@ Returns a [ShellString](#shellstringstr) (with array-like properties) of all
@@ -70,12 +74,14 @@ function _ls(options, paths) {
     if (process.platform === 'win32') {
       relName = relName.replace(/\\/g, '/');
     }
-    if (options.long) {
+    if (options.long || options.time) {
       stat = stat || (options.link ? common.statFollowLinks(abs) : common.statNoFollowLinks(abs));
-      list.push(addLsAttributes(relName, stat));
+    }
+    var entry = options.long ? addLsAttributes(relName, stat) : relName;
+    if (options.time) {
+      list.push({ name: relName, mtime: stat.mtimeMs, value: entry });
     } else {
-      // list.push(path.relative(rel || '.', file));
-      list.push(relName);
+      list.push(entry);
     }
   }
 
@@ -137,6 +143,19 @@ function _ls(options, paths) {
       pushFile(p, p, stat);
     }
   });
+
+  if (options.time) {
+    list.sort(function (a, b) {
+      var difference = b.mtime - a.mtime;
+      if (difference || a.name === b.name) {
+        return difference;
+      }
+      return a.name < b.name ? -1 : 1;
+    });
+    list = list.map(function (entry) {
+      return entry.value;
+    });
+  }
 
   // Add methods, to make this more compatible with ShellStrings
   return list;

@@ -8,6 +8,11 @@ const utils = require('./utils/utils');
 
 const CWD = process.cwd();
 
+function createTimedFile(filename, mtime) {
+  fs.writeFileSync(filename, '');
+  fs.utimesSync(filename, mtime, mtime);
+}
+
 test.beforeEach(t => {
   t.context.tmp = utils.getTempDir();
   shell.config.resetForTesting();
@@ -95,6 +100,124 @@ test('simple arg, a file', t => {
   t.is(result.code, 0);
   t.truthy(result.includes('test/resources/ls/file1'));
   t.is(result.length, 1);
+});
+
+test('-t sorts directory contents by modification time, newest first', t => {
+  const dir = t.context.tmp;
+  createTimedFile(dir + '/older', 1000000000);
+  createTimedFile(dir + '/newer', 1000000200);
+  createTimedFile(dir + '/middle', 1000000100);
+
+  const result = shell.ls('-t', dir);
+  t.falsy(shell.error());
+  t.is(result.code, 0);
+  t.deepEqual([...result], ['newer', 'middle', 'older']);
+});
+
+test('-t sorts explicit paths and glob matches without changing ordinary ls', t => {
+  shell.cd(t.context.tmp);
+  createTimedFile('older', 1000000000);
+  createTimedFile('newer', 1000000200);
+  createTimedFile('middle', 1000000100);
+
+  t.deepEqual([...shell.ls('older', 'newer', 'middle')], ['older', 'newer', 'middle']);
+  t.deepEqual([...shell.ls('-t', ['older', 'newer', 'middle'])], ['newer', 'middle', 'older']);
+  t.deepEqual([...shell.ls('-t', '*')], ['newer', 'middle', 'older']);
+  t.deepEqual([...shell.ls('-t')], ['newer', 'middle', 'older']);
+  t.falsy(shell.error());
+});
+
+test('-t sorts equal modification times by name', t => {
+  shell.cd(t.context.tmp);
+  createTimedFile('b', 1000000000);
+  createTimedFile('a', 1000000000);
+
+  t.deepEqual([...shell.ls('-t', 'b', 'a', 'a')], ['a', 'a', 'b']);
+  t.falsy(shell.error());
+});
+
+test('-t preserves sub-millisecond modification-time precision', t => {
+  shell.cd(t.context.tmp);
+  createTimedFile('a-older', 1000000000.0001);
+  createTimedFile('z-newer', 1000000000.0008);
+
+  t.deepEqual([...shell.ls('-t', 'a-older', 'z-newer')], ['z-newer', 'a-older']);
+  t.falsy(shell.error());
+});
+
+test('-lt preserves file metadata in modification-time order', t => {
+  const dir = t.context.tmp;
+  createTimedFile(dir + '/older', 1000000000);
+  createTimedFile(dir + '/newer', 1000000100);
+
+  const result = shell.ls('-lt', dir);
+  t.falsy(shell.error());
+  t.deepEqual(result.map(file => file.name), ['newer', 'older']);
+  t.is(result[0].mtime.getTime(), 1000000100000);
+  t.true(result[0].isFile());
+  t.true(result[0].toString().endsWith(' newer'));
+});
+
+test('-lt sorts matching names from separate directories by their own timestamps', t => {
+  const dir = t.context.tmp;
+  shell.mkdir(dir + '/a', dir + '/b');
+  createTimedFile(dir + '/a/shared', 1000000000);
+  createTimedFile(dir + '/a/middle', 1000000100);
+  createTimedFile(dir + '/b/shared', 1000000200);
+
+  const result = shell.ls('-lt', dir + '/a', dir + '/b');
+  t.falsy(shell.error());
+  t.deepEqual(result.map(file => file.name), ['shared', 'middle', 'shared']);
+  t.deepEqual(result.map(file => file.mtimeMs), [1000000200000, 1000000100000, 1000000000000]);
+});
+
+test('-t respects hidden-file filtering and -A', t => {
+  const dir = t.context.tmp;
+  createTimedFile(dir + '/visible', 1000000000);
+  createTimedFile(dir + '/.hidden', 1000000100);
+
+  t.deepEqual([...shell.ls('-t', dir)], ['visible']);
+  t.deepEqual([...shell.ls('-At', dir)], ['.hidden', 'visible']);
+  t.falsy(shell.error());
+});
+
+test('-Rt sorts the full recursive list and -dt sorts directories themselves', t => {
+  const dir = t.context.tmp;
+  shell.mkdir(dir + '/sub');
+  createTimedFile(dir + '/older', 1000000000);
+  createTimedFile(dir + '/sub/newer', 1000000200);
+  fs.utimesSync(dir + '/sub', 1000000100, 1000000100);
+  fs.utimesSync(dir, 1000000000, 1000000000);
+
+  t.deepEqual([...shell.ls('-Rt', dir)], ['sub/newer', 'sub', 'older']);
+  t.deepEqual([...shell.ls('-dt', dir, dir + '/sub')], [dir + '/sub', dir]);
+  t.falsy(shell.error());
+});
+
+test('-t uses symlink timestamps unless -L is specified', t => {
+  utils.skipOnWin(t, () => {
+    shell.cd(t.context.tmp);
+    createTimedFile('target', 1000000000);
+    createTimedFile('middle', 1000000100);
+    fs.symlinkSync('target', 'link');
+    fs.lutimesSync('link', 1000000200, 1000000200);
+
+    t.deepEqual([...shell.ls('-t')], ['link', 'middle', 'target']);
+    t.deepEqual([...shell.ls('-Lt')], ['middle', 'link', 'target']);
+    t.falsy(shell.error());
+  });
+});
+
+test('-t lists broken symlinks without following them', t => {
+  utils.skipOnWin(t, () => {
+    shell.cd(t.context.tmp);
+    createTimedFile('older', 1000000000);
+    fs.symlinkSync('missing', 'broken');
+    fs.lutimesSync('broken', 1000000100, 1000000100);
+
+    t.deepEqual([...shell.ls('-t')], ['broken', 'older']);
+    t.falsy(shell.error());
+  });
 });
 
 test('no args, -A option', t => {
